@@ -1,0 +1,18 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/ARGeneralUi/ARGeneralUi.uss?fileID=7433441132597879392&amp;guid=c961486a29d8846749eae72578b77c3f&amp;type=3#ARGeneralUi" />
+    <engine:VisualElement name="Container" class="Container" style="width: 100%; height: 100%;">
+        <engine:VisualElement name="Header" class="Header" style="width: 100%; height: 10%; flex-direction: row; justify-content: space-evenly; background-color: rgba(52, 74, 150, 0.39);">
+            <engine:Label text="Augmented reality" name="Title" class="Title" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/Eurostile%20Extended%20Bold.ttf?fileID=12800000&amp;guid=a2ee0aee317e14c07923819f7cf8cbd6&amp;type=3#Eurostile Extended Bold&quot;); -unity-text-align: middle-left;" />
+            <engine:Label text="Device Detected" name="DeviceDetected" class="Title" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/Eurostile%20Extended%20Bold.ttf?fileID=12800000&amp;guid=a2ee0aee317e14c07923819f7cf8cbd6&amp;type=3#Eurostile Extended Bold&quot;); -unity-text-align: middle-left; font-size: 8px;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="Body" class="Body" style="width: 100%; height: 80%;">
+            <engine:VisualElement name="Visor" class="Visor" />
+        </engine:VisualElement>
+        <engine:VisualElement name="Footer" class="Footer" style="width: 100%; height: 10%; flex-direction: row; justify-content: space-evenly; align-self: stretch; align-content: stretch; align-items: center; background-color: rgba(52, 74, 150, 0.39);">
+            <engine:Button text="Points" name="Points" class="PointsButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+            <engine:Button text="Planes" name="Planes" class="PlanesButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+            <engine:Button text="Dashboard" name="DashboardButton" class="DashboardButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;); " />
+            <engine:Button text="Salir" name="ExitButton" class="ExitButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

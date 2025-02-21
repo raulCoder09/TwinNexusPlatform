@@ -1,0 +1,35 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/View/Register/Register.uss?fileID=7433441132597879392&amp;guid=09cf96b3613cbcc4089e65879794aa4f&amp;type=3#Register" />
+    <engine:VisualElement name="Container" class="Container">
+        <engine:VisualElement name="Header" class="Header">
+            <engine:VisualElement name="TitlePanel" class="TitlePanel">
+                <engine:Label name="Title" text="Crear Cuenta" class="Title" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/Eurostile%20Extended%20Bold.ttf?fileID=12800000&amp;guid=a2ee0aee317e14c07923819f7cf8cbd6&amp;type=3#Eurostile Extended Bold&quot;); -unity-text-align: upper-left;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="Body" class="Body">
+            <engine:VisualElement name="RegisterPanel" class="RegisterPanel">
+                <engine:VisualElement name="InputFieldsPanel" class="InputFieldsPanel">
+                    <engine:VisualElement name="UserNamePanel" class="UserNamePanel">
+                        <engine:TextField name="UserNameField" placeholder-text="Escribe tu usuario" class="UserNameField" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="PasswordPanel" class="PasswordPanel">
+                        <engine:TextField name="PasswordField" password="true" placeholder-text="Escribe tu contraseña" class="PasswordField" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="RepeatPasswordPanel" class="RepeatPasswordPanel" style="margin-top: 70px;">
+                        <engine:TextField name="RepeatPasswordField" password="true" placeholder-text="Repite tu contraseña" class="RepeatPasswordField" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:VisualElement name="LinkPanel" class="LinkPanel">
+                    <engine:Label name="Link" text="¿Ya tienes cuenta? Inicia sesión aquí" class="Link" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                </engine:VisualElement>
+                <engine:VisualElement name="ButtonsPanel" class="ButtonsPanel">
+                    <engine:Button text="Registrar" name="RegisterButton" class="RegisterButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                    <engine:Button text="Cancelar" name="ExitButton" class="ExitButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="Footer" class="Footer">
+            <engine:Label name="FooterText" text="© 2025 Twin Nexus. All Rights Reserved." class="FooterText" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

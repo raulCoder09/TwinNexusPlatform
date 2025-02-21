@@ -1,0 +1,109 @@
+.MainContainer {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(52, 74, 150);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.Header {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Title {
+    color: rgb(230, 229, 234);
+    font-size: 12px;
+}
+
+.Body {
+    width: 90%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.FilterPanel {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px;
+    background-color: rgba(42, 60, 122, 0.9);
+    border-radius: 10px;
+}
+
+.SearchField {
+    width: 40%;
+    height: 30px;
+    background-color: white;
+    padding: 5px;
+    font-size: 10px;
+}
+
+.FilterDropdown {
+    width: 20%;
+    height: 30px;
+    font-size: 10px;
+}
+
+.ActionButton {
+    background-color: rgb(42, 60, 122);
+    color: rgb(230, 229, 234);
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 10px;
+}
+
+.ActionButton:hover {
+    background-color: rgb(54, 76, 151);
+}
+
+.LogsScroll {
+    width: 100%;
+    height: 65%;
+    background-color: rgba(42, 60, 122, 0.9);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.LogList {
+    display: flex;
+    flex-direction: column;
+}
+
+.LogItem {
+    background-color: rgba(230, 229, 234, 0.1);
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 10px;
+    color: rgb(230, 229, 234);
+}
+
+.Footer {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.NavButton {
+    background-color: rgb(93, 92, 97);
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 10px;
+}
+
+.NavButton:hover {
+    background-color: rgb(51, 51, 59);
+}

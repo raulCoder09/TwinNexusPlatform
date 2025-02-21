@@ -1,0 +1,22 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/View/SupportAndHelp/SupportAndHelp.uss?fileID=7433441132597879392&amp;guid=096d7887987de4247b91f60ce99d9644&amp;type=3#SupportAndHelp" />
+    <engine:VisualElement name="Container" class="Container">
+        <engine:VisualElement name="Header" class="Header">
+            <engine:VisualElement name="TitlePanel" class="TitlePanel">
+                <engine:Label name="Title" text="Soporte y Ayuda" class="Title" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/Eurostile%20Extended%20Bold.ttf?fileID=12800000&amp;guid=a2ee0aee317e14c07923819f7cf8cbd6&amp;type=3#Eurostile Extended Bold&quot;);" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="Body" class="Body">
+            <engine:VisualElement name="ContactPanel" class="ContactPanel">
+                <engine:TextField name="NameField" placeholder-text="Nombre" class="InputField" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                <engine:TextField name="EmailField" placeholder-text="Correo" class="InputField" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                <engine:TextField name="MessageField" multiline="true" placeholder-text="Mensaje" class="InputField Large" style="height: 50px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;); font-size: 8px;" />
+                <engine:Button name="SendButton" text="Enviar" class="SendButton" style="width: 40%; height: 20px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;); font-size: 8px;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="Footer" class="Footer" style="flex-direction: row; justify-content: space-evenly;">
+            <engine:Button name="BackButton" text="Volver al Dashboard" class="BackButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;); font-size: 8px;" />
+            <engine:Button name="OpenDocsButton" text="Ver Documentación" class="DocsButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;); font-size: 8px;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

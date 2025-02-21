@@ -1,0 +1,28 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/View/Dashboard/Dashboard.uss?fileID=7433441132597879392&amp;guid=2962367cea00f724a90e1850ce400ab9&amp;type=3#Dashboard" />
+  
+    <engine:VisualElement name="Container" class="Container">
+        <engine:VisualElement name="Header" class="Header">
+            <engine:VisualElement name="TitlePanel" class="TitlePanel">
+                <engine:Label text="Dashboard" name="Title" class="Title" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/Eurostile%20Extended%20Bold.ttf?fileID=12800000&amp;guid=a2ee0aee317e14c07923819f7cf8cbd6&amp;type=3#Eurostile Extended Bold&quot;);" />
+            </engine:VisualElement>
+            <engine:VisualElement name="UserPanel" class="UserPanel">
+                <engine:Label text="Invitado" name="UserName" class="UserName" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                <engine:Button text="Cerrar sesión" name="LogoutButton" class="LogoutButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="Body" class="Body">
+            <engine:VisualElement name="ButtonsPanel" class="ButtonsPanel">
+                <engine:Button text="Espacio Virtual" name="VirtualSpaceButton" class="DashboardButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                <engine:Button text="Realidad Aumentada" name="AugmentedRealityButton" class="DashboardButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                <engine:Button text="Configuración" name="SettingsButton" class="DashboardButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                <engine:Button text="Registros del Sistema" name="SystemLogsButton" class="DashboardButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                <engine:Button text="Soporte y Ayuda" name="SupportAndHelpButton" class="DashboardButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="Footer" class="Footer">
+            <engine:Button text="Salir" name="ExitButton" class="ExitButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+    
+</engine:UXML>

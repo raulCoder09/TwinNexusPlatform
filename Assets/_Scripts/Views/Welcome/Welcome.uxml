@@ -1,0 +1,21 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/View/Welcome/Welcome.uss?fileID=7433441132597879392&amp;guid=ba71eb8fc931e224c820cb714f3f1a0f&amp;type=3#Welcome" />
+    <engine:VisualElement name="MainContainer" class="MainContainer">
+        <engine:VisualElement name="Header" class="Header" />
+        <engine:VisualElement name="Body" class="Body">
+            <engine:VisualElement name="NameApplicationPanel" class="NameApplicationPanel">
+                <engine:Label name="NameApplication" text="Twin Nexus Platform" class="NameApplication" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/Eurostile%20Extended%20Bold.ttf?fileID=12800000&amp;guid=a2ee0aee317e14c07923819f7cf8cbd6&amp;type=3#Eurostile Extended Bold&quot;);" />
+            </engine:VisualElement>
+            <engine:VisualElement name="SloganPanel" class="SloganPanel">
+                <engine:Label name="Slogan" text="Manipulación, monitoreo y simulación industrial" class="Slogan" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;); " />
+            </engine:VisualElement>
+            <engine:VisualElement name="ButtonsPanel" class="ButtonsPanel">
+                <engine:Button name="LaunchButton" text="Launch" class="LaunchButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+                <engine:Button name="ExitButton" text="Exit" class="ExitButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/EurostileExtendedBlack.ttf?fileID=12800000&amp;guid=9cc1426b7e99046b7a8612faaec972de&amp;type=3#EurostileExtendedBlack&quot;);" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="Footer" class="Footer">
+            <engine:Label name="FooterText" text="© 2025 Twin Nexus. All Rights Reserved." class="FooterText" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

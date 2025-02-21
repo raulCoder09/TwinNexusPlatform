@@ -1,0 +1,165 @@
+.Container {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(52, 74, 150);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.Header {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Body {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    align-self: stretch;
+    align-content: stretch;
+}
+
+.RegisterPanel {
+    height: 100%;
+    width: 95%;
+    padding: 20px;
+    background-color: rgba(42, 60, 122, 0.9);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-content: stretch;
+    align-self: center;
+    align-items: stretch;
+}
+
+.TitlePanel {
+    width: 100%;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+    align-self: stretch;
+    align-content: stretch;
+}
+
+.Title {
+    color: rgb(230, 229, 234);
+    font-size: 16px;
+}
+
+.InputFieldsPanel {
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 80%;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.UserNamePanel, .PasswordPanel, .RepeatPasswordPanel {
+    justify-content: center;
+    width: 40%;
+    height: 15%; 
+    margin-right: 0;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    
+}
+
+.UserNameField, .PasswordField, .RepeatPasswordField{
+    border-radius: 5px;
+    padding: 5px;
+    color: black;
+    height: 45px;
+    font-size: 8px;
+    width: 200px;
+}
+
+.Label {
+    color: rgb(230, 229, 234);
+    font-size: 12px;
+}
+
+.InputField {
+    width: 60%;
+    height: 40px;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 12px;
+    color: black;
+}
+
+.LinkPanel {
+    width: 100%;
+    margin-top: 10px;
+    height: 10%;
+}
+
+.Link {
+    font-size: 12px;
+    color: rgb(230, 229, 234);
+    -unity-text-align: upper-center;
+}
+
+.Link:hover {
+    color: rgb(54, 76, 151);
+}
+
+.ButtonsPanel {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    flex-direction: row;
+    height: 10%;
+}
+
+.RegisterButton, .ExitButton {
+    width: 70px;
+    height: 25px;
+    font-size: 8px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.RegisterButton {
+    background-color: rgb(42, 60, 122);
+    color: rgb(230, 229, 234);
+}
+
+.RegisterButton:hover {
+    background-color: rgb(54, 76, 151);
+}
+
+.ExitButton {
+    background-color: rgb(93, 92, 97);
+    color: white;
+}
+
+.ExitButton:hover {
+    background-color: rgb(51, 51, 59);
+}
+
+.Footer {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.FooterText {
+    font-size: 8px;
+    color: rgb(230, 229, 234);
+}

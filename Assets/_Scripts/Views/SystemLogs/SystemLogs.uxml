@@ -1,0 +1,23 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/View/SystemLogs/SystemLogs.uss?fileID=7433441132597879392&amp;guid=f6450f7cf2b39af418627ce014c43afb&amp;type=3#SystemLogs" />
+    <engine:VisualElement name="MainContainer" class="MainContainer">
+        <engine:VisualElement name="Header" class="Header">
+            <engine:Label text="System Logs" name="Title" class="Title" />
+        </engine:VisualElement>
+        <engine:VisualElement name="Body" class="Body">
+            <engine:VisualElement name="FilterPanel" class="FilterPanel">
+                <engine:TextField name="SearchField" placeholder-text="Buscar logs..." class="SearchField" style="width: 25%;" />
+                <engine:DropdownField name="FilterDropdown" class="FilterDropdown" />
+                <engine:Button text="Filtrar" name="FilterButton" class="ActionButton" />
+                <engine:Button text="Exportar" name="ExportButton" class="ActionButton" />
+            </engine:VisualElement>
+            <engine:ScrollView name="LogsScroll" class="LogsScroll">
+                <engine:VisualElement name="LogList" class="LogList" />
+            </engine:ScrollView>
+        </engine:VisualElement>
+        <engine:VisualElement name="Footer" class="Footer" style="flex-direction: row;">
+            <engine:Button text="Dashboard" name="DashboardButton" class="NavButton" />
+            <engine:Button text="Salir" name="ExitButton" class="NavButton" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
