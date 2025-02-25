@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    include:
+      - develop
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- name: GITHUB_REPO
+  value: 'raulCoder09/TwinNexusPlatform'
+- name: GITHUB_USER
+  value: 'raulCoder09'
+
+steps:
+- checkout: self
+
+- script: |
+    git config --global user. Email "mechar09@outlook.com"
+    git config --global user.name "$(GITHUB_USER)"
+    git remote add github https://$(System.AccessToken)@github.com/$(GITHUB_REPO).git
+    git push --force github develop
+    git push --force github main
+  displayName: 'Sync Azure DevOps develop and main to GitHub'
