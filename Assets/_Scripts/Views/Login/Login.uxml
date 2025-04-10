@@ -1,0 +1,26 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/Login/Login.uss?fileID=7433441132597879392&amp;guid=7add5472090db4a8bbea26816c0ad408&amp;type=3#Login" />
+    <ui:VisualElement name="Container" style="flex-grow: 1; background-color: rgb(23, 24, 26); align-items: center; justify-content: center;">
+        <ui:VisualElement name="LoginPanel" class="login-panel">
+            <ui:Label text="Login" name="TitleLabel" class="title-text" />
+            
+            <ui:TextField name="UsernameField" placeholder="Username" class="input-field" />
+            <ui:TextField name="PasswordField" password="true" placeholder="Password" class="input-field" />
+            
+            <ui:VisualElement name="RememberContainer" style="flex-direction: row; align-items: center; margin-top: 10px;">
+                <ui:Toggle name="RememberToggle" />
+                <ui:Label text="Remember me" name="RememberLabel" class="link-text" />
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="ButtonContainer" style="flex-direction: row; width: 100%; justify-content: space-between; margin-top: 30px;">
+                <ui:Button text="Exit" name="ExitButton" class="action-button" />
+                <ui:Button text="Login" name="LoginButton" class="action-button" />
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="LinksContainer" style="width: 100%; align-items: center; margin-top: 30px;">
+                <ui:Label text="Do you want register?" name="RegisterLabel" class="link-text" style="margin-bottom: 15px;" />
+                <ui:Label text="Forgot password?" name="ForgotPasswordLabel" class="link-text" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

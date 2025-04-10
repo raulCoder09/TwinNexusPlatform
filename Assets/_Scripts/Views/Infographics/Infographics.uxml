@@ -1,0 +1,90 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/Infographics/Infographics.uss?fileID=7433441132597879392&amp;guid=3dcea6928512942c5ac2c61d9c9ad63a&amp;type=3#Infographics" />
+    <ui:VisualElement name="Container" style="flex-grow: 1; background-color: rgb(23, 24, 26); flex-direction: row;">
+        <!-- Left Sidebar Menu (Same as Dashboard) -->
+        <ui:VisualElement name="Sidebar" class="sidebar">
+            <ui:VisualElement name="ProfileSection" class="sidebar-section">
+                <ui:VisualElement name="ProfileImage" class="profile-image" />
+                <ui:Label text="Username" name="UsernameLabel" class="sidebar-text" />
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="MenuSection" class="sidebar-section" style="flex-grow: 1;">
+                <ui:Button name="DashboardButton" class="menu-button">
+                    <ui:VisualElement name="DashboardIcon" class="menu-icon dashboard-icon" />
+                    <ui:Label text="Dashboard" name="DashboardLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="TrainingButton" class="menu-button menu-button-selected">
+                    <ui:VisualElement name="TrainingIcon" class="menu-icon training-icon" />
+                    <ui:Label text="Training" name="TrainingLabel" class="sidebar-text highlighted-text" />
+                </ui:Button>
+                
+                <ui:Button name="OperationsButton" class="menu-button">
+                    <ui:VisualElement name="OperationsIcon" class="menu-icon operations-icon" />
+                    <ui:Label text="Operations" name="OperationsLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="ReportsButton" class="menu-button">
+                    <ui:VisualElement name="ReportsIcon" class="menu-icon reports-icon" />
+                    <ui:Label text="Reports" name="ReportsLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="SupportButton" class="menu-button">
+                    <ui:VisualElement name="SupportIcon" class="menu-icon support-icon" />
+                    <ui:Label text="Support" name="SupportLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="SettingsButton" class="menu-button">
+                    <ui:VisualElement name="SettingsIcon" class="menu-icon settings-icon" />
+                    <ui:Label text="Settings" name="SettingsLabel" class="sidebar-text" />
+                </ui:Button>
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="LogoutSection" class="sidebar-section">
+                <ui:Button name="LogoutButton" class="menu-button">
+                    <ui:VisualElement name="LogoutIcon" class="menu-icon logout-icon" />
+                    <ui:Label text="Logout" name="LogoutLabel" class="sidebar-text" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Main Content Area -->
+        <ui:VisualElement name="MainContent" style="flex-grow: 1; padding: 20px; flex-direction: column;">
+            <!-- Page Title -->
+            <ui:Label text="Infographics" name="PageTitle" class="page-title" />
+            
+            <!-- Infographics Grid -->
+            <ui:VisualElement name="InfographicsGrid" class="infographics-grid">
+                <!-- Infographic 1 -->
+                <ui:Button name="Infographic1Button" class="infographic-button">
+                    <ui:Label text="Infographics 1" name="Infographic1Label" class="infographic-title" />
+                </ui:Button>
+                
+                <!-- Infographic 2 -->
+                <ui:Button name="Infographic2Button" class="infographic-button">
+                    <ui:Label text="Infographics 2" name="Infographic2Label" class="infographic-title" />
+                </ui:Button>
+                
+                <!-- Infographic 3 -->
+                <ui:Button name="Infographic3Button" class="infographic-button">
+                    <ui:Label text="Infographics 3" name="Infographic3Label" class="infographic-title" />
+                </ui:Button>
+                
+                <!-- Infographic 4 -->
+                <ui:Button name="Infographic4Button" class="infographic-button">
+                    <ui:Label text="Infographics 4" name="Infographic4Label" class="infographic-title" />
+                </ui:Button>
+                
+                <!-- Infographic 5 -->
+                <ui:Button name="Infographic5Button" class="infographic-button">
+                    <ui:Label text="Infographics 5" name="Infographic5Label" class="infographic-title" />
+                </ui:Button>
+            </ui:VisualElement>
+            
+            <!-- Back Button -->
+            <ui:VisualElement name="BackButtonContainer" style="margin-top: 40px;">
+                <ui:Button text="Back" name="BackButton" class="back-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

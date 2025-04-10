@@ -1,0 +1,97 @@
+/* Base container styling */
+#Container {
+    flex-grow: 1;
+    background-color: rgb(23, 24, 26);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Register panel styling with rounded corners and border glow */
+.register-panel {
+    background-color: rgb(90, 90, 90);
+    border-radius: 30px;
+    width: 450px;
+    padding: 40px;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(128, 0, 128, 0.5);
+}
+
+/* Title styling with green glow effect */
+.title-text {
+    font-size: 48px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgb(120, 255, 120);
+    -unity-text-align: middle-center;
+    letter-spacing: 2px;
+    margin-top: 10px;
+}
+
+/* Input field styling */
+.input-field {
+    width: 100%;
+    height: 50px;
+    background-color: rgb(230, 230, 230);
+    border-radius: 10px;
+    border-width: 0;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 18px;
+    color: rgb(80, 80, 80);
+}
+
+.input-field:focus {
+    border-color: rgb(120, 255, 120);
+    border-width: 1px;
+}
+
+/* Common button styling */
+.action-button {
+    width: 160px;
+    height: 50px;
+    background-color: rgb(75, 42, 87);
+    border-width: 0;
+    border-radius: 10px;
+    color: white;
+    font-size: 20px;
+    transition-duration: 0.2s;
+    margin: 10px 0;
+    -unity-font-style: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.action-button:hover {
+    background-color: rgb(90, 50, 105);
+    border-color: rgb(120, 255, 120);
+    border-width: 1px;
+    scale: 1.05;
+}
+
+.action-button:active {
+    background-color: rgb(60, 35, 70);
+    scale: 0.98;
+}
+
+/* Link text styling with green color */
+.link-text {
+    color: rgb(120, 255, 120);
+    font-size: 16px;
+    -unity-text-align: middle-center;
+    cursor: link;
+    transition-duration: 0.2s;
+}
+
+.link-text:hover {
+    color: rgb(180, 255, 180);
+    scale: 1.05;
+}
+
+/* Adjust the spacing for form elements */
+#ButtonContainer {
+    margin-top: 30px;
+}
+
+#LinksContainer {
+    margin-top: 20px;
+}

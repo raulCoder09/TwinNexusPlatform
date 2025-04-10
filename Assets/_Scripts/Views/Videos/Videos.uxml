@@ -1,0 +1,95 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/Videos/Videos.uss?fileID=7433441132597879392&amp;guid=eef232faf467d472f87dc34586ae6742&amp;type=3#Videos" />
+    <ui:VisualElement name="Container" style="flex-grow: 1; background-color: rgb(23, 24, 26); flex-direction: row;">
+        <!-- Left Sidebar Menu (Same as Dashboard) -->
+        <ui:VisualElement name="Sidebar" class="sidebar">
+            <ui:VisualElement name="ProfileSection" class="sidebar-section">
+                <ui:VisualElement name="ProfileImage" class="profile-image" />
+                <ui:Label text="Username" name="UsernameLabel" class="sidebar-text" />
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="MenuSection" class="sidebar-section" style="flex-grow: 1;">
+                <ui:Button name="DashboardButton" class="menu-button">
+                    <ui:VisualElement name="DashboardIcon" class="menu-icon dashboard-icon" />
+                    <ui:Label text="Dashboard" name="DashboardLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="TrainingButton" class="menu-button menu-button-selected">
+                    <ui:VisualElement name="TrainingIcon" class="menu-icon training-icon" />
+                    <ui:Label text="Training" name="TrainingLabel" class="sidebar-text highlighted-text" />
+                </ui:Button>
+                
+                <ui:Button name="OperationsButton" class="menu-button">
+                    <ui:VisualElement name="OperationsIcon" class="menu-icon operations-icon" />
+                    <ui:Label text="Operations" name="OperationsLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="ReportsButton" class="menu-button">
+                    <ui:VisualElement name="ReportsIcon" class="menu-icon reports-icon" />
+                    <ui:Label text="Reports" name="ReportsLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="SupportButton" class="menu-button">
+                    <ui:VisualElement name="SupportIcon" class="menu-icon support-icon" />
+                    <ui:Label text="Support" name="SupportLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="SettingsButton" class="menu-button">
+                    <ui:VisualElement name="SettingsIcon" class="menu-icon settings-icon" />
+                    <ui:Label text="Settings" name="SettingsLabel" class="sidebar-text" />
+                </ui:Button>
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="LogoutSection" class="sidebar-section">
+                <ui:Button name="LogoutButton" class="menu-button">
+                    <ui:VisualElement name="LogoutIcon" class="menu-icon logout-icon" />
+                    <ui:Label text="Logout" name="LogoutLabel" class="sidebar-text" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Main Content Area -->
+        <ui:VisualElement name="MainContent" style="flex-grow: 1; padding: 20px; flex-direction: column;">
+            <!-- Page Title -->
+            <ui:Label text="Videos" name="PageTitle" class="page-title" />
+            
+            <!-- Videos Grid -->
+            <ui:VisualElement name="VideosGrid" class="videos-grid">
+                <!-- Video 1 -->
+                <ui:Button name="Video1Button" class="video-button">
+                    <ui:Label text="Video 1" name="Video1Label" class="video-title" />
+                </ui:Button>
+                
+                <!-- Video 2 -->
+                <ui:Button name="Video2Button" class="video-button">
+                    <ui:Label text="Video 2" name="Video2Label" class="video-title" />
+                </ui:Button>
+                
+                <!-- Video 3 -->
+                <ui:Button name="Video3Button" class="video-button">
+                    <ui:Label text="Video 3" name="Video3Label" class="video-title" />
+                </ui:Button>
+                
+                <!-- Video 4 -->
+                <ui:Button name="Video4Button" class="video-button">
+                    <ui:Label text="Video 4" name="Video4Label" class="video-title" />
+                </ui:Button>
+                
+                <!-- Video 5 -->
+                <ui:Button name="Video5Button" class="video-button">
+                    <ui:Label text="Video 5" name="Video5Label" class="video-title" />
+                </ui:Button>
+                
+                <!-- Video 6 -->
+                <ui:Button name="Video6Button" class="video-button">
+                    <ui:Label text="Video 6" name="Video6Label" class="video-title" />
+                </ui:Button>
+            </ui:VisualElement>
+            
+            <!-- Back Button -->
+            <ui:VisualElement name="BackButtonContainer" style="margin-top: 40px;">
+                <ui:Button text="Back" name="BackButton" class="back-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

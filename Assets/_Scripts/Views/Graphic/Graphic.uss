@@ -1,0 +1,199 @@
+/* Base container */
+#Container {
+    flex-grow: 1;
+    background-color: rgb(23, 24, 26);
+    flex-direction: row;
+}
+
+/* Left Sidebar Styling */
+.sidebar {
+    width: 250px;
+    background-color: rgb(75, 42, 87);
+    padding: 20px 0;
+    border-radius: 0 15px 15px 0;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebar-section {
+    width: 100%;
+    padding: 10px 20px;
+    align-items: center;
+}
+
+.profile-image {
+    width: 80px;
+    height: 80px;
+    background-color: black;
+    border-radius: 40px;
+    margin-bottom: 10px;
+    background-image: url('project://database/Assets/Images/profile-placeholder.png');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.sidebar-text {
+    color: white;
+    font-size: 16px;
+    -unity-text-align: middle-left;
+    margin-left: 10px;
+}
+
+.highlighted-text {
+    color: rgb(120, 255, 120);
+}
+
+.menu-button {
+    background-color: transparent;
+    border-width: 0;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    transition-duration: 0.2s;
+}
+
+.menu-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-button-selected {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-icon {
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.dashboard-icon {
+    background-image: url('project://database/Assets/Images/Icons/dashboard-icon.png');
+}
+
+.training-icon {
+    background-image: url('project://database/Assets/Images/Icons/training-icon.png');
+}
+
+.operations-icon {
+    background-image: url('project://database/Assets/Images/Icons/operations-icon.png');
+}
+
+.reports-icon {
+    background-image: url('project://database/Assets/Images/Icons/reports-icon.png');
+}
+
+.support-icon {
+    background-image: url('project://database/Assets/Images/Icons/support-icon.png');
+}
+
+.settings-icon {
+    background-image: url('project://database/Assets/Images/Icons/settings-icon.png');
+}
+
+.logout-icon {
+    background-image: url('project://database/Assets/Images/Icons/logout-icon.png');
+}
+
+/* Environment Dropdown */
+.environment-dropdown {
+    min-width: 300px;
+    background-color: rgb(75, 42, 87);
+    border-radius: 5px;
+    color: white;
+    padding: 5px;
+}
+
+.environment-dropdown > .unity-base-field__input {
+    background-color: rgb(75, 42, 87);
+    border-width: 0;
+    color: white;
+}
+
+.environment-dropdown > .unity-base-field__label {
+    color: white;
+    min-width: 150px;
+}
+
+/* Visualization Mode Buttons */
+.mode-button {
+    background-color: rgb(75, 42, 87);
+    border-width: 0;
+    border-radius: 20px;
+    color: white;
+    font-size: 18px;
+    padding: 8px 25px;
+    margin: 0 5px;
+    transition-duration: 0.2s;
+}
+
+.mode-button:hover {
+    background-color: rgb(90, 50, 105);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.mode-selected {
+    box-shadow: 0 0 15px rgb(0, 255, 0);
+    border: 1px solid rgb(120, 255, 120);
+}
+
+/* Step Grid */
+.step-grid {
+    flex-grow: 1;
+    margin-top: 20px;
+}
+
+.step-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.step-item {
+    width: 18%;
+    background-color: rgb(40, 40, 40);
+    border-radius: 10px;
+    padding: 10px;
+    transition-duration: 0.2s;
+}
+
+.step-item:hover {
+    background-color: rgb(50, 50, 50);
+}
+
+.step-selected {
+    border: 2px solid rgb(0, 150, 255);
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.5);
+}
+
+.step-thumbnail {
+    width: 100%;
+    height: 120px;
+    background-color: rgb(60, 60, 60);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-image: url('project://database/Assets/Images/robot-step-placeholder.png');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.step-number {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.step-description {
+    font-size: 14px;
+    color: rgb(200, 200, 200);
+    white-space: normal;
+    -unity-text-align: upper-left;
+}
+
+/* GraphicMode Specific */
+.highlighted-text {
+    color: rgb(120, 255, 120);
+}

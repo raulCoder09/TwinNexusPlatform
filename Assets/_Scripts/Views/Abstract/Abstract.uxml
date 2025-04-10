@@ -1,0 +1,87 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/Abstract/Abstract.uss?fileID=7433441132597879392&amp;guid=fe66d6338b9d840c8949eb7c29c88057&amp;type=3#Abstract" />
+    <ui:VisualElement name="Container" style="flex-grow: 1; background-color: rgb(23, 24, 26); flex-direction: row;">
+        <!-- Left Sidebar Menu (Same as Dashboard) -->
+        <ui:VisualElement name="Sidebar" class="sidebar">
+            <ui:VisualElement name="ProfileSection" class="sidebar-section">
+                <ui:VisualElement name="ProfileImage" class="profile-image" />
+                <ui:Label text="Username" name="UsernameLabel" class="sidebar-text" />
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="MenuSection" class="sidebar-section" style="flex-grow: 1;">
+                <ui:Button name="DashboardButton" class="menu-button">
+                    <ui:VisualElement name="DashboardIcon" class="menu-icon dashboard-icon" />
+                    <ui:Label text="Dashboard" name="DashboardLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="TrainingButton" class="menu-button menu-button-selected">
+                    <ui:VisualElement name="TrainingIcon" class="menu-icon training-icon" />
+                    <ui:Label text="Training" name="TrainingLabel" class="sidebar-text highlighted-text" />
+                </ui:Button>
+                
+                <ui:Button name="OperationsButton" class="menu-button">
+                    <ui:VisualElement name="OperationsIcon" class="menu-icon operations-icon" />
+                    <ui:Label text="Operations" name="OperationsLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="ReportsButton" class="menu-button">
+                    <ui:VisualElement name="ReportsIcon" class="menu-icon reports-icon" />
+                    <ui:Label text="Reports" name="ReportsLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="SupportButton" class="menu-button">
+                    <ui:VisualElement name="SupportIcon" class="menu-icon support-icon" />
+                    <ui:Label text="Support" name="SupportLabel" class="sidebar-text" />
+                </ui:Button>
+                
+                <ui:Button name="SettingsButton" class="menu-button">
+                    <ui:VisualElement name="SettingsIcon" class="menu-icon settings-icon" />
+                    <ui:Label text="Settings" name="SettingsLabel" class="sidebar-text" />
+                </ui:Button>
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="LogoutSection" class="sidebar-section">
+                <ui:Button name="LogoutButton" class="menu-button">
+                    <ui:VisualElement name="LogoutIcon" class="menu-icon logout-icon" />
+                    <ui:Label text="Logout" name="LogoutLabel" class="sidebar-text" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Main Content Area -->
+        <ui:VisualElement name="MainContent" style="flex-grow: 1; padding: 20px; flex-direction: column;">
+            <!-- Top Bar with Environment Selection -->
+            <ui:VisualElement name="TopBar" style="flex-direction: row; justify-content: flex-end; margin-bottom: 40px;">
+                <!-- Visualization Mode Buttons -->
+                <ui:VisualElement name="VisualizationModes" style="flex-direction: row; align-items: center;">
+                    <ui:Button text="Concrete" name="ConcreteButton" class="mode-button" />
+                    <ui:Button text="Graphic" name="GraphicButton" class="mode-button" />
+                    <ui:Button text="Abstract" name="AbstractButton" class="mode-button mode-selected" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <!-- Categories Grid -->
+            <ui:VisualElement name="CategoriesGrid" style="flex-grow: 1; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;">
+                <!-- Videos Category -->
+                <ui:Button name="VideosButton" class="category-button">
+                    <ui:Label text="Videos" name="VideosLabel" class="category-text" />
+                </ui:Button>
+                
+                <!-- Documents Category -->
+                <ui:Button name="DocumentsButton" class="category-button">
+                    <ui:Label text="Documents" name="DocumentsLabel" class="category-text" />
+                </ui:Button>
+                
+                <!-- Infographics Category -->
+                <ui:Button name="InfographicsButton" class="category-button">
+                    <ui:Label text="Infographics" name="InfographicsLabel" class="category-text" />
+                </ui:Button>
+                
+                <!-- Interactive Simulator Category -->
+                <ui:Button name="SimulatorButton" class="category-button">
+                    <ui:Label text="Interactive simulator" name="SimulatorLabel" class="category-text" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

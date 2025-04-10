@@ -1,0 +1,66 @@
+/* Base container styling */
+#Container {
+    flex-grow: 1;
+    background-color: rgb(23, 24, 26);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Title styling with green glow effect */
+.title-text {
+    font-size: 48px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgb(120, 255, 120);
+    -unity-text-align: middle-center;
+    letter-spacing: 2px;
+    /*-unity-font-definition: url('project://database/Assets/Fonts/YourCustomFont.asset');*/
+}
+
+/* Subtitle styling with blue tint */
+.subtitle-text {
+    font-size: 20px;
+    color: rgb(150, 200, 255);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+    /*-unity-font-definition: url('project://database/Assets/Fonts/YourCustomFont.asset');*/
+}
+
+/* Common button styling */
+.action-button {
+    width: 180px;
+    height: 60px;
+    background-color: rgb(75, 42, 87);
+    border-width: 0;
+    border-radius: 8px;
+    color: white;
+    font-size: 24px;
+    transition-duration: 0.2s;
+    margin: 20px 40px;
+    -unity-font-style: bold;
+    /*-unity-font-definition: url('project://database/Assets/Fonts/YourCustomFont.asset');*/
+}
+
+.action-button:hover {
+    background-color: rgb(90, 50, 105);
+    border-color: rgb(120, 255, 120);
+    border-width: 1px;
+    scale: 1.05;
+}
+
+.action-button:active {
+    background-color: rgb(60, 35, 70);
+    scale: 0.98;
+}
+
+/* Add the green glow effect for buttons */
+#ButtonContainer {
+    margin-top: 80px;
+}
+
+#ExitButton, #LaunchButton {
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
