@@ -1,45 +1,49 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/_Scripts/Views/Dashboard/Dashboard.uss?fileID=7433441132597879392&amp;guid=850538d86019f4473a094916e822bbf9&amp;type=3#Dashboard" />
     <ui:VisualElement name="Container" style="flex-grow: 1; background-color: rgb(23, 24, 26); flex-direction: row;">
-        <!-- Left Sidebar Menu -->
-        <ui:VisualElement name="Sidebar" class="sidebar">
-            <ui:VisualElement name="ProfileSection" class="sidebar-section">
+        <ui:VisualElement name="HamburgerButtonContainer" style="position: absolute; left: 10px; top: 10px; z-index: 9999; width: 40px; height: 40px;">
+            <ui:Button name="HamburgerButton" class="hamburger-button">
+                <ui:VisualElement name="HamburgerIconCSS" class="hamburger-icon-css">
+                    <ui:VisualElement class="line" />
+                    <ui:VisualElement class="line" />
+                    <ui:VisualElement class="line" />
+                </ui:VisualElement>
+            </ui:Button>
+        </ui:VisualElement>
+        <ui:VisualElement name="Sidebar" class="sidebar sidebar-expanded">
+            <ui:Button name="CloseSidebarButton" class="close-sidebar-button">
+                <ui:VisualElement name="CloseIcon" class="close-icon" />
+            </ui:Button>
+            <ui:VisualElement name="ProfileSection" class="sidebar-section" style="width: 80%;">
                 <ui:VisualElement name="ProfileImage" class="profile-image" />
                 <ui:Label text="Username" name="UsernameLabel" class="sidebar-text" />
             </ui:VisualElement>
-            
             <ui:VisualElement name="MenuSection" class="sidebar-section" style="flex-grow: 1;">
                 <ui:Button name="DashboardButton" class="menu-button menu-button-selected">
                     <ui:VisualElement name="DashboardIcon" class="menu-icon dashboard-icon" />
                     <ui:Label text="Dashboard" name="DashboardLabel" class="sidebar-text" />
                 </ui:Button>
-                
                 <ui:Button name="TrainingButton" class="menu-button">
                     <ui:VisualElement name="TrainingIcon" class="menu-icon training-icon" />
                     <ui:Label text="Training" name="TrainingLabel" class="sidebar-text" />
                 </ui:Button>
-                
                 <ui:Button name="OperationsButton" class="menu-button">
                     <ui:VisualElement name="OperationsIcon" class="menu-icon operations-icon" />
                     <ui:Label text="Operations" name="OperationsLabel" class="sidebar-text" />
                 </ui:Button>
-                
                 <ui:Button name="ReportsButton" class="menu-button">
                     <ui:VisualElement name="ReportsIcon" class="menu-icon reports-icon" />
                     <ui:Label text="Reports" name="ReportsLabel" class="sidebar-text" />
                 </ui:Button>
-                
                 <ui:Button name="SupportButton" class="menu-button">
                     <ui:VisualElement name="SupportIcon" class="menu-icon support-icon" />
                     <ui:Label text="Support" name="SupportLabel" class="sidebar-text" />
                 </ui:Button>
-                
                 <ui:Button name="SettingsButton" class="menu-button">
                     <ui:VisualElement name="SettingsIcon" class="menu-icon settings-icon" />
                     <ui:Label text="Settings" name="SettingsLabel" class="sidebar-text" />
                 </ui:Button>
             </ui:VisualElement>
-            
             <ui:VisualElement name="LogoutSection" class="sidebar-section">
                 <ui:Button name="LogoutButton" class="menu-button">
                     <ui:VisualElement name="LogoutIcon" class="menu-icon logout-icon" />
@@ -48,95 +52,75 @@
             </ui:VisualElement>
         </ui:VisualElement>
         
-        <!-- Main Content Area -->
-        <ui:VisualElement name="MainContent" style="flex-grow: 1; padding: 20px;">
-            <ui:Label text="Dashboard" name="PageTitle" class="title-text" />
-            
-            <ui:VisualElement name="DashboardGrid" style="margin-top: 20px; flex-grow: 1; display: flex;">
-                <!-- Row 1 -->
-                <ui:VisualElement name="Row1" style="flex-direction: row; margin-bottom: 20px; height: 150px;">
-                    <!-- Welcome Box -->
-                    <ui:VisualElement name="WelcomeBox" class="dashboard-panel" style="flex-grow: 2; margin-right: 20px;">
-                        <ui:Label text="Welcome back, Username" name="WelcomeTitle" class="panel-title" />
-                        <ui:Label text="Here you can access the platform's main features, such as simulation, monitoring, and reporting." name="WelcomeMessage" class="panel-text" />
-                    </ui:VisualElement>
-                    
-                    <!-- Quick Actions Box -->
-                    <ui:VisualElement name="QuickActionsBox" class="dashboard-panel" style="flex-grow: 1;">
-                        <ui:Label text="Quick Actions" name="QuickActionsTitle" class="panel-title purple-text" />
-                        <ui:Button text="Start Simulation" name="StartSimulationButton" class="action-button" />
-                        <ui:Button text="Generar Reporte" name="GenerateReportButton" class="action-button" />
+        <!-- Reemplazamos el MainContent por un contenedor con ScrollView -->
+        <ui:VisualElement name="MainContentContainer" style="flex-grow: 1; height: 100%;">
+            <ui:ScrollView name="MainContentScrollView" style="flex-grow: 1; width: 100%;">
+                <ui:VisualElement name="MainContent" style="padding: 20px; padding-left: 20px; width: 100%;">
+                    <ui:VisualElement name="DashboardGrid" style="margin-top: 20px; flex-grow: 1; display: flex;">
+                        <ui:VisualElement name="Row1" style="flex-direction: row; margin-bottom: 20px; min-height: 150px;">
+                            <ui:VisualElement name="WelcomeBox" class="dashboard-panel" style="flex-grow: 2; margin-right: 20px; min-width: 300px;">
+                                <ui:Label text="Welcome back, Username" name="WelcomeTitle" class="panel-title" />
+                                <ui:Label text="Here you can access the platform&apos;s main features, such as simulation, monitoring, and reporting." name="WelcomeMessage" class="panel-text" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="QuickActionsBox" class="dashboard-panel" style="flex-grow: 1; min-width: 200px;">
+                                <ui:Label text="Quick Actions" name="QuickActionsTitle" class="panel-title purple-text" />
+                                <ui:Button text="Start Simulation" name="StartSimulationButton" class="action-button" />
+                                <ui:Button text="Generar Reporte" name="GenerateReportButton" class="action-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="Row2" style="flex-direction: row; flex-grow: 1; flex-wrap: wrap;">
+                            <ui:VisualElement name="Column1" style="flex-grow: 2; margin-right: 20px; min-width: 300px;">
+                                <ui:VisualElement name="SystemStatusBox" class="dashboard-panel" style="margin-bottom: 20px;">
+                                    <ui:Label text="System Status" name="SystemStatusTitle" class="panel-title purple-text" />
+                                    <ui:Label text="List of devices:" name="DevicesTitle" class="panel-text" />
+                                    <ui:VisualElement name="DeviceList" style="margin-top: 10px;">
+                                        <ui:VisualElement name="Device1" class="device-item">
+                                            <ui:Label text="AR-SCARA" name="Device1Name" class="device-name" />
+                                            <ui:Label text="Online" name="Device1Status" class="device-status online" />
+                                        </ui:VisualElement>
+                                        <ui:VisualElement name="Device2" class="device-item">
+                                            <ui:Label text="Robotics kit 1" name="Device2Name" class="device-name" />
+                                            <ui:Label text="Online" name="Device2Status" class="device-status online" />
+                                        </ui:VisualElement>
+                                        <ui:VisualElement name="Device3" class="device-item">
+                                            <ui:Label text="Device 1" name="Device3Name" class="device-name" />
+                                            <ui:Label text="Offline" name="Device3Status" class="device-status offline" />
+                                        </ui:VisualElement>
+                                        <ui:VisualElement name="Device4" class="device-item">
+                                            <ui:Label text="Device 2" name="Device4Name" class="device-name" />
+                                            <ui:Label text="Offline" name="Device4Status" class="device-status offline" />
+                                        </ui:VisualElement>
+                                    </ui:VisualElement>
+                                </ui:VisualElement>
+                                <ui:VisualElement name="RecentActivityBox" class="dashboard-panel" style="flex-grow: 1;">
+                                    <ui:Label text="Recent Activity" name="RecentActivityTitle" class="panel-title purple-text" />
+                                    <ui:VisualElement name="ActivityList" style="margin-top: 10px;">
+                                        <ui:Label text="- AR-SCARA simulation started at 10:05 AM" name="Activity1" class="activity-item" />
+                                        <ui:Label text="- AR-SCARA monitoring stopped at 9:45 AM" name="Activity2" class="activity-item" />
+                                        <ui:Label text="- AR-SCARA report generated at 9:30 AM" name="Activity3" class="activity-item" />
+                                    </ui:VisualElement>
+                                    <ui:Label text="[View Full History]" name="ViewHistoryLink" class="link-text" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="ARSCARABox" class="dashboard-panel robot-panel" style="flex-grow: 1; min-width: 250px;">
+                                <ui:VisualElement name="RobotHeader">
+                                    <ui:Label text="AR-SCARA" name="RobotTitle" class="robot-title" />
+                                    <ui:VisualElement name="StatusButtons" style="flex-direction: row; justify-content: space-between; margin-top: 5px;">
+                                        <ui:Label text="Online" name="OnlineStatus" class="status-button online-status" />
+                                        <ui:Label text="Busy" name="BusyStatus" class="status-button busy-status" />
+                                        <ui:Label text="Alarmed" name="AlarmedStatus" class="status-button alarmed-status" />
+                                    </ui:VisualElement>
+                                </ui:VisualElement>
+                                <ui:VisualElement name="RobotImageContainer" class="robot-image-container">
+                                    <ui:VisualElement name="RobotImage" class="robot-image" />
+                                </ui:VisualElement>
+                                <ui:Label text="Automatic mode" name="RobotMode" class="robot-info-text" />
+                                <ui:Label text="X:0.0 mm, Y:0.0 mm, Z:0.0 mm" name="RobotPosition" class="robot-info-text" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                
-                <!-- Row 2 -->
-                <ui:VisualElement name="Row2" style="flex-direction: row; flex-grow: 1;">
-                    <!-- Column 1 (System Status and Recent Activity) -->
-                    <ui:VisualElement name="Column1" style="flex-grow: 2; margin-right: 20px;">
-                        <!-- System Status Box -->
-                        <ui:VisualElement name="SystemStatusBox" class="dashboard-panel" style="margin-bottom: 20px;">
-                            <ui:Label text="System Status" name="SystemStatusTitle" class="panel-title purple-text" />
-                            <ui:Label text="List of devices:" name="DevicesTitle" class="panel-text" />
-                            
-                            <ui:VisualElement name="DeviceList" style="margin-top: 10px;">
-                                <ui:VisualElement name="Device1" class="device-item">
-                                    <ui:Label text="AR-SCARA" name="Device1Name" class="device-name" />
-                                    <ui:Label text="Online" name="Device1Status" class="device-status online" />
-                                </ui:VisualElement>
-                                
-                                <ui:VisualElement name="Device2" class="device-item">
-                                    <ui:Label text="Robotics kit 1" name="Device2Name" class="device-name" />
-                                    <ui:Label text="Online" name="Device2Status" class="device-status online" />
-                                </ui:VisualElement>
-                                
-                                <ui:VisualElement name="Device3" class="device-item">
-                                    <ui:Label text="Device 1" name="Device3Name" class="device-name" />
-                                    <ui:Label text="Offline" name="Device3Status" class="device-status offline" />
-                                </ui:VisualElement>
-                                
-                                <ui:VisualElement name="Device4" class="device-item">
-                                    <ui:Label text="Device 2" name="Device4Name" class="device-name" />
-                                    <ui:Label text="Offline" name="Device4Status" class="device-status offline" />
-                                </ui:VisualElement>
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        
-                        <!-- Recent Activity Box -->
-                        <ui:VisualElement name="RecentActivityBox" class="dashboard-panel" style="flex-grow: 1;">
-                            <ui:Label text="Recent Activity" name="RecentActivityTitle" class="panel-title purple-text" />
-                            
-                            <ui:VisualElement name="ActivityList" style="margin-top: 10px;">
-                                <ui:Label text="- AR-SCARA simulation started at 10:05 AM" name="Activity1" class="activity-item" />
-                                <ui:Label text="- AR-SCARA monitoring stopped at 9:45 AM" name="Activity2" class="activity-item" />
-                                <ui:Label text="- AR-SCARA report generated at 9:30 AM" name="Activity3" class="activity-item" />
-                            </ui:VisualElement>
-                            
-                            <ui:Label text="[View Full History]" name="ViewHistoryLink" class="link-text" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    
-                    <!-- AR-SCARA Monitor Box -->
-                    <ui:VisualElement name="ARSCARABox" class="dashboard-panel robot-panel" style="flex-grow: 1;">
-                        <ui:VisualElement name="RobotHeader">
-                            <ui:Label text="AR-SCARA" name="RobotTitle" class="robot-title" />
-                            
-                            <ui:VisualElement name="StatusButtons" style="flex-direction: row; justify-content: space-between; margin-top: 5px;">
-                                <ui:Label text="Online" name="OnlineStatus" class="status-button online-status" />
-                                <ui:Label text="Busy" name="BusyStatus" class="status-button busy-status" />
-                                <ui:Label text="Alarmed" name="AlarmedStatus" class="status-button alarmed-status" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        
-                        <ui:VisualElement name="RobotImageContainer" class="robot-image-container">
-                            <!-- Placeholder for robot visualization -->
-                            <ui:VisualElement name="RobotImage" class="robot-image" />
-                        </ui:VisualElement>
-                        
-                        <ui:Label text="Automatic mode" name="RobotMode" class="robot-info-text" />
-                        <ui:Label text="X:0.0 mm, Y:0.0 mm, Z:0.0 mm" name="RobotPosition" class="robot-info-text" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
+            </ui:ScrollView>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

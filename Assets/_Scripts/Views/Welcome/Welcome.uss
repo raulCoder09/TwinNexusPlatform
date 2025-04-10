@@ -5,6 +5,18 @@
     align-items: center;
     justify-content: center;
 }
+#ContentWrapper{
+    width: 80%; 
+    max-width: 800px; 
+    align-items: center;
+}
+
+#ButtonContainer{
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 100px;
+}
 
 /* Title styling with green glow effect */
 .title-text {
@@ -15,7 +27,6 @@
     text-shadow: 0 0 10px rgb(120, 255, 120);
     -unity-text-align: middle-center;
     letter-spacing: 2px;
-    /*-unity-font-definition: url('project://database/Assets/Fonts/YourCustomFont.asset');*/
 }
 
 /* Subtitle styling with blue tint */
@@ -26,7 +37,6 @@
     white-space: normal;
     margin-bottom: 40px;
     letter-spacing: 1px;
-    /*-unity-font-definition: url('project://database/Assets/Fonts/YourCustomFont.asset');*/
 }
 
 /* Common button styling */
@@ -41,7 +51,6 @@
     transition-duration: 0.2s;
     margin: 20px 40px;
     -unity-font-style: bold;
-    /*-unity-font-definition: url('project://database/Assets/Fonts/YourCustomFont.asset');*/
 }
 
 .action-button:hover {

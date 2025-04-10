@@ -5,15 +5,96 @@
     flex-direction: row;
 }
 
+/* Hamburger Button Styling */
+.hamburger-button {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: rgb(75, 42, 87);
+    border-radius: 8px;
+    border-width: 0;
+    padding: 8px;
+    transition-duration: 0.2s;
+    display: none; /* Hidden by default when sidebar is expanded */
+}
+
+.hamburger-button:hover {
+    background-color: rgb(90, 50, 105);
+    scale: 1.05;
+}
+
+.hamburger-icon {
+    width: 100%;
+    height: 100%;
+    background-image: url('project://database/Assets/Images/Icons/menu-icon.png');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* If you don't have a menu icon, you can use this CSS to create a hamburger icon */
+.hamburger-icon-css {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+}
+
+.hamburger-icon-css > .line {
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    margin: 3px 0;
+    border-radius: 3px;
+}
+
+/* Close Button Styling */
+.close-sidebar-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: transparent;
+    border-width: 0;
+    padding: 5px;
+    border-radius: 15px;
+}
+
+.close-sidebar-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.close-icon {
+    width: 100%;
+    height: 100%;
+    background-image: url('project://database/Assets/Images/Icons/close-icon.png');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
 /* Left Sidebar Styling */
 .sidebar {
-    width: 250px;
     background-color: rgb(75, 42, 87);
     padding: 20px 0;
     border-radius: 0 15px 15px 0;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     flex-direction: column;
     justify-content: space-between;
+    transition-property: width, opacity, margin-left;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+}
+
+.sidebar-expanded {
+    width: 250px;
+    opacity: 1;
+    margin-left: 0;
+}
+
+.sidebar-collapsed {
+    width: 0;
+    opacity: 0;
+    margin-left: -250px;
+    overflow: hidden;
 }
 
 .sidebar-section {
@@ -248,4 +329,36 @@
     font-size: 16px;
     -unity-text-align: middle-center;
     margin: 5px 0;
+}
+
+.unity-scroller--vertical {
+    width: 14px;
+}
+
+.unity-scroller--vertical > .unity-scroller__low-button,
+.unity-scroller--vertical > .unity-scroller__high-button {
+    display: none;
+}
+
+.unity-scroller--vertical > .unity-slider {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.unity-base-slider__tracker {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 7px;
+}
+
+.unity-base-slider__dragger {
+    background-color: rgb(75, 42, 87);
+    border-radius: 7px;
+    border-width: 0;
+    width: 10px;
+    left: 2px;
+}
+
+.unity-base-slider__dragger:hover {
+    background-color: rgb(90, 50, 105);
+    scale: 1.05;
 }
