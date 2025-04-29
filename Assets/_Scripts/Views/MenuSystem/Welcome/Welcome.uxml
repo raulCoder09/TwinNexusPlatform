@@ -52,7 +52,7 @@
                     <ui:Button text="Login" name="LoginButton" style="width: 25%; height: 25%; border-top-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px; border-bottom-left-radius: 50px; font-size: 20px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;); -unity-font-style: bold; color: rgb(255, 255, 255); background-color: rgb(0, 0, 0);" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="RegisterPanel" style="background-color: rgb(75, 42, 87); position: absolute; width: 100%; height: 50%; bottom: 0; translate: 100% 0;">
+            <ui:VisualElement name="RegisterPanel" class="RegisterPanelOutMainScreen">
                 <ui:VisualElement name="HeaderRegister" style="flex-grow: 1; flex-direction: row; width: 100%; height: 25%;">
                     <ui:VisualElement name="TitleRegisterPanel" style="flex-grow: 1; width: 33%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center; -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;); font-size: 50px;">
                         <ui:Label text="Register" name="TitleRegister" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/LibreBaskerville-Bold.ttf?fileID=12800000&amp;guid=de4aded9d2c2b4a4d817c425d5d4b760&amp;type=3#LibreBaskerville-Bold&quot;); color: rgb(163, 218, 89);" />

@@ -11,13 +11,13 @@ namespace _Scripts.Controller
         private Button _exitAppButton;
         private VisualElement _loginPanel;
         private VisualElement _scrim;
+        private VisualElement _registerPanel;
 
         private Button _registerLoginButton;
         private Button _recoverPasswordLoginButton;
         private Button _loginButton;
+
         
-        // RegisterLoginButton
-        //     RecoverPasswordLoginButton
         private void Start()
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
@@ -26,6 +26,7 @@ namespace _Scripts.Controller
             _closeLoginPanelButton = root.Q<Button>("CloseButton");
             _exitAppButton=root.Q<Button>("ExitButton");
             _loginPanel = root.Q<VisualElement>("LoginPanel");
+            _registerPanel= root.Q<VisualElement>("RegisterPanel");
             _scrim = root.Q<VisualElement>("Scrim");
             _registerLoginButton=root.Q<Button>("RegisterLoginButton");
             _recoverPasswordLoginButton=root.Q<Button>("RecoverPasswordLoginButton");
@@ -47,10 +48,7 @@ namespace _Scripts.Controller
         private void CloseLoginPanelAndOpenRegisterPanel(ClickEvent evt)
         {
             CloseLoginPanel(evt);
-            // si se detecto que la animacion del loginpanel ya termino
-            //     se debe abrir el panel register es decir si se dio click en el boton register y la animacion de closeloginpanel termino 
-            //         el metodo OpenRegisterPanel(evt); debe ejecutarse
-
+            OpenRegisterPanel();
         }
 
         private void ExitAplication(ClickEvent evt)
@@ -72,17 +70,19 @@ namespace _Scripts.Controller
             _scrim.RemoveFromClassList("ScrimFadein");
         }
 
-        private void OnLoginPanelTransitionComplete(TransitionEndEvent evt)  //revisar es el nombe mas adecuado
+        private void OnLoginPanelTransitionComplete(TransitionEndEvent evt) 
         {
 
-            if (!_loginPanel.ClassListContains("LoginPanelMoveB"))
+            if (!_loginPanel.ClassListContains("LoginPanelMoveB") && !_registerPanel.ClassListContains("RegisterPanelInMainScreen"))
             {
                 _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
             }
         }
 
-        void Update()
+        private void OpenRegisterPanel()
         {
+            _registerPanel.AddToClassList("RegisterPanelInMainScreen");
         }
+        
     }
 }
