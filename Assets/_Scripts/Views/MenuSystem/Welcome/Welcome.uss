@@ -297,9 +297,24 @@
     flex-grow: 1;
     background-color: rgba(0, 0, 0, 0.78);
     opacity: 0;
-    transition-duration: .25s;
+    transition-duration: 0.25s;
 }
 
 .ScrimFadein {
     opacity: 1;
+}
+
+.RegisterPanelOutMainScreen {
+    background-color: rgb(75, 42, 87);
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+    translate: 100% 0;
+    transition-timing-function: ease-in-bounce;
+    transition-duration: 1s;
+}
+
+.RegisterPanelInMainScreen {
+    translate: 0% 0;
 }
