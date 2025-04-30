@@ -21,7 +21,7 @@
     flex-direction: row;
     translate: -100% 0;
     transition-duration: 1s;
-    transition-timing-function: ease-in-bounce;
+    transition-timing-function: ease-in-cubic;
 }
 
 .NavigationMenuPanelinMainScreen {

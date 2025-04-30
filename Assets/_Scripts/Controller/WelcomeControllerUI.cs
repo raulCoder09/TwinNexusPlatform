@@ -5,6 +5,7 @@ namespace _Scripts.Controller
 {
     public class WelcomeControllerUI : MonoBehaviour
     {
+        private VisualElement _body;
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private Button _launchButton;
         private Button _closeLoginPanelButton;
@@ -26,11 +27,15 @@ namespace _Scripts.Controller
 
         private Button _backToLoginPanelFromRegisterButton;
         private Button _backToLoginPanelFromRecoverPasswordButton;
+        
+        private UIDocument _dashboardUIDocument;
+        private VisualElement _dashboardBody;
 
         
         private void Start()
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
+            _body = root.Q<VisualElement>("Body");
             _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
             _launchButton = root.Q<Button>("LaunchButton");
             _closeLoginPanelButton = root.Q<Button>("CloseLoginButton");
@@ -67,26 +72,39 @@ namespace _Scripts.Controller
             _loginPanel.RegisterCallback<TransitionEndEvent>(OnLoginPanelTransitionComplete);
             _registerPanel.RegisterCallback<TransitionEndEvent>(OnRegisterTransitionComplete);
             _recoverPasswordPanel.RegisterCallback<TransitionEndEvent>(OnRecoverPasswordTransitionComplete);
+            
+            _body.style.display = DisplayStyle.Flex;
+            
+            
+            _dashboardUIDocument=GameObject.Find("Dashboard").GetComponent<UIDocument>();
+            var dashboardRoot = _dashboardUIDocument.rootVisualElement;
+            _dashboardBody=dashboardRoot.Q<VisualElement>("Body");
+            
         }
 
         private void RecoverPassword(ClickEvent evt)
         {
-            print("recover password");
+            // print("recover password");
             // todo
         }
 
         private void RegisterAndLogin(ClickEvent evt)
         {
             // todo
-            print("se hace el registro y se inicia sesion");
+            // print("se hace el registro y se inicia sesion");
             Authentication(evt);
+            _body.style.display = DisplayStyle.None;
+            _dashboardBody.style.display = DisplayStyle.Flex;
             
         }
 
         private void Authentication(ClickEvent evt)
         {
             // todo
-            print("Logica para autentificar e ir al dashboard o mandar error de incio de sesion");
+            // print("Logica para autentificar e ir al dashboard o mandar error de incio de sesion");
+            CloseLoginPanel(evt);
+            _body.style.display = DisplayStyle.None;
+            _dashboardBody.style.display = DisplayStyle.Flex;
         }
 
         private void OnRecoverPasswordTransitionComplete(TransitionEndEvent evt)
