@@ -297,11 +297,7 @@
     flex-grow: 1;
     background-color: rgba(0, 0, 0, 0.78);
     opacity: 0;
-    transition-duration: 0.25s;
-}
-
-.ScrimFadein {
-    opacity: 1;
+    transition-duration: 1s;
 }
 
 .RegisterPanelOutMainScreen {
@@ -333,4 +329,9 @@
 
 .RecoverPasswordPanelInMainScreen {
     translate: 0% 0;
+}
+
+.ScrimFadein {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.88);
 }
