@@ -9,10 +9,10 @@
                 <ui:Label name="SpareLabel0" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
             </ui:VisualElement>
             <ui:VisualElement name="UsernamePanel" style="flex-grow: 1; width: 25%; height: 100%; -unity-text-align: upper-left; justify-content: center;">
-                <ui:Label text="Username" name="Username" style="-unity-font-style: bold; -unity-text-outline-color: rgba(0, 0, 0, 0); color: rgb(255, 255, 255); -unity-text-align: middle-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;); font-size: 30px;" />
+                <ui:Label name="Username" style="-unity-font-style: bold; -unity-text-outline-color: rgba(0, 0, 0, 0); color: rgb(255, 255, 255); -unity-text-align: middle-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;); font-size: 30px;" />
             </ui:VisualElement>
             <ui:VisualElement name="LogoutPanel" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label text="Logout" name="Logout" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; font-size: 30px; -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;);" />
+                <ui:Label name="Logout" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; font-size: 30px; -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;);" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Main" style="flex-grow: 1; width: 100%; height: 80%; flex-direction: row; flex-wrap: wrap;">
@@ -129,38 +129,82 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; display: flex; opacity: 1;">
-            <ui:VisualElement name="Scrim" style="flex-grow: 1; position: relative; display: flex;" />
-            <ui:VisualElement name="NavigationMenuPanel" style="flex-grow: 1; position: absolute; width: 25%; height: 100%; translate: -100% 0; background-color: rgb(255, 255, 255);">
-                <ui:VisualElement style="flex-grow: 1;">
-                    <ui:VisualElement style="flex-grow: 1;" />
-                    <ui:VisualElement style="flex-grow: 1;" />
+            <ui:VisualElement name="Scrim" class="ScrimTransparent" />
+            <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen" style="translate: -100% 0;">
+                <ui:VisualElement name="NavigationMenu" style="flex-grow: 1; position: relative; width: 25%; height: 100%; translate: 0% 0; background-color: rgb(75, 42, 87); border-top-right-radius: 200px; border-bottom-right-radius: 200px;">
+                    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 30%;">
+                        <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; width: 100%; height: 25%; margin-top: 0; margin-left: 0;">
+                            <ui:Label text="Username" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/RobotoSerif-VariableFont_GRAD,opsz,wdth,wght.ttf?fileID=12800000&amp;guid=107b25d6011d5425e8d420338534b760&amp;type=3#RobotoSerif-VariableFont_GRAD,opsz,wdth,wght&quot;); -unity-font-style: bold; font-size: 50px; color: rgb(163, 218, 89);" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 70%;">
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label text="Dashboard" name="Label" style="-unity-font-style: bold; font-size: 30px; color: rgb(247, 187, 39);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label text="Training" name="Label" style="-unity-font-style: bold; font-size: 30px; color: rgb(176, 169, 218);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label text="Operations" name="Label" style="-unity-font-style: bold; font-size: 30px; color: rgb(176, 169, 218);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label text="Reports" name="Label" style="-unity-font-style: bold; font-size: 30px; color: rgb(176, 169, 218);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label text="Support" name="Label" style="-unity-font-style: bold; font-size: 30px; color: rgb(176, 169, 218);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label text="Settings" name="Label" style="-unity-font-style: bold; font-size: 30px; color: rgb(176, 169, 218);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label text="Logout" name="Label" style="-unity-font-style: bold; font-size: 30px; color: rgb(176, 169, 218);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label name="Label" style="-unity-font-style: bold; font-size: 30px;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement style="flex-grow: 1;">
-                    <ui:VisualElement style="flex-grow: 1;">
-                        <ui:VisualElement style="flex-grow: 1;" />
-                        <ui:VisualElement style="flex-grow: 1;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement style="flex-grow: 1;">
-                        <ui:VisualElement style="flex-grow: 1;" />
-                        <ui:VisualElement style="flex-grow: 1;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement style="flex-grow: 1;">
-                        <ui:VisualElement style="flex-grow: 1;" />
-                        <ui:VisualElement style="flex-grow: 1;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement style="flex-grow: 1;">
-                        <ui:VisualElement style="flex-grow: 1;" />
-                        <ui:VisualElement style="flex-grow: 1;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement style="flex-grow: 1;">
-                        <ui:VisualElement style="flex-grow: 1;" />
-                        <ui:VisualElement style="flex-grow: 1;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement style="flex-grow: 1;">
-                        <ui:VisualElement style="flex-grow: 1;" />
-                        <ui:VisualElement style="flex-grow: 1;" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
+                <ui:Button style="width: 75%; height: 100%; background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
