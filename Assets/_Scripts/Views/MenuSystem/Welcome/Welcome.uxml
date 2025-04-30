@@ -29,7 +29,7 @@
             <ui:Label text="Centro Universitario de los Valles" name="AdditionalInformation" />
         </ui:VisualElement>
         <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" style="flex-grow: 1; width: 100%; height: 100%; position: absolute; top: auto; opacity: 1; visibility: visible;">
-            <ui:VisualElement name="Scrim" class="Scrim" />
+            <ui:VisualElement name="Scrim" class="Scrim" style="background-color: rgba(0, 0, 0, 0);" />
             <ui:VisualElement name="LoginPanel" class="LoginPanelMoveA" style="background-color: rgb(75, 42, 87);">
                 <ui:VisualElement name="HeaderLogin" style="flex-grow: 1; flex-direction: row; width: 100%; height: 33%;">
                     <ui:VisualElement name="TitleLoginPanel" style="flex-grow: 1; width: 33%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center; -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;); font-size: 50px;">
