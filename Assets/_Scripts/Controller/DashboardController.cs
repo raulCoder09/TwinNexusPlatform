@@ -7,7 +7,7 @@ namespace _Scripts.Controller
 {
     public class DashboardController : MonoBehaviour
     {
-        private VisualElement _body;
+        private static VisualElement _body;
         private Button _menuButton;
         private Button _hideMenuButton;
         private Button _logoutButton;
@@ -17,6 +17,7 @@ namespace _Scripts.Controller
         private UIDocument _welcomeUIDocumentdocument;
         private VisualElement _welcomeBody;
         private Button _operationsButton;
+        
 
         private void Awake()
         {
@@ -33,7 +34,9 @@ namespace _Scripts.Controller
             _hideMenuButton=root.Q<Button>("HideMenuButton");
             _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
             _logoutButton.RegisterCallback<ClickEvent>(Logout);
+            
             _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+            
             _welcomeUIDocumentdocument=GameObject.Find("Welcome").GetComponent<UIDocument>();
             var welcomeRoot = _welcomeUIDocumentdocument.rootVisualElement;
             _welcomeBody=welcomeRoot.Q<VisualElement>("Body");
@@ -44,8 +47,9 @@ namespace _Scripts.Controller
         private void StartOperations(ClickEvent evt)
         {
             _body.style.display = DisplayStyle.None;
-            _welcomeBody.style.display = DisplayStyle.None;
-            SceneManager.LoadScene("VirtualEnvironment");
+            HideMenu(evt);
+            DeviceSelectionController.ShowUi();
+
         }
 
         private void Logout(ClickEvent evt)
@@ -60,7 +64,6 @@ namespace _Scripts.Controller
             if (!_navigationMenuPanel.ClassListContains("NavigationMenuPanelinMainScreen"))
             {
                 _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-                print("Si se desactivo");
             }
         }
 
@@ -72,10 +75,14 @@ namespace _Scripts.Controller
 
         private void ShowMenu(ClickEvent evt)
         {
-            print("ShowMenu");
             _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.Flex;
             _navigationMenuPanel.AddToClassList("NavigationMenuPanelinMainScreen");
             _scrim.AddToClassList("ScrimOpaque");
+        }
+        
+        internal static void ShowUi()
+        {
+            _body.style.display = DisplayStyle.Flex;
         }
 
         private void Start()
