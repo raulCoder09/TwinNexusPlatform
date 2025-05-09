@@ -6,13 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DashboardController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/DashboardController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/VirtualEnvironment.unity" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/VirtualEnvironment.unity.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DeviceSelectionController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/DeviceSelectionController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Dashboard/Dashboard.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Dashboard/Dashboard.uxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +136,9 @@
       <workItem from="1746036463713" duration="15450000" />
       <workItem from="1746058011287" duration="9187000" />
       <workItem from="1746252646873" duration="5716000" />
-      <workItem from="1746672023607" duration="9857000" />
+      <workItem from="1746672023607" duration="26868000" />
+      <workItem from="1746743468015" duration="2187000" />
+      <workItem from="1746750221224" duration="635000" />
     </task>
     <servers />
   </component>

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace _Scripts.Controller
@@ -13,6 +14,7 @@ namespace _Scripts.Controller
         private Button _hideMenuButton;
         private VisualElement _scrim;
         private Button _dashboardButton;
+        private Button _arscaraButton;
 
         private void Awake()
         {
@@ -28,8 +30,15 @@ namespace _Scripts.Controller
             _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
             _dashboardButton= root.Q<Button>("DashboardButton");
             _dashboardButton.RegisterCallback<ClickEvent>(StartDashboard);
+            _arscaraButton= root.Q<Button>("ARSCARAButton");
+            _arscaraButton.RegisterCallback<ClickEvent>(StartArscara);
         }
-        
+
+        private void StartArscara(ClickEvent evt)
+        {
+            SceneManager.LoadScene("ARSCARA");
+        }
+
 
         private void Start()
         {
