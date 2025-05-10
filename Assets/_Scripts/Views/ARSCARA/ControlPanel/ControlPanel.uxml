@@ -10,7 +10,7 @@
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 30%; height: 100%;" />
             <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 30%; height: 100%;">
-                <ui:DropdownField choices="Menu ARSCARA,Control panel,Jog and teach,Points" style="width: 80%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
+                <ui:DropdownField choices="Menu ARSCARA,Control panel,Jog and teach,Points" name="MenuRobotARSCARADropdownField" style="width: 80%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Main" style="flex-grow: 1; width: 100%; height: 80%; flex-direction: row;">
@@ -47,12 +47,14 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Footer" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
-            <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-evenly; width: 20%; height: 100%; align-items: flex-start; align-self: center; align-content: center;">
+            <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-evenly; width: 20%; height: 100%; align-items: center; align-self: center; align-content: center;">
                 <ui:Button text="Reset" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); font-size: 30px;" />
                 <ui:Button text="Home" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(3, 255, 0); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); font-size: 30px;" />
             </ui:VisualElement>
-            <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%;" />
-            <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 20%; height: 100%; align-items: flex-start; justify-content: space-evenly; align-self: center; align-content: center;">
+            <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%; align-items: center; justify-content: center;">
+                <ui:DropdownField choices="Select view,Top,Front,Back,Left,Right" name="Views" style="width: 25%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 20%; height: 100%; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
                 <ui:Button text="Free all" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); font-size: 30px;" />
                 <ui:Button text="Lock all" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); font-size: 30px;" />
             </ui:VisualElement>

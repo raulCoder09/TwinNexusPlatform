@@ -36,6 +36,7 @@ namespace _Scripts.Controller
 
         private void StartArscara(ClickEvent evt)
         {
+            HideUi();
             SceneManager.LoadScene("ARSCARA");
         }
 

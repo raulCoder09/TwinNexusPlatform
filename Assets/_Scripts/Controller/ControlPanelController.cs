@@ -1,50 +1,37 @@
+using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace _Scripts.Controller
 {
-    public class JogAndTeachController : MonoBehaviour
+    public class ControlPanelController : MonoBehaviour
     {
         private VisualElement _body;
-        private Button _menuButton;
-        private VisualElement _subpanelsAndSmokeMaskContainer;
-        private VisualElement _scrim;
-        private VisualElement _navigationMenuPanel;
-        private Button _hideMenuButton;
         private DropdownField _menuEnvironmentDropdownField;
-        [SerializeField] private GameObject[] environments;
-        private Button _logoutButton;
         private DropdownField _menuRobotArscaraDropdownField;
 
-        internal DropdownField menuRobotArscaraDropdownField
+        public DropdownField menuRobotArscaraDropdownField
         {
             get => _menuRobotArscaraDropdownField;
             set => _menuRobotArscaraDropdownField = value;
         }
 
-        private ControlPanelController _controlPanelController;
+        [SerializeField] private GameObject[] environments;
+        private JogAndTeachController _jogAndTeachController;
         
         private GameManager _gameManager;
         
         private void Awake()
         {
-            var root=GetComponent<UIDocument>().rootVisualElement;
-            _body=root.Q<VisualElement>("Body");
-            _menuButton=root.Q<Button>("MenuButton");
-            _menuButton.RegisterCallback<ClickEvent>(ShowMenu);
-            _subpanelsAndSmokeMaskContainer=root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
-            _scrim=root.Q<VisualElement>("Scrim");
-            _navigationMenuPanel=root.Q<VisualElement>("NavigationMenuPanel");
-            _hideMenuButton=root.Q<Button>("HideMenuButton");
-            _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
-            _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
-            _menuEnvironmentDropdownField=root.Q<DropdownField>("MenuEnvironmentDropdownField");
-            _menuEnvironmentDropdownField.RegisterValueChangedCallback(evt => {
+            var root= GetComponent<UIDocument>().rootVisualElement;
+            
+            _body = root.Q<VisualElement>("Body");
+            
+            _menuEnvironmentDropdownField = root.Q<DropdownField>("MenuEnvironmentDropdownField");
+            _menuEnvironmentDropdownField.RegisterValueChangedCallback(evt =>
+            {
                 EnableEnvironment(evt.newValue);
             });
-            _logoutButton=root.Q<Button>("LogoutButton");
-            _logoutButton.RegisterCallback<ClickEvent>(BorrarEsteMetodo);
             
             _menuRobotArscaraDropdownField=root.Q<DropdownField>("MenuRobotARSCARADropdownField");
             _menuRobotArscaraDropdownField.RegisterValueChangedCallback(evt=>
@@ -52,41 +39,24 @@ namespace _Scripts.Controller
                 SelectArscaraUi(evt.newValue);
             });
             
-            _controlPanelController=GameObject.FindGameObjectWithTag("ControlPanel").GetComponent<ControlPanelController>();
+            _jogAndTeachController=GameObject.FindGameObjectWithTag("JogAndTeach").GetComponent<JogAndTeachController>();
             _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         }
         
+
         private void Start()
         {
-            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-            HideUI();
-        }
-
-        private void BorrarEsteMetodo(ClickEvent evt)
-        {
-            SceneManager.LoadScene("Main");
-        }
-        
-        private void SelectArscaraUi(string evtNewValue)
-        {
-            switch (evtNewValue)
-            {
-                case "Control panel":
-                    _controlPanelController.ShowUI();
-                    HideUI();
-                    break;
-                case "Jog and teach":
-                    break;
-                case "Points":
-                    break;
-                default:
-                    break;
-            }
+            ShowUI();
+            _menuRobotArscaraDropdownField.value = "Menu environment";
+            _menuEnvironmentDropdownField.value =  "Menu ARSCARA";
+            
+            // de momento para que pueda trabajar voy a habilitar desde el principio pero debo dejar guardado cual es la
+            //     ultima pantalla del robot o algo asi debo pensarlo mas
         }
 
         internal void ShowUI()
         {
-            _gameManager.arscaraUiSelected = "Jog and teach";
+            _gameManager.arscaraUiSelected = "Control panel";
             _menuRobotArscaraDropdownField.value=_gameManager.arscaraUiSelected;
             _body.style.display = DisplayStyle.Flex;
         }
@@ -95,7 +65,22 @@ namespace _Scripts.Controller
         {
             _body.style.display = DisplayStyle.None;
         }
-
+        private void SelectArscaraUi(string evtNewValue)
+        {
+            switch (evtNewValue)
+            {
+                case "Control panel":
+                    break;
+                case "Jog and teach":
+                    _jogAndTeachController.ShowUI();
+                    HideUI();
+                    break;
+                case "Points":
+                    break;
+                default:
+                    break;
+            }
+        }
         private void EnableEnvironment(string evtNewValue)
         {
             switch (evtNewValue)
@@ -137,33 +122,8 @@ namespace _Scripts.Controller
                     _menuEnvironmentDropdownField.value=_gameManager.environmentSelected;
                     break;
                 default:
-                    print("opcion no disponible");
                     break;
             }
         }
-
-
-        private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
-        {
-            if (!_navigationMenuPanel.ClassListContains("NavigationMenuPanelInMainScreen"))
-            {
-                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-            }
-        }
-
-        private void ShowMenu(ClickEvent evt)
-        {
-            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.Flex;
-            _scrim.AddToClassList("Opaque");
-            _navigationMenuPanel.AddToClassList("NavigationMenuPanelInMainScreen");
-        }
-
-        private void HideMenu(ClickEvent evt)
-        {
-            _scrim.RemoveFromClassList("Opaque");
-            _navigationMenuPanel.RemoveFromClassList("NavigationMenuPanelInMainScreen");
-        }
-
-
     }
 }
