@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,8 +8,10 @@ namespace _Scripts.Controller
         
         [SerializeField] private GameObject[] environments;
         
-        private VisualElement _body;
+        private JogAndTeachController _jogAndTeachController;
+        private GameManager _gameManager;
         
+        private VisualElement _body;
         private DropdownField _menuEnvironmentDropdownField;
         private DropdownField _menuRobotArscaraDropdownField;
 
@@ -25,32 +26,12 @@ namespace _Scripts.Controller
             get => _menuRobotArscaraDropdownField;
             set => _menuRobotArscaraDropdownField = value;
         }
-
-        
-        private JogAndTeachController _jogAndTeachController;
-        
-        private GameManager _gameManager;
         
         private void Awake()
         {
-            var root= GetComponent<UIDocument>().rootVisualElement;
-            
-            _body = root.Q<VisualElement>("Body");
-            
-            _menuEnvironmentDropdownField = root.Q<DropdownField>("MenuEnvironmentDropdownField");
-            _menuEnvironmentDropdownField.RegisterValueChangedCallback(evt =>
-            {
-                EnableEnvironment(evt.newValue);
-            });
-            
-            _menuRobotArscaraDropdownField=root.Q<DropdownField>("MenuRobotARSCARADropdownField");
-            _menuRobotArscaraDropdownField.RegisterValueChangedCallback(evt=>
-            {
-                SelectArscaraUi(evt.newValue);
-            });
-            
-            _jogAndTeachController=GameObject.FindGameObjectWithTag("JogAndTeach").GetComponent<JogAndTeachController>();
-            _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+            GetUiComponents();
+            RegisterEvents();
+            FindObjects();
         }
         
 
@@ -59,18 +40,13 @@ namespace _Scripts.Controller
             ShowUI();
             _menuRobotArscaraDropdownField.value = "Menu environment";
             _menuEnvironmentDropdownField.value =  "Menu ARSCARA";
-            
-            // de momento para que pueda trabajar voy a habilitar desde el principio pero debo dejar guardado cual es la
-            //     ultima pantalla del robot o algo asi debo pensarlo mas
         }
-
         internal void ShowUI()
         {
             _gameManager.arscaraUiSelected = "Control panel";
             _menuRobotArscaraDropdownField.value=_gameManager.arscaraUiSelected;
             _body.style.display = DisplayStyle.Flex;
         }
-
         private void HideUI()
         {
             _body.style.display = DisplayStyle.None;
@@ -134,6 +110,31 @@ namespace _Scripts.Controller
                 default:
                     break;
             }
+        }
+        private void GetUiComponents()
+        {
+            var root= GetComponent<UIDocument>().rootVisualElement;
+            _body = root.Q<VisualElement>("Body");
+            _menuEnvironmentDropdownField = root.Q<DropdownField>("MenuEnvironmentDropdownField");
+            _menuRobotArscaraDropdownField=root.Q<DropdownField>("MenuRobotARSCARADropdownField");
+        }
+        private void RegisterEvents()
+        {
+            _menuEnvironmentDropdownField.RegisterValueChangedCallback(evt =>
+            {
+                EnableEnvironment(evt.newValue);
+            });
+            
+           
+            _menuRobotArscaraDropdownField.RegisterValueChangedCallback(evt=>
+            {
+                SelectArscaraUi(evt.newValue);
+            });
+        }
+        private void FindObjects()
+        {
+            _jogAndTeachController=GameObject.FindGameObjectWithTag("JogAndTeach").GetComponent<JogAndTeachController>();
+            _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         }
     }
 }
