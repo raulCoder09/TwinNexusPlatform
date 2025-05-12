@@ -1,16 +1,9 @@
 using UnityEngine;
 
-public class AugmentedRealityEnvironmentController : MonoBehaviour
+namespace _Scripts.Controller
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class AugmentedRealityEnvironmentController : MonoBehaviour
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

@@ -6,9 +6,19 @@ namespace _Scripts.Controller
 {
     public class ControlPanelController : MonoBehaviour
     {
+        
+        [SerializeField] private GameObject[] environments;
+        
         private VisualElement _body;
+        
         private DropdownField _menuEnvironmentDropdownField;
         private DropdownField _menuRobotArscaraDropdownField;
+
+        public DropdownField menuEnvironmentDropdownField
+        {
+            get => _menuEnvironmentDropdownField;
+            set => _menuEnvironmentDropdownField = value;
+        }
 
         public DropdownField menuRobotArscaraDropdownField
         {
@@ -16,7 +26,7 @@ namespace _Scripts.Controller
             set => _menuRobotArscaraDropdownField = value;
         }
 
-        [SerializeField] private GameObject[] environments;
+        
         private JogAndTeachController _jogAndTeachController;
         
         private GameManager _gameManager;

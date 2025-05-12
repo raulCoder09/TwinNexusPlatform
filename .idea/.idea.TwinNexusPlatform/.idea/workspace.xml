@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/ARSCARA.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/ARSCARA.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DeviceSelectionController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/DeviceSelectionController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/JogAndTeachController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/JogAndTeachController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/ARSCARA/ControlPanel/ControlPanel.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/ARSCARA/ControlPanel/ControlPanel.uxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/ARSCARA/JogAndTeach/JogAndTeach.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/ARSCARA/JogAndTeach/JogAndTeach.uxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/AugmentedRealityEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/AugmentedRealityEnvironmentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/ControlPanelController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/ControlPanelController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/HybridEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/HybridEnvironmentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/RealDeviceEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/RealDeviceEnvironmentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/VirtualEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/VirtualEnvironmentController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
