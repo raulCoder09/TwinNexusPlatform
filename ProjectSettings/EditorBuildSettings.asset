@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/_Scenes/VirtualEnvironment.unity
     guid: d85ce80bb73204dcf832e80f77b4035d
   - enabled: 1
-    path: Assets/_Scenes/ARSCARA.unity
+    path: Assets/_Scenes/ArscaraScene.unity
     guid: a1d5e04ad9e6f47d69dbfef30335a620
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 6ee72d15cf39dd748a13eac57397b9af,

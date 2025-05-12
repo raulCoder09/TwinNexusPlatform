@@ -6,8 +6,6 @@ namespace _Scripts.Controller
 {
     public class JogAndTeachController : MonoBehaviour
     {
-        [SerializeField] private GameObject[] environments;
-        
         private ControlPanelController _controlPanelController;
         private GameManager _gameManager;
         
@@ -22,6 +20,11 @@ namespace _Scripts.Controller
         
         private DropdownField _menuEnvironmentDropdownField;
         private DropdownField _menuRobotArscaraDropdownField;
+
+        private VirtualEnvironmentController _virtualEnvironment;
+        private AugmentedRealityEnvironmentController _augmentedRealityEnvironment;
+        private HybridEnvironmentController _hybridEnvironment;
+        private RealDeviceEnvironmentController _realDeviceEnvironment;
         
         public DropdownField menuEnvironmentDropdownField
         {
@@ -41,12 +44,10 @@ namespace _Scripts.Controller
         }
         private void Start()
         {
+
+            FindEnvironmentComponents();
             _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
             HideUI();
-        }
-        private void BorrarEsteMetodo(ClickEvent evt)
-        {
-            SceneManager.LoadScene("Main");
         }
         private void SelectArscaraUi(string evtNewValue)
         {
@@ -66,8 +67,7 @@ namespace _Scripts.Controller
         }
         internal void ShowUI()
         {
-            _gameManager.arscaraUiSelected = "Jog and teach";
-            _menuRobotArscaraDropdownField.value=_gameManager.arscaraUiSelected;
+            _controlPanelController.menuRobotArscaraDropdownField.value=_menuRobotArscaraDropdownField.value=_gameManager.deviceUiSelected= "Jog and teach";;
             _body.style.display = DisplayStyle.Flex;
         }
         private void HideUI()
@@ -79,40 +79,16 @@ namespace _Scripts.Controller
             switch (evtNewValue)
             {
                 case "Virtual  environment":
-                    _body.style.backgroundColor = new Color(0, 0, 0, 0);
-                    environments[0].SetActive(true);
-                    environments[1].SetActive(false);
-                    environments[2].SetActive(false);
-                    environments[3].SetActive(false);
-                    _gameManager.environmentSelected = "Virtual  environment";
-                    _menuEnvironmentDropdownField.value=_gameManager.environmentSelected;
+                    LaunchVirtualEnvironment();
                     break;
                 case "Augmented reality environment":
-                    _body.style.backgroundColor = new Color(0, 0, 0, 0);
-                    environments[0].SetActive(false);
-                    environments[1].SetActive(true);
-                    environments[2].SetActive(false);
-                    environments[3].SetActive(false);
-                    _gameManager.environmentSelected = "Augmented reality environment";
-                    _menuEnvironmentDropdownField.value=_gameManager.environmentSelected;
+                    LaunchAugmentedRealityEnvironment();
                     break;
                 case "Hybrid environment":
-                    _body.style.backgroundColor = new Color(0, 0, 0, 0);
-                    environments[0].SetActive(false);
-                    environments[1].SetActive(false);
-                    environments[2].SetActive(true);
-                    environments[3].SetActive(false);
-                    _gameManager.environmentSelected = "Hybrid environment";
-                    _menuEnvironmentDropdownField.value=_gameManager.environmentSelected;
+                    LaunchHybridEnvironment();
                     break;
                 case "Real device environment":
-                    _body.style.backgroundColor = new Color(0, 0, 0, 0);
-                    environments[0].SetActive(false);
-                    environments[1].SetActive(false);
-                    environments[2].SetActive(false);
-                    environments[3].SetActive(true);
-                    _gameManager.environmentSelected = "Real device environment";
-                    _menuEnvironmentDropdownField.value=_gameManager.environmentSelected;
+                    LaunchRealDeviceEnvironment();
                     break;
                 default:
                     break;
@@ -153,13 +129,10 @@ namespace _Scripts.Controller
         {
             _menuButton.RegisterCallback<ClickEvent>(ShowMenu);
             _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
-            _logoutButton.RegisterCallback<ClickEvent>(BorrarEsteMetodo);
             _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
-            
             _menuEnvironmentDropdownField.RegisterValueChangedCallback(evt => {
                 EnableEnvironment(evt.newValue);
             });
-            
             _menuRobotArscaraDropdownField.RegisterValueChangedCallback(evt=>
             {
                 SelectArscaraUi(evt.newValue);
@@ -169,6 +142,49 @@ namespace _Scripts.Controller
         {
             _controlPanelController=GameObject.FindGameObjectWithTag("ControlPanel").GetComponent<ControlPanelController>();
             _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        }
+        private void FindEnvironmentComponents()
+        {
+            _virtualEnvironment=_gameManager.arscaraInstance.transform.Find("VirtualEnvironment").GetComponent<VirtualEnvironmentController>();
+            _augmentedRealityEnvironment = _gameManager.arscaraInstance.transform.Find("AugmentedRealityEnvironment").GetComponent<AugmentedRealityEnvironmentController>();
+            _hybridEnvironment = _gameManager.arscaraInstance.transform.Find("HybridEnvironment").GetComponent<HybridEnvironmentController>();
+            _realDeviceEnvironment = _gameManager.arscaraInstance.transform.Find("RealDeviceEnvironment").GetComponent<RealDeviceEnvironmentController>();
+        }
+        private void LaunchVirtualEnvironment()
+        {
+            _body.style.backgroundColor = new Color(0, 0, 0, 0);
+            _virtualEnvironment.EnableEnvironment();
+            _augmentedRealityEnvironment.DisableEnvironment();
+            _hybridEnvironment.DisableEnvironment();
+            _realDeviceEnvironment.DisableEnvironment();
+            _controlPanelController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Virtual  environment";
+        }
+        private void LaunchAugmentedRealityEnvironment()
+        {
+            _body.style.backgroundColor = new Color(0, 0, 0, 0);
+            _virtualEnvironment.DisableEnvironment();
+            _augmentedRealityEnvironment.EnableEnvironment();
+            _hybridEnvironment.DisableEnvironment();
+            _realDeviceEnvironment.DisableEnvironment();
+            _controlPanelController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Augmented reality environment";
+        }
+        private void LaunchHybridEnvironment()
+        {
+            _body.style.backgroundColor = new Color(0, 0, 0, 0);
+            _virtualEnvironment.DisableEnvironment();
+            _augmentedRealityEnvironment.DisableEnvironment();
+            _hybridEnvironment.EnableEnvironment();
+            _realDeviceEnvironment.DisableEnvironment();
+            _controlPanelController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Hybrid environment";
+        }
+        private void LaunchRealDeviceEnvironment()
+        {
+            _body.style.backgroundColor = new Color(0, 0, 0, 0);
+            _virtualEnvironment.DisableEnvironment();
+            _augmentedRealityEnvironment.DisableEnvironment();
+            _hybridEnvironment.DisableEnvironment();
+            _realDeviceEnvironment.EnableEnvironment();
+            _controlPanelController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Real device environment";
         }
     }
 }

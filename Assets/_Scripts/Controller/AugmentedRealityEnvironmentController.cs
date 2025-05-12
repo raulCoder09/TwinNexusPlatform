@@ -1,13 +1,16 @@
-using System;
 using UnityEngine;
 
 namespace _Scripts.Controller
 {
     public class AugmentedRealityEnvironmentController : MonoBehaviour
     {
-        // private void Start()
-        // {
-        //     gameObject.SetActive(false);
-        // }
+        internal void EnableEnvironment()
+        {
+            gameObject.SetActive(true);
+        }
+        internal void DisableEnvironment()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
