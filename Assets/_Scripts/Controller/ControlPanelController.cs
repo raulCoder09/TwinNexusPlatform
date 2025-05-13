@@ -24,19 +24,16 @@ namespace _Scripts.Controller
             get => _menuEnvironment;
             set => _menuEnvironment = value;
         }
-
         internal DropdownField menuRobotArscara
         {
             get => _menuRobotArscara;
             set => _menuRobotArscara = value;
         }
-
         internal DropdownField menuViews
         {
             get => _menuViews;
             set => _menuViews = value;
         }
-
         private void Awake()
         {
             GetUiComponents();
@@ -54,6 +51,7 @@ namespace _Scripts.Controller
         internal void ShowUI()
         {
             _jogAndTeachController.menuRobotArscaraDropdownField.value= _menuRobotArscara.value=_gameManager.deviceUiSelected = "Control panel";
+            _jogAndTeachController.menuViews.value = _gameManager.viewSelected;
             _body.style.display = DisplayStyle.Flex;
         }
         private void HideUI()
@@ -96,34 +94,27 @@ namespace _Scripts.Controller
                     break;
             }
         }
-
         private void SelectView(string evtNewValue)
         {
             switch (evtNewValue)
             {
                 case "Top":
-                    _virtualEnvironmentCamera.transform.position = new Vector3(0f, 0.35f, 0.13f);
-                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(90f, 0f, 0f);
+                    LaunchView(new Vector3(0f, 0.35f, 0.13f),new Vector3(90f, 0f, 0f),evtNewValue);
                     break;
                 case "Front":
-                    _virtualEnvironmentCamera.transform.position = new Vector3(0f, 0.03f, 0.5f);
-                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(-10f, 180f, 0f);
+                    LaunchView( new Vector3(0f, 0.03f, 0.5f),new Vector3(-10f, 180f, 0f),evtNewValue);
                     break;
                 case "Back":
-                    _virtualEnvironmentCamera.transform.position = new Vector3(0f, 0.06f, -0.25f);
-                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(-10f, 0f, 0f);
+                    LaunchView( new Vector3(0f, 0.06f, -0.25f),new Vector3(-10f, 0f, 0f),evtNewValue);
                     break;
                 case "Left":
-                    _virtualEnvironmentCamera.transform.position = new Vector3(-0.35f, 0.03f, .12f);
-                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(-10f, 90f, 0f);
+                    LaunchView( new Vector3(-0.35f, 0.03f, .12f),new Vector3(-10f, 90f, 0f),evtNewValue);
                     break;
                 case "Right":
-                    _virtualEnvironmentCamera.transform.position = new Vector3(0.35f, 0.03f, .12f);
-                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(-10f, 270f, 0f);
+                    LaunchView( new Vector3(0.35f, 0.03f, .12f),new Vector3(-10f, 270f, 0f),evtNewValue);
                     break;
                 default:
-                    _virtualEnvironmentCamera.transform.position = new Vector3(0f, 0.325f, 0f);
-                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(66f, 0f, 0f);
+                    LaunchView( new Vector3(0f, 0.325f, 0f),new Vector3(66f, 0f, 0f),"Default");
                     break;
             }
         }
@@ -185,6 +176,7 @@ namespace _Scripts.Controller
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
             _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironment.value=_gameManager.environmentSelected= "Augmented reality environment";
+            _menuViews.style.display = DisplayStyle.None;
         }
         private void LaunchHybridEnvironment()
         {
@@ -194,6 +186,7 @@ namespace _Scripts.Controller
             _hybridEnvironment.EnableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
             _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironment.value=_gameManager.environmentSelected= "Hybrid environment";
+            _menuViews.style.display = DisplayStyle.None;
         }
         private void LaunchRealDeviceEnvironment()
         {
@@ -203,6 +196,13 @@ namespace _Scripts.Controller
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.EnableEnvironment();
             _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironment.value=_gameManager.environmentSelected= "Real device environment";
+            _menuViews.style.display = DisplayStyle.None;
+        }
+        private void LaunchView(Vector3 position,Vector3 rotation,string view)
+        {
+            _virtualEnvironmentCamera.transform.position = position;
+            _virtualEnvironmentCamera.transform.eulerAngles = rotation;
+            _jogAndTeachController.menuViews.value=_gameManager.viewSelected = view;
         }
     }
 }

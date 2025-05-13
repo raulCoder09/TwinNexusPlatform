@@ -9,6 +9,13 @@ namespace _Scripts
         
         private string _environmentSelected;
         private string _deviceUiSelected;
+        private string _viewSelected;
+
+        public string viewSelected
+        {
+            get => _viewSelected;
+            set => _viewSelected = value;
+        }
 
         private GameObject _arscaraInstance;
 
@@ -18,13 +25,13 @@ namespace _Scripts
             set => _arscaraInstance = value;
         }
         
-        public string environmentSelected
+        internal string environmentSelected
         {
             get => _environmentSelected;
             set => _environmentSelected = value;
         }
 
-        public string deviceUiSelected
+        internal string deviceUiSelected
         {
             get => _deviceUiSelected;
             set => _deviceUiSelected = value;

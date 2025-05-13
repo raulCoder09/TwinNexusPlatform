@@ -8,6 +8,7 @@ namespace _Scripts.Controller
     {
         private ControlPanelController _controlPanelController;
         private GameManager _gameManager;
+        private GameObject _virtualEnvironmentCamera;
         
         private Button _menuButton;
         private Button _hideMenuButton;
@@ -20,6 +21,7 @@ namespace _Scripts.Controller
         
         private DropdownField _menuEnvironmentDropdownField;
         private DropdownField _menuRobotArscaraDropdownField;
+        private DropdownField _menuViews;
 
         private VirtualEnvironmentController _virtualEnvironment;
         private AugmentedRealityEnvironmentController _augmentedRealityEnvironment;
@@ -36,6 +38,13 @@ namespace _Scripts.Controller
             get => _menuRobotArscaraDropdownField;
             set => _menuRobotArscaraDropdownField = value;
         }
+        
+        internal DropdownField menuViews
+        {
+            get => _menuViews;
+            set => _menuViews = value;
+        }
+        
         private void Awake()
         {
             GetUiComponents();
@@ -68,6 +77,7 @@ namespace _Scripts.Controller
         internal void ShowUI()
         {
             _controlPanelController.menuRobotArscara.value=_menuRobotArscaraDropdownField.value=_gameManager.deviceUiSelected= "Jog and teach";;
+            _controlPanelController.menuViews.value = _gameManager.viewSelected;
             _body.style.display = DisplayStyle.Flex;
         }
         private void HideUI()
@@ -112,6 +122,30 @@ namespace _Scripts.Controller
             _scrim.RemoveFromClassList("Opaque");
             _navigationMenuPanel.RemoveFromClassList("NavigationMenuPanelInMainScreen");
         }
+        private void SelectView(string evtNewValue)
+        {
+            switch (evtNewValue)
+            {
+                case "Top":
+                    LaunchView(new Vector3(0f, 0.35f, 0.13f),new Vector3(90f, 0f, 0f),evtNewValue);
+                    break;
+                case "Front":
+                    LaunchView(new Vector3(0f, 0.03f, 0.5f),new Vector3(-10f, 180f, 0f),evtNewValue);
+                    break;
+                case "Back":
+                    LaunchView(new Vector3(0f, 0.06f, -0.25f),new Vector3(-10f, 0f, 0f),evtNewValue);
+                    break;
+                case "Left":
+                    LaunchView(new Vector3(-0.35f, 0.03f, .12f),new Vector3(-10f, 90f, 0f),evtNewValue);
+                    break;
+                case "Right":
+                    LaunchView(new Vector3(0.35f, 0.03f, .12f),new Vector3(-10f, 270f, 0f),evtNewValue);
+                    break;
+                default:
+                    LaunchView(new Vector3(0f, 0.325f, 0f),new Vector3(66f, 0f, 0f),"Default");
+                    break;
+            }
+        }
         private void GetUiComponents()
         {
             var root=GetComponent<UIDocument>().rootVisualElement;
@@ -124,6 +158,7 @@ namespace _Scripts.Controller
             _logoutButton=root.Q<Button>("LogoutButton");
             _menuEnvironmentDropdownField=root.Q<DropdownField>("MenuEnvironmentDropdownField");
             _menuRobotArscaraDropdownField=root.Q<DropdownField>("MenuRobotARSCARADropdownField");
+            _menuViews=root.Q<DropdownField>("Views");
         }
         private void RegisterEvents()
         {
@@ -136,6 +171,11 @@ namespace _Scripts.Controller
             _menuRobotArscaraDropdownField.RegisterValueChangedCallback(evt=>
             {
                 SelectArscaraUi(evt.newValue);
+            });
+            
+            _menuViews.RegisterValueChangedCallback(evt =>
+            {
+                SelectView(evt.newValue);
             });
         }
         private void FindObjects()
@@ -158,6 +198,8 @@ namespace _Scripts.Controller
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
             _controlPanelController.menuEnvironment.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Virtual  environment";
+            _virtualEnvironmentCamera=GameObject.FindGameObjectWithTag("VirtualEnvironmentCamera");
+            _menuViews.value = "Select view";
         }
         private void LaunchAugmentedRealityEnvironment()
         {
@@ -167,6 +209,7 @@ namespace _Scripts.Controller
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
             _controlPanelController.menuEnvironment.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Augmented reality environment";
+            _menuViews.style.display = DisplayStyle.None;
         }
         private void LaunchHybridEnvironment()
         {
@@ -176,6 +219,7 @@ namespace _Scripts.Controller
             _hybridEnvironment.EnableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
             _controlPanelController.menuEnvironment.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Hybrid environment";
+            _menuViews.style.display = DisplayStyle.None;
         }
         private void LaunchRealDeviceEnvironment()
         {
@@ -185,6 +229,13 @@ namespace _Scripts.Controller
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.EnableEnvironment();
             _controlPanelController.menuEnvironment.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Real device environment";
+            _menuViews.style.display = DisplayStyle.None;
+        }
+        private void LaunchView(Vector3 position,Vector3 rotation,string view)
+        {
+            _virtualEnvironmentCamera.transform.position = position;
+            _virtualEnvironmentCamera.transform.eulerAngles = rotation;
+            _controlPanelController.menuViews.value=_gameManager.viewSelected = view;
         }
     }
 }
