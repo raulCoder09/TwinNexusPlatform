@@ -31,13 +31,13 @@ namespace _Scripts.Controller
             _dashboardButton= root.Q<Button>("DashboardButton");
             _dashboardButton.RegisterCallback<ClickEvent>(StartDashboard);
             _arscaraButton= root.Q<Button>("ARSCARAButton");
-            _arscaraButton.RegisterCallback<ClickEvent>(StartArscara);
+            _arscaraButton.RegisterCallback<ClickEvent>(StartOperations);
         }
 
-        private void StartArscara(ClickEvent evt)
+        private void StartOperations(ClickEvent evt)
         {
             HideUi();
-            SceneManager.LoadScene("ArscaraScene");
+            SceneManager.LoadScene("Operations");
         }
 
 
