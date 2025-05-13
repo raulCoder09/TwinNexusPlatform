@@ -67,7 +67,7 @@ namespace _Scripts.Controller
         }
         internal void ShowUI()
         {
-            _controlPanelController.menuRobotArscaraDropdownField.value=_menuRobotArscaraDropdownField.value=_gameManager.deviceUiSelected= "Jog and teach";;
+            _controlPanelController.menuRobotArscara.value=_menuRobotArscaraDropdownField.value=_gameManager.deviceUiSelected= "Jog and teach";;
             _body.style.display = DisplayStyle.Flex;
         }
         private void HideUI()
@@ -157,7 +157,7 @@ namespace _Scripts.Controller
             _augmentedRealityEnvironment.DisableEnvironment();
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
-            _controlPanelController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Virtual  environment";
+            _controlPanelController.menuEnvironment.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Virtual  environment";
         }
         private void LaunchAugmentedRealityEnvironment()
         {
@@ -166,7 +166,7 @@ namespace _Scripts.Controller
             _augmentedRealityEnvironment.EnableEnvironment();
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
-            _controlPanelController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Augmented reality environment";
+            _controlPanelController.menuEnvironment.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Augmented reality environment";
         }
         private void LaunchHybridEnvironment()
         {
@@ -175,7 +175,7 @@ namespace _Scripts.Controller
             _augmentedRealityEnvironment.DisableEnvironment();
             _hybridEnvironment.EnableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
-            _controlPanelController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Hybrid environment";
+            _controlPanelController.menuEnvironment.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Hybrid environment";
         }
         private void LaunchRealDeviceEnvironment()
         {
@@ -184,7 +184,7 @@ namespace _Scripts.Controller
             _augmentedRealityEnvironment.DisableEnvironment();
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.EnableEnvironment();
-            _controlPanelController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Real device environment";
+            _controlPanelController.menuEnvironment.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Real device environment";
         }
     }
 }

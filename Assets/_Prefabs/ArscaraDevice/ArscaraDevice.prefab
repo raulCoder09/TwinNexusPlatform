@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8494053402766682799}
   m_Layer: 0
-  m_Name: ARSCARA
+  m_Name: ArscaraDevice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 135930720522977915}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0713, z: 0.11694}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -140,7 +140,7 @@ GameObject:
   - component: {fileID: 8815013457155476654}
   m_Layer: 0
   m_Name: VirtualEnvironmentCamera
-  m_TagString: MainCamera
+  m_TagString: VirtualEnvironmentCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1117,6 +1117,8 @@ GameObject:
   - component: {fileID: 3074095097593594370}
   - component: {fileID: 7955432231627414901}
   - component: {fileID: 7573151988093215912}
+  - component: {fileID: 1280860056601296902}
+  - component: {fileID: 1270972197929140055}
   m_Layer: 0
   m_Name: XR Origin (Mobile AR)
   m_TagString: Untagged
@@ -1222,6 +1224,38 @@ MonoBehaviour:
       m_Calls: []
   m_PointCloudPrefab: {fileID: 7988417458948864684, guid: 92695ad637a91400b8c3dd66096a8981,
     type: 3}
+--- !u!114 &1280860056601296902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5753075979877088870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dea56a9eaadd1c439095de4f9a371cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <trackablesChanged>k__BackingField:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SerializedLibrary: {fileID: 11400000, guid: 4470686577f044c6fa7e1ba82f4a827b,
+    type: 2}
+  m_MaxNumberOfMovingImages: 1
+  m_TrackedImagePrefab: {fileID: 2730710176102872688, guid: 7850a18266ffd469a971a8521a6fc550,
+    type: 3}
+--- !u!114 &1270972197929140055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5753075979877088870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7564ab7abc74dcfadfe10b787be036, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5994869479895391398
 GameObject:
   m_ObjectHideFlags: 0

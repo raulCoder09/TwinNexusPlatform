@@ -7,28 +7,36 @@ namespace _Scripts.Controller
     {
         private JogAndTeachController _jogAndTeachController;
         private GameManager _gameManager;
+        private GameObject _virtualEnvironmentCamera;
         
         private VisualElement _body;
-        private DropdownField _menuEnvironmentDropdownField;
-        private DropdownField _menuRobotArscaraDropdownField;
+        private DropdownField _menuEnvironment;
+        private DropdownField _menuRobotArscara;
+        private DropdownField _menuViews;
         
         private VirtualEnvironmentController _virtualEnvironment;
         private AugmentedRealityEnvironmentController _augmentedRealityEnvironment;
         private HybridEnvironmentController _hybridEnvironment;
         private RealDeviceEnvironmentController _realDeviceEnvironment;
 
-        internal DropdownField menuEnvironmentDropdownField
+        internal DropdownField menuEnvironment
         {
-            get => _menuEnvironmentDropdownField;
-            set => _menuEnvironmentDropdownField = value;
+            get => _menuEnvironment;
+            set => _menuEnvironment = value;
         }
 
-        internal DropdownField menuRobotArscaraDropdownField
+        internal DropdownField menuRobotArscara
         {
-            get => _menuRobotArscaraDropdownField;
-            set => _menuRobotArscaraDropdownField = value;
+            get => _menuRobotArscara;
+            set => _menuRobotArscara = value;
         }
-        
+
+        internal DropdownField menuViews
+        {
+            get => _menuViews;
+            set => _menuViews = value;
+        }
+
         private void Awake()
         {
             GetUiComponents();
@@ -38,15 +46,14 @@ namespace _Scripts.Controller
         private void Start()
         {
             ShowUI();
-            _menuRobotArscaraDropdownField.value = "Menu environment";
-            _menuEnvironmentDropdownField.value =  "Menu ARSCARA";
-            
+            _menuRobotArscara.value = "Menu environment";
+            _menuEnvironment.value =  "Menu ARSCARA";
             FindEnvironmentComponents();
 
         }
         internal void ShowUI()
         {
-            _jogAndTeachController.menuRobotArscaraDropdownField.value= _menuRobotArscaraDropdownField.value=_gameManager.deviceUiSelected = "Control panel";
+            _jogAndTeachController.menuRobotArscaraDropdownField.value= _menuRobotArscara.value=_gameManager.deviceUiSelected = "Control panel";
             _body.style.display = DisplayStyle.Flex;
         }
         private void HideUI()
@@ -89,30 +96,68 @@ namespace _Scripts.Controller
                     break;
             }
         }
+
+        private void SelectView(string evtNewValue)
+        {
+            switch (evtNewValue)
+            {
+                case "Top":
+                    _virtualEnvironmentCamera.transform.position = new Vector3(0f, 0.35f, 0.13f);
+                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(90f, 0f, 0f);
+                    break;
+                case "Front":
+                    _virtualEnvironmentCamera.transform.position = new Vector3(0f, 0.03f, 0.5f);
+                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(-10f, 180f, 0f);
+                    break;
+                case "Back":
+                    _virtualEnvironmentCamera.transform.position = new Vector3(0f, 0.06f, -0.25f);
+                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(-10f, 0f, 0f);
+                    break;
+                case "Left":
+                    _virtualEnvironmentCamera.transform.position = new Vector3(-0.35f, 0.03f, .12f);
+                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(-10f, 90f, 0f);
+                    break;
+                case "Right":
+                    _virtualEnvironmentCamera.transform.position = new Vector3(0.35f, 0.03f, .12f);
+                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(-10f, 270f, 0f);
+                    break;
+                default:
+                    _virtualEnvironmentCamera.transform.position = new Vector3(0f, 0.325f, 0f);
+                    _virtualEnvironmentCamera.transform.eulerAngles = new Vector3(66f, 0f, 0f);
+                    break;
+            }
+        }
         private void GetUiComponents()
         {
             var root= GetComponent<UIDocument>().rootVisualElement;
             _body = root.Q<VisualElement>("Body");
-            _menuEnvironmentDropdownField = root.Q<DropdownField>("MenuEnvironmentDropdownField");
-            _menuRobotArscaraDropdownField=root.Q<DropdownField>("MenuRobotARSCARADropdownField");
+            _menuEnvironment = root.Q<DropdownField>("MenuEnvironmentDropdownField");
+            _menuRobotArscara=root.Q<DropdownField>("MenuRobotARSCARADropdownField");
+            _menuViews=root.Q<DropdownField>("Views");
         }
         private void RegisterEvents()
         {
-            _menuEnvironmentDropdownField.RegisterValueChangedCallback(evt =>
+            _menuEnvironment.RegisterValueChangedCallback(evt =>
             {
                 EnableEnvironment(evt.newValue);
             });
             
            
-            _menuRobotArscaraDropdownField.RegisterValueChangedCallback(evt=>
+            _menuRobotArscara.RegisterValueChangedCallback(evt=>
             {
                 SelectArscaraUi(evt.newValue);
+            });
+
+            _menuViews.RegisterValueChangedCallback(evt =>
+            {
+                SelectView(evt.newValue);
             });
         }
         private void FindObjects()
         {
             _jogAndTeachController=GameObject.FindGameObjectWithTag("JogAndTeach").GetComponent<JogAndTeachController>();
             _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+            
         }
         private void FindEnvironmentComponents()
         {
@@ -128,7 +173,9 @@ namespace _Scripts.Controller
             _augmentedRealityEnvironment.DisableEnvironment();
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
-            _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Virtual  environment";
+            _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironment.value=_gameManager.environmentSelected= "Virtual  environment";
+            _virtualEnvironmentCamera=GameObject.FindGameObjectWithTag("VirtualEnvironmentCamera");
+            _menuViews.value = "Select view";
         }
         private void LaunchAugmentedRealityEnvironment()
         {
@@ -137,7 +184,7 @@ namespace _Scripts.Controller
             _augmentedRealityEnvironment.EnableEnvironment();
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
-            _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Augmented reality environment";
+            _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironment.value=_gameManager.environmentSelected= "Augmented reality environment";
         }
         private void LaunchHybridEnvironment()
         {
@@ -146,7 +193,7 @@ namespace _Scripts.Controller
             _augmentedRealityEnvironment.DisableEnvironment();
             _hybridEnvironment.EnableEnvironment();
             _realDeviceEnvironment.DisableEnvironment();
-            _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Hybrid environment";
+            _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironment.value=_gameManager.environmentSelected= "Hybrid environment";
         }
         private void LaunchRealDeviceEnvironment()
         {
@@ -155,7 +202,7 @@ namespace _Scripts.Controller
             _augmentedRealityEnvironment.DisableEnvironment();
             _hybridEnvironment.DisableEnvironment();
             _realDeviceEnvironment.EnableEnvironment();
-            _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironmentDropdownField.value=_gameManager.environmentSelected= "Real device environment";
+            _jogAndTeachController.menuEnvironmentDropdownField.value=_menuEnvironment.value=_gameManager.environmentSelected= "Real device environment";
         }
     }
 }
