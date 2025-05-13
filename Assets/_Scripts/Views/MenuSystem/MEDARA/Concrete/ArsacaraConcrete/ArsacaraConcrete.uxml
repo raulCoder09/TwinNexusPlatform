@@ -1,0 +1,95 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArsacaraConcrete/ArsacaraConcrete.uss?fileID=7433441132597879392&amp;guid=335b187c35e1042e2a9341d6c85b40a8&amp;type=3#ArsacaraConcrete" />
+    <ui:VisualElement name="Body" style="flex-grow: 1; background-color: rgb(0, 0, 0);">
+        <ui:VisualElement name="Header" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
+            <ui:VisualElement style="flex-grow: 1; width: 10%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                <ui:Button text="Menu" name="MenuButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); color: rgb(3, 255, 0); font-size: 30px;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 30%; height: 100%;">
+                <ui:DropdownField choices="Menu environment,Virtual  environment,Augmented reality environment,Hybrid environment,Real device environment" name="MenuEnvironmentDropdownField" style="width: 80%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 30%; height: 100%;" />
+            <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 30%; height: 100%;">
+                <ui:DropdownField choices="Menu ARSCARA,Control panel,Jog and teach,Points" name="MenuRobotARSCARADropdownField" style="width: 80%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Main" style="flex-grow: 1; width: 100%; height: 80%; flex-direction: row;">
+            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%;" />
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%;" />
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%;" />
+            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                <ui:VisualElement style="flex-grow: 1;" />
+                <ui:VisualElement style="flex-grow: 1; align-items: flex-end;" />
+                <ui:VisualElement style="flex-grow: 1;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Footer" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
+            <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-evenly; width: 20%; height: 100%; align-items: center; align-self: center; align-content: center;" />
+            <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%; align-items: center; justify-content: center;">
+                <ui:DropdownField choices="Select view,Top,Front,Back,Left,Right" name="Views" style="width: 25%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 20%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; display: none; opacity: 1;">
+            <ui:VisualElement name="Scrim" />
+            <ui:VisualElement name="NavigationMenuPanel" style="flex-direction: row; position: absolute; width: 100%; height: 100%;">
+                <ui:VisualElement name="NavigationMenu" style="flex-grow: 1; position: relative; width: 25%; height: 100%; translate: 0% 0; background-color: rgb(0, 0, 0); border-top-right-radius: 0; border-bottom-right-radius: 0; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 30%;">
+                        <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; width: 100%; height: 25%; margin-top: 0; margin-left: 0;">
+                            <ui:Label text="Username" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); -unity-font-style: bold; font-size: 50px; color: rgb(0, 255, 0);" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 70%;">
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Button text="Dashboard" name="DashboardButton" style="color: rgb(0, 255, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 40px; -unity-font-style: bold; background-color: rgba(255, 255, 255, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Button text="Training" style="font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(0, 255, 0); -unity-font-style: bold; background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Button text="Operations" name="OperationsButton" style="-unity-font-style: bold; color: rgb(0, 255, 0); font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Button text="Reports" style="-unity-font-style: bold; font-size: 40px; color: rgb(0, 255, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Button text="Support" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); -unity-font-style: bold; font-size: 40px; color: rgb(0, 255, 0); background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Button text="Settings" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); -unity-font-style: bold; font-size: 40px; color: rgb(0, 255, 0); background-color: rgba(188, 188, 188, 0); border-left-color: rgba(149, 149, 149, 0); border-right-color: rgba(149, 149, 149, 0); border-top-color: rgba(149, 149, 149, 0); border-bottom-color: rgba(149, 149, 149, 0);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Button text="Logout" name="LogoutButton" style="-unity-font-style: bold; color: rgb(0, 255, 0); font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
+                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
+                                <ui:Label name="Label" style="-unity-font-style: bold; font-size: 30px;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="HideMenuButton" style="width: 75%; height: 100%; background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

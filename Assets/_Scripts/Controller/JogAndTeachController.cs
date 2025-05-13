@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace _Scripts.Controller
@@ -237,5 +236,6 @@ namespace _Scripts.Controller
             _virtualEnvironmentCamera.transform.eulerAngles = rotation;
             _controlPanelController.menuViews.value=_gameManager.viewSelected = view;
         }
+        
     }
 }
