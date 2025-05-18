@@ -6,17 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/ArscaraScene.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/ArscaraScene.unity.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DashboardController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/DashboardController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DeviceSelectionController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/DeviceSelectionController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArsacaraConcrete.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArsacaraConcrete/ArsacaraConcrete.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArsacaraConcrete/ArsacaraConcrete.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArsacaraConcrete/ArsacaraConcrete.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArsacaraConcrete/ArsacaraConcrete.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Graphic/Graphic.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Graphic/Graphic.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/GameManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Dashboard/Dashboard.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Dashboard/Dashboard.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,6 +149,7 @@
       <workItem from="1747063909209" duration="12132000" />
       <workItem from="1747119701048" duration="3342000" />
       <workItem from="1747155317941" duration="8966000" />
+      <workItem from="1747556007853" duration="4228000" />
     </task>
     <servers />
   </component>

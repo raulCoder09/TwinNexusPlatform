@@ -279,6 +279,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arscara: {fileID: 135930720522977915, guid: d2de1525189e24134bbacd4cd5f9e454, type: 3}
+  robotKit1: {fileID: 5966587843983695716, guid: 368795241456c48ad90cb62826c779c9,
+    type: 3}
+  robotKit2: {fileID: 4728689927913071684, guid: 408d0cf5094244cb992f65030f1bd661,
+    type: 3}
 --- !u!4 &1734392420
 Transform:
   m_ObjectHideFlags: 0

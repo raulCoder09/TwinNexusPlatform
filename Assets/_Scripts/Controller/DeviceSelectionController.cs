@@ -15,6 +15,9 @@ namespace _Scripts.Controller
         private VisualElement _scrim;
         private Button _dashboardButton;
         private Button _arscaraButton;
+        private Button _robotKit1Button;
+        private Button _robotKit2Button;
+        private GameManager _gameManager;
 
         private void Awake()
         {
@@ -32,17 +35,39 @@ namespace _Scripts.Controller
             _dashboardButton.RegisterCallback<ClickEvent>(StartDashboard);
             _arscaraButton= root.Q<Button>("ARSCARAButton");
             _arscaraButton.RegisterCallback<ClickEvent>(StartOperations);
+            _robotKit1Button= root.Q<Button>("RobotKit1Button");
+            _robotKit1Button.RegisterCallback<ClickEvent>(StartOperations);
+            _robotKit2Button= root.Q<Button>("RobotKit2Button");
+            _robotKit2Button.RegisterCallback<ClickEvent>(StartOperations);
+            
         }
-
+        
         private void StartOperations(ClickEvent evt)
         {
             HideUi();
+            if (evt.currentTarget is Button button)
+                switch (button.name)
+                {
+                    case "ARSCARAButton":
+                        _gameManager.deviceSelected = button.name;
+                        break;
+                    case "RobotKit1Button":
+                        _gameManager.deviceSelected = button.name;
+                        break;
+                    case "RobotKit2Button":
+                        _gameManager.deviceSelected = button.name;
+                        break;
+                    default:
+                        break;
+                }
+
             SceneManager.LoadScene("Operations");
         }
 
 
         private void Start()
         {
+            FindObjects();
             HideUi();
             _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
         }
@@ -83,6 +108,12 @@ namespace _Scripts.Controller
             HideMenu(evt);
             _body.style.display = DisplayStyle.None;
             DashboardController.ShowUi();
+        }
+        
+        private void FindObjects()
+        {
+            _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+            
         }
         
     }
