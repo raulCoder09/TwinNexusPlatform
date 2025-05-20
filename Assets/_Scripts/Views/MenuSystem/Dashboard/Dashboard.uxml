@@ -145,7 +145,7 @@
                         </ui:VisualElement>
                         <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
                             <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Button text="Training" style="font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(0, 255, 0); -unity-font-style: bold; background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                                <ui:Button name="TrainingButton" text="Training" style="font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(0, 255, 0); -unity-font-style: bold; background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement style="flex-grow: 1; flex-direction: row;">

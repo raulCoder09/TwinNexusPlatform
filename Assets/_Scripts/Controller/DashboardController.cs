@@ -42,14 +42,25 @@ namespace _Scripts.Controller
             _welcomeBody=welcomeRoot.Q<VisualElement>("Body");
             _operationsButton=root.Q<Button>("OperationsButton");
             _operationsButton.RegisterCallback<ClickEvent>(StartOperations);
+            
+            _operationsButton=root.Q<Button>("TrainingButton");
+            _operationsButton.RegisterCallback<ClickEvent>(StartTraining);
         }
 
         private void StartOperations(ClickEvent evt)
         {
             _body.style.display = DisplayStyle.None;
             HideMenu(evt);
-            DeviceSelectionController.ShowUi();
+            DeviceSelectionController.ShowUi(); // no debe ser estatico aqui tambien debe ir la logica de la maquina de estados
 
+        }
+        
+        private void StartTraining(ClickEvent evt)
+        {
+            _body.style.display = DisplayStyle.None;
+            HideMenu(evt);
+            SceneManager.LoadScene("Training"); //borrar solo para pruebas
+            // DeviceSelectionController.ShowUi(); // no debe ser estatico aqui tambien debe ir la logica de la maquina de estados
         }
 
         private void Logout(ClickEvent evt)

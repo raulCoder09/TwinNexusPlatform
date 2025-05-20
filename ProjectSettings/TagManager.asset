@@ -7,6 +7,11 @@ TagManager:
   - JogAndTeach
   - ControlPanel
   - GameManager
+  - VirtualEnvironment
+  - AugmentedRealityEnvironment
+  - HybridEnvironment
+  - RealDeviceEnvironment
+  - VirtualEnvironmentCamera
   layers:
   - Default
   - TransparentFX
