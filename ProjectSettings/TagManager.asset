@@ -12,6 +12,8 @@ TagManager:
   - HybridEnvironment
   - RealDeviceEnvironment
   - VirtualEnvironmentCamera
+  - Dashboard
+  - DeviceSelection
   layers:
   - Default
   - TransparentFX

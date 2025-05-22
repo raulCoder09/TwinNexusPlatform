@@ -14,6 +14,13 @@ namespace _Scripts
         private string _deviceUiSelected;
         private string _viewSelected;
         private string _deviceSelected;
+        private string _modeSelected;
+
+        internal string modeSelected
+        {
+            get => _modeSelected;
+            set => _modeSelected = value;
+        }
 
         private GameObject _robotKit1Instance;
         private GameObject _robotKit2Instance;
@@ -75,10 +82,26 @@ namespace _Scripts
 
                     break;
                 case "Training":
-                    print("entrenamiento");
+                    switch (_deviceSelected)
+                    {
+                        //todo ajustar interfaces solo para entrenamientos, son mas basicas que las intefaces de las
+                     //operaciones ya que solo son introductorias y para conocer los equipos, de moemento se
+                     //usare los mismas que operaciones
+                        case "ARSCARAButton":
+                            _arscaraInstance = Instantiate(arscara);
+                            break;
+                        case "RobotKit1Button":
+                            _robotKit1Instance= Instantiate(robotKit1);
+                            break;
+                        case "RobotKit2Button":
+                            _robotKit2Instance= Instantiate(robotKit2);
+                            break;
+                    }
                     break;
             }
         }
+
+
         
     }
 }

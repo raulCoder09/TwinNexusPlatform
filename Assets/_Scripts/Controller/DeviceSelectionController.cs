@@ -18,31 +18,18 @@ namespace _Scripts.Controller
         private Button _robotKit1Button;
         private Button _robotKit2Button;
         private GameManager _gameManager;
+        private DashboardController _dashboardController;
 
+        
         private void Awake()
         {
-            var root = GetComponent<UIDocument>().rootVisualElement;
-            _body = root.Q<VisualElement>("Body");
-            _menuButton = root.Q<Button>("MenuButton");
-            _menuButton.RegisterCallback<ClickEvent>(ShowMenu);
-            _subpanelsAndSmokeMaskContainer=root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
-            _navigationMenuPanel = root.Q<VisualElement>("NavigationMenuPanel");
-            _hideMenuButton = root.Q<Button>("HideMenuButton");
-            _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
-            _scrim = root.Q<VisualElement>("Scrim");
-            _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
-            _dashboardButton= root.Q<Button>("DashboardButton");
-            _dashboardButton.RegisterCallback<ClickEvent>(StartDashboard);
-            _arscaraButton= root.Q<Button>("ARSCARAButton");
-            _arscaraButton.RegisterCallback<ClickEvent>(StartOperations);
-            _robotKit1Button= root.Q<Button>("RobotKit1Button");
-            _robotKit1Button.RegisterCallback<ClickEvent>(StartOperations);
-            _robotKit2Button= root.Q<Button>("RobotKit2Button");
-            _robotKit2Button.RegisterCallback<ClickEvent>(StartOperations);
-            
+            GetUiComponents();
+            RegisterEvents();
+            FindObjects();
         }
+
         
-        private void StartOperations(ClickEvent evt)
+        private void LaunchDevice(ClickEvent evt)
         {
             HideUi();
             if (evt.currentTarget is Button button)
@@ -61,7 +48,17 @@ namespace _Scripts.Controller
                         break;
                 }
 
-            SceneManager.LoadScene("Operations");
+            switch (_gameManager.modeSelected)
+            {
+                case "OperationsButton":
+                    SceneManager.LoadScene("Operations");
+                break;
+                case "TrainingButton":
+                    SceneManager.LoadScene("Training");
+                    break;
+            }
+            
+            
         }
 
 
@@ -72,12 +69,12 @@ namespace _Scripts.Controller
             _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
         }
 
-        internal static void ShowUi()
+        internal void ShowUi()
         {
             _body.style.display = DisplayStyle.Flex;
         }
 
-        internal static void HideUi()
+        internal void HideUi()
         {
             _body.style.display = DisplayStyle.None;
         }
@@ -107,14 +104,39 @@ namespace _Scripts.Controller
         {
             HideMenu(evt);
             _body.style.display = DisplayStyle.None;
-            DashboardController.ShowUi();
+            _dashboardController.ShowUi();
         }
-        
+
+        private void GetUiComponents()
+        {
+            var root = GetComponent<UIDocument>().rootVisualElement;
+            _body = root.Q<VisualElement>("Body");
+            _menuButton = root.Q<Button>("MenuButton");
+            _subpanelsAndSmokeMaskContainer=root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+            _navigationMenuPanel = root.Q<VisualElement>("NavigationMenuPanel");
+            _hideMenuButton = root.Q<Button>("HideMenuButton");
+            _scrim = root.Q<VisualElement>("Scrim");
+            _dashboardButton= root.Q<Button>("DashboardButton");
+            _robotKit2Button= root.Q<Button>("RobotKit2Button");
+            _robotKit1Button= root.Q<Button>("RobotKit1Button");
+            _arscaraButton= root.Q<Button>("ARSCARAButton");
+        }
+
+        private void RegisterEvents()
+        {
+            _menuButton.RegisterCallback<ClickEvent>(ShowMenu);
+            _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
+            _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+            _dashboardButton.RegisterCallback<ClickEvent>(StartDashboard);
+            _arscaraButton.RegisterCallback<ClickEvent>(LaunchDevice);
+            _robotKit1Button.RegisterCallback<ClickEvent>(LaunchDevice);
+            _robotKit2Button.RegisterCallback<ClickEvent>(LaunchDevice);
+        }
         private void FindObjects()
         {
             _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+            _dashboardController=GameObject.FindGameObjectWithTag("Dashboard").GetComponent<DashboardController>();
             
         }
-        
     }
 }
