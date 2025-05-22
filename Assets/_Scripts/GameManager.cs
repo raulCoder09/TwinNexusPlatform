@@ -15,6 +15,13 @@ namespace _Scripts
         private string _viewSelected;
         private string _deviceSelected;
         private string _modeSelected;
+        private string _selectedModeUiName;
+
+        public string selectedModeUiName
+        {
+            get => _selectedModeUiName;
+            set => _selectedModeUiName = value;
+        }
 
         internal string modeSelected
         {
@@ -88,7 +95,8 @@ namespace _Scripts
                      //operaciones ya que solo son introductorias y para conocer los equipos, de moemento se
                      //usare los mismas que operaciones
                         case "ARSCARAButton":
-                            _arscaraInstance = Instantiate(arscara);
+                            // _arscaraInstance = Instantiate(arscara);
+                            print("trabajando");
                             break;
                         case "RobotKit1Button":
                             _robotKit1Instance= Instantiate(robotKit1);

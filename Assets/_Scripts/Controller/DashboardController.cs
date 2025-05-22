@@ -20,6 +20,7 @@ namespace _Scripts.Controller
         private DeviceSelectionController _deviceSelectionController;
         private GameManager _gameManager;
         
+        
         private void Awake()
         {
             GetUiComponents();
@@ -43,19 +44,23 @@ namespace _Scripts.Controller
         
         private void StartOperations(ClickEvent evt)
         {
+            _gameManager.selectedModeUiName = "Devices available for operate";
             HideUi();
             HideMenu(evt);
             _deviceSelectionController.ShowUi(); // no debe ser estatico aqui tambien debe ir la logica de la maquina de estados
             if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
+            
         }
         
         private void StartTraining(ClickEvent evt)
         {
+            _gameManager.selectedModeUiName = "Devices available for learning";
             HideUi();
             HideMenu(evt);
             //todo necesito trabajar la maquina de estados para poder seleccionar de forma correcta la seleccion del dispisitivo
             _deviceSelectionController.ShowUi(); 
             if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
+            
         }
 
         private void Logout(ClickEvent evt)

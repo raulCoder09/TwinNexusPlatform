@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -7,18 +6,21 @@ namespace _Scripts.Controller
 {
     public class DeviceSelectionController : MonoBehaviour
     {
-        private static VisualElement _body;
+        private VisualElement _body;
         private VisualElement _subpanelsAndSmokeMaskContainer;
-        private Button _menuButton;
         private VisualElement _navigationMenuPanel;
-        private Button _hideMenuButton;
         private VisualElement _scrim;
+        private Button _menuButton;
+        private Button _hideMenuButton;
         private Button _dashboardButton;
+        private Button _operationsButton;
+        private Button _trainingButton;
         private Button _arscaraButton;
         private Button _robotKit1Button;
         private Button _robotKit2Button;
         private GameManager _gameManager;
         private DashboardController _dashboardController;
+        private Label _selectedModeUiName;
 
         
         private void Awake()
@@ -57,8 +59,6 @@ namespace _Scripts.Controller
                     SceneManager.LoadScene("Training");
                     break;
             }
-            
-            
         }
 
 
@@ -71,6 +71,7 @@ namespace _Scripts.Controller
 
         internal void ShowUi()
         {
+            _selectedModeUiName.text = _gameManager.selectedModeUiName;
             _body.style.display = DisplayStyle.Flex;
         }
 
@@ -106,6 +107,22 @@ namespace _Scripts.Controller
             _body.style.display = DisplayStyle.None;
             _dashboardController.ShowUi();
         }
+        private void StartOperations(ClickEvent evt)
+        {
+            HideUi();
+            HideMenu(evt);
+            ShowUi(); 
+            if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
+            _selectedModeUiName.text =  _gameManager.selectedModeUiName="Devices available for operate";
+        }
+        private void StartTraining(ClickEvent evt)
+        {
+            HideUi();
+            HideMenu(evt); 
+            ShowUi(); 
+            if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
+            _selectedModeUiName.text = _gameManager.selectedModeUiName="Devices available for learning";
+        }
 
         private void GetUiComponents()
         {
@@ -117,9 +134,12 @@ namespace _Scripts.Controller
             _hideMenuButton = root.Q<Button>("HideMenuButton");
             _scrim = root.Q<VisualElement>("Scrim");
             _dashboardButton= root.Q<Button>("DashboardButton");
+            _operationsButton= root.Q<Button>("OperationsButton");
+            _trainingButton=root.Q<Button>("TrainingButton");
             _robotKit2Button= root.Q<Button>("RobotKit2Button");
             _robotKit1Button= root.Q<Button>("RobotKit1Button");
             _arscaraButton= root.Q<Button>("ARSCARAButton");
+            _selectedModeUiName=root.Q<Label>("SelectedModeUiName");
         }
 
         private void RegisterEvents()
@@ -128,6 +148,8 @@ namespace _Scripts.Controller
             _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
             _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
             _dashboardButton.RegisterCallback<ClickEvent>(StartDashboard);
+            _operationsButton.RegisterCallback<ClickEvent>(StartOperations);
+            _trainingButton.RegisterCallback<ClickEvent>(StartTraining);
             _arscaraButton.RegisterCallback<ClickEvent>(LaunchDevice);
             _robotKit1Button.RegisterCallback<ClickEvent>(LaunchDevice);
             _robotKit2Button.RegisterCallback<ClickEvent>(LaunchDevice);

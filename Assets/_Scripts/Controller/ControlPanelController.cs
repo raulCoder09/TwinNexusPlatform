@@ -43,8 +43,8 @@ namespace _Scripts.Controller
         private void Start()
         {
             ShowUI();
-            _menuRobotArscara.value = "Menu environment";
-            _menuEnvironment.value =  "Menu ARSCARA";
+            _menuRobotArscara.value = "Menu ARSCARA";
+            _menuEnvironment.value = "Menu environment" ;
             FindEnvironmentComponents();
 
         }
