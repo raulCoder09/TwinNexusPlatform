@@ -1,13 +1,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace _Scripts
 {
     public class GameManager : MonoBehaviour
     {
-        [SerializeField] private GameObject arscara;
+        [SerializeField] private GameObject arscaraOperative;
+        [SerializeField] private GameObject arscaraTraining;
         [SerializeField] private GameObject robotKit1;
         [SerializeField] private GameObject robotKit2;
+        
         
         
         private string _environmentSelected;
@@ -16,6 +19,17 @@ namespace _Scripts
         private string _deviceSelected;
         private string _modeSelected;
         private string _selectedModeUiName;
+        
+        private GameObject _arscaraOperativeOperativeInstance;
+        private GameObject _arscaraTrainingInstance;
+        private GameObject _robotKit1Instance;
+        private GameObject _robotKit2Instance;
+
+        public GameObject arscaraTrainingInstance
+        {
+            get => _arscaraTrainingInstance;
+            set => _arscaraTrainingInstance = value;
+        }
 
         public string selectedModeUiName
         {
@@ -29,8 +43,7 @@ namespace _Scripts
             set => _modeSelected = value;
         }
 
-        private GameObject _robotKit1Instance;
-        private GameObject _robotKit2Instance;
+
         internal string deviceSelected
         {
             get => _deviceSelected;
@@ -43,12 +56,12 @@ namespace _Scripts
             set => _viewSelected = value;
         }
 
-        private GameObject _arscaraInstance;
+        
 
-        internal GameObject arscaraInstance
+        internal GameObject arscaraOperativeInstance
         {
-            get => _arscaraInstance;
-            set => _arscaraInstance = value;
+            get => _arscaraOperativeOperativeInstance;
+            set => _arscaraOperativeOperativeInstance = value;
         }
         
         internal string environmentSelected
@@ -77,7 +90,7 @@ namespace _Scripts
                     switch (_deviceSelected)
                     {
                         case "ARSCARAButton":
-                            _arscaraInstance = Instantiate(arscara);
+                            _arscaraOperativeOperativeInstance = Instantiate(arscaraOperative);
                             break;
                         case "RobotKit1Button":
                             _robotKit1Instance= Instantiate(robotKit1);
@@ -95,8 +108,7 @@ namespace _Scripts
                      //operaciones ya que solo son introductorias y para conocer los equipos, de moemento se
                      //usare los mismas que operaciones
                         case "ARSCARAButton":
-                            // _arscaraInstance = Instantiate(arscara);
-                            print("trabajando");
+                            _arscaraTrainingInstance = Instantiate(arscaraTraining);
                             break;
                         case "RobotKit1Button":
                             _robotKit1Instance= Instantiate(robotKit1);
