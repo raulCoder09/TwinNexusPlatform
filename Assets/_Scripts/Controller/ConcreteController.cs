@@ -16,6 +16,13 @@ namespace _Scripts.Controller
         private RadioButton _homogeneousTransformationMatrixMethodRadioButton;
         private RadioButton _denavitHartenbergAlgorithmRadioButton;
         private RadioButton _quaternialMethodRadioButton;
+        private Slider _angleQ1Slider;
+        private Slider _angleQ2Slider;
+        private Slider _displacementD3Slider;
+
+        private Label _xCoordinateLabel;
+        private Label _yCoordinateLabel;
+        private Label _zCoordinateLabel;
         
         
         private VirtualEnvironmentController _virtualEnvironment;
@@ -85,6 +92,12 @@ namespace _Scripts.Controller
                 _homogeneousTransformationMatrixMethodRadioButton.style.display = DisplayStyle.Flex;
                 _denavitHartenbergAlgorithmRadioButton.style.display = DisplayStyle.Flex;
                 _quaternialMethodRadioButton.style.display = DisplayStyle.Flex;
+                _angleQ1Slider.style.display =DisplayStyle.Flex;
+                _angleQ2Slider.style.display =DisplayStyle.Flex;
+                _displacementD3Slider.style.display =DisplayStyle.Flex;
+                _xCoordinateLabel.style.display =DisplayStyle.Flex;
+                _yCoordinateLabel.style.display =DisplayStyle.Flex;
+                _zCoordinateLabel.style.display =DisplayStyle.Flex;
             }
             else
             {
@@ -92,6 +105,12 @@ namespace _Scripts.Controller
                 _homogeneousTransformationMatrixMethodRadioButton.style.display = DisplayStyle.None;
                 _denavitHartenbergAlgorithmRadioButton.style.display = DisplayStyle.None;
                 _quaternialMethodRadioButton.style.display = DisplayStyle.None;
+                _angleQ1Slider.style.display = DisplayStyle.None;
+                _angleQ2Slider.style.display = DisplayStyle.None;
+                _displacementD3Slider.style.display = DisplayStyle.None;
+                _xCoordinateLabel.style.display =DisplayStyle.None;
+                _yCoordinateLabel.style.display =DisplayStyle.None;
+                _zCoordinateLabel.style.display =DisplayStyle.None;
             }
         }
 
@@ -154,7 +173,12 @@ namespace _Scripts.Controller
             _homogeneousTransformationMatrixMethodRadioButton= root.Q<RadioButton>("HomogeneousTransformationMatrixMethodRadioButton");
             _denavitHartenbergAlgorithmRadioButton= root.Q<RadioButton>("DenavitHartenbergAlgorithmRadioButton");
             _quaternialMethodRadioButton= root.Q<RadioButton>("QuaternialMethodRadioButton");
-
+            _angleQ1Slider=root.Q<Slider>("AngleQ1Slider");
+            _angleQ2Slider=root.Q<Slider>("AngleQ2Slider");
+            _displacementD3Slider=root.Q<Slider>("DisplacementD3Slider");
+            _xCoordinateLabel=root.Q<Label>("xCoordinateLabel");
+            _yCoordinateLabel=root.Q<Label>("yCoordinateLabel");
+            _zCoordinateLabel=root.Q<Label>("zCoordinateLabel");
         }
         
         private void LaunchRealDeviceEnvironment()
