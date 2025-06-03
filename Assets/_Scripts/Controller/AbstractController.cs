@@ -1,16 +1,17 @@
 using UnityEngine;
 
-public class AbstractController : MonoBehaviour
+namespace _Scripts.Controller
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class AbstractController : MonoBehaviour
     {
-        
-    }
+        internal void EnableLevel()
+        {
+            gameObject.SetActive(true);
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        internal void DisableLevel()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
