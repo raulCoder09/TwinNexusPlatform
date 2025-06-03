@@ -5,34 +5,50 @@ namespace _Scripts.Controller
 {
     public class WelcomeControllerUI : MonoBehaviour
     {
-        private VisualElement _body;
-        private VisualElement _subpanelsAndSmokeMaskContainer;
-        private Button _launchButton;
-        private Button _closeLoginPanelButton;
-        private Button _closeRegisterPanelButton;
-        private Button _closeRecoverPasswordButton;
-        private Button _exitAppButton;
-        private VisualElement _loginPanel;
-        private VisualElement _scrim;
-        private VisualElement _registerPanel;
-        private VisualElement _recoverPasswordPanel;
-        
-        
+        #region ButtonsVariables
 
-        private Button _registerLoginButton;
-        private Button _recoverPasswordLoginButton;
-        private Button _loginButton;
-        private Button _registerAndLoginButton;
-        private Button _recoverPasswordButton;
+            private Button _launchButton;
+            private Button _closeLoginPanelButton;
+            private Button _closeRegisterPanelButton;
+            private Button _closeRecoverPasswordButton;
+            private Button _exitAppButton;
+            private Button _registerLoginButton;
+            private Button _recoverPasswordLoginButton;
+            private Button _loginButton;
+            private Button _registerAndLoginButton;
+            private Button _recoverPasswordButton;
+            private Button _backToLoginPanelFromRegisterButton;
+            private Button _backToLoginPanelFromRecoverPasswordButton;
 
-        private Button _backToLoginPanelFromRegisterButton;
-        private Button _backToLoginPanelFromRecoverPasswordButton;
+        #endregion
         
+        #region VisualElementVariables
+            private VisualElement _body;
+            private VisualElement _subpanelsAndSmokeMaskContainer;
+            private VisualElement _loginPanel;
+            private VisualElement _scrim;
+            private VisualElement _registerPanel;
+            private VisualElement _recoverPasswordPanel;
+        #endregion
+        
+        private DashboardController _dashboardController;
         private UIDocument _dashboardUIDocument;
-        private VisualElement _dashboardBody;
+
+        private void Awake()
+        {
+            GetUiComponents();
+            RegisterEvents();
+            FindObjects();
+        }
 
         
         private void Start()
+        {
+            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            ShowUi();
+        }
+
+        private void GetUiComponents()
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
             _body = root.Q<VisualElement>("Body");
@@ -53,9 +69,10 @@ namespace _Scripts.Controller
             _closeRecoverPasswordButton=root.Q<Button>("CloseRecoverPasswordButton");
             _registerAndLoginButton=root.Q<Button>("RegisterAndLoginButton");
             _recoverPasswordButton=root.Q<Button>("RecoverPasswordButton");
+        }
 
-            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-
+        private void RegisterEvents()
+        {
             _launchButton.RegisterCallback<ClickEvent>(OpenLoginPanel);
             _closeLoginPanelButton.RegisterCallback<ClickEvent>(CloseLoginPanel);
             _exitAppButton.RegisterCallback<ClickEvent>(ExitAplication);
@@ -66,20 +83,16 @@ namespace _Scripts.Controller
             _closeRecoverPasswordButton.RegisterCallback<ClickEvent>(CloseRecoverPasswordPanel);
             _registerAndLoginButton.RegisterCallback<ClickEvent>(RegisterAndLogin);
             _recoverPasswordButton.RegisterCallback<ClickEvent>(RecoverPassword);
-            
             _backToLoginPanelFromRegisterButton.RegisterCallback<ClickEvent>(CloseRegisterPanelAndOpenLoginPanel);
             _backToLoginPanelFromRecoverPasswordButton.RegisterCallback<ClickEvent>(CloseRecoverPasswordPanelAndOpenLoginPanel);
             _loginPanel.RegisterCallback<TransitionEndEvent>(OnLoginPanelTransitionComplete);
             _registerPanel.RegisterCallback<TransitionEndEvent>(OnRegisterTransitionComplete);
             _recoverPasswordPanel.RegisterCallback<TransitionEndEvent>(OnRecoverPasswordTransitionComplete);
-            
-            _body.style.display = DisplayStyle.Flex;
-            
-            
-            _dashboardUIDocument=GameObject.Find("Dashboard").GetComponent<UIDocument>();
-            var dashboardRoot = _dashboardUIDocument.rootVisualElement;
-            _dashboardBody=dashboardRoot.Q<VisualElement>("Body");
-            
+        }
+
+        private void FindObjects()
+        {
+            _dashboardController=GameObject.FindGameObjectWithTag("Dashboard").GetComponent<DashboardController>();
         }
 
         private void RecoverPassword(ClickEvent evt)
@@ -94,7 +107,7 @@ namespace _Scripts.Controller
             // print("se hace el registro y se inicia sesion");
             Authentication(evt);
             _body.style.display = DisplayStyle.None;
-            _dashboardBody.style.display = DisplayStyle.Flex;
+            _dashboardController.ShowUi();
             
         }
 
@@ -103,8 +116,18 @@ namespace _Scripts.Controller
             // todo
             // print("Logica para autentificar e ir al dashboard o mandar error de incio de sesion");
             CloseLoginPanel(evt);
+            HideUi();
+            _dashboardController.ShowUi();
+        }
+
+        internal void ShowUi()
+        {
+            _body.style.display = DisplayStyle.Flex;
+        }
+
+        internal void HideUi()
+        {
             _body.style.display = DisplayStyle.None;
-            _dashboardBody.style.display = DisplayStyle.Flex;
         }
 
         private void OnRecoverPasswordTransitionComplete(TransitionEndEvent evt)

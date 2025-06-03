@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -7,67 +6,68 @@ namespace _Scripts.Controller
 {
     public class DashboardController : MonoBehaviour
     {
-        private static VisualElement _body;
-        private Button _menuButton;
-        private Button _hideMenuButton;
-        private Button _logoutButton;
+        private VisualElement _body;
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private VisualElement _navigationMenuPanel;
         private VisualElement _scrim;
-        private UIDocument _welcomeUIDocumentdocument;
-        private VisualElement _welcomeBody;
+        private Button _menuButton;
+        private Button _hideMenuButton;
+        private Button _logoutButton;
         private Button _operationsButton;
+        private Button _trainingButton;
         
-
+        private WelcomeControllerUI _welcomeController;
+        private DeviceSelectionController _deviceSelectionController;
+        private GameManager _gameManager;
+        
+        
         private void Awake()
         {
-            var root = GetComponent<UIDocument>().rootVisualElement;
-            _body = root.Q<VisualElement>("Body");
-            _menuButton=root.Q<Button>("MenuButton");
-            _menuButton.RegisterCallback<ClickEvent>(ShowMenu);
-            _logoutButton=root.Q<Button>("LogoutButton");
-            _subpanelsAndSmokeMaskContainer=root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
-            
-            _navigationMenuPanel=root.Q<VisualElement>("NavigationMenuPanel");
-            _scrim = root.Q<VisualElement>("Scrim");
-            
-            _hideMenuButton=root.Q<Button>("HideMenuButton");
-            _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
-            _logoutButton.RegisterCallback<ClickEvent>(Logout);
-            
-            _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
-            
-            _welcomeUIDocumentdocument=GameObject.Find("Welcome").GetComponent<UIDocument>();
-            var welcomeRoot = _welcomeUIDocumentdocument.rootVisualElement;
-            _welcomeBody=welcomeRoot.Q<VisualElement>("Body");
-            _operationsButton=root.Q<Button>("OperationsButton");
-            _operationsButton.RegisterCallback<ClickEvent>(StartOperations);
-            
-            _operationsButton=root.Q<Button>("TrainingButton");
-            _operationsButton.RegisterCallback<ClickEvent>(StartTraining);
+            GetUiComponents();
+            RegisterEvents();
+            FindObjects();
         }
-
-        private void StartOperations(ClickEvent evt)
+        
+        private void Start()
+        {
+            HideUi();
+            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+        }
+        internal void ShowUi()
+        {
+            _body.style.display = DisplayStyle.Flex;
+        }
+        internal void HideUi()
         {
             _body.style.display = DisplayStyle.None;
+        }
+        
+        private void StartOperations(ClickEvent evt)
+        {
+            _gameManager.selectedModeUiName = "Devices available for operate";
+            HideUi();
             HideMenu(evt);
-            DeviceSelectionController.ShowUi(); // no debe ser estatico aqui tambien debe ir la logica de la maquina de estados
-
+            _deviceSelectionController.ShowUi(); // no debe ser estatico aqui tambien debe ir la logica de la maquina de estados
+            if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
+            
         }
         
         private void StartTraining(ClickEvent evt)
         {
-            _body.style.display = DisplayStyle.None;
+            _gameManager.selectedModeUiName = "Devices available for learning";
+            HideUi();
             HideMenu(evt);
-            SceneManager.LoadScene("Training"); //borrar solo para pruebas
-            // DeviceSelectionController.ShowUi(); // no debe ser estatico aqui tambien debe ir la logica de la maquina de estados
+            //todo necesito trabajar la maquina de estados para poder seleccionar de forma correcta la seleccion del dispisitivo
+            _deviceSelectionController.ShowUi(); 
+            if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
+            
         }
 
         private void Logout(ClickEvent evt)
         {
             HideMenu(evt);
-            _body.style.display = DisplayStyle.None;
-            _welcomeBody.style.display = DisplayStyle.Flex;
+            HideUi();
+            _welcomeController.ShowUi();
         }
 
         private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
@@ -90,16 +90,38 @@ namespace _Scripts.Controller
             _navigationMenuPanel.AddToClassList("NavigationMenuPanelinMainScreen");
             _scrim.AddToClassList("ScrimOpaque");
         }
-        
-        internal static void ShowUi()
+
+        private void GetUiComponents()
         {
-            _body.style.display = DisplayStyle.Flex;
+            var root = GetComponent<UIDocument>().rootVisualElement;
+            _body = root.Q<VisualElement>("Body");
+            _menuButton=root.Q<Button>("MenuButton");
+            _logoutButton=root.Q<Button>("LogoutButton");
+            _subpanelsAndSmokeMaskContainer=root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+            _navigationMenuPanel=root.Q<VisualElement>("NavigationMenuPanel");
+            _scrim = root.Q<VisualElement>("Scrim");
+            _hideMenuButton=root.Q<Button>("HideMenuButton");
+            _operationsButton=root.Q<Button>("OperationsButton");
+            _trainingButton=root.Q<Button>("TrainingButton");
         }
 
-        private void Start()
+        private void RegisterEvents()
         {
-            _body.style.display = DisplayStyle.None;
-            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            _menuButton.RegisterCallback<ClickEvent>(ShowMenu);
+            _operationsButton.RegisterCallback<ClickEvent>(StartOperations);
+            _trainingButton.RegisterCallback<ClickEvent>(StartTraining);
+            _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
+            _logoutButton.RegisterCallback<ClickEvent>(Logout);
+            _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
         }
+
+        private void FindObjects()
+        {
+            _welcomeController=GameObject.Find("Welcome").GetComponent<WelcomeControllerUI>();
+            _deviceSelectionController=GameObject.Find("DeviceSelection").GetComponent<DeviceSelectionController>();
+            _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        }
+
+
     }
 }

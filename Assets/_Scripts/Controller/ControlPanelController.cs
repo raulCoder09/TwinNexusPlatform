@@ -43,8 +43,8 @@ namespace _Scripts.Controller
         private void Start()
         {
             ShowUI();
-            _menuRobotArscara.value = "Menu environment";
-            _menuEnvironment.value =  "Menu ARSCARA";
+            _menuRobotArscara.value = "Menu ARSCARA";
+            _menuEnvironment.value = "Menu environment" ;
             FindEnvironmentComponents();
 
         }
@@ -152,10 +152,10 @@ namespace _Scripts.Controller
         }
         private void FindEnvironmentComponents()
         {
-            _virtualEnvironment=_gameManager.arscaraInstance.transform.Find("VirtualEnvironment").GetComponent<VirtualEnvironmentController>();
-            _augmentedRealityEnvironment = _gameManager.arscaraInstance.transform.Find("AugmentedRealityEnvironment").GetComponent<AugmentedRealityEnvironmentController>();
-            _hybridEnvironment = _gameManager.arscaraInstance.transform.Find("HybridEnvironment").GetComponent<HybridEnvironmentController>();
-            _realDeviceEnvironment = _gameManager.arscaraInstance.transform.Find("RealDeviceEnvironment").GetComponent<RealDeviceEnvironmentController>();
+            _virtualEnvironment=_gameManager.arscaraOperativeInstance.transform.Find("VirtualEnvironment").GetComponent<VirtualEnvironmentController>();
+            _augmentedRealityEnvironment = _gameManager.arscaraOperativeInstance.transform.Find("AugmentedRealityEnvironment").GetComponent<AugmentedRealityEnvironmentController>();
+            _hybridEnvironment = _gameManager.arscaraOperativeInstance.transform.Find("HybridEnvironment").GetComponent<HybridEnvironmentController>();
+            _realDeviceEnvironment = _gameManager.arscaraOperativeInstance.transform.Find("RealDeviceEnvironment").GetComponent<RealDeviceEnvironmentController>();
         }
         private void LaunchVirtualEnvironment()
         {

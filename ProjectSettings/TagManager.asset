@@ -12,6 +12,14 @@ TagManager:
   - HybridEnvironment
   - RealDeviceEnvironment
   - VirtualEnvironmentCamera
+  - Dashboard
+  - DeviceSelection
+  - Concrete
+  - Graphic
+  - Abstract
+  - Videos
+  - Documents
+  - Infographics
   layers:
   - Default
   - TransparentFX

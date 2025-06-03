@@ -1,5 +1,5 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArsacaraConcrete/ArsacaraConcrete.uss?fileID=7433441132597879392&amp;guid=335b187c35e1042e2a9341d6c85b40a8&amp;type=3#ArsacaraConcrete" />
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArscaraLearning/Concrete.uss?fileID=7433441132597879392&amp;guid=61c3c52e703d041e6b814d086c5cef38&amp;type=3#Concrete" />
     <ui:VisualElement name="Body" style="flex-grow: 1; background-color: rgb(0, 0, 0);">
         <ui:VisualElement name="Header" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
             <ui:VisualElement style="flex-grow: 1; width: 10%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
@@ -10,26 +10,50 @@
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 30%; height: 100%;" />
             <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 30%; height: 100%;">
-                <ui:DropdownField choices="Menu ARSCARA,Control panel,Jog and teach,Points" name="MenuRobotARSCARADropdownField" style="width: 80%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
+                <ui:DropdownField choices="MEDARA Level,Concrete,Graphic,Abstract" name="MenuLevelMedaraDropdownField" style="width: 80%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Main" style="flex-grow: 1; width: 100%; height: 80%; flex-direction: row;">
-            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
-                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%;" />
-                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%;" />
-                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%;" />
+            <ui:VisualElement style="flex-grow: 1; width: 26%; height: 100%;">
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; -unity-text-align: upper-left; justify-content: space-evenly; align-items: flex-end;">
+                    <ui:RadioButton label="Direct kinematics" name="DirectKinematicsRadioButton" style="color: rgb(3, 255, 0); font-size: 25px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
+                    <ui:RadioButton label="Inverse kinematics" name="InverseKinematicsRadioButton" style="color: rgb(3, 255, 0); font-size: 25px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; align-items: flex-end; justify-content: space-evenly;">
+                    <ui:RadioButton label="Geometric Method" name="GeometricMethodRadioButton" style="color: rgb(3, 255, 0); font-size: 25px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                    <ui:RadioButton label="Homogeneous Transformation Matrix Method" name="HomogeneousTransformationMatrixMethodRadioButton" style="color: rgb(3, 255, 0); font-size: 25px; flex-wrap: nowrap; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                    <ui:RadioButton label="Denavit-Hartenberg Algorithm" name="DenavitHartenbergAlgorithmRadioButton" style="color: rgb(3, 255, 0); font-size: 25px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                    <ui:RadioButton label="Quaternial Method" name="QuaternialMethodRadioButton" style="color: rgb(3, 255, 0); font-size: 25px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; justify-content: space-evenly; align-items: flex-end;">
+                    <ui:Label text="Length of link 1 : 100 mm" name="LengthOfLink1Label" style="color: rgb(3, 255, 0); font-size: 30px; -unity-text-align: upper-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
+                    <ui:Label text="Length of link 2 : 100 mm" name="LengthOfLink2Label" style="color: rgb(3, 255, 0); font-size: 30px; -unity-text-align: upper-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
+                    <ui:Label text="Length of link 3 : 100 mm" name="LengthOfLink3Label" style="color: rgb(3, 255, 0); font-size: 30px; -unity-text-align: upper-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%;" />
+            <ui:VisualElement style="flex-grow: 1; width: 54%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                <ui:Label text="Select Environment or MEDARA level" name="InitialMessageLabel" style="color: rgb(3, 255, 0); font-size: 50px;" />
+            </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
-                <ui:VisualElement style="flex-grow: 1;" />
-                <ui:VisualElement style="flex-grow: 1; align-items: flex-end;" />
-                <ui:VisualElement style="flex-grow: 1;" />
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; align-items: stretch; justify-content: space-evenly;">
+                    <ui:Slider label="Angle-Q1" value="50" high-value="100" name="AngleQ1Slider" style="color: rgb(3, 255, 0); font-size: 25px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                    <ui:Slider label="Angle-Q2" value="50" high-value="100" name="AngleQ2Slider" style="color: rgb(3, 255, 0); font-size: 25px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                    <ui:Slider label="Displacement-D3" value="50" high-value="100" name="DisplacementD3Slider" style="color: rgb(3, 255, 0); font-size: 25px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%;" />
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; align-items: center; justify-content: space-evenly;">
+                    <ui:Label text="X = 0.00 mm" name="xCoordinateLabel" style="color: rgb(3, 255, 0); font-size: 30px; -unity-text-align: upper-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                    <ui:Label text="Y = 0.00 mm" name="yCoordinateLabel" style="color: rgb(3, 255, 0); font-size: 30px; -unity-text-align: upper-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                    <ui:Label text="Z = 0.00 mm" name="zCoordinateLabel" style="color: rgb(3, 255, 0); font-size: 30px; -unity-text-align: upper-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); display: none;" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Footer" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
             <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-evenly; width: 20%; height: 100%; align-items: center; align-self: center; align-content: center;" />
-            <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%; align-items: center; justify-content: center;">
-                <ui:DropdownField choices="Select view,Top,Front,Back,Left,Right" name="Views" style="width: 25%; height: 50%; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(12, 53, 17); font-size: 30px;" />
+            <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%; align-items: center; justify-content: space-evenly; flex-direction: row;">
+                <ui:Button text="Stop" name="StartButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); color: rgb(3, 255, 0); font-size: 30px;" />
+                <ui:Button text="Pause" name="StartButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); color: rgb(3, 255, 0); font-size: 30px;" />
+                <ui:Button text="Start" name="StartButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); color: rgb(3, 255, 0); font-size: 30px;" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 20%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;" />
         </ui:VisualElement>
