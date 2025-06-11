@@ -6,8 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Prefabs/ARSCARA.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Prefabs/ARSCARA.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Prefabs/ArscaraDevice/ArscaraTraining.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Prefabs/ArscaraDevice/ArscaraTraining.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/ConcreteController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/ConcreteController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/GameManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/DirectKinematics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/DirectKinematics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/ARSCARA/ControlPanel/ControlPanel.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/ARSCARA/ControlPanel/ControlPanel.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/ARSCARA/JogAndTeach/JogAndTeach.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/ARSCARA/JogAndTeach/JogAndTeach.uxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArscaraLearning/Concrete.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArscaraLearning/Concrete.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +54,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.39784947&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/refactorCode&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/MedaraMoveLinks&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -146,6 +157,7 @@
       <workItem from="1747993237537" duration="9726000" />
       <workItem from="1748328260626" duration="5298000" />
       <workItem from="1748949837263" duration="2592000" />
+      <workItem from="1748962008582" duration="19039000" />
     </task>
     <servers />
   </component>

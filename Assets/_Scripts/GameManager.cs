@@ -24,6 +24,7 @@ namespace _Scripts
         private GameObject _arscaraTrainingInstance;
         private GameObject _robotKit1Instance;
         private GameObject _robotKit2Instance;
+        
 
         public GameObject arscaraTrainingInstance
         {

@@ -66,5 +66,28 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4717124911068610711, guid: 9ed3affaa93164d09862b4855a8ecfc0,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 525986845182539213}
   m_SourcePrefab: {fileID: 100100000, guid: 9ed3affaa93164d09862b4855a8ecfc0, type: 3}
+--- !u!1 &7517246251374398390 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4717124911068610711, guid: 9ed3affaa93164d09862b4855a8ecfc0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2964502967529163553}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &525986845182539213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517246251374398390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c1a6ef90c21c4cc5b756d2e94f9bf40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controller.LinkController
+  link: {fileID: 7517246251374398390}

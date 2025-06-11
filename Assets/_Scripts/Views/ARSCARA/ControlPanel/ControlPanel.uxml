@@ -43,6 +43,7 @@
                     <ui:Toggle label="J1" style="color: rgb(3, 255, 0); -unity-text-align: upper-right; font-size: 30px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
                     <ui:Toggle label="J2" style="color: rgb(3, 255, 0); -unity-text-align: upper-right; font-size: 30px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
                     <ui:Toggle label="J3" style="color: rgb(3, 255, 0); -unity-text-align: upper-right; font-size: 30px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
+                    <ui:Toggle label="J4" style="color: rgb(3, 255, 0); -unity-text-align: upper-right; font-size: 30px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;);" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

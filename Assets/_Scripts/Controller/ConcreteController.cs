@@ -7,6 +7,8 @@ namespace _Scripts.Controller
     public class ConcreteController : MonoBehaviour
     {
         private VisualElement _body;
+        private VisualElement _main;
+        private VisualElement _footer;
         private DropdownField _menuEnvironment;
         private DropdownField _menuLevelMedara;
         private GameManager _gameManager;
@@ -14,16 +16,53 @@ namespace _Scripts.Controller
         private RadioButton _directKinematicsRadioButton;
         private RadioButton _geometricMethodRadioButton;
         private RadioButton _homogeneousTransformationMatrixMethodRadioButton;
+
+        private RadioButton _inverseKinematicsRadioButton;
         private RadioButton _denavitHartenbergAlgorithmRadioButton;
         private RadioButton _quaternialMethodRadioButton;
+
+
+        private RadioButton _ikGeometricMethod;
+        private RadioButton _ikHomogeneousMatrixDecomposition;
+        private RadioButton _ikKinematicDecoupling;
+        private RadioButton _ikNumericalMethods;
+        
+        
+        
         private Slider _angleQ1Slider;
         private Slider _angleQ2Slider;
         private Slider _displacementD3Slider;
+        private Slider _angleQ4Slider;
 
         private Label _xCoordinateLabel;
         private Label _yCoordinateLabel;
         private Label _zCoordinateLabel;
+
+        private Label _lengthOfLink1Label;
+
+        internal Label lengthOfLink1Label
+        {
+            get => _lengthOfLink1Label;
+            set => _lengthOfLink1Label = value;
+        }
+
+        internal Label lengthOfLink2Label
+        {
+            get => _lengthOfLink2Label;
+            set => _lengthOfLink2Label = value;
+        }
+
+        internal Label lengthOfLink3Label
+        {
+            get => _lengthOfLink3Label;
+            set => _lengthOfLink3Label = value;
+        }
+
+        private Label _lengthOfLink2Label;
+        private Label _lengthOfLink3Label;
         
+        
+        private Label _helperMessageLabel;
         
         private VirtualEnvironmentController _virtualEnvironment;
         private AugmentedRealityEnvironmentController _augmentedRealityEnvironment;
@@ -31,6 +70,9 @@ namespace _Scripts.Controller
         private RealDeviceEnvironmentController _realDeviceEnvironment;
         
 
+        private bool _isDkMethodSelected;
+        private bool _isIkMethodSelected;
+        
         private GraphicController _graphic;
         private AbstractController _abstract;
         private void Awake()
@@ -48,7 +90,19 @@ namespace _Scripts.Controller
             FindEnvironmentComponents();
             _menuEnvironment.value ="Menu environment" ;
             _menuLevelMedara.value ="MEDARA Level" ;
+            _main.style.display = DisplayStyle.None;
+            _footer.style.display = DisplayStyle.None;
+            _menuEnvironment.style.display = DisplayStyle.None;
+            _directKinematicsRadioButton.style.display = DisplayStyle.None;
+            _inverseKinematicsRadioButton.style.display = DisplayStyle.None;
+            _lengthOfLink1Label.style.display = DisplayStyle.None;
+            _lengthOfLink2Label.style.display = DisplayStyle.None;
+            _lengthOfLink3Label.style.display = DisplayStyle.None;
+            _helperMessageLabel.style.display = DisplayStyle.None;
+            _menuEnvironment.style.height = 60;
+            _menuLevelMedara.style.height = 60;
         }
+        
 
         private void FindEnvironmentComponents()
         {
@@ -58,6 +112,7 @@ namespace _Scripts.Controller
             _realDeviceEnvironment = _gameManager.arscaraTrainingInstance.transform.Find("Concrete/RealDeviceEnvironment").GetComponent<RealDeviceEnvironmentController>();
             _graphic=_gameManager.arscaraTrainingInstance.transform.Find("Graphic").GetComponent<GraphicController>();
             _abstract=_gameManager.arscaraTrainingInstance.transform.Find("Abstract").GetComponent<AbstractController>();
+            
         }
         
         private void FindObjects()
@@ -67,24 +122,211 @@ namespace _Scripts.Controller
 
         private void RegisterEvents()
         {
-            _menuEnvironment.RegisterValueChangedCallback(evt =>
-            {
-                SelectEnvironment(evt.newValue);
-            });
-            
-            _menuLevelMedara.RegisterValueChangedCallback(evt =>
-            {
-                SelectMedaraLevel(evt.newValue);
-            });
+            _menuEnvironment.RegisterValueChangedCallback(evt => SelectEnvironment(evt.newValue));
+            _menuLevelMedara.RegisterValueChangedCallback(evt => SelectMedaraLevel(evt.newValue));
+
             _directKinematicsRadioButton.RegisterValueChangedCallback(evt =>
             {
-                EnableMethotsDirectKinematics(evt.newValue);
-
+                if (evt.newValue)
+                {
+                    _inverseKinematicsRadioButton.value = false;
+                    _isIkMethodSelected = false;
+                    EnableMethodsInverseKinematics(false);
+                    EnableMethodsDirectKinematics(true);
+                }
+                else
+                {
+                    EnableMethodsDirectKinematics(_isDkMethodSelected);
+                }
             });
 
+    _inverseKinematicsRadioButton.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _directKinematicsRadioButton.value = false;
+            _isDkMethodSelected = false;
+            EnableMethodsDirectKinematics(false);
+            EnableMethodsInverseKinematics(true);
+        }
+        else
+        {
+            EnableMethodsInverseKinematics(_isIkMethodSelected);
+        }
+    });
+
+    _geometricMethodRadioButton.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _isDkMethodSelected = true;
+            _homogeneousTransformationMatrixMethodRadioButton.value = false;
+            _denavitHartenbergAlgorithmRadioButton.value = false;
+            _quaternialMethodRadioButton.value = false;
+            EnableMethodsDirectKinematics(true);
+        }
+        else if (!_homogeneousTransformationMatrixMethodRadioButton.value &&
+                 !_denavitHartenbergAlgorithmRadioButton.value &&
+                 !_quaternialMethodRadioButton.value)
+        {
+            _isDkMethodSelected = false;
+            EnableMethodsDirectKinematics(_directKinematicsRadioButton.value);
+        }
+    });
+
+    _homogeneousTransformationMatrixMethodRadioButton.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _isDkMethodSelected = true;
+            _geometricMethodRadioButton.value = false;
+            _denavitHartenbergAlgorithmRadioButton.value = false;
+            _quaternialMethodRadioButton.value = false;
+            EnableMethodsDirectKinematics(true);
+        }
+        else if (!_geometricMethodRadioButton.value &&
+                 !_denavitHartenbergAlgorithmRadioButton.value &&
+                 !_quaternialMethodRadioButton.value)
+        {
+            _isDkMethodSelected = false;
+            EnableMethodsDirectKinematics(_directKinematicsRadioButton.value);
+        }
+    });
+
+    _denavitHartenbergAlgorithmRadioButton.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _isDkMethodSelected = true;
+            _geometricMethodRadioButton.value = false;
+            _homogeneousTransformationMatrixMethodRadioButton.value = false;
+            _quaternialMethodRadioButton.value = false;
+            EnableMethodsDirectKinematics(true);
+        }
+        else if (!_geometricMethodRadioButton.value &&
+                 !_homogeneousTransformationMatrixMethodRadioButton.value &&
+                 !_quaternialMethodRadioButton.value)
+        {
+            _isDkMethodSelected = false;
+            EnableMethodsDirectKinematics(_directKinematicsRadioButton.value);
+        }
+    });
+
+    _quaternialMethodRadioButton.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _isDkMethodSelected = true;
+            _geometricMethodRadioButton.value = false;
+            _homogeneousTransformationMatrixMethodRadioButton.value = false;
+            _denavitHartenbergAlgorithmRadioButton.value = false;
+            EnableMethodsDirectKinematics(true);
+        }
+        else if (!_geometricMethodRadioButton.value &&
+                 !_homogeneousTransformationMatrixMethodRadioButton.value &&
+                 !_denavitHartenbergAlgorithmRadioButton.value)
+        {
+            _isDkMethodSelected = false;
+            EnableMethodsDirectKinematics(_directKinematicsRadioButton.value);
+        }
+    });
+
+    _ikGeometricMethod.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _isIkMethodSelected = true;
+            _ikHomogeneousMatrixDecomposition.value = false;
+            _ikKinematicDecoupling.value = false;
+            _ikNumericalMethods.value = false;
+            EnableMethodsInverseKinematics(true);
+        }
+        else if (!_ikHomogeneousMatrixDecomposition.value &&
+                 !_ikKinematicDecoupling.value &&
+                 !_ikNumericalMethods.value)
+        {
+            _isIkMethodSelected = false;
+            EnableMethodsInverseKinematics(_inverseKinematicsRadioButton.value);
+        }
+    });
+
+    _ikHomogeneousMatrixDecomposition.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _isIkMethodSelected = true;
+            _ikGeometricMethod.value = false;
+            _ikKinematicDecoupling.value = false;
+            _ikNumericalMethods.value = false;
+            EnableMethodsInverseKinematics(true);
+        }
+        else if (!_ikGeometricMethod.value &&
+                 !_ikKinematicDecoupling.value &&
+                 !_ikNumericalMethods.value)
+        {
+            _isIkMethodSelected = false;
+            EnableMethodsInverseKinematics(_inverseKinematicsRadioButton.value);
+        }
+    });
+
+    _ikKinematicDecoupling.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _isIkMethodSelected = true;
+            _ikGeometricMethod.value = false;
+            _ikHomogeneousMatrixDecomposition.value = false;
+            _ikNumericalMethods.value = false;
+            EnableMethodsInverseKinematics(true);
+        }
+        else if (!_ikGeometricMethod.value &&
+                 !_ikHomogeneousMatrixDecomposition.value &&
+                 !_ikNumericalMethods.value)
+        {
+            _isIkMethodSelected = false;
+            EnableMethodsInverseKinematics(_inverseKinematicsRadioButton.value);
+        }
+    });
+
+    _ikNumericalMethods.RegisterValueChangedCallback(evt =>
+    {
+        if (evt.newValue)
+        {
+            _isIkMethodSelected = true;
+            _ikGeometricMethod.value = false;
+            _ikHomogeneousMatrixDecomposition.value = false;
+            _ikKinematicDecoupling.value = false;
+            EnableMethodsInverseKinematics(true);
+        }
+        else if (!_ikGeometricMethod.value &&
+                 !_ikHomogeneousMatrixDecomposition.value &&
+                 !_ikKinematicDecoupling.value)
+        {
+            _isIkMethodSelected = false;
+            EnableMethodsInverseKinematics(_inverseKinematicsRadioButton.value);
+        }
+    });
+}
+
+        private void EnableMethodsInverseKinematics(bool evtNewValue)
+        {
+            if (evtNewValue)
+            {
+                _ikGeometricMethod.style.display = DisplayStyle.Flex;
+                _ikHomogeneousMatrixDecomposition.style.display = DisplayStyle.Flex;
+                _ikKinematicDecoupling.style.display = DisplayStyle.Flex;
+                _ikNumericalMethods.style.display = DisplayStyle.Flex;
+            }
+            else
+            {
+                _ikGeometricMethod.style.display = DisplayStyle.None;
+                _ikHomogeneousMatrixDecomposition.style.display = DisplayStyle.None;
+                _ikKinematicDecoupling.style.display = DisplayStyle.None;
+                _ikNumericalMethods.style.display = DisplayStyle.None;
+            }
         }
 
-        private void EnableMethotsDirectKinematics(bool evtNewValue)
+        private void EnableMethodsDirectKinematics(bool evtNewValue)
         {
             if (evtNewValue)
             {
@@ -95,6 +337,7 @@ namespace _Scripts.Controller
                 _angleQ1Slider.style.display =DisplayStyle.Flex;
                 _angleQ2Slider.style.display =DisplayStyle.Flex;
                 _displacementD3Slider.style.display =DisplayStyle.Flex;
+                _angleQ4Slider.style.display =DisplayStyle.Flex;
                 _xCoordinateLabel.style.display =DisplayStyle.Flex;
                 _yCoordinateLabel.style.display =DisplayStyle.Flex;
                 _zCoordinateLabel.style.display =DisplayStyle.Flex;
@@ -111,30 +354,41 @@ namespace _Scripts.Controller
                 _xCoordinateLabel.style.display =DisplayStyle.None;
                 _yCoordinateLabel.style.display =DisplayStyle.None;
                 _zCoordinateLabel.style.display =DisplayStyle.None;
+                _angleQ4Slider.style.display =DisplayStyle.None;
             }
         }
 
         private void SelectMedaraLevel(string selectMedaraLevel)
         {
-            print(selectMedaraLevel);
             switch (selectMedaraLevel)
             {
                 case "Graphic":
+                    _initialMessageLabel.style.display = DisplayStyle.None;
+                    _helperMessageLabel.style.display = DisplayStyle.Flex;
                     _graphic.EnableLevel();
                     _abstract.DisableLevel();
                     DisableLevel();
                     break;
                 case "Abstract":
+                    _initialMessageLabel.style.display = DisplayStyle.None;
+                    _helperMessageLabel.style.display = DisplayStyle.Flex;
                     _graphic.DisableLevel();
                     _abstract.EnableLevel();
                     DisableLevel();
                     break;
                 case "Concrete":
+                    _initialMessageLabel.style.display = DisplayStyle.None;
+                    _helperMessageLabel.style.display = DisplayStyle.Flex;
                     _graphic.DisableLevel();
                     _abstract.DisableLevel();
+                    _menuEnvironment.style.display = DisplayStyle.Flex;
+                    _main.style.display = DisplayStyle.Flex;
+                    _directKinematicsRadioButton.style.display = DisplayStyle.Flex;
+                    _inverseKinematicsRadioButton.style.display = DisplayStyle.Flex;
+                    _lengthOfLink1Label.style.display = DisplayStyle.Flex;
+                    _lengthOfLink2Label.style.display = DisplayStyle.Flex;
+                    _lengthOfLink3Label.style.display = DisplayStyle.Flex;
                     EnableLevel();
-                    break;
-                default:
                     break;
             }
         }
@@ -145,18 +399,20 @@ namespace _Scripts.Controller
             {
                 
                 case "Virtual  environment":
+                    _helperMessageLabel.style.display = DisplayStyle.None;
                     LaunchVirtualEnvironment();
                     break;
                 case "Augmented reality environment":
+                    _helperMessageLabel.style.display = DisplayStyle.None;
                     LaunchAugmentedRealityEnvironment();
                     break;
                 case "Hybrid environment":
+                    _helperMessageLabel.style.display = DisplayStyle.None;
                     LaunchHybridEnvironment();
                     break;
                 case "Real device environment":
+                    _helperMessageLabel.style.display = DisplayStyle.None;
                     LaunchRealDeviceEnvironment();
-                    break;
-                default:
                     break;
             }
         }
@@ -165,20 +421,33 @@ namespace _Scripts.Controller
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
             _body = root.Q<VisualElement>("Body");
+            _main=root.Q<VisualElement>("Main");
             _menuEnvironment = root.Q<DropdownField>("MenuEnvironmentDropdownField");
             _menuLevelMedara= root.Q<DropdownField>("MenuLevelMedaraDropdownField");
             _initialMessageLabel = root.Q<Label>("InitialMessageLabel");
             _directKinematicsRadioButton= root.Q<RadioButton>("DirectKinematicsRadioButton");
-            _geometricMethodRadioButton= root.Q<RadioButton>("GeometricMethodRadioButton");
-            _homogeneousTransformationMatrixMethodRadioButton= root.Q<RadioButton>("HomogeneousTransformationMatrixMethodRadioButton");
-            _denavitHartenbergAlgorithmRadioButton= root.Q<RadioButton>("DenavitHartenbergAlgorithmRadioButton");
-            _quaternialMethodRadioButton= root.Q<RadioButton>("QuaternialMethodRadioButton");
+            _inverseKinematicsRadioButton= root.Q<RadioButton>("InverseKinematicsRadioButton");
+            _geometricMethodRadioButton= root.Q<RadioButton>("DKGeometricMethodRadioButton");
+            _homogeneousTransformationMatrixMethodRadioButton= root.Q<RadioButton>("DKHomogeneousTransformationMatrixMethodRadioButton");
+            _denavitHartenbergAlgorithmRadioButton= root.Q<RadioButton>("DKDenavitHartenbergAlgorithmRadioButton");
+            _quaternialMethodRadioButton= root.Q<RadioButton>("DKQuaternialMethodRadioButton");
             _angleQ1Slider=root.Q<Slider>("AngleQ1Slider");
             _angleQ2Slider=root.Q<Slider>("AngleQ2Slider");
             _displacementD3Slider=root.Q<Slider>("DisplacementD3Slider");
+            _angleQ4Slider=root.Q<Slider>("AngleQ4Slider");
             _xCoordinateLabel=root.Q<Label>("xCoordinateLabel");
             _yCoordinateLabel=root.Q<Label>("yCoordinateLabel");
             _zCoordinateLabel=root.Q<Label>("zCoordinateLabel");
+            _ikGeometricMethod = root.Q<RadioButton>("IKGeometricMethod");
+            _ikHomogeneousMatrixDecomposition= root.Q<RadioButton>("IKHomogeneousMatrixDecomposition");
+            _ikKinematicDecoupling= root.Q<RadioButton>("IKKinematicDecoupling");
+            _ikNumericalMethods= root.Q<RadioButton>("IKNumericalMethods");
+            _footer=root.Q<VisualElement>("Footer");
+            
+            _lengthOfLink1Label=root.Q<Label>("LengthOfLink1Label");
+            _lengthOfLink2Label=root.Q<Label>("LengthOfLink2Label");
+            _lengthOfLink3Label=root.Q<Label>("LengthOfLink3Label");
+            _helperMessageLabel=root.Q<Label>("HelperMessageLabel");
         }
         
         private void LaunchRealDeviceEnvironment()
@@ -213,7 +482,6 @@ namespace _Scripts.Controller
 
         private void LaunchVirtualEnvironment()
         {
-            _initialMessageLabel.style.display = DisplayStyle.None;
             _body.style.backgroundColor = new Color(0, 0, 0, 0);
             _virtualEnvironment.EnableEnvironment();
             _augmentedRealityEnvironment.DisableEnvironment();

@@ -173,7 +173,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -181,6 +180,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &568156021503826166
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,9 +190,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7602888584682768673}
+  - component: {fileID: 3327591440281344039}
   m_Layer: 0
   m_Name: ArscaraTraining
-  m_TagString: Untagged
+  m_TagString: ArscaraTraining
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -216,6 +217,18 @@ Transform:
   - {fileID: 1177151082341438399}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3327591440281344039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568156021503826166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3afc02614afb4a0dad623b9ebee2248f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.DirectKinematics
 --- !u!1 &1344946922460798803
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,17 +339,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 3
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
   m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &3382676670514411447
 GameObject:
   m_ObjectHideFlags: 0
@@ -387,9 +406,13 @@ MonoBehaviour:
   sourceAsset: {fileID: 9197481963319205126, guid: be51a35eb033541c5ae53bfeaba5376d,
     type: 3}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!114 &8027911896582314581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,9 +474,13 @@ MonoBehaviour:
   sourceAsset: {fileID: 9197481963319205126, guid: 7c35e7b674b24439eb9fab512b62be82,
     type: 3}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!1 &4267661392481891553
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,9 +626,13 @@ MonoBehaviour:
   sourceAsset: {fileID: 9197481963319205126, guid: b6c510728118f4e138c73d5acf90632d,
     type: 3}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!114 &6003997005764867749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,9 +694,13 @@ MonoBehaviour:
   sourceAsset: {fileID: 9197481963319205126, guid: 30697725520074711adf86aa7adb30ea,
     type: 3}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!1 &8306459462003871930
 GameObject:
   m_ObjectHideFlags: 0
@@ -759,9 +794,13 @@ MonoBehaviour:
   sourceAsset: {fileID: 9197481963319205126, guid: 6f4c493faf456440fb75533b9a8816b5,
     type: 3}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!1 &8889702716597399036
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,9 +850,13 @@ MonoBehaviour:
   sourceAsset: {fileID: 9197481963319205126, guid: ff241ceaa2d0441dab3b56ac78061a96,
     type: 3}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!1 &9025417653656992433
 GameObject:
   m_ObjectHideFlags: 0
@@ -867,9 +910,13 @@ MonoBehaviour:
   sourceAsset: {fileID: 9197481963319205126, guid: 7905eda2ad969497a92ea071aaa08b4f,
     type: 3}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!114 &7014152410538496783
 MonoBehaviour:
   m_ObjectHideFlags: 0

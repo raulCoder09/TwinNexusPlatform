@@ -20,6 +20,7 @@ TagManager:
   - Videos
   - Documents
   - Infographics
+  - ArscaraTraining
   layers:
   - Default
   - TransparentFX
