@@ -24,8 +24,9 @@
                         <ui:TextField placeholder-text="Client ID" name="ClientIDTextField" style="width: 50%;" />
                     </ui:VisualElement>
                     <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 50%; height: 100%;">
-                        <ui:DropdownField choices="Connection type,Not safe (1883),Safe (8883)" name="ConnectionTypeDropdownField" style="width: 50%;" />
-                        <ui:DropdownField choices="Mode connection,Automatic connection,Manual connection" name="ModeConnectionDropdownField" style="width: 50%;" />
+                        <ui:DropdownField choices="Protocol communication,MQTT,Sokets" name="ProtocolCommunicationDropdownField" style="width: 80%;" />
+                        <ui:DropdownField choices="Connection type,Not safe (1883),Safe (8883)" name="ConnectionTypeDropdownField" style="width: 80%;" />
+                        <ui:DropdownField choices="Mode connection,Automatic connection,Manual connection" name="ModeConnectionDropdownField" style="width: 80%;" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 100%; height: 33%;">
