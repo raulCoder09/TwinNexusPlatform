@@ -1,0 +1,87 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/IoT/IoT.uss?fileID=7433441132597879392&amp;guid=7475b0e30c98d46b18e4925aeec13a17&amp;type=3#IoT" />
+    <ui:VisualElement name="Body" style="flex-grow: 1; background-image: none; background-color: rgb(0, 0, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0);">
+        <ui:VisualElement name="Header" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
+            <ui:VisualElement name="MenuPanel" style="flex-grow: 1; width: 25%; height: 100%; align-items: center;">
+                <ui:Button name="MenuButton" text="Menu" style="height: 100%; width: 50%; background-image: none; background-color: rgba(0, 0, 0, 0); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; translate: 0 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="PonerAlgo" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
+                <ui:Label name="SpareLabel0" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="UsernamePanel" style="flex-grow: 1; width: 25%; height: 100%; -unity-text-align: upper-left; justify-content: center;">
+                <ui:Label name="Username" style="-unity-font-style: bold; -unity-text-outline-color: rgba(0, 0, 0, 0); color: rgb(255, 255, 255); -unity-text-align: middle-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;); font-size: 30px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="LogoutPanel" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
+                <ui:Label name="Logout" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; font-size: 30px; -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;);" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Main" style="flex-grow: 1; width: 100%; height: 80%; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
+            <ui:VisualElement name="LocalIoT" style="flex-grow: 1; flex-direction: column; width: 50%; height: 80%;">
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 33%;">
+                    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-content: center; width: 50%; height: 100%;">
+                        <ui:TextField placeholder-text="IP or hostname" name="IPOrHostnameTextField" style="width: 50%;" />
+                        <ui:TextField placeholder-text="Port" name="PortTextField" style="width: 50%;" />
+                        <ui:TextField placeholder-text="Client ID" name="ClientIDTextField" style="width: 50%;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 50%; height: 100%;">
+                        <ui:DropdownField choices="Connection type,Not safe (1883),Safe (8883)" name="ConnectionTypeDropdownField" style="width: 50%;" />
+                        <ui:DropdownField choices="Mode connection,Automatic connection,Manual connection" name="ModeConnectionDropdownField" style="width: 50%;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 100%; height: 33%;">
+                    <ui:TextField placeholder-text="Username" name="UsernameTextField" style="width: 50%;" />
+                    <ui:TextField placeholder-text="Password" name="PasswordTextField" style="width: 50%;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                    <ui:Button text="Test" name="TestLocalButton" style="width: 20%;" />
+                    <ui:Button text="Connect" name="ConnectLocalButton" style="width: 20%;" />
+                    <ui:Button text="Disconnect" name="DisconnectLocalButton" style="width: 20%;" />
+                    <ui:Label text="Stauts: Offline" name="StatusLocalLabel" style="width: 20%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="CloudIoT" style="flex-grow: 1; width: 50%; height: 80%;">
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 11%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                    <ui:DropdownField choices="Select cloud,AWS IoT core,Azure IoT hub" name="SelectCloudDropdownField" style="width: 50%;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 11%; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
+                    <ui:TextField placeholder-text="Endpoint" name="EndpointTextField" style="width: 50%;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 11%; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
+                    <ui:TextField placeholder-text="Certificate" name="CertificateTextField" style="width: 50%;" />
+                    <ui:Button text="Browse" name="BrowseCertificateButton" style="width: 20%;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 11%; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
+                    <ui:TextField placeholder-text="Private Key" name="PrivateKeyTextField" style="height: 39px; width: 50%;" />
+                    <ui:Button text="Browse" name="BrowsePrivateKeyButton" style="width: 20%;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 11%; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
+                    <ui:TextField placeholder-text="CA Certificate" name="CACertificateTextField" style="width: 50%;" />
+                    <ui:Button text="Browse" name="BrowseCACertificateButton" style="width: 20%;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 11%; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
+                    <ui:TextField placeholder-text="Client ID" name="ClientID" style="width: 50%;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 11%; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
+                    <ui:Button text="Test" name="TestCloudButton" style="width: 20%;" />
+                    <ui:Button text="Connect" name="ConnectCloudButton" style="width: 20%;" />
+                    <ui:Button text="Disconnect" name="DisconnectCloudButton" style="width: 20%;" />
+                    <ui:Label text="Stauts: Offline" name="StatusCloudLabel" style="color: rgb(4, 201, 0); -unity-text-align: middle-center; font-size: 30px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); width: 20%;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Footer" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
+            <ui:VisualElement name="SparePanel0" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
+                <ui:Label name="SpareLabel0" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel1" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
+                <ui:Label name="SpareLabel1" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel2" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
+                <ui:Label name="SpareLabel2" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel3" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
+                <ui:Label name="SpareLabel3" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

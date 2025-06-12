@@ -21,6 +21,9 @@ TagManager:
   - Documents
   - Infographics
   - ArscaraTraining
+  - Welcome
+  - Settings
+  - IoT
   layers:
   - Default
   - TransparentFX
