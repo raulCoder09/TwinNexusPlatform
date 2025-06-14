@@ -39,20 +39,11 @@ namespace _Scripts.Models
             _client.ConnectedAsync += async e =>
             {
                 Debug.Log("Conectado al broker MQTT en " + _brokerAddress);
-                await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic(_subscribeTopic).Build());
-                Debug.Log("Suscrito al tema: " + _subscribeTopic);
             };
             
             _client.DisconnectedAsync += async e =>
             {
                 Debug.Log("Desconectado del broker MQTT");
-            };
-
-            _client.ApplicationMessageReceivedAsync += e =>
-            {
-                string message = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                Debug.Log("Mensaje recibido en " + e.ApplicationMessage.Topic + ": " + message);
-                return Task.CompletedTask;
             };
 
             try
