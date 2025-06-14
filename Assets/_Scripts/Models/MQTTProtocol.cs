@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace _Scripts.Models
 {
+
     public class MQTTProtocol : MonoBehaviour
     {
         private IMqttClient _mqttClient;
