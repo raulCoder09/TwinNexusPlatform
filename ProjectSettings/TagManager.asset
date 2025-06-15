@@ -24,6 +24,7 @@ TagManager:
   - Welcome
   - Settings
   - IoT
+  - MQTTProtocol
   layers:
   - Default
   - TransparentFX

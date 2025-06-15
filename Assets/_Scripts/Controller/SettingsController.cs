@@ -39,7 +39,7 @@ namespace _Scripts.Controller
             _ioTButton.RegisterCallback<ClickEvent>(_ =>
             {
                 HideUi();
-                // _ioTController.ShowUi();
+                _ioTController.ShowUi();
             }  );
         }
 

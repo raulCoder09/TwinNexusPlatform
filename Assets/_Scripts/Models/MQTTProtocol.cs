@@ -8,27 +8,56 @@ namespace _Scripts.Models
 {
     public class MQTTProtocol : MonoBehaviour
     {
-        // Fábrica para crear el cliente MQTT
         private MqttFactory _factory;
         
         private IMqttClient _client;
         
-        private string _brokerAddress = "192.168.8.94"; // IP del broker
+        private string _brokerAddress;
         
-        private int _brokerPort = 1883; // Puerto estándar de MQTT
+        private int _brokerPort; 
         
-        private string _username = "ruloCoder09"; // Usuario configurado en Mosquitto
+        private string _username;
         
-        private string _password = "5859"; // Contraseña del usuario
+        private string _password;
         
-        private string _clientId = "UnityClient"; // ID del cliente en Unity
-        
-        private string _subscribeTopic = "test/topic"; // Tema para suscribirse
-        
-        private async Task ConnectToBroker()
+        private string _clientId;
+
+        internal string brokerAddress
+        {
+            get => _brokerAddress;
+            set => _brokerAddress = value;
+        }
+
+        internal int brokerPort
+        {
+            get => _brokerPort;
+            set => _brokerPort = value;
+        }
+
+        internal string username
+        {
+            get => _username;
+            set => _username = value;
+        }
+
+        internal string password
+        {
+            get => _password;
+            set => _password = value;
+        }
+
+        internal string clientId
+        {
+            get => _clientId;
+            set => _clientId = value;
+        }
+
+
+        internal async Task<bool> ConnectToBroker()
         {
             _factory = new MqttFactory();
             _client = _factory.CreateMqttClient();
+            var connectionSuccess = false;
             
             var options = new MqttClientOptionsBuilder()
                 .WithClientId(_clientId)
@@ -38,34 +67,122 @@ namespace _Scripts.Models
             
             _client.ConnectedAsync += async e =>
             {
-                Debug.Log("Conectado al broker MQTT en " + _brokerAddress);
+                // print("Conectado al broker MQTT en " + _brokerAddress);
             };
             
-            _client.DisconnectedAsync += async e =>
+            try
             {
-                Debug.Log("Desconectado del broker MQTT");
-            };
+                await _client.ConnectAsync(options);
+                connectionSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                // print("Error al conectar al broker: " + ex.Message);
+                connectionSuccess = false;
+            }
+            return connectionSuccess;
+        }
+        
+
+        internal async Task<bool> DisconnectFromBroker()
+        {
+            var disconnectionSuccess = false;
+            if (_client == null || !_client.IsConnected)
+            {
+                // print("No se puede desconectar: El cliente no está conectado.");
+                disconnectionSuccess = false;
+            }
+
+            try
+            {
+                await _client.DisconnectAsync();
+                // print("Desconectado del broker MQTT manualmente");
+                disconnectionSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                // print("Error al desconectar del broker: " + ex.Message);
+                disconnectionSuccess = false;
+            }
+            return disconnectionSuccess;
+        }
+        
+        private async Task ReconnectToBroker()
+        {
+            if (_client == null)
+            {
+                print("No se puede reconectar: El cliente no está inicializado.");
+                return;
+            }
+
+            if (_client.IsConnected)
+            {
+                print("El cliente ya está conectado, no se necesita reconexión.");
+                return;
+            }
+
+            print("Intentando reconectar al broker...");
+            var options = new MqttClientOptionsBuilder()
+                .WithClientId(_clientId)
+                .WithTcpServer(_brokerAddress, _brokerPort)
+                .WithCredentials(_username, _password)
+                .Build();
 
             try
             {
                 await _client.ConnectAsync(options);
+                print("Reconectado al broker MQTT en " + _brokerAddress);
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error al conectar al broker: " + ex.Message);
+                print("Error al reconectar al broker: " + ex.Message);
             }
         }
         
-        async void Start()
+        private async Task SubscribeToTopic(string subscribeTopic)
         {
+            await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic(subscribeTopic).Build());
+            print("Suscrito al tema: " + subscribeTopic);
+        }
+        
+        private async Task PublishMessage(string topic, string message)
+        {
+            if (_client == null || !_client.IsConnected)
+            {
+                print("No se puede publicar: El cliente no está conectado.");
+                return;
+            }
+
+            var mqttMessage = new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                .WithPayload(message)
+                .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+                .Build();
+
             try
             {
-                await ConnectToBroker();
+                await _client.PublishAsync(mqttMessage);
+                print("Mensaje publicado en " + topic + ": " + message);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw; // TODO handle exception
+                print("Error al publicar el mensaje: " + ex.Message);
             }
+        }
+        
+        private Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
+        {
+            string message = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            print("Mensaje recibido en " + e.ApplicationMessage.Topic + ": " + message);
+            return Task.CompletedTask;
+        }
+        
+        
+
+        
+        async void Start()
+        {
+
         }
 
         private void OnDestroy()
@@ -73,8 +190,17 @@ namespace _Scripts.Models
             if (_client != null && _client.IsConnected)
             {
                 _client.DisconnectAsync().Wait();
-                Debug.Log("Cliente MQTT desconectado");
+                print("Cliente MQTT desconectado");
             }
         }
     }
 }
+
+// try
+// {
+//     await ConnectToBroker();
+// }
+// catch (Exception e)
+// {
+//     throw; // TODO handle exception
+// }
