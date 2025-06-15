@@ -24,19 +24,17 @@
                         <ui:TextField placeholder-text="Client ID" name="ClientIDTextField" style="width: 50%;" />
                     </ui:VisualElement>
                     <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 50%; height: 100%;">
-                        <ui:DropdownField choices="Protocol communication,MQTT,Sokets" name="ProtocolCommunicationDropdownField" style="width: 80%;" />
-                        <ui:DropdownField choices="Connection type,Not safe (1883),Safe (8883)" name="ConnectionTypeDropdownField" style="width: 80%;" />
                         <ui:DropdownField choices="Mode connection,Automatic connection,Manual connection" name="ModeConnectionDropdownField" style="width: 80%;" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 100%; height: 33%;">
                     <ui:TextField placeholder-text="Username" name="UsernameTextField" style="width: 50%;" />
-                    <ui:TextField placeholder-text="Password" name="PasswordTextField" style="width: 50%;" />
+                    <ui:TextField placeholder-text="Password" name="PasswordTextField" password="true" style="width: 50%;" />
                 </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
-                    <ui:Button text="Test" name="TestLocalButton" style="width: 20%;" />
                     <ui:Button text="Connect" name="ConnectLocalButton" style="width: 20%;" />
                     <ui:Button text="Disconnect" name="DisconnectLocalButton" style="width: 20%;" />
+                    <ui:VisualElement style="flex-grow: 1; width: 20%;" />
                     <ui:Label text="Stauts: Offline" name="StatusLocalLabel" style="width: 20%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px; -unity-text-align: middle-center;" />
                 </ui:VisualElement>
             </ui:VisualElement>

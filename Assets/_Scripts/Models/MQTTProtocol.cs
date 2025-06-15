@@ -15,12 +15,14 @@ namespace _Scripts.Models
         private string _brokerAddress;
         
         private int _brokerPort; 
+        private string _clientId;
         
         private string _username;
         
         private string _password;
+        private string _modeConnection;
         
-        private string _clientId;
+        
 
         internal string brokerAddress
         {
@@ -52,6 +54,12 @@ namespace _Scripts.Models
             set => _clientId = value;
         }
 
+
+        internal string modeConnection
+        {
+            get => _modeConnection;
+            set => _modeConnection = value;
+        }
 
         internal async Task<bool> ConnectToBroker()
         {
@@ -177,14 +185,6 @@ namespace _Scripts.Models
             return Task.CompletedTask;
         }
         
-        
-
-        
-        async void Start()
-        {
-
-        }
-
         private void OnDestroy()
         {
             if (_client != null && _client.IsConnected)
@@ -195,12 +195,3 @@ namespace _Scripts.Models
         }
     }
 }
-
-// try
-// {
-//     await ConnectToBroker();
-// }
-// catch (Exception e)
-// {
-//     throw; // TODO handle exception
-// }

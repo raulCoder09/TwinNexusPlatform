@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 434c7abb4e3494880acd525e673eceb1, type: 3}
+  m_Name: IotConfigurationData
+  m_EditorClassIdentifier: Assembly-CSharp::_ScriptableObjects.IotConfigurationData
+  _brokerAddress: 192.168.1.35
+  _brokerPort: 1883
+  _clientId: TiwnNexusPlatform
+  _username: ruloCoder09
+  _password: 5859
+  _modeConnection: Manual connection
