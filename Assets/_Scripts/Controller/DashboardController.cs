@@ -10,14 +10,17 @@ namespace _Scripts.Controller
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private VisualElement _navigationMenuPanel;
         private VisualElement _scrim;
+        
         private Button _menuButton;
         private Button _hideMenuButton;
         private Button _logoutButton;
         private Button _operationsButton;
         private Button _trainingButton;
+        private Button _settingsButton;
         
         private WelcomeControllerUI _welcomeController;
         private DeviceSelectionController _deviceSelectionController;
+        private SettingsController _settingsController;
         private GameManager _gameManager;
         
         
@@ -40,6 +43,13 @@ namespace _Scripts.Controller
         internal void HideUi()
         {
             _body.style.display = DisplayStyle.None;
+        }
+
+        private void StartSettings(ClickEvent evt)
+        {
+            HideUi();
+            HideMenu(evt);
+            _settingsController.ShowUi(); 
         }
         
         private void StartOperations(ClickEvent evt)
@@ -103,6 +113,7 @@ namespace _Scripts.Controller
             _hideMenuButton=root.Q<Button>("HideMenuButton");
             _operationsButton=root.Q<Button>("OperationsButton");
             _trainingButton=root.Q<Button>("TrainingButton");
+            _settingsButton=root.Q<Button>("SettingsButton");
         }
 
         private void RegisterEvents()
@@ -113,13 +124,15 @@ namespace _Scripts.Controller
             _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
             _logoutButton.RegisterCallback<ClickEvent>(Logout);
             _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+            _settingsButton.RegisterCallback<ClickEvent>(StartSettings);
         }
 
         private void FindObjects()
         {
-            _welcomeController=GameObject.Find("Welcome").GetComponent<WelcomeControllerUI>();
-            _deviceSelectionController=GameObject.Find("DeviceSelection").GetComponent<DeviceSelectionController>();
+            _welcomeController=GameObject.FindGameObjectWithTag("Welcome").GetComponent<WelcomeControllerUI>();
+            _deviceSelectionController=GameObject.FindGameObjectWithTag("DeviceSelection").GetComponent<DeviceSelectionController>();
             _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+            _settingsController=GameObject.FindGameObjectWithTag("Settings").GetComponent<SettingsController>();
         }
 
 

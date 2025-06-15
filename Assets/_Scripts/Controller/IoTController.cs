@@ -1,0 +1,162 @@
+using System;
+using _ScriptableObjects;
+using _Scripts.Models;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UIElements;
+
+
+namespace _Scripts.Controller
+{
+    public class IoTController : MonoBehaviour
+    {
+        private VisualElement _body;
+        private TextField _ipOrHostnameTextField;
+        private TextField _portTextField;
+        private TextField _clientIDTextField;
+        private DropdownField _modeConnectionDropdownField;
+        private TextField _usernameTextField;
+        private TextField _passwordTextField;
+        private Button _connectLocalButton;
+        private Button _disconnectLocalButton;
+        private Label _statusLocalLabel;
+        private MQTTProtocol _mqttProtocol;
+        private SaveSystem _saveSystem;
+        
+        [SerializeField] private IotConfigurationData iotConfigurationData;
+        
+        private void Awake()
+        {
+            GetUiComponents();
+            RegisterEvents();
+            FindObjects();
+        }
+        
+        private void Start()
+        {
+            HideUi();
+            _saveSystem.LoadData();
+            _ipOrHostnameTextField.value= iotConfigurationData.brokerAddress;
+            _portTextField.value = iotConfigurationData.BrokerPort.ToString();
+            _clientIDTextField.value=iotConfigurationData.ClientId;
+            _usernameTextField.value=iotConfigurationData.Username;
+            _passwordTextField.value=iotConfigurationData.Password;
+            _modeConnectionDropdownField.value = iotConfigurationData.ModeConnection;
+            if (_modeConnectionDropdownField.value=="Automatic connection")
+            {
+                ConnectToBroker();
+            }
+        }
+        
+        internal void HideUi()
+        {
+            _body.style.display = DisplayStyle.None;
+        }
+        internal void ShowUi()
+        {
+            _body.style.display = DisplayStyle.Flex;
+        }
+        
+        private void FindObjects()
+        {
+            _mqttProtocol = GameObject.FindGameObjectWithTag("MQTTProtocol").GetComponent<MQTTProtocol>();
+            _saveSystem=GameObject.FindGameObjectWithTag("GameManager").GetComponent<SaveSystem>();
+        }
+        
+        private void RegisterEvents()
+        {
+            _ipOrHostnameTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.brokerAddress=_mqttProtocol.brokerAddress = evt.newValue;
+                _saveSystem.SaveData();
+            });
+            
+            _portTextField.RegisterValueChangedCallback(evt =>
+            {
+                int.TryParse(evt.newValue, out var port);
+                iotConfigurationData.BrokerPort=_mqttProtocol.brokerPort =port;
+                _saveSystem.SaveData();
+            });
+            
+            _clientIDTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.ClientId=_mqttProtocol.clientId = evt.newValue;
+                _saveSystem.SaveData();
+            });
+
+            _modeConnectionDropdownField.RegisterValueChangedCallback(evt =>
+            {
+                _mqttProtocol.modeConnection = iotConfigurationData.ModeConnection= evt.newValue;
+                _saveSystem.SaveData();
+            });
+            
+            _usernameTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.Username=_mqttProtocol.username = evt.newValue;
+                _saveSystem.SaveData();
+            });
+            _passwordTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.Password=_mqttProtocol.password = evt.newValue;
+                _saveSystem.SaveData();
+                
+            });
+            _connectLocalButton.RegisterCallback<ClickEvent>(ConnectToBroker);
+            _disconnectLocalButton.RegisterCallback<ClickEvent>(DisconnectFromBroker);
+        }
+
+        private void GetUiComponents()
+        {
+            var root = GetComponent<UIDocument>().rootVisualElement;
+            _body = root.Q<VisualElement>("Body");
+            _ipOrHostnameTextField= root.Q<TextField>("IPOrHostnameTextField");
+            _portTextField= root.Q<TextField>("PortTextField");
+            _clientIDTextField= root.Q<TextField>("ClientIDTextField");
+            _modeConnectionDropdownField=root.Q<DropdownField>("ModeConnectionDropdownField");
+            _usernameTextField=root.Q<TextField>("UsernameTextField");
+            _passwordTextField=root.Q<TextField>("PasswordTextField");
+            _connectLocalButton=root.Q<Button>("ConnectLocalButton");
+            _disconnectLocalButton=root.Q<Button>("DisconnectLocalButton");
+            _statusLocalLabel=root.Q<Label>("StatusLocalLabel");
+        }
+        
+        private async void ConnectToBroker(ClickEvent evt)
+        {
+            try
+            {
+                var result = await _mqttProtocol.ConnectToBroker();
+                _statusLocalLabel.text = result ? "Status: Online" : "Status: Offline";
+            }
+            catch (Exception ex)
+            {
+                _statusLocalLabel.text = "Error connection: " + ex.Message;
+            }
+        }
+        
+        private async void ConnectToBroker()
+        {
+            try
+            {
+                var result = await _mqttProtocol.ConnectToBroker();
+                _statusLocalLabel.text = result ? "Status: Online" : "Status: Offline";
+            }
+            catch (Exception ex)
+            {
+                _statusLocalLabel.text = "Error connection: " + ex.Message;
+            }
+        }
+
+        private async void DisconnectFromBroker(ClickEvent evt)
+        {
+            try
+            {
+                var result = await _mqttProtocol.DisconnectFromBroker();
+                _statusLocalLabel.text = result ? "Status: Offline" : "The client is not connected";
+            }
+            catch (Exception ex)
+            {
+                _statusLocalLabel.text = "Error disconnect: " + ex.Message;
+            }
+        }
+    }
+}

@@ -1,6 +1,7 @@
+using System;
+using _Scripts.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace _Scripts
 {
@@ -82,7 +83,9 @@ namespace _Scripts
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
-        
+
+
+
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             switch (scene.name)
@@ -121,8 +124,6 @@ namespace _Scripts
                     break;
             }
         }
-
-
         
     }
 }

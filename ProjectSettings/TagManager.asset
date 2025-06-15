@@ -21,6 +21,10 @@ TagManager:
   - Documents
   - Infographics
   - ArscaraTraining
+  - Welcome
+  - Settings
+  - IoT
+  - MQTTProtocol
   layers:
   - Default
   - TransparentFX
