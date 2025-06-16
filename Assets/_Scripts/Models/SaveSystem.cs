@@ -17,7 +17,7 @@ namespace _Scripts.Models
         internal void SaveData()
         {
             var json = JsonUtility.ToJson(iotConfigurationData);
-            Debug.Log("JSON generado: " + json); // Para depuración
+            Debug.Log("JSON generado: " + json); 
             File.WriteAllText(_savePath, json);
             Debug.Log("Datos guardados en: " + _savePath);
         }
@@ -34,7 +34,14 @@ namespace _Scripts.Models
                 Debug.LogWarning("No se encontró archivo de guardado.");
             }
         }
-        
+        public void ResetToDefault()
+        {
+            if (File.Exists(_savePath))
+            {
+                File.Delete(_savePath);
+                Debug.Log("Configuración restablecida a valores por defecto.");
+            }
+        }
         private void OnApplicationPause(bool pauseStatus)
         {
             if (pauseStatus)

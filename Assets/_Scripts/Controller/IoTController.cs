@@ -20,7 +20,7 @@ namespace _Scripts.Controller
         private Button _connectLocalButton;
         private Button _disconnectLocalButton;
         private Label _statusLocalLabel;
-        private MQTTProtocol _mqttProtocol;
+        private LocalIoT _localIoT;
         private SaveSystem _saveSystem;
         
         [SerializeField] private IotConfigurationData iotConfigurationData;
@@ -59,7 +59,7 @@ namespace _Scripts.Controller
         
         private void FindObjects()
         {
-            _mqttProtocol = GameObject.FindGameObjectWithTag("MQTTProtocol").GetComponent<MQTTProtocol>();
+            _localIoT = GameObject.FindGameObjectWithTag("LocalIoT").GetComponent<LocalIoT>();
             _saveSystem=GameObject.FindGameObjectWithTag("GameManager").GetComponent<SaveSystem>();
         }
         
@@ -67,37 +67,37 @@ namespace _Scripts.Controller
         {
             _ipOrHostnameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.brokerAddress=_mqttProtocol.brokerAddress = evt.newValue;
+                iotConfigurationData.brokerAddress=_localIoT.brokerAddress = evt.newValue;
                 _saveSystem.SaveData();
             });
             
             _portTextField.RegisterValueChangedCallback(evt =>
             {
                 int.TryParse(evt.newValue, out var port);
-                iotConfigurationData.BrokerPort=_mqttProtocol.brokerPort =port;
+                iotConfigurationData.BrokerPort=_localIoT.brokerPort =port;
                 _saveSystem.SaveData();
             });
             
             _clientIDTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.ClientId=_mqttProtocol.clientId = evt.newValue;
+                iotConfigurationData.ClientId=_localIoT.clientId = evt.newValue;
                 _saveSystem.SaveData();
             });
 
             _modeConnectionDropdownField.RegisterValueChangedCallback(evt =>
             {
-                _mqttProtocol.modeConnection = iotConfigurationData.ModeConnection= evt.newValue;
+                _localIoT.modeConnection = iotConfigurationData.ModeConnection= evt.newValue;
                 _saveSystem.SaveData();
             });
             
             _usernameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.Username=_mqttProtocol.username = evt.newValue;
+                iotConfigurationData.Username=_localIoT.username = evt.newValue;
                 _saveSystem.SaveData();
             });
             _passwordTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.Password=_mqttProtocol.password = evt.newValue;
+                iotConfigurationData.Password=_localIoT.password = evt.newValue;
                 _saveSystem.SaveData();
                 
             });
@@ -124,7 +124,7 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _mqttProtocol.ConnectToBroker();
+                var result = await _localIoT.ConnectToBroker();
                 _statusLocalLabel.text = result ? "Status: Online" : "Status: Offline";
             }
             catch (Exception ex)
@@ -137,7 +137,7 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _mqttProtocol.ConnectToBroker();
+                var result = await _localIoT.ConnectToBroker();
                 _statusLocalLabel.text = result ? "Status: Online" : "Status: Offline";
             }
             catch (Exception ex)
@@ -150,7 +150,7 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _mqttProtocol.DisconnectFromBroker();
+                var result = await _localIoT.DisconnectFromBroker();
                 _statusLocalLabel.text = result ? "Status: Offline" : "The client is not connected";
             }
             catch (Exception ex)
