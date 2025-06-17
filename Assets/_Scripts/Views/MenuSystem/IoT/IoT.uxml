@@ -42,9 +42,9 @@
                 <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 33%;">
                     <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-content: center; width: 50%; height: 100%; flex-direction: row;">
                         <ui:VisualElement style="flex-grow: 1; justify-content: center; align-items: center; width: 100%; height: 100%;">
-                            <ui:TextField placeholder-text="Region" name="CloudRegionTextField" style="width: 90%;" />
-                            <ui:TextField placeholder-text="Client ID" name="CloudClientIDTextField" style="width: 90%;" />
+                            <ui:TextField placeholder-text="Endpoint" name="CloudEndPointTextField" style="width: 90%;" />
                             <ui:TextField placeholder-text="Thing name" name="CloudThingNameTextField" style="width: 90%;" />
+                            <ui:TextField placeholder-text="Cloud port" name="CloudPortTextField" style="width: 90%;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 50%; height: 100%;">

@@ -14,7 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_ScriptableObjects.IotConfigurationData
   _brokerAddress: 192.168.1.35
   _brokerPort: 1883
-  _clientId: TiwnNexusPlatform
+  _clientId: TNPSGA52
   _username: ruloCoder09
   _password: 5859
   _modeConnection: Manual connection
+  _endpoint: aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com
+  _thingName: TwinNexusPlatformGalaxyA52
+  _cloudPort: 883
+  _caFilePath: Assets/_Certificates/AmazonRootCA1.pem
+  _clientCertPath: Assets/_Certificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-certificate.pem.crt
+  _clientKeyPath: Assets/_Certificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-private.pem.key
+  _cloudModeConnection: Manual connection

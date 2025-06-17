@@ -20,8 +20,24 @@ namespace _Scripts.Controller
         private Button _connectLocalButton;
         private Button _disconnectLocalButton;
         private Label _statusLocalLabel;
+        
+        private TextField _endpointTextField;
+        private TextField _cloudThingNameTextField;
+        private TextField _cloudPortTextField;
+        private TextField _caFileTextField;
+        private TextField _clientCertificateFileTextField;
+        private TextField _clientKeyFileTextField;
+        private DropdownField _cloudModeConnectionDropdownField;
+        private Button _cloudConnectButton;
+        private Button _cloudDisconnectButton;
+        private Label _cloudStatusLabel;
+        
         private LocalIoT _localIoT;
+        private CloudIoT _cloudIoT;
         private SaveSystem _saveSystem;
+        
+        
+        
         
         [SerializeField] private IotConfigurationData iotConfigurationData;
         
@@ -42,9 +58,24 @@ namespace _Scripts.Controller
             _usernameTextField.value=iotConfigurationData.Username;
             _passwordTextField.value=iotConfigurationData.Password;
             _modeConnectionDropdownField.value = iotConfigurationData.ModeConnection;
+
+            
+            _endpointTextField.value=iotConfigurationData.endpoint;
+            _cloudThingNameTextField.value = iotConfigurationData.thingName;
+            _caFileTextField.value = iotConfigurationData.caFilePath;
+            _clientCertificateFileTextField.value = iotConfigurationData.clientCertPath;
+            _clientKeyFileTextField.value = iotConfigurationData.clientKeyPath;
+            _cloudPortTextField.value = iotConfigurationData.cloudPort;
+            _cloudModeConnectionDropdownField.value=iotConfigurationData.cloudModeConnection;
+                
             if (_modeConnectionDropdownField.value=="Automatic connection")
             {
                 ConnectToBroker();
+            }
+
+            if (_cloudModeConnectionDropdownField.value == "Automatic connection")
+            {
+                print("conectando con AWS");
             }
         }
         
@@ -60,6 +91,7 @@ namespace _Scripts.Controller
         private void FindObjects()
         {
             _localIoT = GameObject.FindGameObjectWithTag("LocalIoT").GetComponent<LocalIoT>();
+            _cloudIoT = GameObject.FindGameObjectWithTag("CloudIoT").GetComponent<CloudIoT>();
             _saveSystem=GameObject.FindGameObjectWithTag("GameManager").GetComponent<SaveSystem>();
         }
         
@@ -101,8 +133,51 @@ namespace _Scripts.Controller
                 _saveSystem.SaveData();
                 
             });
+            
+            _endpointTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.endpoint=_cloudIoT.endpoint = evt.newValue;
+                _saveSystem.SaveData();
+            });
+            _cloudThingNameTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.thingName=_cloudIoT.thingName = evt.newValue;
+                _saveSystem.SaveData();
+            });
+            _caFileTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.caFilePath=_cloudIoT.caFilePath = evt.newValue;
+                _saveSystem.SaveData();
+            });
+            _clientCertificateFileTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.clientCertPath=_cloudIoT.clientCertPath = evt.newValue;
+                _saveSystem.SaveData();
+            });
+            _clientKeyFileTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.clientKeyPath=_cloudIoT.clientKeyPath = evt.newValue;
+                _saveSystem.SaveData();
+            });
+            _cloudModeConnectionDropdownField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.cloudModeConnection=_cloudIoT.modeConnection = evt.newValue;
+                _saveSystem.SaveData();
+            });
+
+            _cloudPortTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.cloudPort = _cloudIoT.port = evt.newValue;
+                _saveSystem.SaveData();
+            });
+            
+            
+            
             _connectLocalButton.RegisterCallback<ClickEvent>(ConnectToBroker);
             _disconnectLocalButton.RegisterCallback<ClickEvent>(DisconnectFromBroker);
+            _cloudConnectButton.RegisterCallback<ClickEvent>(ConnectToAwsIotCore);
+            _cloudDisconnectButton.RegisterCallback<ClickEvent>(DisconnectFromAwsIotCore);
+            
         }
 
         private void GetUiComponents()
@@ -118,6 +193,21 @@ namespace _Scripts.Controller
             _connectLocalButton=root.Q<Button>("ConnectLocalButton");
             _disconnectLocalButton=root.Q<Button>("DisconnectLocalButton");
             _statusLocalLabel=root.Q<Label>("StatusLocalLabel");
+            
+            
+            _endpointTextField=root.Q<TextField>("CloudEndPointTextField");
+            _cloudThingNameTextField=root.Q<TextField>("CloudThingNameTextField");
+            _caFileTextField=root.Q<TextField>("CAFileTextField");
+            _clientCertificateFileTextField=root.Q<TextField>("ClientCertificateFileTextField");
+            _clientKeyFileTextField=root.Q<TextField>("ClientKeyFileTextField");
+            _cloudModeConnectionDropdownField=root.Q<DropdownField>("CloudModeConnectionDropdownField");
+            
+            _cloudConnectButton=root.Q<Button>("CloudConnectButton");
+            _cloudDisconnectButton=root.Q<Button>("CloudDisconnectButton");
+            _cloudStatusLabel=root.Q<Label>("CloudStatusLabel");
+            _cloudPortTextField=root.Q<TextField>("CloudPortTextField");
+            
+            
         }
         
         private async void ConnectToBroker(ClickEvent evt)
@@ -145,6 +235,7 @@ namespace _Scripts.Controller
                 _statusLocalLabel.text = "Error connection: " + ex.Message;
             }
         }
+        
 
         private async void DisconnectFromBroker(ClickEvent evt)
         {
@@ -157,6 +248,16 @@ namespace _Scripts.Controller
             {
                 _statusLocalLabel.text = "Error disconnect: " + ex.Message;
             }
+        }
+        
+        private void ConnectToAwsIotCore(ClickEvent evt)
+        {
+            _cloudIoT.LoadCertificates();
+        }
+
+        private void DisconnectFromAwsIotCore(ClickEvent evt)
+        {
+            
         }
     }
 }

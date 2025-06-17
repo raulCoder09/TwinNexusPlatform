@@ -11,15 +11,12 @@ namespace _Scripts.Models
         private void Awake()
         {
             _savePath = Path.Combine(Application.persistentDataPath, "iotConfig.json");
-            Debug.Log("Ruta de guardado: " + _savePath);
         }
         
         internal void SaveData()
         {
             var json = JsonUtility.ToJson(iotConfigurationData);
-            Debug.Log("JSON generado: " + json); 
             File.WriteAllText(_savePath, json);
-            Debug.Log("Datos guardados en: " + _savePath);
         }
         internal void LoadData()
         {
@@ -27,7 +24,6 @@ namespace _Scripts.Models
             {
                 var json = File.ReadAllText(_savePath);
                 JsonUtility.FromJsonOverwrite(json, iotConfigurationData);
-                Debug.Log("Datos cargados desde: " + _savePath);
             }
             else
             {
@@ -47,14 +43,12 @@ namespace _Scripts.Models
             if (pauseStatus)
             {
                 SaveData();
-                Debug.Log("Aplicación pausada, datos guardados.");
             }
         }
 
         private void OnApplicationQuit()
         {
             SaveData();
-            Debug.Log("Aplicación cerrada, datos guardados.");
         }
 
     }

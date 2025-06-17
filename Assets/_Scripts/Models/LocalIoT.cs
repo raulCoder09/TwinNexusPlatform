@@ -85,7 +85,6 @@ namespace _Scripts.Models
             }
             catch (Exception ex)
             {
-                // print("Error al conectar al broker: " + ex.Message);
                 connectionSuccess = false;
             }
             return connectionSuccess;

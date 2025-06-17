@@ -6,14 +6,217 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/AWSSDK.CognitoIdentity.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/AWSSDK.CognitoIdentity.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/analyzers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/analyzers/dotnet.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/analyzers/dotnet/cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/analyzers/dotnet/cs/AWSSDK.CognitoIdentity.CodeAnalysis.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/analyzers/dotnet/cs/AWSSDK.CognitoIdentity.CodeAnalysis.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/lib/netstandard2.0/AWSSDK.CognitoIdentity.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/lib/netstandard2.0/AWSSDK.CognitoIdentity.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/lib/netstandard2.0/AWSSDK.CognitoIdentity.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentity.4.0.0.8/lib/netstandard2.0/AWSSDK.CognitoIdentity.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/AWSSDK.CognitoIdentityProvider.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/AWSSDK.CognitoIdentityProvider.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/analyzers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/analyzers/dotnet.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/analyzers/dotnet/cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/analyzers/dotnet/cs/AWSSDK.CognitoIdentityProvider.CodeAnalysis.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/analyzers/dotnet/cs/AWSSDK.CognitoIdentityProvider.CodeAnalysis.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/analyzers/dotnet/cs/SharedAnalysisCode.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/analyzers/dotnet/cs/SharedAnalysisCode.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/lib/netstandard2.0/AWSSDK.CognitoIdentityProvider.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/lib/netstandard2.0/AWSSDK.CognitoIdentityProvider.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/lib/netstandard2.0/AWSSDK.CognitoIdentityProvider.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/lib/netstandard2.0/AWSSDK.CognitoIdentityProvider.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/AWSSDK.CognitoSync.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/AWSSDK.CognitoSync.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/analyzers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/analyzers/dotnet.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/analyzers/dotnet/cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/analyzers/dotnet/cs/AWSSDK.CognitoSync.CodeAnalysis.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/analyzers/dotnet/cs/AWSSDK.CognitoSync.CodeAnalysis.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/lib/netstandard2.0/AWSSDK.CognitoSync.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/lib/netstandard2.0/AWSSDK.CognitoSync.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/lib/netstandard2.0/AWSSDK.CognitoSync.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.CognitoSync.4.0.0.8/lib/netstandard2.0/AWSSDK.CognitoSync.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/AWSSDK.Core.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/AWSSDK.Core.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/lib/netstandard2.0/AWSSDK.Core.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/lib/netstandard2.0/AWSSDK.Core.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/lib/netstandard2.0/AWSSDK.Core.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.10/lib/netstandard2.0/AWSSDK.Core.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/AWSSDK.EC2.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/AWSSDK.EC2.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/analyzers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/analyzers/dotnet.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/analyzers/dotnet/cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/analyzers/dotnet/cs/AWSSDK.EC2.CodeAnalysis.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/analyzers/dotnet/cs/AWSSDK.EC2.CodeAnalysis.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/analyzers/dotnet/cs/SharedAnalysisCode.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/analyzers/dotnet/cs/SharedAnalysisCode.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/lib/netstandard2.0/AWSSDK.EC2.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/lib/netstandard2.0/AWSSDK.EC2.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/lib/netstandard2.0/AWSSDK.EC2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.EC2.4.0.13.3/lib/netstandard2.0/AWSSDK.EC2.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/AWSSDK.IoT.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/AWSSDK.IoT.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/analyzers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/analyzers/dotnet.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/analyzers/dotnet/cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/analyzers/dotnet/cs/AWSSDK.IoT.CodeAnalysis.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/analyzers/dotnet/cs/AWSSDK.IoT.CodeAnalysis.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/lib/netstandard2.0/AWSSDK.IoT.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/lib/netstandard2.0/AWSSDK.IoT.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/lib/netstandard2.0/AWSSDK.IoT.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IoT.4.0.0.8/lib/netstandard2.0/AWSSDK.IoT.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/AWSSDK.IotData.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/AWSSDK.IotData.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/analyzers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/analyzers/dotnet.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/analyzers/dotnet/cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/analyzers/dotnet/cs/AWSSDK.IotData.CodeAnalysis.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/analyzers/dotnet/cs/AWSSDK.IotData.CodeAnalysis.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/lib/netstandard2.0/AWSSDK.IotData.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/lib/netstandard2.0/AWSSDK.IotData.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/lib/netstandard2.0/AWSSDK.IotData.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.IotData.4.0.0.8/lib/netstandard2.0/AWSSDK.IotData.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/AWSSDK.Lambda.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/AWSSDK.Lambda.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/analyzers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/analyzers/dotnet.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/analyzers/dotnet/cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/analyzers/dotnet/cs/AWSSDK.Lambda.CodeAnalysis.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/analyzers/dotnet/cs/AWSSDK.Lambda.CodeAnalysis.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/analyzers/dotnet/cs/SharedAnalysisCode.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/lib/netstandard2.0/AWSSDK.Lambda.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/lib/netstandard2.0/AWSSDK.Lambda.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/lib/netstandard2.0/AWSSDK.Lambda.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Lambda.4.0.0.8/lib/netstandard2.0/AWSSDK.Lambda.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/AWSSDK.S3.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/AWSSDK.S3.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/analyzers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/analyzers/dotnet.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/analyzers/dotnet/cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/analyzers/dotnet/cs/AWSSDK.S3.CodeAnalysis.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/analyzers/dotnet/cs/AWSSDK.S3.CodeAnalysis.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/analyzers/dotnet/cs/SharedAnalysisCode.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/analyzers/dotnet/cs/SharedAnalysisCode.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/lib/netstandard2.0/AWSSDK.S3.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/lib/netstandard2.0/AWSSDK.S3.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/lib/netstandard2.0/AWSSDK.S3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.S3.4.0.1.6/lib/netstandard2.0/AWSSDK.S3.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-certificate.pem.crt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-certificate.pem.crt.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-private.pem.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-private.pem.key.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-public.pem.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-public.pem.key.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/AmazonRootCA1.pem" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/AmazonRootCA1.pem.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/AmazonRootCA3.pem" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_AwsKeysAndCertificates/AmazonRootCA3.pem.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_ScriptableObjects/IotConfigurationData.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_ScriptableObjects/IotConfigurationData.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_ScriptableObjects/IotConfigurationData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_ScriptableObjects/IotConfigurationData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/IoTController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/IoTController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTProtocol.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LocalIoT.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTProtocol.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LocalIoT.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudIoT.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudIoT.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LocalIoT.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LocalIoT.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/SaveSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/SaveSystem.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/IoT/IoT.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/IoT/IoT.uxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/packages.config" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/packages.config" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.CognitoIdentity.4.0.0.8/tools/install.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.CognitoIdentity.4.0.0.8/tools/uninstall.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/tools/install.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.CognitoIdentityProvider.4.0.1.6/tools/uninstall.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.CognitoSync.4.0.0.8/tools/install.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.CognitoSync.4.0.0.8/tools/uninstall.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.Core.4.0.0.10/tools/account-management.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.EC2.4.0.13.3/tools/install.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.EC2.4.0.13.3/tools/uninstall.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.IoT.4.0.0.8/tools/install.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.IoT.4.0.0.8/tools/uninstall.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.IotData.4.0.0.8/tools/install.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.IotData.4.0.0.8/tools/uninstall.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.Lambda.4.0.0.8/tools/install.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.Lambda.4.0.0.8/tools/uninstall.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.S3.4.0.1.6/tools/install.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.S3.4.0.1.6/tools/uninstall.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,23 +245,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Attach to Unity Editor.Attach to Unity Editor.executor": "Debug",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "XThreadsFramesViewSplitterKey": "0.39784947",
-    "git-widget-placeholder": "feature/awsIotCore",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "configurable.group.tools",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Attach to Unity Editor.Attach to Unity Editor.executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.39784947&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/awsIotCore&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.tools&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="$USER_HOME$/Apks/twin nexus platform.app/Contents/MacOS/TwinNexusPlatform" />
@@ -161,7 +364,9 @@
       <workItem from="1750004474413" duration="403000" />
       <workItem from="1750005081736" duration="3283000" />
       <workItem from="1750011476370" duration="10094000" />
-      <workItem from="1750024783518" duration="15938000" />
+      <workItem from="1750024783518" duration="32863000" />
+      <workItem from="1750104807430" duration="1250000" />
+      <workItem from="1750180146101" duration="5635000" />
     </task>
     <servers />
   </component>

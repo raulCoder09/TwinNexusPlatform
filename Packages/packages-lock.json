@@ -39,11 +39,11 @@
       "dependencies": {}
     },
     "com.unity.ai.assistant": {
-      "version": "1.0.0-pre.5",
+      "version": "1.0.0-pre.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.ai.toolkit": "1.0.0-pre.7",
+        "com.unity.ai.toolkit": "1.0.0-pre.12",
         "com.unity.serialization": "3.1.1",
         "com.unity.nuget.newtonsoft-json": "3.2.1",
         "com.unity.modules.unitywebrequest": "1.0.0"
