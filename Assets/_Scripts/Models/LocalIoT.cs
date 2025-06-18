@@ -22,7 +22,14 @@ namespace _Scripts.Models
         private string _password;
         private string _modeConnection;
         
-        
+        // Clase para el payload de prueba
+        [System.Serializable]
+        public class TestPayload
+        {
+            public string message;
+            public string timestamp;
+            public string source;
+        }
 
         internal string brokerAddress
         {
@@ -54,7 +61,6 @@ namespace _Scripts.Models
             set => _clientId = value;
         }
 
-
         internal string modeConnection
         {
             get => _modeConnection;
@@ -75,8 +81,11 @@ namespace _Scripts.Models
             
             _client.ConnectedAsync += async e =>
             {
-                // print("Conectado al broker MQTT en " + _brokerAddress);
+                print("Conectado al broker MQTT en " + _brokerAddress);
             };
+            
+            // Agregar handler para mensajes recibidos
+            _client.ApplicationMessageReceivedAsync += HandleReceivedMessage;
             
             try
             {
@@ -85,30 +94,30 @@ namespace _Scripts.Models
             }
             catch (Exception ex)
             {
+                Debug.LogError("Error al conectar al broker: " + ex.Message);
                 connectionSuccess = false;
             }
             return connectionSuccess;
         }
         
-
         internal async Task<bool> DisconnectFromBroker()
         {
             var disconnectionSuccess = false;
             if (_client == null || !_client.IsConnected)
             {
-                // print("No se puede desconectar: El cliente no está conectado.");
-                disconnectionSuccess = false;
+                print("No se puede desconectar: El cliente no está conectado.");
+                return false;
             }
 
             try
             {
                 await _client.DisconnectAsync();
-                // print("Desconectado del broker MQTT manualmente");
+                print("Desconectado del broker MQTT manualmente");
                 disconnectionSuccess = true;
             }
             catch (Exception ex)
             {
-                // print("Error al desconectar del broker: " + ex.Message);
+                print("Error al desconectar del broker: " + ex.Message);
                 disconnectionSuccess = false;
             }
             return disconnectionSuccess;
@@ -146,18 +155,33 @@ namespace _Scripts.Models
             }
         }
         
-        private async Task SubscribeToTopic(string subscribeTopic)
+        internal async Task<bool> SubscribeToTopic(string subscribeTopic)
         {
-            await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic(subscribeTopic).Build());
-            print("Suscrito al tema: " + subscribeTopic);
+            if (_client == null || !_client.IsConnected)
+            {
+                print("No se puede suscribir: El cliente no está conectado.");
+                return false;
+            }
+
+            try
+            {
+                await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic(subscribeTopic).Build());
+                print("Suscrito al tema: " + subscribeTopic);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Error al suscribirse al tema: " + ex.Message);
+                return false;
+            }
         }
         
-        private async Task PublishMessage(string topic, string message)
+        internal async Task<bool> PublishMessage(string topic, string message)
         {
             if (_client == null || !_client.IsConnected)
             {
                 print("No se puede publicar: El cliente no está conectado.");
-                return;
+                return false;
             }
 
             var mqttMessage = new MqttApplicationMessageBuilder()
@@ -170,10 +194,12 @@ namespace _Scripts.Models
             {
                 await _client.PublishAsync(mqttMessage);
                 print("Mensaje publicado en " + topic + ": " + message);
+                return true;
             }
             catch (Exception ex)
             {
                 print("Error al publicar el mensaje: " + ex.Message);
+                return false;
             }
         }
         
@@ -183,7 +209,21 @@ namespace _Scripts.Models
             print("Mensaje recibido en " + e.ApplicationMessage.Topic + ": " + message);
             return Task.CompletedTask;
         }
-        
+
+        internal async Task<bool> SendTestMessage(string message = "Hello from twin nexus platform!")
+        {
+            var testPayload = new TestPayload
+            {
+                message = message,
+                timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"),
+                source = "Unity Android"
+            };
+    
+            var json = JsonUtility.ToJson(testPayload);
+            Debug.Log($"Enviando mensaje de prueba: {json}");
+            return await PublishMessage("test/topic", json);
+        }
+
         private void OnDestroy()
         {
             if (_client != null && _client.IsConnected)

@@ -19,6 +19,7 @@ namespace _Scripts.Controller
         private TextField _passwordTextField;
         private Button _connectLocalButton;
         private Button _disconnectLocalButton;
+        private Button _testMessageButton;
         private Label _statusLocalLabel;
         
         private TextField _endpointTextField;
@@ -187,10 +188,10 @@ namespace _Scripts.Controller
             _cloudConnectButton.RegisterCallback<ClickEvent>(ConnectToAwsIotCore);
             _cloudDisconnectButton.RegisterCallback<ClickEvent>(DisconnectFromAwsIotCore);
             _cloudTestMessageButton.RegisterCallback<ClickEvent>(TestMessageAwsIotCore);
+            _testMessageButton.RegisterCallback<ClickEvent>(TestMessageLocal);
             
         }
         
-
         private void GetUiComponents()
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
@@ -203,6 +204,7 @@ namespace _Scripts.Controller
             _passwordTextField=root.Q<TextField>("PasswordTextField");
             _connectLocalButton=root.Q<Button>("ConnectLocalButton");
             _disconnectLocalButton=root.Q<Button>("DisconnectLocalButton");
+            _testMessageButton=root.Q<Button>("TestMessageButton");
             _statusLocalLabel=root.Q<Label>("StatusLocalLabel");
             
             
@@ -262,7 +264,10 @@ namespace _Scripts.Controller
                 _statusLocalLabel.text = "Error disconnect: " + ex.Message;
             }
         }
-        
+        private void TestMessageLocal(ClickEvent evt)
+        {
+            _ = _localIoT.SendTestMessage();
+        }
         private async void ConnectToAwsIotCore(ClickEvent evt)
         {
             var isConnected = await _cloudIoT.ConnectToAwsIoT();

@@ -339,80 +339,71 @@ namespace _Scripts.Models
         {
             try
             {
-                // Determinar qué archivo PFX usar
                 string pfxPath = string.IsNullOrEmpty(_pfxFilePath) ? _clientCertPath : _pfxFilePath;
 
                 #if UNITY_ANDROID && !UNITY_EDITOR
-                // En Android, el archivo debe estar en StreamingAssets
                 if (string.IsNullOrEmpty(pfxPath))
                 {
-                    pfxPath = "aws-iot.pfx"; // Nombre por defecto
+                    pfxPath = "aws-iot.pfx"; 
                 }
                 
-                // Solo usar el nombre del archivo, no la ruta completa
                 pfxPath = Path.GetFileName(pfxPath);
                 
-                // Verificar que el archivo existe en StreamingAssets
                 string streamingPath = Path.Combine(Application.streamingAssetsPath, pfxPath);
                 Debug.Log($"Verificando certificado en StreamingAssets: {streamingPath}");
                 
-                // En Android, no podemos usar File.Exists con StreamingAssets
-                // Intentaremos cargar el archivo directamente
                 var testBytes = await LoadCertificateBytesAsync(pfxPath);
                 if (testBytes == null)
                 {
-                    Debug.LogError($"❌ No se encuentra el archivo PFX en StreamingAssets: {pfxPath}");
-                    Debug.LogError("📁 Asegúrate de que el archivo .pfx esté en la carpeta StreamingAssets");
+                    Debug.LogError($"No se encuentra el archivo PFX en StreamingAssets: {pfxPath}");
+                    Debug.LogError("Asegúrate de que el archivo .pfx esté en la carpeta StreamingAssets");
                     return false;
                 }
                 #else
-                // En Editor o PC, verificar la existencia del archivo
                 if (!string.IsNullOrEmpty(pfxPath))
                 {
                     if (!File.Exists(pfxPath))
                     {
-                        Debug.LogError($"❌ No se encuentra el archivo PFX: {pfxPath}");
+                        Debug.LogError($"No se encuentra el archivo PFX: {pfxPath}");
                         Debug.Log($"Ruta completa buscada: {Path.GetFullPath(pfxPath)}");
                         return false;
                     }
 
                     if (!pfxPath.EndsWith(".pfx"))
                     {
-                        Debug.LogError("❌ El archivo debe ser .pfx para AWS IoT Core");
+                        Debug.LogError("El archivo debe ser .pfx para AWS IoT Core");
                         Debug.Log("Convierte tus certificados PEM a PFX con:");
                         Debug.Log("openssl pkcs12 -export -out aws-iot.pfx -inkey private.pem.key -in certificate.pem.crt -passout pass:");
                         return false;
                     }
 
-                    Debug.Log($"✅ Archivo PFX encontrado: {pfxPath}");
+                    Debug.Log($"Archivo PFX encontrado: {pfxPath}");
                 }
                 else
                 {
-                    Debug.LogError("❌ No se ha especificado ningún archivo de certificado");
+                    Debug.LogError("No se ha especificado ningún archivo de certificado");
                     Debug.Log("Configura el campo 'Cloud Pfx File Path' o 'Client Certificate File'");
                     return false;
                 }
             #endif
-
-                // Guardar la ruta para usarla en ConnectToAwsIoT
+                
                 _pfxFilePath = pfxPath;
                 Debug.Log($"✅ Ruta PFX asignada: {_pfxFilePath}");
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"❌ Error al verificar certificados: {ex.Message}");
+                Debug.LogError($"Error al verificar certificados: {ex.Message}");
                 Debug.LogError($"Stack trace: {ex.StackTrace}");
                 return false;
             }
         }
         
-        // Publicación y suscripción
         internal async Task<bool> PublishMessage(string topic, string payload, int qos = 1)
         {
             if (_client == null || !_client.IsConnected)
             {
-                Debug.LogWarning("⚠️ No conectado a AWS IoT - No se puede publicar");
+                Debug.LogWarning("No conectado a AWS IoT - No se puede publicar");
                 return false;
             }
             
@@ -426,12 +417,12 @@ namespace _Scripts.Models
                     .Build();
                 
                 await _client.PublishAsync(message);
-                Debug.Log($"📤 Mensaje publicado en {topic}: {payload}");
+                Debug.Log($"Mensaje publicado en {topic}: {payload}");
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"❌ Error al publicar mensaje: {ex.Message}");
+                Debug.LogError($"Error al publicar mensaje: {ex.Message}");
                 return false;
             }
         }
@@ -440,7 +431,7 @@ namespace _Scripts.Models
         {
             if (_client == null || !_client.IsConnected)
             {
-                Debug.LogWarning("⚠️ No conectado a AWS IoT - No se puede suscribir");
+                Debug.LogWarning("No conectado a AWS IoT - No se puede suscribir");
                 return false;
             }
             
@@ -451,12 +442,12 @@ namespace _Scripts.Models
                     .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)qos)
                     .Build());
                 
-                Debug.Log($"📥 Suscrito al topic: {topic}");
+                Debug.Log($"Suscrito al topic: {topic}");
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"❌ Error al suscribirse: {ex.Message}");
+                Debug.LogError($"Error al suscribirse: {ex.Message}");
                 return false;
             }
         }
@@ -482,7 +473,7 @@ namespace _Scripts.Models
             }
             catch (Exception ex)
             {
-                Debug.LogError($"❌ Error al suscribirse a topics predeterminados: {ex.Message}");
+                Debug.LogError($"Error al suscribirse a topics predeterminados: {ex.Message}");
             }
         }
         
@@ -493,7 +484,7 @@ namespace _Scripts.Models
                 var topic = e.ApplicationMessage.Topic;
                 var payload = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                 
-                Debug.Log($"📨 Mensaje recibido en {topic}: {payload}");
+                Debug.Log($"Mensaje recibido en {topic}: {payload}");
                 
                 if (topic.Contains("/shadow/"))
                 {
@@ -502,7 +493,7 @@ namespace _Scripts.Models
             }
             catch (Exception ex)
             {
-                Debug.LogError($"❌ Error al procesar mensaje recibido: {ex.Message}");
+                Debug.LogError($"Error al procesar mensaje recibido: {ex.Message}");
             }
             
             return Task.CompletedTask;
@@ -510,19 +501,19 @@ namespace _Scripts.Models
         
         private void HandleShadowMessage(string topic, string payload)
         {
-            Debug.Log($"🔄 Shadow update en {topic}");
+            Debug.Log($"Shadow update en {topic}");
             
             if (topic.Contains("/accepted"))
             {
-                Debug.Log("✅ Operación de Shadow aceptada");
+                Debug.Log("Operación de Shadow aceptada");
             }
             else if (topic.Contains("/rejected"))
             {
-                Debug.LogWarning($"❌ Operación de Shadow rechazada: {payload}");
+                Debug.LogWarning($"Operación de Shadow rechazada: {payload}");
             }
             else if (topic.Contains("/delta"))
             {
-                Debug.Log("🔄 Cambios detectados en el Shadow");
+                Debug.Log("Cambios detectados en el Shadow");
             }
         }
         
@@ -530,7 +521,7 @@ namespace _Scripts.Models
         {
             var shadowTopic = $"$aws/things/{_thingName}/shadow/update";
             var shadowPayload = $"{{\"state\": {{\"reported\": {state}}}}}";
-            Debug.Log($"🔄 Actualizando Shadow: {shadowPayload}");
+            Debug.Log($"Actualizando Shadow: {shadowPayload}");
             return await PublishMessage(shadowTopic, shadowPayload);
         }
         
@@ -561,7 +552,7 @@ namespace _Scripts.Models
             };
     
             var json = JsonUtility.ToJson(testPayload);
-            Debug.Log($"📤 Enviando mensaje de prueba: {json}");
+            Debug.Log($"Enviando mensaje de prueba: {json}");
             return await PublishMessage("test/topic", json);
         }
         
@@ -574,7 +565,7 @@ namespace _Scripts.Models
         {
             if (_client != null && _client.IsConnected)
             {
-                Debug.Log("🔌 Desconectando cliente AWS IoT en OnDestroy...");
+                Debug.Log("Desconectando cliente AWS IoT en OnDestroy...");
                 try
                 {
                     _client.DisconnectAsync().Wait(5000); // Timeout de 5 segundos
