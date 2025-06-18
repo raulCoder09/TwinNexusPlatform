@@ -8,6 +8,7 @@ using MQTTnet.Client;
 using MQTTnet.Formatter;
 using System.Net.Security;
 using MQTTnet.Exceptions;
+using System.Collections;
 
 namespace _Scripts.Models
 {
@@ -90,12 +91,12 @@ namespace _Scripts.Models
                 Debug.Log($"Endpoint: {_endpoint}");
                 Debug.Log($"Thing Name: {_thingName}");
                 Debug.Log($"Puerto: {_port}");
+                Debug.Log($"Platform: {Application.platform}");
                 
                 _factory = new MqttFactory();
                 _client = _factory.CreateMqttClient();
                 
-                // Cargar certificados
-                if (!LoadCertificates())
+                if (!await LoadCertificatesAsync())
                 {
                     Debug.LogError("Error al cargar los certificados");
                     return false;
@@ -104,7 +105,7 @@ namespace _Scripts.Models
                 // Determinar qué archivo PFX usar
                 string pfxPath = !string.IsNullOrEmpty(_pfxFilePath) ? _pfxFilePath : _clientCertPath;
                 
-                if (string.IsNullOrEmpty(pfxPath) || !pfxPath.EndsWith(".pfx"))
+                if (string.IsNullOrEmpty(pfxPath))
                 {
                     Debug.LogError("Se requiere un archivo PFX para conectar con AWS IoT Core");
                     return false;
@@ -116,8 +117,16 @@ namespace _Scripts.Models
                 
                 try
                 {
-                    var clientCert = new X509Certificate2(pfxPath, "");
+                    byte[] certBytes = await LoadCertificateBytesAsync(pfxPath);
+                    if (certBytes == null)
+                    {
+                        Debug.LogError("No se pudieron cargar los bytes del certificado");
+                        return false;
+                    }
+                    
+                    var clientCert = new X509Certificate2(certBytes, "", X509KeyStorageFlags.Exportable);
                     Debug.Log($"Certificado cargado: {clientCert.Subject}");
+                    Debug.Log($"Certificado válido desde: {clientCert.NotBefore} hasta: {clientCert.NotAfter}");
                     
                     tlsParams = new MqttClientOptionsBuilderTlsParameters
                     {
@@ -133,14 +142,15 @@ namespace _Scripts.Models
                 catch (Exception ex)
                 {
                     Debug.LogError($"Error al cargar certificado PFX: {ex.Message}");
+                    Debug.LogError($"Stack trace: {ex.StackTrace}");
                     if (ex.Message.Contains("password"))
                     {
                         Debug.LogError("💡 Tip: Si tu PFX tiene contraseña, cámbiala en el código o crea uno sin contraseña");
                     }
-                    throw;
+                    return false;
                 }
                 
-                // Configurar opciones de conexión
+                // Configurar opciones de conexión con timeouts más largos para Android
                 var options = new MqttClientOptionsBuilder()
                     .WithClientId(_thingName)
                     .WithTcpServer(_endpoint, int.Parse(_port ?? "8883"))
@@ -148,19 +158,30 @@ namespace _Scripts.Models
                     .WithTls(tlsParams)
                     .WithCleanSession()
                     .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
+                    .WithTimeout(TimeSpan.FromSeconds(30)) // Timeout más largo para Android
                     .Build();
                 
-                // Configurar eventos antes de conectar
                 ConfigureEventHandlers();
                 
                 Debug.Log("Conectando al broker...");
                 
-                // Conectar
-                await _client.ConnectAsync(options);
+                // Usar timeout específico para Android
+                var connectTask = _client.ConnectAsync(options);
+                var timeoutTask = Task.Delay(45000); // 45 segundos de timeout
+                
+                var completedTask = await Task.WhenAny(connectTask, timeoutTask);
+                
+                if (completedTask == timeoutTask)
+                {
+                    Debug.LogError("Timeout al conectar con AWS IoT Core");
+                    return false;
+                }
+                
+                await connectTask; // Asegurar que se lance cualquier excepción
                 
                 if (_client.IsConnected)
                 {
-                    Debug.Log($"Conectado exitosamente a AWS IoT Core: {_endpoint}");
+                    Debug.Log($"✅ Conectado exitosamente a AWS IoT Core: {_endpoint}");
                     await SubscribeToDefaultTopics();
                     return true;
                 }
@@ -173,6 +194,7 @@ namespace _Scripts.Models
             catch (MqttCommunicationException mqttEx)
             {
                 Debug.LogError($"Error de comunicación MQTT: {mqttEx.Message}");
+                Debug.LogError($"Stack trace: {mqttEx.StackTrace}");
                 return false;
             }
             catch (Exception ex)
@@ -186,6 +208,58 @@ namespace _Scripts.Models
                 }
                 
                 return false;
+            }
+        }
+        
+        private async Task<byte[]> LoadCertificateBytesAsync(string pfxPath)
+        {
+            try
+            {
+               #if UNITY_ANDROID && !UNITY_EDITOR
+                // En Android, usar UnityWebRequest para cargar desde StreamingAssets
+                string streamingPath = Path.Combine(Application.streamingAssetsPath, Path.GetFileName(pfxPath));
+                Debug.Log($"Cargando certificado desde StreamingAssets: {streamingPath}");
+                
+                using (var request = UnityEngine.Networking.UnityWebRequest.Get(streamingPath))
+                {
+                    var operation = request.SendWebRequest();
+                    
+                    // Esperar de forma asíncrona
+                    while (!operation.isDone)
+                    {
+                        await Task.Delay(50);
+                    }
+                    
+                    if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+                    {
+                        Debug.Log($"Certificado cargado exitosamente. Tamaño: {request.downloadHandler.data.Length} bytes");
+                        return request.downloadHandler.data;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Error al cargar certificado: {request.error}");
+                        return null;
+                    }
+                }
+                #else
+                // En Editor o PC
+                if (File.Exists(pfxPath))
+                {
+                    var bytes = await File.ReadAllBytesAsync(pfxPath);
+                    Debug.Log($"Certificado cargado desde archivo. Tamaño: {bytes.Length} bytes");
+                    return bytes;
+                }
+                else
+                {
+                    Debug.LogError($"Archivo no encontrado: {pfxPath}");
+                    return null;
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error al cargar bytes del certificado: {ex.Message}");
+                return null;
             }
         }
         
@@ -214,26 +288,34 @@ namespace _Scripts.Models
         {
             if (args.SslPolicyErrors == SslPolicyErrors.None)
             {
-                Debug.Log("Certificado del servidor validado correctamente");
+                Debug.Log("✅ Certificado del servidor validado correctamente");
                 return true;
             }
             
-            Debug.LogWarning($"Errores de certificado SSL: {args.SslPolicyErrors}");
+            Debug.LogWarning($"⚠️ Errores de certificado SSL: {args.SslPolicyErrors}");
             
-            return true;
+            // En Android, algunos errores de certificado pueden ser normales
+            // Permitir solo errores menores de cadena de certificados
+            if (args.SslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+            {
+                Debug.Log("Permitiendo errores menores de cadena de certificados en Android");
+                return true;
+            }
+            
+            return args.SslPolicyErrors == SslPolicyErrors.None;
         }
         
         private void ConfigureEventHandlers()
         {
             _client.ConnectedAsync += async e =>
             {
-                Debug.Log("¡Conexión establecida con AWS IoT Core!");
+                Debug.Log("✅ ¡Conexión establecida con AWS IoT Core!");
                 Debug.Log($"Cliente conectado como: {_thingName}");
             };
             
             _client.DisconnectedAsync += async e =>
             {
-                Debug.Log($"Desconectado de AWS IoT Core. Razón: {e.Reason}");
+                Debug.Log($"🔌 Desconectado de AWS IoT Core. Razón: {e.Reason}");
                 
                 if (e.Exception != null)
                 {
@@ -245,7 +327,7 @@ namespace _Scripts.Models
                 {
                     Debug.Log("Esperando 5 segundos antes de reconectar...");
                     await Task.Delay(5000);
-                    Debug.Log("Intentando reconexión automática...");
+                    Debug.Log("🔄 Intentando reconexión automática...");
                     await ConnectToAwsIoT();
                 }
             };
@@ -253,70 +335,84 @@ namespace _Scripts.Models
             _client.ApplicationMessageReceivedAsync += HandleReceivedMessage;
         }
         
-        private bool LoadCertificates()
+        private async Task<bool> LoadCertificatesAsync()
         {
             try
             {
-                // Primero verificar si hay un archivo PFX en pfxFilePath
-                if (!string.IsNullOrEmpty(_pfxFilePath))
+                // Determinar qué archivo PFX usar
+                string pfxPath = string.IsNullOrEmpty(_pfxFilePath) ? _clientCertPath : _pfxFilePath;
+
+                #if UNITY_ANDROID && !UNITY_EDITOR
+                // En Android, el archivo debe estar en StreamingAssets
+                if (string.IsNullOrEmpty(pfxPath))
                 {
-                    if (!File.Exists(_pfxFilePath))
-                    {
-                        Debug.LogError($"No se encuentra el archivo PFX: {_pfxFilePath}");
-                        Debug.Log($"Ruta completa buscada: {Path.GetFullPath(_pfxFilePath)}");
-                        return false;
-                    }
-                    
-                    Debug.Log($"Archivo PFX encontrado: {_pfxFilePath}");
-                    return true;
+                    pfxPath = "aws-iot.pfx"; // Nombre por defecto
                 }
-                // Si no hay PFX en pfxFilePath, verificar el clientCertPath
-                else if (!string.IsNullOrEmpty(_clientCertPath))
+                
+                // Solo usar el nombre del archivo, no la ruta completa
+                pfxPath = Path.GetFileName(pfxPath);
+                
+                // Verificar que el archivo existe en StreamingAssets
+                string streamingPath = Path.Combine(Application.streamingAssetsPath, pfxPath);
+                Debug.Log($"Verificando certificado en StreamingAssets: {streamingPath}");
+                
+                // En Android, no podemos usar File.Exists con StreamingAssets
+                // Intentaremos cargar el archivo directamente
+                var testBytes = await LoadCertificateBytesAsync(pfxPath);
+                if (testBytes == null)
                 {
-                    if (!File.Exists(_clientCertPath))
+                    Debug.LogError($"❌ No se encuentra el archivo PFX en StreamingAssets: {pfxPath}");
+                    Debug.LogError("📁 Asegúrate de que el archivo .pfx esté en la carpeta StreamingAssets");
+                    return false;
+                }
+                #else
+                // En Editor o PC, verificar la existencia del archivo
+                if (!string.IsNullOrEmpty(pfxPath))
+                {
+                    if (!File.Exists(pfxPath))
                     {
-                        Debug.LogError($"No se encuentra el archivo: {_clientCertPath}");
-                        Debug.Log($"Ruta completa buscada: {Path.GetFullPath(_clientCertPath)}");
+                        Debug.LogError($"❌ No se encuentra el archivo PFX: {pfxPath}");
+                        Debug.Log($"Ruta completa buscada: {Path.GetFullPath(pfxPath)}");
                         return false;
                     }
-                    
-                    if (_clientCertPath.EndsWith(".pfx"))
+
+                    if (!pfxPath.EndsWith(".pfx"))
                     {
-                        Debug.Log($"Archivo PFX encontrado en clientCertPath: {_clientCertPath}");
-                        return true;
-                    }
-                    else
-                    {
-                        Debug.LogError("El archivo debe ser .pfx para AWS IoT Core");
+                        Debug.LogError("❌ El archivo debe ser .pfx para AWS IoT Core");
                         Debug.Log("Convierte tus certificados PEM a PFX con:");
                         Debug.Log("openssl pkcs12 -export -out aws-iot.pfx -inkey private.pem.key -in certificate.pem.crt -passout pass:");
                         return false;
                     }
+
+                    Debug.Log($"✅ Archivo PFX encontrado: {pfxPath}");
                 }
                 else
                 {
-                    Debug.LogError("No se ha especificado ningún archivo de certificado");
+                    Debug.LogError("❌ No se ha especificado ningún archivo de certificado");
                     Debug.Log("Configura el campo 'Cloud Pfx File Path' o 'Client Certificate File'");
                     return false;
                 }
+            #endif
+
+                // Guardar la ruta para usarla en ConnectToAwsIoT
+                _pfxFilePath = pfxPath;
+                Debug.Log($"✅ Ruta PFX asignada: {_pfxFilePath}");
+                return true;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error al verificar certificados: {ex.Message}");
+                Debug.LogError($"❌ Error al verificar certificados: {ex.Message}");
+                Debug.LogError($"Stack trace: {ex.StackTrace}");
                 return false;
             }
         }
-        
-        
-        
-        
         
         // Publicación y suscripción
         internal async Task<bool> PublishMessage(string topic, string payload, int qos = 1)
         {
             if (_client == null || !_client.IsConnected)
             {
-                Debug.LogWarning("No conectado a AWS IoT - No se puede publicar");
+                Debug.LogWarning("⚠️ No conectado a AWS IoT - No se puede publicar");
                 return false;
             }
             
@@ -330,12 +426,12 @@ namespace _Scripts.Models
                     .Build();
                 
                 await _client.PublishAsync(message);
-                Debug.Log($"Mensaje publicado en {topic}: {payload}");
+                Debug.Log($"📤 Mensaje publicado en {topic}: {payload}");
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error al publicar mensaje: {ex.Message}");
+                Debug.LogError($"❌ Error al publicar mensaje: {ex.Message}");
                 return false;
             }
         }
@@ -344,7 +440,7 @@ namespace _Scripts.Models
         {
             if (_client == null || !_client.IsConnected)
             {
-                Debug.LogWarning("No conectado a AWS IoT - No se puede suscribir");
+                Debug.LogWarning("⚠️ No conectado a AWS IoT - No se puede suscribir");
                 return false;
             }
             
@@ -360,7 +456,7 @@ namespace _Scripts.Models
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error al suscribirse: {ex.Message}");
+                Debug.LogError($"❌ Error al suscribirse: {ex.Message}");
                 return false;
             }
         }
@@ -381,12 +477,12 @@ namespace _Scripts.Models
                     // Topic de prueba
                     await SubscribeToTopic("test/topic");
                     
-                    Debug.Log("Suscrito a todos los topics predeterminados");
+                    Debug.Log("✅ Suscrito a todos los topics predeterminados");
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error al suscribirse a topics predeterminados: {ex.Message}");
+                Debug.LogError($"❌ Error al suscribirse a topics predeterminados: {ex.Message}");
             }
         }
         
@@ -397,7 +493,7 @@ namespace _Scripts.Models
                 var topic = e.ApplicationMessage.Topic;
                 var payload = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                 
-                Debug.Log($"Mensaje recibido en {topic}: {payload}");
+                Debug.Log($"📨 Mensaje recibido en {topic}: {payload}");
                 
                 if (topic.Contains("/shadow/"))
                 {
@@ -406,7 +502,7 @@ namespace _Scripts.Models
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error al procesar mensaje recibido: {ex.Message}");
+                Debug.LogError($"❌ Error al procesar mensaje recibido: {ex.Message}");
             }
             
             return Task.CompletedTask;
@@ -418,15 +514,15 @@ namespace _Scripts.Models
             
             if (topic.Contains("/accepted"))
             {
-                Debug.Log("Operación de Shadow aceptada");
+                Debug.Log("✅ Operación de Shadow aceptada");
             }
             else if (topic.Contains("/rejected"))
             {
-                Debug.LogWarning($"Operación de Shadow rechazada: {payload}");
+                Debug.LogWarning($"❌ Operación de Shadow rechazada: {payload}");
             }
             else if (topic.Contains("/delta"))
             {
-                Debug.Log("Cambios detectados en el Shadow");
+                Debug.Log("🔄 Cambios detectados en el Shadow");
             }
         }
         
@@ -434,14 +530,14 @@ namespace _Scripts.Models
         {
             var shadowTopic = $"$aws/things/{_thingName}/shadow/update";
             var shadowPayload = $"{{\"state\": {{\"reported\": {state}}}}}";
-            Debug.Log($"Actualizando Shadow: {shadowPayload}");
+            Debug.Log($"🔄 Actualizando Shadow: {shadowPayload}");
             return await PublishMessage(shadowTopic, shadowPayload);
         }
         
         internal async Task<bool> GetDeviceShadow()
         {
             var shadowTopic = $"$aws/things/{_thingName}/shadow/get";
-            Debug.Log("Solicitando estado del Shadow");
+            Debug.Log("🔍 Solicitando estado del Shadow");
             return await PublishMessage(shadowTopic, "");
         }
         
@@ -460,12 +556,12 @@ namespace _Scripts.Models
             {
                 message = message,
                 timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"),
-                source = "Unity",
+                source = "Unity Android",
                 thingName = _thingName
             };
     
             var json = JsonUtility.ToJson(testPayload);
-            Debug.Log($"🧪 Enviando mensaje de prueba: {json}");
+            Debug.Log($"📤 Enviando mensaje de prueba: {json}");
             return await PublishMessage("test/topic", json);
         }
         
@@ -479,7 +575,14 @@ namespace _Scripts.Models
             if (_client != null && _client.IsConnected)
             {
                 Debug.Log("🔌 Desconectando cliente AWS IoT en OnDestroy...");
-                _client.DisconnectAsync().Wait(5000); // Timeout de 5 segundos
+                try
+                {
+                    _client.DisconnectAsync().Wait(5000); // Timeout de 5 segundos
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error al desconectar en OnDestroy: {ex.Message}");
+                }
             }
         }
     }

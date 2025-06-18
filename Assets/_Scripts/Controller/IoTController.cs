@@ -32,6 +32,7 @@ namespace _Scripts.Controller
         private Button _cloudConnectButton;
         private Button _cloudDisconnectButton;
         private Label _cloudStatusLabel;
+        private Button _cloudTestMessageButton;
         
         private LocalIoT _localIoT;
         private CloudIoT _cloudIoT;
@@ -185,8 +186,10 @@ namespace _Scripts.Controller
             _disconnectLocalButton.RegisterCallback<ClickEvent>(DisconnectFromBroker);
             _cloudConnectButton.RegisterCallback<ClickEvent>(ConnectToAwsIotCore);
             _cloudDisconnectButton.RegisterCallback<ClickEvent>(DisconnectFromAwsIotCore);
+            _cloudTestMessageButton.RegisterCallback<ClickEvent>(TestMessageAwsIotCore);
             
         }
+        
 
         private void GetUiComponents()
         {
@@ -215,6 +218,7 @@ namespace _Scripts.Controller
             _cloudStatusLabel=root.Q<Label>("CloudStatusLabel");
             _cloudPortTextField=root.Q<TextField>("CloudPortTextField");
             _cloudPfxFilePathTextField=root.Q<TextField>("CloudPfxFilePathTextField");
+            _cloudTestMessageButton=root.Q<Button>("CloudTestMessageButton");
             
             
         }
@@ -270,6 +274,11 @@ namespace _Scripts.Controller
         {
             var isDisconnected = await _cloudIoT.DisconnectFromAwsIoT();
             _cloudStatusLabel.text = isDisconnected ? "Status: Offline" : "Client not connected";
+        }
+        
+        private void TestMessageAwsIotCore(ClickEvent evt)
+        {
+            _ = _cloudIoT.SendTestMessage();
         }
     }
 }
