@@ -45,6 +45,7 @@
                             <ui:TextField placeholder-text="Endpoint" name="CloudEndPointTextField" style="width: 90%;" />
                             <ui:TextField placeholder-text="Thing name" name="CloudThingNameTextField" style="width: 90%;" />
                             <ui:TextField placeholder-text="Cloud port" name="CloudPortTextField" style="width: 90%;" />
+                            <ui:TextField placeholder-text="Pfx file" name="CloudPfxFilePathTextField" style="width: 90%;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 50%; height: 100%;">

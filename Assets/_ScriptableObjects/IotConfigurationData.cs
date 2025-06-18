@@ -21,7 +21,14 @@ namespace _ScriptableObjects
         [SerializeField] private string _clientCertPath;
         [SerializeField] private string _clientKeyPath;
         [SerializeField] private string _cloudModeConnection;
-        
+        [SerializeField] private string _pfxFilePath;
+
+        public string pfxFilePath
+        {
+            get => _pfxFilePath;
+            set => _pfxFilePath = value;
+        }
+
         internal string brokerAddress
         {
             get => _brokerAddress;

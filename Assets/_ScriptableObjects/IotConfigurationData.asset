@@ -25,3 +25,4 @@ MonoBehaviour:
   _clientCertPath: Assets/_Certificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-certificate.pem.crt
   _clientKeyPath: Assets/_Certificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-private.pem.key
   _cloudModeConnection: Manual connection
+  _pfxFilePath: Assets/_Certificates/aws-iot.pfx

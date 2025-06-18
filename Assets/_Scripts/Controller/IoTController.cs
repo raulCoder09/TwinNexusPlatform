@@ -27,6 +27,7 @@ namespace _Scripts.Controller
         private TextField _caFileTextField;
         private TextField _clientCertificateFileTextField;
         private TextField _clientKeyFileTextField;
+        private TextField _cloudPfxFilePathTextField;
         private DropdownField _cloudModeConnectionDropdownField;
         private Button _cloudConnectButton;
         private Button _cloudDisconnectButton;
@@ -59,13 +60,14 @@ namespace _Scripts.Controller
             _passwordTextField.value=iotConfigurationData.Password;
             _modeConnectionDropdownField.value = iotConfigurationData.ModeConnection;
 
-            
+            _cloudPfxFilePathTextField.value = iotConfigurationData.pfxFilePath;
             _endpointTextField.value=iotConfigurationData.endpoint;
             _cloudThingNameTextField.value = iotConfigurationData.thingName;
             _caFileTextField.value = iotConfigurationData.caFilePath;
             _clientCertificateFileTextField.value = iotConfigurationData.clientCertPath;
             _clientKeyFileTextField.value = iotConfigurationData.clientKeyPath;
             _cloudPortTextField.value = iotConfigurationData.cloudPort;
+            _cloudPfxFilePathTextField.value = iotConfigurationData.pfxFilePath;
             _cloudModeConnectionDropdownField.value=iotConfigurationData.cloudModeConnection;
                 
             if (_modeConnectionDropdownField.value=="Automatic connection")
@@ -170,6 +172,12 @@ namespace _Scripts.Controller
                 iotConfigurationData.cloudPort = _cloudIoT.port = evt.newValue;
                 _saveSystem.SaveData();
             });
+
+            _cloudPfxFilePathTextField.RegisterValueChangedCallback(evt =>
+            {
+                iotConfigurationData.pfxFilePath = _cloudIoT.pfxFilePath= evt.newValue;;
+                _saveSystem.SaveData();
+            });
             
             
             
@@ -206,6 +214,7 @@ namespace _Scripts.Controller
             _cloudDisconnectButton=root.Q<Button>("CloudDisconnectButton");
             _cloudStatusLabel=root.Q<Label>("CloudStatusLabel");
             _cloudPortTextField=root.Q<TextField>("CloudPortTextField");
+            _cloudPfxFilePathTextField=root.Q<TextField>("CloudPfxFilePathTextField");
             
             
         }
@@ -242,7 +251,7 @@ namespace _Scripts.Controller
             try
             {
                 var result = await _localIoT.DisconnectFromBroker();
-                _statusLocalLabel.text = result ? "Status: Offline" : "The client is not connected";
+                _statusLocalLabel.text = result ? "Status: Offline" : "Client not connected";
             }
             catch (Exception ex)
             {
@@ -250,14 +259,17 @@ namespace _Scripts.Controller
             }
         }
         
-        private void ConnectToAwsIotCore(ClickEvent evt)
+        private async void ConnectToAwsIotCore(ClickEvent evt)
         {
-            _cloudIoT.LoadCertificates();
+            var isConnected = await _cloudIoT.ConnectToAwsIoT();
+
+            _cloudStatusLabel.text = isConnected ? "Status: Online" : "Status: Offline";
         }
 
-        private void DisconnectFromAwsIotCore(ClickEvent evt)
+        private async void DisconnectFromAwsIotCore(ClickEvent evt)
         {
-            
+            var isDisconnected = await _cloudIoT.DisconnectFromAwsIoT();
+            _cloudStatusLabel.text = isDisconnected ? "Status: Offline" : "Client not connected";
         }
     }
 }
