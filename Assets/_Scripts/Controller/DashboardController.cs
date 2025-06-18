@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -22,8 +23,50 @@ namespace _Scripts.Controller
         private DeviceSelectionController _deviceSelectionController;
         private SettingsController _settingsController;
         private GameManager _gameManager;
-        
-        
+
+        private Label _localIoTStatusLabel;
+        private Label _localIoTModeLabel;
+        private Label _vMIoTStatusLabel;
+        private Label _vMIoTModeLabel;
+        private Label _cloudIoTStatusLabel;
+        private Label _cloudlIoTModeLabel;
+
+        public Label localIoTStatusLabel
+        {
+            get => _localIoTStatusLabel;
+            set => _localIoTStatusLabel = value;
+        }
+
+        public Label localIoTModeLabel
+        {
+            get => _localIoTModeLabel;
+            set => _localIoTModeLabel = value;
+        }
+
+        public Label vMIoTStatusLabel
+        {
+            get => _vMIoTStatusLabel;
+            set => _vMIoTStatusLabel = value;
+        }
+
+        public Label vMIoTModeLabel
+        {
+            get => _vMIoTModeLabel;
+            set => _vMIoTModeLabel = value;
+        }
+
+        public Label cloudIoTStatusLabel
+        {
+            get => _cloudIoTStatusLabel;
+            set => _cloudIoTStatusLabel = value;
+        }
+
+        public Label cloudlIoTModeLabel
+        {
+            get => _cloudlIoTModeLabel;
+            set => _cloudlIoTModeLabel = value;
+        }
+
         private void Awake()
         {
             GetUiComponents();
@@ -36,6 +79,7 @@ namespace _Scripts.Controller
             HideUi();
             _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
         }
+        
         internal void ShowUi()
         {
             _body.style.display = DisplayStyle.Flex;
@@ -114,6 +158,12 @@ namespace _Scripts.Controller
             _operationsButton=root.Q<Button>("OperationsButton");
             _trainingButton=root.Q<Button>("TrainingButton");
             _settingsButton=root.Q<Button>("SettingsButton");
+            _localIoTStatusLabel=root.Q<Label>("LocalIoTStatusLabel");
+                _localIoTModeLabel=root.Q<Label>("LocalIoTModeLabel");
+            _vMIoTStatusLabel=root.Q<Label>("VMIoTStatusLabel");
+                _vMIoTModeLabel=root.Q<Label>("VMIoTModeLabel");
+            _cloudIoTStatusLabel=root.Q<Label>("CloudIoTStatusLabel");
+                _cloudlIoTModeLabel=root.Q<Label>("CloudlIoTModeLabel");
         }
 
         private void RegisterEvents()

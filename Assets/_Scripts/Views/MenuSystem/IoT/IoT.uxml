@@ -15,8 +15,19 @@
                 <ui:Label name="Logout" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; font-size: 30px; -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;);" />
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:VisualElement name="Titles" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
+            <ui:VisualElement style="flex-grow: 1; width: 33%; height: 100%; align-items: center; justify-content: center;">
+                <ui:Label text="Local IoT" name="LocalIoTLabel" style="width: 35%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 50px; -unity-text-align: middle-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; width: 33%; height: 100%; align-items: center; justify-content: center;">
+                <ui:Label text="VM IoT" name="CloudVMIoTLabel" style="width: 35%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 50px; -unity-text-align: middle-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; width: 33%; height: 100%; align-items: center; justify-content: center;">
+                <ui:Label text="Cloud Iot" name="CloudIoT" style="width: 35%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 50px; -unity-text-align: middle-center;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
         <ui:VisualElement name="Main" style="flex-grow: 1; width: 100%; height: 80%; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
-            <ui:VisualElement name="LocalIoT" style="flex-grow: 1; flex-direction: column; width: 50%; height: 80%;">
+            <ui:VisualElement name="LocalIoT" style="flex-grow: 1; flex-direction: column; width: 33%; height: 100%;">
                 <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 33%;">
                     <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-content: center; width: 50%; height: 100%;">
                         <ui:TextField placeholder-text="IP or hostname" name="IPOrHostnameTextField" style="width: 50%;" />
@@ -31,14 +42,44 @@
                     <ui:TextField placeholder-text="Username" name="UsernameTextField" style="width: 50%;" />
                     <ui:TextField placeholder-text="Password" name="PasswordTextField" password="true" style="width: 50%;" />
                 </ui:VisualElement>
-                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
-                    <ui:Button text="Connect" name="ConnectLocalButton" style="width: 20%;" />
-                    <ui:Button text="Disconnect" name="DisconnectLocalButton" style="width: 20%;" />
-                    <ui:Button text="Test message" name="TestMessageButton" style="width: 20%;" />
-                    <ui:Label text="Status: Offline" name="StatusLocalLabel" style="width: 35%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px; -unity-text-align: middle-center;" />
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; flex-direction: column; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                    <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 50%; align-items: center; justify-content: space-evenly;">
+                        <ui:Button text="Connect" name="ConnectLocalButton" style="width: 20%;" />
+                        <ui:Button text="Disconnect" name="DisconnectLocalButton" style="width: 20%;" />
+                        <ui:Button text="Test message" name="TestMessageButton" style="width: 20%;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; flex-direction: column; width: 100%; height: 50%; align-items: center; justify-content: center;">
+                        <ui:Label text="Status: Offline" name="StatusLocalLabel" style="width: 35%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px; -unity-text-align: middle-center;" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="CloudIoT" style="flex-grow: 1; width: 50%; height: 80%;">
+            <ui:VisualElement name="CloudVMIoT" style="flex-grow: 1; flex-direction: column; width: 33%; height: 100%;">
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 33%;">
+                    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-content: center; width: 50%; height: 100%;">
+                        <ui:TextField placeholder-text="IP or hostname" name="CloudVMIoTIPOrHostnameTextField" style="width: 50%;" />
+                        <ui:TextField placeholder-text="Port" name="CloudVMIoTPortTextField" style="width: 50%;" />
+                        <ui:TextField placeholder-text="Client ID" name="CloudVMIoTClientIDTextField" style="width: 50%;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 50%; height: 100%;">
+                        <ui:DropdownField choices="Mode connection,Automatic connection,Manual connection" name="ModeConnectionDropdownField" style="width: 80%;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 100%; height: 33%;">
+                    <ui:TextField placeholder-text="Username" name="CloudVMIoTUsernameTextField" style="width: 50%;" />
+                    <ui:TextField placeholder-text="Password" name="CloudVMIoTPasswordTextField" password="true" style="width: 50%;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; flex-direction: column; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                    <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 50%; align-items: center; justify-content: space-evenly;">
+                        <ui:Button text="Connect" name="ConnectCloudVMIoTButton" style="width: 20%;" />
+                        <ui:Button text="Disconnect" name="DisconnectCloudVMIoTButton" style="width: 20%;" />
+                        <ui:Button text="Test message" name="TestMessageCloudVMIoTButton" style="width: 20%;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 50%; align-items: center; justify-content: center;">
+                        <ui:Label text="Status: Offline" name="StatusLocalCloudVMIoTLabel" style="width: 35%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px; -unity-text-align: middle-center;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="CloudIoT" style="flex-grow: 1; width: 33%; height: 100%;">
                 <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 100%; height: 33%;">
                     <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; align-content: center; width: 50%; height: 100%; flex-direction: row;">
                         <ui:VisualElement style="flex-grow: 1; justify-content: center; align-items: center; width: 100%; height: 100%;">
@@ -66,26 +107,16 @@
                         <ui:Button text="Browse" name="ClientKeyFileButton" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
-                    <ui:Button text="Connect" name="CloudConnectButton" style="width: 20%;" />
-                    <ui:Button text="Disconnect" name="CloudDisconnectButton" style="width: 20%;" />
-                    <ui:Button text="Test message" name="CloudTestMessageButton" style="width: 20%;" />
-                    <ui:Label text="Status: Offline" name="CloudStatusLabel" style="width: 35%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px; -unity-text-align: middle-center;" />
+                <ui:VisualElement style="flex-grow: 1; width: 100%; height: 33%; flex-direction: column; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                    <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-evenly; align-items: center; width: 100%; height: 50%;">
+                        <ui:Button text="Connect" name="CloudConnectButton" style="width: 20%;" />
+                        <ui:Button text="Disconnect" name="CloudDisconnectButton" style="width: 20%;" />
+                        <ui:Button text="Test message" name="CloudTestMessageButton" style="width: 20%;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 50%; align-items: center; justify-content: center;">
+                        <ui:Label text="Status: Offline" name="CloudStatusLabel" style="width: 35%; color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px; -unity-text-align: middle-center;" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-            </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement name="Footer" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
-            <ui:VisualElement name="SparePanel0" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel0" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="SparePanel1" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel1" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="SparePanel2" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel2" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="SparePanel3" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel3" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

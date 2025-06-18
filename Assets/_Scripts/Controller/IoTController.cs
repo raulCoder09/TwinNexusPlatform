@@ -38,6 +38,7 @@ namespace _Scripts.Controller
         private LocalIoT _localIoT;
         private CloudIoT _cloudIoT;
         private SaveSystem _saveSystem;
+        private DashboardController _dashboard;
         
         
         
@@ -60,7 +61,7 @@ namespace _Scripts.Controller
             _clientIDTextField.value=iotConfigurationData.ClientId;
             _usernameTextField.value=iotConfigurationData.Username;
             _passwordTextField.value=iotConfigurationData.Password;
-            _modeConnectionDropdownField.value = iotConfigurationData.ModeConnection;
+            _dashboard.localIoTModeLabel.text=_modeConnectionDropdownField.value = iotConfigurationData.ModeConnection;
 
             _cloudPfxFilePathTextField.value = iotConfigurationData.pfxFilePath;
             _endpointTextField.value=iotConfigurationData.endpoint;
@@ -70,7 +71,9 @@ namespace _Scripts.Controller
             _clientKeyFileTextField.value = iotConfigurationData.clientKeyPath;
             _cloudPortTextField.value = iotConfigurationData.cloudPort;
             _cloudPfxFilePathTextField.value = iotConfigurationData.pfxFilePath;
-            _cloudModeConnectionDropdownField.value=iotConfigurationData.cloudModeConnection;
+            _dashboard.cloudlIoTModeLabel.text= _cloudModeConnectionDropdownField.value=iotConfigurationData.cloudModeConnection;
+            
+            
                 
             if (_modeConnectionDropdownField.value=="Automatic connection")
             {
@@ -79,8 +82,27 @@ namespace _Scripts.Controller
 
             if (_cloudModeConnectionDropdownField.value == "Automatic connection")
             {
-                print("conectando con AWS");
+                ConnectToAwsIotCore();
             }
+            
+            if (_dashboard.localIoTStatusLabel.text=="Online")
+            {
+                _dashboard.localIoTStatusLabel.style.color=Color.green;
+            }
+            else
+            {
+                _dashboard.localIoTStatusLabel.style.color=Color.red;
+            }
+            
+            if (_dashboard.cloudIoTStatusLabel.text=="Online")
+            {
+                _dashboard.cloudIoTStatusLabel.style.color=Color.green;
+            }
+            else
+            {
+                _dashboard.cloudIoTStatusLabel.style.color=Color.red;
+            }
+            
         }
         
         internal void HideUi()
@@ -97,6 +119,7 @@ namespace _Scripts.Controller
             _localIoT = GameObject.FindGameObjectWithTag("LocalIoT").GetComponent<LocalIoT>();
             _cloudIoT = GameObject.FindGameObjectWithTag("CloudIoT").GetComponent<CloudIoT>();
             _saveSystem=GameObject.FindGameObjectWithTag("GameManager").GetComponent<SaveSystem>();
+            _dashboard=GameObject.FindGameObjectWithTag("Dashboard").GetComponent<DashboardController>();
         }
         
         private void RegisterEvents()
@@ -230,11 +253,20 @@ namespace _Scripts.Controller
             try
             {
                 var result = await _localIoT.ConnectToBroker();
-                _statusLocalLabel.text = result ? "Status: Online" : "Status: Offline";
+                _dashboard.localIoTStatusLabel.text = _statusLocalLabel.text = result ? "Online" : "Offline";
+                if (_dashboard.localIoTStatusLabel.text=="Online")
+                {
+                    _dashboard.localIoTStatusLabel.style.color=Color.green;
+                }
+                else
+                {
+                    _dashboard.localIoTStatusLabel.style.color=Color.red;
+                }
             }
             catch (Exception ex)
             {
-                _statusLocalLabel.text = "Error connection: " + ex.Message;
+                _dashboard.localIoTStatusLabel.text =_statusLocalLabel.text = "Error connection: " + ex.Message;
+                _dashboard.localIoTStatusLabel.style.color=Color.red;
             }
         }
         
@@ -243,11 +275,20 @@ namespace _Scripts.Controller
             try
             {
                 var result = await _localIoT.ConnectToBroker();
-                _statusLocalLabel.text = result ? "Status: Online" : "Status: Offline";
+                _dashboard.localIoTStatusLabel.text=_statusLocalLabel.text = result ? "Online" : "Offline";
+                if (_dashboard.localIoTStatusLabel.text=="Online")
+                {
+                    _dashboard.localIoTStatusLabel.style.color=Color.green;
+                }
+                else
+                {
+                    _dashboard.localIoTStatusLabel.style.color=Color.red;
+                }
             }
             catch (Exception ex)
             {
-                _statusLocalLabel.text = "Error connection: " + ex.Message;
+                _dashboard.localIoTStatusLabel.text= _statusLocalLabel.text = "Error connection: " + ex.Message;
+                _dashboard.localIoTStatusLabel.style.color=Color.red;
             }
         }
         
@@ -257,11 +298,19 @@ namespace _Scripts.Controller
             try
             {
                 var result = await _localIoT.DisconnectFromBroker();
-                _statusLocalLabel.text = result ? "Status: Offline" : "Client not connected";
+                _dashboard.localIoTStatusLabel.text=_statusLocalLabel.text = result ? "Offline" : "Client not connected";
+                if (_dashboard.localIoTStatusLabel.text == "Offline")
+                {
+                    _dashboard.localIoTStatusLabel.style.color=Color.red;
+                }else if (_dashboard.localIoTStatusLabel.text == "Client not connected")
+                {
+                    _dashboard.localIoTStatusLabel.style.color=Color.yellow;
+                }
             }
             catch (Exception ex)
             {
-                _statusLocalLabel.text = "Error disconnect: " + ex.Message;
+                _dashboard.localIoTStatusLabel.text=_statusLocalLabel.text = "Error disconnect: " + ex.Message;
+                _dashboard.localIoTStatusLabel.style.color=Color.red;
             }
         }
         private void TestMessageLocal(ClickEvent evt)
@@ -272,13 +321,43 @@ namespace _Scripts.Controller
         {
             var isConnected = await _cloudIoT.ConnectToAwsIoT();
 
-            _cloudStatusLabel.text = isConnected ? "Status: Online" : "Status: Offline";
+            _dashboard.cloudIoTStatusLabel.text=_cloudStatusLabel.text = isConnected ? "Online" : "Offline";
+            if (_dashboard.cloudIoTStatusLabel.text=="Online")
+            {
+                _dashboard.cloudIoTStatusLabel.style.color=Color.green;
+            }
+            else
+            {
+                _dashboard.cloudIoTStatusLabel.style.color=Color.red;
+            }
+        }
+        
+        private async void ConnectToAwsIotCore()
+        {
+            var isConnected = await _cloudIoT.ConnectToAwsIoT();
+
+            _dashboard.cloudIoTStatusLabel.text=_cloudStatusLabel.text = isConnected ? "Online" : "Offline";
+            if (_dashboard.cloudIoTStatusLabel.text=="Online")
+            {
+                _dashboard.cloudIoTStatusLabel.style.color=Color.green;
+            }
+            else
+            {
+                _dashboard.cloudIoTStatusLabel.style.color=Color.red;
+            }
         }
 
         private async void DisconnectFromAwsIotCore(ClickEvent evt)
         {
             var isDisconnected = await _cloudIoT.DisconnectFromAwsIoT();
-            _cloudStatusLabel.text = isDisconnected ? "Status: Offline" : "Client not connected";
+            _dashboard.cloudIoTStatusLabel.text=_cloudStatusLabel.text = isDisconnected ? "Offline" : "Client not connected";
+            if (_dashboard.cloudIoTStatusLabel.text == "Offline")
+            {
+                _dashboard.cloudIoTStatusLabel.style.color=Color.red;
+            }else if (_dashboard.cloudIoTStatusLabel.text == "Client not connected")
+            {
+                _dashboard.cloudIoTStatusLabel.style.color=Color.yellow;
+            }
         }
         
         private void TestMessageAwsIotCore(ClickEvent evt)
