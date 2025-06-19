@@ -20,9 +20,15 @@ MonoBehaviour:
   _modeConnection: Manual connection
   _endpoint: aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com
   _thingName: TwinNexusPlatformGalaxyA52
-  _cloudPort: 883
+  _cloudPort: 8883
   _caFilePath: Assets/_Certificates/AmazonRootCA1.pem
   _clientCertPath: Assets/_Certificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-certificate.pem.crt
   _clientKeyPath: Assets/_Certificates/36496f1b2648f5638028f5f24cabf9ebb2f28f8e97febd96636f884d927fd694-private.pem.key
   _cloudModeConnection: Manual connection
-  _pfxFilePath: Assets/_Certificates/aws-iot.pfx
+  _pfxFilePath: Assets/StreamingAssets/aws-iot.pfx
+  _cloudVmIoTipOrHostname: 78.13.74.209
+  _cloudVmIoTPort: 1883
+  _cloudVmIoTClientID: TNPSGA52
+  _cloudVmIoTModeConnection: Manual connection
+  _cloudVmIoTUsername: ruloCoder09
+  _cloudVmIoTPassword: 5859

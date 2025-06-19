@@ -101,7 +101,7 @@ namespace _Scripts.Controller
             _gameManager.selectedModeUiName = "Devices available for operate";
             HideUi();
             HideMenu(evt);
-            _deviceSelectionController.ShowUi(); // no debe ser estatico aqui tambien debe ir la logica de la maquina de estados
+            _deviceSelectionController.ShowUi(); 
             if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
             
         }
@@ -159,11 +159,11 @@ namespace _Scripts.Controller
             _trainingButton=root.Q<Button>("TrainingButton");
             _settingsButton=root.Q<Button>("SettingsButton");
             _localIoTStatusLabel=root.Q<Label>("LocalIoTStatusLabel");
-                _localIoTModeLabel=root.Q<Label>("LocalIoTModeLabel");
+            _localIoTModeLabel=root.Q<Label>("LocalIoTModeLabel");
             _vMIoTStatusLabel=root.Q<Label>("VMIoTStatusLabel");
-                _vMIoTModeLabel=root.Q<Label>("VMIoTModeLabel");
+            _vMIoTModeLabel=root.Q<Label>("VMIoTModeLabel");
             _cloudIoTStatusLabel=root.Q<Label>("CloudIoTStatusLabel");
-                _cloudlIoTModeLabel=root.Q<Label>("CloudlIoTModeLabel");
+            _cloudlIoTModeLabel=root.Q<Label>("CloudlIoTModeLabel");
         }
 
         private void RegisterEvents()

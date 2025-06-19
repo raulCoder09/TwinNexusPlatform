@@ -91,3 +91,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controller.LinkController
   link: {fileID: 7517246251374398390}
+  mode: 0

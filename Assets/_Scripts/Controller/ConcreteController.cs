@@ -40,6 +40,16 @@ namespace _Scripts.Controller
 
         private Label _lengthOfLink1Label;
 
+        #region menu
+
+        private VisualElement _subpanelsAndSmokeMaskContainer;
+        private VisualElement _navigationMenuPanel;
+        private VisualElement _scrim;
+        private Button _menuButton;
+        private Button _hideMenuButton;
+
+        #endregion
+
         internal Label lengthOfLink1Label
         {
             get => _lengthOfLink1Label;
@@ -101,6 +111,12 @@ namespace _Scripts.Controller
             _helperMessageLabel.style.display = DisplayStyle.None;
             _menuEnvironment.style.height = 60;
             _menuLevelMedara.style.height = 60;
+
+            #region menu
+
+            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+
+            #endregion
         }
         
 
@@ -306,6 +322,13 @@ namespace _Scripts.Controller
             EnableMethodsInverseKinematics(_inverseKinematicsRadioButton.value);
         }
     });
+    
+    #region menu
+
+    _menuButton.RegisterCallback<ClickEvent>(ShowMenu);
+    _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
+    _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+    #endregion
 }
 
         private void EnableMethodsInverseKinematics(bool evtNewValue)
@@ -448,7 +471,42 @@ namespace _Scripts.Controller
             _lengthOfLink2Label=root.Q<Label>("LengthOfLink2Label");
             _lengthOfLink3Label=root.Q<Label>("LengthOfLink3Label");
             _helperMessageLabel=root.Q<Label>("HelperMessageLabel");
+            
+            
+            #region menu
+
+            _menuButton=root.Q<Button>("MenuButton");
+            _subpanelsAndSmokeMaskContainer=root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+            _navigationMenuPanel=root.Q<VisualElement>("NavigationMenuPanel");
+            _scrim = root.Q<VisualElement>("Scrim");
+            _hideMenuButton=root.Q<Button>("HideMenuButton");
+            #endregion
         }
+
+        #region menu
+
+        private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
+        {
+            if (!_navigationMenuPanel.ClassListContains("NavigationMenuPanelInMainScreen"))
+            {
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            }
+        }
+
+        private void HideMenu(ClickEvent evt)
+        {
+            _navigationMenuPanel.RemoveFromClassList("NavigationMenuPanelInMainScreen");
+            _scrim.RemoveFromClassList("ScrimOpaque");
+        }
+
+        private void ShowMenu(ClickEvent evt)
+        {
+            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.Flex;
+            _navigationMenuPanel.AddToClassList("NavigationMenuPanelInMainScreen");
+            _scrim.AddToClassList("ScrimOpaque");
+        }
+
+        #endregion
         
         private void LaunchRealDeviceEnvironment()
         {

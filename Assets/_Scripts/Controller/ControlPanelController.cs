@@ -18,6 +18,15 @@ namespace _Scripts.Controller
         private AugmentedRealityEnvironmentController _augmentedRealityEnvironment;
         private HybridEnvironmentController _hybridEnvironment;
         private RealDeviceEnvironmentController _realDeviceEnvironment;
+        #region menu
+
+        private VisualElement _subpanelsAndSmokeMaskContainer;
+        private VisualElement _navigationMenuPanel;
+        private VisualElement _scrim;
+        private Button _menuButton;
+        private Button _hideMenuButton;
+
+        #endregion
 
         internal DropdownField menuEnvironment
         {
@@ -46,6 +55,11 @@ namespace _Scripts.Controller
             _menuRobotArscara.value = "Menu ARSCARA";
             _menuEnvironment.value = "Menu environment" ;
             FindEnvironmentComponents();
+            #region menu
+
+            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+
+            #endregion
 
         }
         internal void ShowUI()
@@ -125,9 +139,47 @@ namespace _Scripts.Controller
             _menuEnvironment = root.Q<DropdownField>("MenuEnvironmentDropdownField");
             _menuRobotArscara=root.Q<DropdownField>("MenuRobotARSCARADropdownField");
             _menuViews=root.Q<DropdownField>("Views");
+            #region menu
+
+            _menuButton=root.Q<Button>("MenuButton");
+            _subpanelsAndSmokeMaskContainer=root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+            _navigationMenuPanel=root.Q<VisualElement>("NavigationMenuPanel");
+            _scrim = root.Q<VisualElement>("Scrim");
+            _hideMenuButton=root.Q<Button>("HideMenuButton");
+            #endregion
         }
+        #region menu
+
+        private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
+        {
+            if (!_navigationMenuPanel.ClassListContains("NavigationMenuPanelInMainScreen"))
+            {
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            }
+        }
+
+        private void HideMenu(ClickEvent evt)
+        {
+            _navigationMenuPanel.RemoveFromClassList("NavigationMenuPanelInMainScreen");
+            _scrim.RemoveFromClassList("ScrimOpaque");
+        }
+
+        private void ShowMenu(ClickEvent evt)
+        {
+            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.Flex;
+            _navigationMenuPanel.AddToClassList("NavigationMenuPanelInMainScreen");
+            _scrim.AddToClassList("ScrimOpaque");
+        }
+
+        #endregion
         private void RegisterEvents()
         {
+            #region menu
+
+            _menuButton.RegisterCallback<ClickEvent>(ShowMenu);
+            _hideMenuButton.RegisterCallback<ClickEvent>(HideMenu);
+            _navigationMenuPanel.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+            #endregion
             _menuEnvironment.RegisterValueChangedCallback(evt =>
             {
                 EnableEnvironment(evt.newValue);

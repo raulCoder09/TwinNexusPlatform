@@ -1,0 +1,25 @@
+.NavigationMenuPanelOutMainScreen {
+    flex-direction: row;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition-timing-function: ease-in-cubic;
+    transition-duration: 1s;
+    translate: -100% 0;
+}
+
+.NavigationMenuPanelInMainScreen {
+    translate: 0% 0;
+}
+
+.ScrimTransparent {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    transition-duration: 1s;
+}
+
+.ScrimOpaque {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.78);
+}
