@@ -13,6 +13,7 @@ namespace _Scripts.Models
 {
     public class CloudIoT : MonoBehaviour
     {
+        #region Private Fields
         private string _endpoint;
         private string _clientId;
         private string _thingName;
@@ -26,20 +27,30 @@ namespace _Scripts.Models
         private MqttFactory _factory;
         private IMqttClient _client;
         
-        // Properties
-        internal string endpoint
+        private const int DEFAULT_PORT = 8883;
+        private const int CONNECTION_TIMEOUT = 45000;
+        private const int DISCONNECT_TIMEOUT = 5000;
+        private const int KEEP_ALIVE_SECONDS = 60;
+        private const int CLIENT_TIMEOUT_SECONDS = 30;
+        private const int RECONNECT_DELAY = 5000;
+        private const string DEFAULT_PFX_FILENAME = "aws-iot.pfx";
+        private const string TEST_TOPIC = "test/topic";
+        #endregion
+
+        #region Public Properties
+        public string endpoint
         {
             get => _endpoint;
             set => _endpoint = value;
         }
 
-        internal string clientId
+        public string clientId
         {
             get => _clientId;
             set => _clientId = value;
         }
 
-        internal string thingName
+        public string thingName
         {
             get => _thingName;
             set => _thingName = value;
@@ -51,19 +62,19 @@ namespace _Scripts.Models
             set => _port = value;
         }
 
-        internal string caFilePath
+        public string caFilePath
         {
             get => _caFilePath;
             set => _caFilePath = value;
         }
 
-        internal string clientCertPath
+        public string clientCertPath
         {
             get => _clientCertPath;
             set => _clientCertPath = value;
         }
 
-        internal string clientKeyPath
+        public string clientKeyPath
         {
             get => _clientKeyPath;
             set => _clientKeyPath = value;
@@ -75,164 +86,59 @@ namespace _Scripts.Models
             set => _pfxFilePath = value;
         }
 
-        internal string modeConnection
+        public string modeConnection
         {
             get => _modeConnection;
             set => _modeConnection = value;
         }
-        
-        // Métodos de conexión
-        internal async Task<bool> ConnectToAwsIoT()
+        #endregion
+
+        #region Public Methods - API Principal
+        /// <summary>
+        /// Conecta a AWS IoT Core usando certificados
+        /// </summary>
+        /// <returns>True si la conexión fue exitosa</returns>
+        public async Task<bool> ConnectToAwsIoT()
         {
             try
             {
-                _factory = new MqttFactory();
-                _client = _factory.CreateMqttClient();
-                
-                if (!await LoadCertificatesAsync())
-                {
+                if (!await InitializeClientAsync())
                     return false;
-                }
-                
-                // Determinar qué archivo PFX usar
-                string pfxPath = !string.IsNullOrEmpty(_pfxFilePath) ? _pfxFilePath : _clientCertPath;
-                
-                if (string.IsNullOrEmpty(pfxPath))
-                {
+
+                if (!await ValidateCertificatesAsync())
                     return false;
-                }
-                
-                MqttClientOptionsBuilderTlsParameters tlsParams;
-                
-                try
-                {
-                    byte[] certBytes = await LoadCertificateBytesAsync(pfxPath);
-                    if (certBytes == null)
-                    {
-                        return false;
-                    }
-                    
-                    var clientCert = new X509Certificate2(certBytes, "", X509KeyStorageFlags.Exportable);
-                    
-                    tlsParams = new MqttClientOptionsBuilderTlsParameters
-                    {
-                        UseTls = true,
-                        Certificates = new[] { clientCert },
-                        SslProtocol = System.Security.Authentication.SslProtocols.Tls12,
-                        CertificateValidationHandler = ValidateServerCertificate,
-                        AllowUntrustedCertificates = false,
-                        IgnoreCertificateChainErrors = false,
-                        IgnoreCertificateRevocationErrors = true
-                    };
-                }
-                catch (Exception ex)
-                {
-                    if (ex.Message.Contains("password"))
-                    {
-                    }
+
+                var tlsParams = await CreateTlsParametersAsync();
+                if (tlsParams == null)
                     return false;
-                }
-                
-                var options = new MqttClientOptionsBuilder()
-                    .WithClientId(_thingName)
-                    .WithTcpServer(_endpoint, int.Parse(_port ?? "8883"))
-                    .WithProtocolVersion(MqttProtocolVersion.V311)
-                    .WithTls(tlsParams)
-                    .WithCleanSession()
-                    .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
-                    .WithTimeout(TimeSpan.FromSeconds(30)) // Timeout más largo para Android
-                    .Build();
-                
+
+                var options = BuildConnectionOptions(tlsParams);
                 ConfigureEventHandlers();
+
+                bool connected = await AttemptConnectionAsync(options);
                 
-                var connectTask = _client.ConnectAsync(options);
-                var timeoutTask = Task.Delay(45000);
-                
-                var completedTask = await Task.WhenAny(connectTask, timeoutTask);
-                
-                if (completedTask == timeoutTask)
-                {
-                    return false;
-                }
-                
-                await connectTask; 
-                
-                if (_client.IsConnected)
+                if (connected)
                 {
                     await SubscribeToDefaultTopics();
-                    return true;
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (MqttCommunicationException mqttEx)
-            {
-                return false;
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                }
-                
-                return false;
-            }
-        }
-        
-        private async Task<byte[]> LoadCertificateBytesAsync(string pfxPath)
-        {
-            try
-            {
-               #if UNITY_ANDROID && !UNITY_EDITOR
-                string streamingPath = Path.Combine(Application.streamingAssetsPath, Path.GetFileName(pfxPath));
-                Debug.Log($"Cargando certificado desde StreamingAssets: {streamingPath}");
-                
-                using (var request = UnityEngine.Networking.UnityWebRequest.Get(streamingPath))
-                {
-                    var operation = request.SendWebRequest();
 
-                    while (!operation.isDone)
-                    {
-                        await Task.Delay(50);
-                    }
-                    
-                    if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
-                    {
-                        Debug.Log($"Certificado cargado exitosamente. Tamaño: {request.downloadHandler.data.Length} bytes");
-                        return request.downloadHandler.data;
-                    }
-                    else
-                    {
-                        Debug.LogError($"Error al cargar certificado: {request.error}");
-                        return null;
-                    }
-                }
-                #else
-                if (File.Exists(pfxPath))
-                {
-                    var bytes = await File.ReadAllBytesAsync(pfxPath);
-                    return bytes;
-                }
-                else
-                {
-                    return null;
-                }
-#endif
+                return connected;
             }
             catch (Exception ex)
             {
-                return null;
+                Debug.LogError($"Error connecting to AWS IoT: {ex.Message}");
+                return false;
             }
         }
-        
-        internal async Task<bool> DisconnectFromAwsIoT()
+
+        /// <summary>
+        /// Desconecta de AWS IoT Core
+        /// </summary>
+        /// <returns>True si la desconexión fue exitosa</returns>
+        public async Task<bool> DisconnectFromAwsIoT()
         {
             if (_client == null || !_client.IsConnected)
-            {
                 return false;
-            }
             
             try
             {
@@ -241,108 +147,23 @@ namespace _Scripts.Models
             }
             catch (Exception ex)
             {
+                Debug.LogError($"Error disconnecting from AWS IoT: {ex.Message}");
                 return false;
             }
         }
-        
-        private bool ValidateServerCertificate(MqttClientCertificateValidationEventArgs args)
-        {
-            if (args.SslPolicyErrors == SslPolicyErrors.None)
-            {
-                return true;
-            }
-            
-            
-            if (args.SslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
-            {
-                return true;
-            }
-            
-            return args.SslPolicyErrors == SslPolicyErrors.None;
-        }
-        
-        private void ConfigureEventHandlers()
-        {
-            _client.ConnectedAsync += async e =>
-            {
-            };
-            
-            _client.DisconnectedAsync += async e =>
-            {
-                
-                if (e.Exception != null)
-                {
-                }
-                
-                if (e.Reason != MqttClientDisconnectReason.NormalDisconnection && 
-                    _modeConnection == "Automatic connection")
-                {
-                    await Task.Delay(5000);
-                    await ConnectToAwsIoT();
-                }
-            };
-            
-            _client.ApplicationMessageReceivedAsync += HandleReceivedMessage;
-        }
-        
-        private async Task<bool> LoadCertificatesAsync()
-        {
-            try
-            {
-                string pfxPath = string.IsNullOrEmpty(_pfxFilePath) ? _clientCertPath : _pfxFilePath;
 
-                #if UNITY_ANDROID && !UNITY_EDITOR
-                if (string.IsNullOrEmpty(pfxPath))
-                {
-                    pfxPath = "aws-iot.pfx"; 
-                }
-                
-                pfxPath = Path.GetFileName(pfxPath);
-                
-                string streamingPath = Path.Combine(Application.streamingAssetsPath, pfxPath);
-                Debug.Log($"Verificando certificado en StreamingAssets: {streamingPath}");
-                
-                var testBytes = await LoadCertificateBytesAsync(pfxPath);
-                if (testBytes == null)
-                {
-                    Debug.LogError($"No se encuentra el archivo PFX en StreamingAssets: {pfxPath}");
-                    Debug.LogError("Asegúrate de que el archivo .pfx esté en la carpeta StreamingAssets");
-                    return false;
-                }
-                #else
-                if (!string.IsNullOrEmpty(pfxPath))
-                {
-                    if (!File.Exists(pfxPath))
-                    {
-                        return false;
-                    }
-
-                    if (!pfxPath.EndsWith(".pfx"))
-                    {
-
-                        return false;
-                    }
-                    
-                }
-                else
-                {
-                    return false;
-                }
-            #endif
-                
-                _pfxFilePath = pfxPath;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-        
-        internal async Task<bool> PublishMessage(string topic, string payload, int qos = 1)
+        /// <summary>
+        /// Publica un mensaje en un topic específico
+        /// </summary>
+        /// <param name="topic">Topic de destino</param>
+        /// <param name="payload">Contenido del mensaje</param>
+        /// <param name="qos">Quality of Service (0, 1, 2)</param>
+        /// <returns>True si el mensaje fue enviado exitosamente</returns>
+        public async Task<bool> PublishMessage(string topic, string payload, int qos = 1)
         {
-            if (_client == null || !_client.IsConnected)
+            if (!IsConnected())
             {
+                Debug.LogWarning("Cannot publish message: Client not connected");
                 return false;
             }
             
@@ -356,18 +177,27 @@ namespace _Scripts.Models
                     .Build();
                 
                 await _client.PublishAsync(message);
+                Debug.Log($"Message published to topic: {topic}");
                 return true;
             }
             catch (Exception ex)
             {
+                Debug.LogError($"Error publishing message: {ex.Message}");
                 return false;
             }
         }
-        
-        internal async Task<bool> SubscribeToTopic(string topic, int qos = 1)
+
+        /// <summary>
+        /// Se suscribe a un topic específico
+        /// </summary>
+        /// <param name="topic">Topic al cual suscribirse</param>
+        /// <param name="qos">Quality of Service (0, 1, 2)</param>
+        /// <returns>True si la suscripción fue exitosa</returns>
+        public async Task<bool> SubscribeToTopic(string topic, int qos = 1)
         {
-            if (_client == null || !_client.IsConnected)
+            if (!IsConnected())
             {
+                Debug.LogWarning("Cannot subscribe: Client not connected");
                 return false;
             }
             
@@ -377,63 +207,23 @@ namespace _Scripts.Models
                     .WithTopic(topic)
                     .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)qos)
                     .Build());
+                
+                Debug.Log($"Subscribed to topic: {topic}");
                 return true;
             }
             catch (Exception ex)
             {
+                Debug.LogError($"Error subscribing to topic: {ex.Message}");
                 return false;
             }
         }
-        
-        private async Task SubscribeToDefaultTopics()
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(_thingName))
-                {
 
-                    // Topic de prueba
-                    await SubscribeToTopic("test/topic");
-                    
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-        
-        private Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
-        {
-            try
-            {
-                var topic = e.ApplicationMessage.Topic;
-                var payload = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                
-                
-                if (topic.Contains("/shadow/"))
-                {
-
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-            
-            return Task.CompletedTask;
-        }
-        
-        
-        
-        [Serializable]
-        public class TestPayload
-        {
-            public string message;
-            public string timestamp;
-            public string source;
-            public string thingName;
-        }
-
-        internal async Task<bool> SendTestMessage(string message = "Hello from twin nexus platform!")
+        /// <summary>
+        /// Envía un mensaje de prueba al topic de test
+        /// </summary>
+        /// <param name="message">Mensaje personalizado (opcional)</param>
+        /// <returns>True si el mensaje fue enviado exitosamente</returns>
+        public async Task<bool> SendTestMessage(string message = "Hello from twin nexus platform!")
         {
             var testPayload = new TestPayload
             {
@@ -444,26 +234,298 @@ namespace _Scripts.Models
             };
     
             var json = JsonUtility.ToJson(testPayload);
-            return await PublishMessage("test/topic", json);
+            return await PublishMessage(TEST_TOPIC, json);
         }
-        
-        internal bool IsConnected()
+
+        /// <summary>
+        /// Verifica si el cliente está conectado
+        /// </summary>
+        /// <returns>True si está conectado</returns>
+        public bool IsConnected()
         {
             return _client != null && _client.IsConnected;
         }
-        
+        #endregion
+
+        #region Private Helper Methods
+        private async Task<bool> InitializeClientAsync()
+        {
+            try
+            {
+                _factory = new MqttFactory();
+                _client = _factory.CreateMqttClient();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to initialize MQTT client: {ex.Message}");
+                return false;
+            }
+        }
+
+        private async Task<bool> ValidateCertificatesAsync()
+        {
+            try
+            {
+                string pfxPath = string.IsNullOrEmpty(_pfxFilePath) ? _clientCertPath : _pfxFilePath;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+                if (string.IsNullOrEmpty(pfxPath))
+                    pfxPath = DEFAULT_PFX_FILENAME;
+                
+                pfxPath = Path.GetFileName(pfxPath);
+                
+                var testBytes = await LoadCertificateBytesAsync(pfxPath);
+                if (testBytes == null)
+                {
+                    Debug.LogError($"Certificate file not found in StreamingAssets: {pfxPath}");
+                    return false;
+                }
+#else
+                if (string.IsNullOrEmpty(pfxPath) || !File.Exists(pfxPath))
+                {
+                    Debug.LogError("Certificate file not found or path is empty");
+                    return false;
+                }
+
+                if (!pfxPath.EndsWith(".pfx"))
+                {
+                    Debug.LogError("Certificate file must be a .pfx file");
+                    return false;
+                }
+#endif
+                
+                _pfxFilePath = pfxPath;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Certificate validation failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        private async Task<MqttClientOptionsBuilderTlsParameters> CreateTlsParametersAsync()
+        {
+            try
+            {
+                string pfxPath = !string.IsNullOrEmpty(_pfxFilePath) ? _pfxFilePath : _clientCertPath;
+                
+                if (string.IsNullOrEmpty(pfxPath))
+                    return null;
+                
+                byte[] certBytes = await LoadCertificateBytesAsync(pfxPath);
+                if (certBytes == null)
+                    return null;
+                
+                var clientCert = new X509Certificate2(certBytes, "", X509KeyStorageFlags.Exportable);
+                
+                return new MqttClientOptionsBuilderTlsParameters
+                {
+                    UseTls = true,
+                    Certificates = new[] { clientCert },
+                    SslProtocol = System.Security.Authentication.SslProtocols.Tls12,
+                    CertificateValidationHandler = ValidateServerCertificate,
+                    AllowUntrustedCertificates = false,
+                    IgnoreCertificateChainErrors = false,
+                    IgnoreCertificateRevocationErrors = true
+                };
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to create TLS parameters: {ex.Message}");
+                return null;
+            }
+        }
+
+        private MqttClientOptions BuildConnectionOptions(MqttClientOptionsBuilderTlsParameters tlsParams)
+        {
+            int portNumber = int.TryParse(_port, out int p) ? p : DEFAULT_PORT;
+            
+            return new MqttClientOptionsBuilder()
+                .WithClientId(_thingName)
+                .WithTcpServer(_endpoint, portNumber)
+                .WithProtocolVersion(MqttProtocolVersion.V311)
+                .WithTls(tlsParams)
+                .WithCleanSession()
+                .WithKeepAlivePeriod(TimeSpan.FromSeconds(KEEP_ALIVE_SECONDS))
+                .WithTimeout(TimeSpan.FromSeconds(CLIENT_TIMEOUT_SECONDS))
+                .Build();
+        }
+
+        private async Task<bool> AttemptConnectionAsync(MqttClientOptions options)
+        {
+            var connectTask = _client.ConnectAsync(options);
+            var timeoutTask = Task.Delay(CONNECTION_TIMEOUT);
+            
+            var completedTask = await Task.WhenAny(connectTask, timeoutTask);
+            
+            if (completedTask == timeoutTask)
+            {
+                Debug.LogError("Connection timeout");
+                return false;
+            }
+            
+            await connectTask;
+            
+            if (_client.IsConnected)
+            {
+                Debug.Log("Successfully connected to AWS IoT Core");
+                return true;
+            }
+            
+            Debug.LogError("Failed to connect to AWS IoT Core");
+            return false;
+        }
+
+        private async Task<byte[]> LoadCertificateBytesAsync(string pfxPath)
+        {
+            try
+            {
+#if UNITY_ANDROID && !UNITY_EDITOR
+                string streamingPath = Path.Combine(Application.streamingAssetsPath, Path.GetFileName(pfxPath));
+                
+                using (var request = UnityEngine.Networking.UnityWebRequest.Get(streamingPath))
+                {
+                    var operation = request.SendWebRequest();
+
+                    while (!operation.isDone)
+                    {
+                        await Task.Delay(50);
+                    }
+                    
+                    if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+                    {
+                        Debug.Log($"Certificate loaded successfully. Size: {request.downloadHandler.data.Length} bytes");
+                        return request.downloadHandler.data;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Failed to load certificate: {request.error}");
+                        return null;
+                    }
+                }
+#else
+                if (File.Exists(pfxPath))
+                {
+                    return await File.ReadAllBytesAsync(pfxPath);
+                }
+                else
+                {
+                    Debug.LogError($"Certificate file not found: {pfxPath}");
+                    return null;
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error loading certificate: {ex.Message}");
+                return null;
+            }
+        }
+
+        private bool ValidateServerCertificate(MqttClientCertificateValidationEventArgs args)
+        {
+            // Permitir certificados válidos y aquellos con errores de cadena solamente
+            return args.SslPolicyErrors == SslPolicyErrors.None || 
+                   args.SslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors;
+        }
+
+        private void ConfigureEventHandlers()
+        {
+            _client.ConnectedAsync += async e =>
+            {
+                Debug.Log("Connected to AWS IoT Core");
+            };
+            
+            _client.DisconnectedAsync += async e =>
+            {
+                Debug.Log($"Disconnected from AWS IoT Core. Reason: {e.Reason}");
+                
+                if (e.Exception != null)
+                {
+                    Debug.LogError($"Disconnection exception: {e.Exception.Message}");
+                }
+                
+                // Auto-reconexión si está configurada
+                if (e.Reason != MqttClientDisconnectReason.NormalDisconnection && 
+                    _modeConnection == "Automatic connection")
+                {
+                    Debug.Log("Attempting automatic reconnection...");
+                    await Task.Delay(RECONNECT_DELAY);
+                    await ConnectToAwsIoT();
+                }
+            };
+            
+            _client.ApplicationMessageReceivedAsync += HandleReceivedMessage;
+        }
+
+        private async Task SubscribeToDefaultTopics()
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(_thingName))
+                {
+                    await SubscribeToTopic(TEST_TOPIC);
+                    Debug.Log("Subscribed to default topics");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error subscribing to default topics: {ex.Message}");
+            }
+        }
+
+        private Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
+        {
+            try
+            {
+                var topic = e.ApplicationMessage.Topic;
+                var payload = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                
+                Debug.Log($"Message received on topic '{topic}': {payload}");
+                
+                if (topic.Contains("/shadow/"))
+                {
+                    Debug.Log("Shadow message received");
+                    // Aquí puedes agregar lógica específica para mensajes de shadow
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error handling received message: {ex.Message}");
+            }
+            
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        #region Unity Lifecycle
         private void OnDestroy()
         {
             if (_client != null && _client.IsConnected)
             {
                 try
                 {
-                    _client.DisconnectAsync().Wait(5000); // Timeout de 5 segundos
+                    _client.DisconnectAsync().Wait(DISCONNECT_TIMEOUT);
                 }
                 catch (Exception ex)
                 {
+                    Debug.LogError($"Error during cleanup: {ex.Message}");
                 }
             }
         }
+        #endregion
+
+        #region Data Classes
+        [Serializable]
+        public class TestPayload
+        {
+            public string message;
+            public string timestamp;
+            public string source;
+            public string thingName;
+        }
+        #endregion
     }
 }
