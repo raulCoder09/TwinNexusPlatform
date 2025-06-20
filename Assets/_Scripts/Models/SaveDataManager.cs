@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace _Scripts.Models
 {
-    public class SaveSystem : MonoBehaviour
+    public class SaveDataManager : MonoBehaviour
     {
         #region Serialized Fields
         [SerializeField] private IotConfigurationData iotConfigurationData;

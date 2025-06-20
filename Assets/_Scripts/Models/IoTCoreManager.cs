@@ -11,7 +11,7 @@ using MQTTnet.Exceptions;
 
 namespace _Scripts.Models
 {
-    public class CloudIoT : MonoBehaviour
+    public class IoTCoreManager : MonoBehaviour
     {
         #region Private Fields
         private string _endpoint;
