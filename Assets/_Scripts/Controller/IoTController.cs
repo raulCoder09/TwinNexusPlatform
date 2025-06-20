@@ -61,7 +61,7 @@ namespace _Scripts.Controller
         private Button _connectCloudVmIoTButton;
         private Button _disconnectCloudVmIoTButton;
         private Button _testMessageCloudVmIoTButton;
-        private Label _statusLocalCloudVmIoTLabel;
+        private Label _statusCloudVmIoTLabel;
         
 
         private void Awake()
@@ -96,9 +96,13 @@ namespace _Scripts.Controller
             _cloudVmIoTipOrHostnameTextField.value = iotConfigurationData.cloudVmIoTipOrHostname;
             _cloudVmIoTPortTextField.value = iotConfigurationData.cloudVmIoTPort.ToString();
             _cloudVmIoTClientIDTextField.value = iotConfigurationData.cloudVmIoTClientID;
+            
             _cloudVmIoTModeConnectionDropdownField.value = iotConfigurationData.cloudVmIoTModeConnection;
+            
             _cloudVmIoTUsernameTextField.value=iotConfigurationData.cloudVmIoTUsername;
             _cloudVmIoTPasswordTextField.value=iotConfigurationData.cloudVmIoTPassword;
+            
+            _dashboardController.vMIoTModeLabel.text=_cloudVmIoTModeConnectionDropdownField.value = iotConfigurationData.cloudVmIoTModeConnection;
                 
             if (_modeConnectionDropdownField.value=="Automatic connection")
             {
@@ -131,6 +135,15 @@ namespace _Scripts.Controller
             else
             {
                 _dashboardController.cloudIoTStatusLabel.style.color=Color.red;
+            }
+            
+            if (_dashboardController.vMIoTStatusLabel.text=="Online")
+            {
+                _dashboardController.vMIoTStatusLabel.style.color=Color.green;
+            }
+            else
+            {
+                _dashboardController.vMIoTStatusLabel.style.color=Color.red;
             }
             
         }
@@ -176,7 +189,7 @@ namespace _Scripts.Controller
 
             _modeConnectionDropdownField.RegisterValueChangedCallback(evt =>
             {
-                _localIoT.modeConnection = iotConfigurationData.ModeConnection= evt.newValue;
+                _dashboardController.localIoTModeLabel.text=_localIoT.modeConnection = iotConfigurationData.ModeConnection= evt.newValue;
                 _saveSystem.SaveData();
             });
             
@@ -219,7 +232,7 @@ namespace _Scripts.Controller
             });
             _cloudModeConnectionDropdownField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.cloudModeConnection=_cloudIoT.modeConnection = evt.newValue;
+                _dashboardController.cloudlIoTModeLabel.text=iotConfigurationData.cloudModeConnection=_cloudIoT.modeConnection = evt.newValue;
                 _saveSystem.SaveData();
             });
 
@@ -256,7 +269,8 @@ namespace _Scripts.Controller
             });
             _cloudVmIoTModeConnectionDropdownField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.cloudVmIoTModeConnection = _vmIoT.modeConnection= evt.newValue;;
+                _dashboardController.vMIoTModeLabel.text=iotConfigurationData.cloudVmIoTModeConnection = _vmIoT.modeConnection= evt.newValue;;
+                
                 _saveSystem.SaveData();
             });
             _cloudVmIoTUsernameTextField.RegisterValueChangedCallback(evt =>
@@ -342,7 +356,7 @@ namespace _Scripts.Controller
             _connectCloudVmIoTButton= root.Q<Button>("ConnectCloudVMIoTButton");
             _disconnectCloudVmIoTButton= root.Q<Button>("DisconnectCloudVMIoTButton");
             _testMessageCloudVmIoTButton= root.Q<Button>("TestMessageCloudVMIoTButton");
-            _statusLocalCloudVmIoTLabel= root.Q<Label>("StatusLocalCloudVMIoTLabel");
+            _statusCloudVmIoTLabel= root.Q<Label>("StatusLocalCloudVMIoTLabel");
             
         }
         
@@ -476,18 +490,71 @@ namespace _Scripts.Controller
             _ = _cloudIoT.SendTestMessage();
         }
         
-        private void ConnectToVM(ClickEvent evt)
+        private async void ConnectToVM(ClickEvent evt)
         {
-            print("si recibi el evento");
-            _ = _vmIoT.ConnectToEC2Broker();
+            
+            try
+            {
+                var result = await _vmIoT.ConnectToEC2Broker();
+                _dashboardController.vMIoTStatusLabel.text = _statusCloudVmIoTLabel.text = result ? "Online" : "Offline";
+                if (_dashboardController.vMIoTStatusLabel.text=="Online")
+                {
+                    _dashboardController.vMIoTStatusLabel.style.color=Color.green;
+                }
+                else
+                {
+                    _dashboardController.vMIoTStatusLabel.style.color=Color.red;
+                }
+            }
+            catch (Exception ex)
+            {
+                _dashboardController.vMIoTStatusLabel.text =_statusCloudVmIoTLabel.text = "Error connection: " + ex.Message;
+                _dashboardController.vMIoTStatusLabel.style.color=Color.red;
+            }
+            
         }
-        private void ConnectToVM()
+        private async void ConnectToVM()
         {
-            _ = _vmIoT.ConnectToEC2Broker();
+            try
+            {
+                var result = await _vmIoT.ConnectToEC2Broker();
+                _dashboardController.vMIoTStatusLabel.text = _statusCloudVmIoTLabel.text = result ? "Online" : "Offline";
+                if (_dashboardController.vMIoTStatusLabel.text=="Online")
+                {
+                    _dashboardController.vMIoTStatusLabel.style.color=Color.green;
+                }
+                else
+                {
+                    _dashboardController.vMIoTStatusLabel.style.color=Color.red;
+                }
+            }
+            catch (Exception ex)
+            {
+                _dashboardController.vMIoTStatusLabel.text =_statusCloudVmIoTLabel.text = "Error connection: " + ex.Message;
+                _dashboardController.vMIoTStatusLabel.style.color=Color.red;
+            }
         }
-        private void DisconnectFromVM(ClickEvent evt)
+        private async void DisconnectFromVM(ClickEvent evt)
         {
-            _ = _vmIoT.DisconnectFromEC2Broker();
+            try
+            {
+                var result = await _vmIoT.DisconnectFromEC2Broker();
+                _dashboardController.vMIoTStatusLabel.text=_statusCloudVmIoTLabel.text = result ? "Offline" : "Client not connected";
+                if (_dashboardController.vMIoTStatusLabel.text == "Offline")
+                {
+                    _dashboardController.vMIoTStatusLabel.style.color=Color.red;
+                }else if (_dashboardController.vMIoTStatusLabel.text == "Client not connected")
+                {
+                    _dashboardController.vMIoTStatusLabel.style.color=Color.yellow;
+                }
+            }
+            catch (Exception ex)
+            {
+                _dashboardController.vMIoTStatusLabel.text=_statusCloudVmIoTLabel.text = "Error disconnect: " + ex.Message;
+                _dashboardController.vMIoTStatusLabel.style.color=Color.red;
+            }
+            
+            
         }
 
         private void TestMessageVM(ClickEvent evt)

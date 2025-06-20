@@ -81,7 +81,7 @@ namespace _Scripts.Models
             
             _client.ConnectedAsync += async e =>
             {
-                print("Conectado al broker MQTT en " + _brokerAddress);
+
             };
             
             // Agregar handler para mensajes recibidos
@@ -94,7 +94,6 @@ namespace _Scripts.Models
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error al conectar al broker: " + ex.Message);
                 connectionSuccess = false;
             }
             return connectionSuccess;
@@ -105,19 +104,16 @@ namespace _Scripts.Models
             var disconnectionSuccess = false;
             if (_client == null || !_client.IsConnected)
             {
-                print("No se puede desconectar: El cliente no está conectado.");
                 return false;
             }
 
             try
             {
                 await _client.DisconnectAsync();
-                print("Desconectado del broker MQTT manualmente");
                 disconnectionSuccess = true;
             }
             catch (Exception ex)
             {
-                print("Error al desconectar del broker: " + ex.Message);
                 disconnectionSuccess = false;
             }
             return disconnectionSuccess;
@@ -127,17 +123,14 @@ namespace _Scripts.Models
         {
             if (_client == null)
             {
-                print("No se puede reconectar: El cliente no está inicializado.");
                 return;
             }
 
             if (_client.IsConnected)
             {
-                print("El cliente ya está conectado, no se necesita reconexión.");
                 return;
             }
-
-            print("Intentando reconectar al broker...");
+            
             var options = new MqttClientOptionsBuilder()
                 .WithClientId(_clientId)
                 .WithTcpServer(_brokerAddress, _brokerPort)
@@ -147,11 +140,9 @@ namespace _Scripts.Models
             try
             {
                 await _client.ConnectAsync(options);
-                print("Reconectado al broker MQTT en " + _brokerAddress);
             }
             catch (Exception ex)
             {
-                print("Error al reconectar al broker: " + ex.Message);
             }
         }
         
@@ -159,19 +150,16 @@ namespace _Scripts.Models
         {
             if (_client == null || !_client.IsConnected)
             {
-                print("No se puede suscribir: El cliente no está conectado.");
                 return false;
             }
 
             try
             {
                 await _client.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic(subscribeTopic).Build());
-                print("Suscrito al tema: " + subscribeTopic);
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error al suscribirse al tema: " + ex.Message);
                 return false;
             }
         }
@@ -180,7 +168,6 @@ namespace _Scripts.Models
         {
             if (_client == null || !_client.IsConnected)
             {
-                print("No se puede publicar: El cliente no está conectado.");
                 return false;
             }
 
@@ -193,12 +180,10 @@ namespace _Scripts.Models
             try
             {
                 await _client.PublishAsync(mqttMessage);
-                print("Mensaje publicado en " + topic + ": " + message);
                 return true;
             }
             catch (Exception ex)
             {
-                print("Error al publicar el mensaje: " + ex.Message);
                 return false;
             }
         }
@@ -206,7 +191,6 @@ namespace _Scripts.Models
         private Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
         {
             string message = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            print("Mensaje recibido en " + e.ApplicationMessage.Topic + ": " + message);
             return Task.CompletedTask;
         }
 
@@ -220,7 +204,6 @@ namespace _Scripts.Models
             };
     
             var json = JsonUtility.ToJson(testPayload);
-            Debug.Log($"Enviando mensaje de prueba: {json}");
             return await PublishMessage("test/topic", json);
         }
 
@@ -229,7 +212,6 @@ namespace _Scripts.Models
             if (_client != null && _client.IsConnected)
             {
                 _client.DisconnectAsync().Wait();
-                print("Cliente MQTT desconectado");
             }
         }
     }
