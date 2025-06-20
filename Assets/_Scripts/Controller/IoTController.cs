@@ -65,7 +65,7 @@ namespace _Scripts.Controller
 
         #region Dependencies
         private LocalIoT _localIoT;
-        private IoTCoreManager _ioTCoreManager;
+        private CloudIoT _ioTCoreManager;
         private VMIoT _vmIoT;
         private SaveDataManager _saveDataManager;
         private DashboardController _dashboardController;
@@ -125,7 +125,7 @@ namespace _Scripts.Controller
         private void FindDependencies()
         {
             _localIoT = FindComponentByTag<LocalIoT>("LocalIoT");
-            _ioTCoreManager = FindComponentByTag<IoTCoreManager>("CloudIoT");
+            _ioTCoreManager = FindComponentByTag<CloudIoT>("CloudIoT");
             _vmIoT = FindComponentByTag<VMIoT>("VMIoT");
             _saveDataManager = FindComponentByTag<SaveDataManager>("GameManager");
             _dashboardController = FindComponentByTag<DashboardController>("Dashboard");

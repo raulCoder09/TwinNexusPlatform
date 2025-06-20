@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace _Scripts.Models
 {
-    public class IoTCoreManager : MonoBehaviour
+    public class CertificateManager : MonoBehaviour
     {
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()

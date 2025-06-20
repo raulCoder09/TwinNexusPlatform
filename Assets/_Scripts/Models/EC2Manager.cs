@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AuthenticationManager : MonoBehaviour
+public class EC2Manager : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
