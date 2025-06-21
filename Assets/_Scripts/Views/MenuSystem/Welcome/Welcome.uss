@@ -37,6 +37,7 @@
     font-size: 30px;
     -unity-text-align: upper-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
 }
 
 /* Main Styles */
@@ -65,6 +66,7 @@
     -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-font-style: normal;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8); /* NEW: Neon glow */
 }
 
 #SubtitlePanel {
@@ -83,6 +85,7 @@
     white-space: normal;
     -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
 }
 
 #ButtonsPanel {
@@ -121,6 +124,7 @@
     color: rgb(0, 255, 0);
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 24px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
 }
 
 #MessageLabel {
@@ -130,6 +134,7 @@
     -unity-text-align: middle-center;
     margin-top: 10px;
     display: none;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
 }
 
 /* Panel Container */
@@ -153,6 +158,7 @@
 .ScrimFadein {
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.8);
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3); /* NEW: Subtle neon glow */
 }
 
 /* Panel Animations */
@@ -182,6 +188,7 @@
 
 .LoginPanelMoveB {
     translate: 0 0%;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* NEW: Neon glow when visible */
 }
 
 .RegisterPanelOutMainScreen {
@@ -206,6 +213,7 @@
 
 .RegisterPanelInMainScreen {
     translate: 0% 0;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* NEW: Neon glow when visible */
 }
 
 .RecoverPasswordPanelOutMainScreen {
@@ -230,6 +238,7 @@
 
 .RecoverPasswordPanelInMainScreen {
     translate: 0% 0;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* NEW: Neon glow when visible */
 }
 
 .EmailVerificationPanelOutMainScreen {
@@ -254,6 +263,7 @@
 
 .EmailVerificationPanelInMainScreen {
     translate: 0% 0;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* NEW: Neon glow when visible */
 }
 
 /* Generic Cyberpunk Styles */
@@ -277,16 +287,19 @@
     -unity-font-style: normal;
     transition-duration: 0.2s;
     transition-timing-function: linear;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7), 0 0 20px rgba(0, 255, 0, 0.3); /* NEW: Neon glow */
 }
 
 .button-cyberpunk:hover {
     background-color: rgb(0, 255, 0);
     color: rgb(0, 0, 0);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 1), 0 0 25px rgba(255, 0, 255, 0.5); /* NEW: Magenta neon glow */
 }
 
 .button-cyberpunk:active {
     background-color: rgb(0, 200, 0);
     color: rgb(0, 0, 0);
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.8); /* NEW: Reduced magenta glow */
 }
 
 .small-button {
@@ -307,6 +320,7 @@
     -unity-font-style: bold;
     right: 46px;
     top: 29px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
 }
 
 .textfield-cyberpunk {
@@ -324,6 +338,7 @@
     border-right-color: rgb(0, 255, 0);
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
 }
 
 .label-cyberpunk {
@@ -332,6 +347,7 @@
     font-size: 32px;
     -unity-text-align: middle-center;
     white-space: normal;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
 }
 
 /* Panel-Specific Styles */
@@ -382,6 +398,7 @@
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 100px;
     -unity-font-style: normal;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8); /* NEW: Neon glow */
 }
 
 #TitleEmailVerification {
@@ -389,6 +406,7 @@
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 80px;
     -unity-font-style: normal;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8); /* NEW: Neon glow */
 }
 
 #CloseLoginPanel, #CloseRegisterPanel, #CloseRecoverPasswordPanel, #CloseEmailVerificationPanel {
