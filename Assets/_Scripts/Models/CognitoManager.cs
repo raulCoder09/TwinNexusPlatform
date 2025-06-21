@@ -171,6 +171,11 @@ namespace _Scripts.Models
                         {
                             Name = "email",
                             Value = email
+                        },
+                        new AttributeType
+                        {
+                            Name = "preferred_username",
+                            Value = username
                         }
                     }
                 };
@@ -187,6 +192,106 @@ namespace _Scripts.Models
                 OnRegistrationComplete?.Invoke(false, ex.Message);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Registers a new user with phone number
+        /// </summary>
+        public async Task<bool> SignUpAsync(string username, string password, string email, string phoneNumber = null)
+        {
+            try
+            {
+                var userAttributes = new List<AttributeType>
+                {
+                    new AttributeType
+                    {
+                        Name = "email",
+                        Value = email
+                    },
+                    new AttributeType
+                    {
+                        Name = "preferred_username",
+                        Value = username
+                    }
+                };
+
+                // Add phone number if provided
+                if (!string.IsNullOrEmpty(phoneNumber))
+                {
+                    userAttributes.Add(new AttributeType
+                    {
+                        Name = "phone_number",
+                        Value = FormatPhoneNumber(phoneNumber)
+                    });
+                }
+
+                var signUpRequest = new SignUpRequest
+                {
+                    ClientId = clientId,
+                    Username = username,
+                    Password = password,
+                    UserAttributes = userAttributes
+                };
+
+                var response = await cognitoUserPool.SignUpAsync(signUpRequest);
+                
+                Debug.Log($"Registration successful. User sub: {response.UserSub}");
+                OnRegistrationComplete?.Invoke(true, "Registration successful. Please check your email for verification.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Registration error: {ex.Message}");
+                OnRegistrationComplete?.Invoke(false, ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Formats phone number to E.164 format (+country code)
+        /// </summary>
+        private string FormatPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+                return phoneNumber;
+
+            // Remove all non-numeric characters
+            var cleaned = System.Text.RegularExpressions.Regex.Replace(phoneNumber, @"[^\d]", "");
+            
+            // If it doesn't start with +, assume it's a US number and add +1
+            if (!phoneNumber.StartsWith("+"))
+            {
+                // If it's 10 digits, assume US number
+                if (cleaned.Length == 10)
+                {
+                    return $"+1{cleaned}";
+                }
+                // If it's 11 digits and starts with 1, assume US number
+                else if (cleaned.Length == 11 && cleaned.StartsWith("1"))
+                {
+                    return $"+{cleaned}";
+                }
+                // For Mexican numbers (if 10 digits), add +52
+                else if (cleaned.Length == 10)
+                {
+                    return $"+52{cleaned}";
+                }
+            }
+
+            return phoneNumber; // Return as-is if already formatted
+        }
+
+        /// <summary>
+        /// Validates phone number format
+        /// </summary>
+        public bool IsValidPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+                return false;
+
+            // Basic validation for international format
+            var phoneRegex = @"^\+[1-9]\d{1,14}$";
+            return System.Text.RegularExpressions.Regex.IsMatch(FormatPhoneNumber(phoneNumber), phoneRegex);
         }
 
         /// <summary>

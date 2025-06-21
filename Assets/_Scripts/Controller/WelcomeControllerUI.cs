@@ -38,6 +38,7 @@ namespace _Scripts.Controller
         private Button _backToLoginPanelFromRegisterButton;
         private TextField _usernameRegisterField;
         private TextField _emailRegisterField;
+        private TextField _phoneRegisterField;
         private TextField _passwordRegisterField;
         private TextField _repeatPasswordRegisterField;
         #endregion
@@ -362,6 +363,7 @@ namespace _Scripts.Controller
 
             string username = _usernameRegisterField.value?.Trim();
             string email = _emailRegisterField.value?.Trim();
+            string phone = _phoneRegisterField.value?.Trim();
             string password = _passwordRegisterField.value;
             string repeatPassword = _repeatPasswordRegisterField.value;
 
@@ -369,13 +371,20 @@ namespace _Scripts.Controller
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || 
                 string.IsNullOrEmpty(password) || string.IsNullOrEmpty(repeatPassword))
             {
-                ShowMessage("Please fill all fields", true);
+                ShowMessage("Please fill all required fields (username, email, password)", true);
                 return;
             }
 
             if (!_cognitoManager.IsValidEmail(email))
             {
                 ShowMessage("Please enter a valid email address", true);
+                return;
+            }
+
+            // Validate phone number if provided
+            if (!string.IsNullOrEmpty(phone) && !_cognitoManager.IsValidPhoneNumber(phone))
+            {
+                ShowMessage("Please enter a valid phone number (include country code, e.g., +52 for Mexico)", true);
                 return;
             }
 
@@ -396,7 +405,15 @@ namespace _Scripts.Controller
                 ShowMessage("Creating account...", false);
                 SetRegisterButtonEnabled(false);
                 
-                bool success = await _cognitoManager.SignUpAsync(username, password, email);
+                bool success;
+                if (!string.IsNullOrEmpty(phone))
+                {
+                    success = await _cognitoManager.SignUpAsync(username, password, email, phone);
+                }
+                else
+                {
+                    success = await _cognitoManager.SignUpAsync(username, password, email);
+                }
                 
                 if (!success)
                 {
@@ -594,6 +611,7 @@ namespace _Scripts.Controller
             // Clear register fields
             if (_usernameRegisterField != null) _usernameRegisterField.value = "";
             if (_emailRegisterField != null) _emailRegisterField.value = "";
+            if (_phoneRegisterField != null) _phoneRegisterField.value = "";
             if (_passwordRegisterField != null) _passwordRegisterField.value = "";
             if (_repeatPasswordRegisterField != null) _repeatPasswordRegisterField.value = "";
             
@@ -795,6 +813,7 @@ namespace _Scripts.Controller
             _backToLoginPanelFromRegisterButton = root.Q<Button>("BackToLoginPanelFromRegisterButton");
             _usernameRegisterField = root.Q<TextField>("UsernameRegisterField");
             _emailRegisterField = root.Q<TextField>("EmailRegisterField");
+            _phoneRegisterField = root.Q<TextField>("PhoneRegisterField");
             _passwordRegisterField = root.Q<TextField>("PasswordRegisterField");
             _repeatPasswordRegisterField = root.Q<TextField>("RepeatPasswordRegisterField");
         }
