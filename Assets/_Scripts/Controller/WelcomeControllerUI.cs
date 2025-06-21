@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using _Scripts.Models;
 
 namespace _Scripts.Controller
 {
@@ -13,6 +14,7 @@ namespace _Scripts.Controller
         private VisualElement _scrim;
         private Button _launchButton;
         private Button _exitAppButton;
+        private Label _messageLabel;
         #endregion
 
         #region UI Components - Panels
@@ -26,22 +28,30 @@ namespace _Scripts.Controller
         private Button _registerLoginButton;
         private Button _recoverPasswordLoginButton;
         private Button _loginButton;
+        private TextField _usernameLoginField;
+        private TextField _passwordLoginField;
         #endregion
 
         #region UI Components - Register Panel
         private Button _closeRegisterPanelButton;
         private Button _registerAndLoginButton;
         private Button _backToLoginPanelFromRegisterButton;
+        private TextField _usernameRegisterField;
+        private TextField _emailRegisterField;
+        private TextField _passwordRegisterField;
+        private TextField _repeatPasswordRegisterField;
         #endregion
 
         #region UI Components - Recover Password Panel
         private Button _closeRecoverPasswordButton;
         private Button _recoverPasswordButton;
         private Button _backToLoginPanelFromRecoverPasswordButton;
+        private TextField _emailRecoverField;
         #endregion
 
         #region Dependencies
         private DashboardController _dashboardController;
+        private CognitoManager _cognitoManager;
         #endregion
 
         #region Panel Management
@@ -72,6 +82,12 @@ namespace _Scripts.Controller
         private void Start()
         {
             InitializeUI();
+            SubscribeToCognitoEvents();
+        }
+
+        private void OnDestroy()
+        {
+            UnsubscribeFromCognitoEvents();
         }
         #endregion
 
@@ -135,6 +151,7 @@ namespace _Scripts.Controller
         {
             _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
             ShowUi();
+            ClearMessage();
         }
 
         private void InitializePanelSystem()
@@ -180,6 +197,12 @@ namespace _Scripts.Controller
         private void FindDependencies()
         {
             _dashboardController = FindComponentByTag<DashboardController>("Dashboard");
+            _cognitoManager = FindComponentByTag<CognitoManager>("CognitoManager");
+            
+            if (_cognitoManager == null)
+            {
+                Debug.LogError("CognitoManager not found in scene. Make sure CognitoManager is attached to a GameObject with tag 'CognitoManager'.");
+            }
         }
 
         private T FindComponentByTag<T>(string tag) where T : Component
@@ -199,6 +222,26 @@ namespace _Scripts.Controller
             
             return component;
         }
+
+        private void SubscribeToCognitoEvents()
+        {
+            if (_cognitoManager != null)
+            {
+                _cognitoManager.OnAuthenticationComplete += OnCognitoAuthenticationComplete;
+                _cognitoManager.OnRegistrationComplete += OnCognitoRegistrationComplete;
+                _cognitoManager.OnPasswordRecoveryComplete += OnCognitoPasswordRecoveryComplete;
+            }
+        }
+
+        private void UnsubscribeFromCognitoEvents()
+        {
+            if (_cognitoManager != null)
+            {
+                _cognitoManager.OnAuthenticationComplete -= OnCognitoAuthenticationComplete;
+                _cognitoManager.OnRegistrationComplete -= OnCognitoRegistrationComplete;
+                _cognitoManager.OnPasswordRecoveryComplete -= OnCognitoPasswordRecoveryComplete;
+            }
+        }
         #endregion
 
         #region Panel Management
@@ -215,6 +258,7 @@ namespace _Scripts.Controller
             _scrim.AddToClassList(SCRIM_FADEIN_CLASS);
             
             _currentActivePanel = panelType;
+            ClearMessage();
             Debug.Log($"Panel {panelType} opened");
         }
 
@@ -231,6 +275,7 @@ namespace _Scripts.Controller
             _scrim.RemoveFromClassList(SCRIM_FADEIN_CLASS);
             
             _currentActivePanel = PanelType.None;
+            ClearInputFields();
             Debug.Log($"Panel {panelType} closed");
         }
 
@@ -262,96 +307,210 @@ namespace _Scripts.Controller
 
         #region Authentication Methods
         /// <summary>
-        /// Maneja el proceso de autenticación
+        /// Maneja el proceso de autenticación con AWS Cognito
         /// </summary>
-        private void HandleAuthentication()
+        private async void HandleAuthentication()
         {
+            if (_cognitoManager == null)
+            {
+                ShowMessage("Authentication service not available", true);
+                return;
+            }
+
+            string username = _usernameLoginField.value?.Trim();
+            string password = _passwordLoginField.value;
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                ShowMessage("Please enter both username and password", true);
+                return;
+            }
+
             try
             {
-                // TODO: Implementar lógica de autenticación real
-                Debug.Log("Authentication process started");
+                ShowMessage("Authenticating...", false);
+                SetLoginButtonEnabled(false);
                 
-                // Simular autenticación exitosa
-                bool authenticationSuccessful = true; // TODO: Reemplazar con lógica real
+                bool success = await _cognitoManager.SignInAsync(username, password);
                 
-                if (authenticationSuccessful)
+                if (!success)
                 {
-                    OnAuthenticationSuccess();
-                }
-                else
-                {
-                    OnAuthenticationFailure("Invalid credentials");
+                    ShowMessage("Authentication failed. Please check your credentials.", true);
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Authentication error: {ex.Message}");
-                OnAuthenticationFailure($"Authentication failed: {ex.Message}");
+                ShowMessage($"Authentication failed: {ex.Message}", true);
+            }
+            finally
+            {
+                SetLoginButtonEnabled(true);
             }
         }
 
         /// <summary>
-        /// Maneja el proceso de registro y login automático
+        /// Maneja el proceso de registro con AWS Cognito
         /// </summary>
-        private void HandleRegisterAndLogin()
+        private async void HandleRegisterAndLogin()
         {
+            if (_cognitoManager == null)
+            {
+                ShowMessage("Registration service not available", true);
+                return;
+            }
+
+            string username = _usernameRegisterField.value?.Trim();
+            string email = _emailRegisterField.value?.Trim();
+            string password = _passwordRegisterField.value;
+            string repeatPassword = _repeatPasswordRegisterField.value;
+
+            // Validaciones
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || 
+                string.IsNullOrEmpty(password) || string.IsNullOrEmpty(repeatPassword))
+            {
+                ShowMessage("Please fill all fields", true);
+                return;
+            }
+
+            if (!_cognitoManager.IsValidEmail(email))
+            {
+                ShowMessage("Please enter a valid email address", true);
+                return;
+            }
+
+            if (password != repeatPassword)
+            {
+                ShowMessage("Passwords do not match", true);
+                return;
+            }
+
+            if (!_cognitoManager.IsValidPassword(password))
+            {
+                ShowMessage("Password must be at least 8 characters with uppercase, lowercase, and number", true);
+                return;
+            }
+
             try
             {
-                // TODO: Implementar lógica de registro real
-                Debug.Log("Registration and login process started");
+                ShowMessage("Creating account...", false);
+                SetRegisterButtonEnabled(false);
                 
-                // Simular registro exitoso
-                bool registrationSuccessful = true; // TODO: Reemplazar con lógica real
+                bool success = await _cognitoManager.SignUpAsync(username, password, email);
                 
-                if (registrationSuccessful)
+                if (!success)
                 {
-                    Debug.Log("Registration successful, proceeding with automatic login");
-                    OnAuthenticationSuccess();
-                }
-                else
-                {
-                    OnRegistrationFailure("Registration failed");
+                    ShowMessage("Registration failed. Please try again.", true);
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Registration error: {ex.Message}");
-                OnRegistrationFailure($"Registration failed: {ex.Message}");
+                ShowMessage($"Registration failed: {ex.Message}", true);
+            }
+            finally
+            {
+                SetRegisterButtonEnabled(true);
             }
         }
 
         /// <summary>
-        /// Maneja el proceso de recuperación de contraseña
+        /// Maneja el proceso de recuperación de contraseña con AWS Cognito
         /// </summary>
-        private void HandlePasswordRecovery()
+        private async void HandlePasswordRecovery()
         {
+            if (_cognitoManager == null)
+            {
+                ShowMessage("Password recovery service not available", true);
+                return;
+            }
+
+            string email = _emailRecoverField.value?.Trim();
+
+            if (string.IsNullOrEmpty(email))
+            {
+                ShowMessage("Please enter your email address", true);
+                return;
+            }
+
+            if (!_cognitoManager.IsValidEmail(email))
+            {
+                ShowMessage("Please enter a valid email address", true);
+                return;
+            }
+
             try
             {
-                // TODO: Implementar lógica de recuperación de contraseña real
-                Debug.Log("Password recovery process started");
+                ShowMessage("Sending recovery email...", false);
+                SetRecoverButtonEnabled(false);
                 
-                // Simular envío de email de recuperación
-                bool recoveryEmailSent = true; // TODO: Reemplazar con lógica real
+                bool success = await _cognitoManager.ForgotPasswordAsync(email);
                 
-                if (recoveryEmailSent)
+                if (!success)
                 {
-                    OnPasswordRecoverySuccess();
-                }
-                else
-                {
-                    OnPasswordRecoveryFailure("Failed to send recovery email");
+                    ShowMessage("Failed to send recovery email", true);
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Password recovery error: {ex.Message}");
-                OnPasswordRecoveryFailure($"Password recovery failed: {ex.Message}");
+                ShowMessage($"Password recovery failed: {ex.Message}", true);
+            }
+            finally
+            {
+                SetRecoverButtonEnabled(true);
+            }
+        }
+        #endregion
+
+        #region Cognito Event Handlers
+        private void OnCognitoAuthenticationComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnAuthenticationSuccess();
+            }
+            else
+            {
+                OnAuthenticationFailure(message);
+            }
+        }
+
+        private void OnCognitoRegistrationComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnRegistrationSuccess(message);
+            }
+            else
+            {
+                OnRegistrationFailure(message);
+            }
+        }
+
+        private void OnCognitoPasswordRecoveryComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnPasswordRecoverySuccess();
+            }
+            else
+            {
+                OnPasswordRecoveryFailure(message);
             }
         }
 
         private void OnAuthenticationSuccess()
         {
             Debug.Log("Authentication successful - navigating to dashboard");
+            ShowMessage("Login successful!", false);
+            
+            // Delay before switching to dashboard
+            Invoke(nameof(NavigateToDashboard), 1f);
+        }
+
+        private void NavigateToDashboard()
+        {
             CloseCurrentPanel();
             HideUi();
             _dashboardController?.ShowUi();
@@ -360,26 +519,113 @@ namespace _Scripts.Controller
         private void OnAuthenticationFailure(string errorMessage)
         {
             Debug.LogError($"Authentication failed: {errorMessage}");
-            // TODO: Mostrar mensaje de error en UI
+            ShowMessage($"Login failed: {errorMessage}", true);
+        }
+
+        private void OnRegistrationSuccess(string message)
+        {
+            Debug.Log($"Registration successful: {message}");
+            ShowMessage("Registration successful! Please check your email to verify your account.", false);
+            
+            // Switch to login panel after delay
+            Invoke(nameof(SwitchToLoginFromRegister), 2f);
+        }
+
+        private void SwitchToLoginFromRegister()
+        {
+            SwitchPanel(PanelType.Register, PanelType.Login);
         }
 
         private void OnRegistrationFailure(string errorMessage)
         {
             Debug.LogError($"Registration failed: {errorMessage}");
-            // TODO: Mostrar mensaje de error en UI
+            ShowMessage($"Registration failed: {errorMessage}", true);
         }
 
         private void OnPasswordRecoverySuccess()
         {
             Debug.Log("Password recovery email sent successfully");
-            // TODO: Mostrar mensaje de confirmación en UI
+            ShowMessage("Recovery email sent! Please check your inbox.", false);
+            
+            // Switch to login panel after delay
+            Invoke(nameof(SwitchToLoginFromRecover), 2f);
+        }
+
+        private void SwitchToLoginFromRecover()
+        {
             SwitchPanel(PanelType.RecoverPassword, PanelType.Login);
         }
 
         private void OnPasswordRecoveryFailure(string errorMessage)
         {
             Debug.LogError($"Password recovery failed: {errorMessage}");
-            // TODO: Mostrar mensaje de error en UI
+            ShowMessage($"Recovery failed: {errorMessage}", true);
+        }
+        #endregion
+
+        #region UI Helper Methods
+        private void ShowMessage(string message, bool isError = false)
+        {
+            if (_messageLabel != null)
+            {
+                _messageLabel.text = message;
+                _messageLabel.style.color = isError ? Color.red : Color.green;
+                _messageLabel.style.display = DisplayStyle.Flex;
+            }
+            
+            Debug.Log($"{(isError ? "Error" : "Info")}: {message}");
+        }
+
+        private void ClearMessage()
+        {
+            if (_messageLabel != null)
+            {
+                _messageLabel.text = "";
+                _messageLabel.style.display = DisplayStyle.None;
+            }
+        }
+
+        private void ClearInputFields()
+        {
+            // Clear login fields
+            if (_usernameLoginField != null) _usernameLoginField.value = "";
+            if (_passwordLoginField != null) _passwordLoginField.value = "";
+            
+            // Clear register fields
+            if (_usernameRegisterField != null) _usernameRegisterField.value = "";
+            if (_emailRegisterField != null) _emailRegisterField.value = "";
+            if (_passwordRegisterField != null) _passwordRegisterField.value = "";
+            if (_repeatPasswordRegisterField != null) _repeatPasswordRegisterField.value = "";
+            
+            // Clear recover field
+            if (_emailRecoverField != null) _emailRecoverField.value = "";
+        }
+
+        private void SetLoginButtonEnabled(bool enabled)
+        {
+            if (_loginButton != null)
+            {
+                _loginButton.SetEnabled(enabled);
+                _loginButton.text = enabled ? "Login" : "Logging in...";
+            }
+        }
+
+        private void SetRegisterButtonEnabled(bool enabled)
+        {
+            if (_registerAndLoginButton != null)
+            {
+                _registerAndLoginButton.SetEnabled(enabled);
+                _registerAndLoginButton.text = enabled ? "Register and Login" : "Creating account...";
+            }
+        }
+
+        private void SetRecoverButtonEnabled(bool enabled)
+        {
+            if (_recoverPasswordButton != null)
+            {
+                _recoverPasswordButton.SetEnabled(enabled);
+                _recoverPasswordButton.text = enabled ? "Recover" : "Sending email...";
+            }
         }
         #endregion
 
@@ -522,6 +768,7 @@ namespace _Scripts.Controller
             _scrim = root.Q<VisualElement>("Scrim");
             _launchButton = root.Q<Button>("LaunchButton");
             _exitAppButton = root.Q<Button>("ExitButton");
+            _messageLabel = root.Q<Label>("MessageLabel"); // Opcional: para mostrar mensajes
         }
 
         private void GetPanelComponents(VisualElement root)
@@ -537,6 +784,8 @@ namespace _Scripts.Controller
             _registerLoginButton = root.Q<Button>("RegisterLoginButton");
             _recoverPasswordLoginButton = root.Q<Button>("RecoverPasswordLoginButton");
             _loginButton = root.Q<Button>("LoginButton");
+            _usernameLoginField = root.Q<TextField>("UsernameLoginField");
+            _passwordLoginField = root.Q<TextField>("PasswordLoginField");
         }
 
         private void GetRegisterPanelComponents(VisualElement root)
@@ -544,6 +793,10 @@ namespace _Scripts.Controller
             _closeRegisterPanelButton = root.Q<Button>("CloseRegisterPanelButton");
             _registerAndLoginButton = root.Q<Button>("RegisterAndLoginButton");
             _backToLoginPanelFromRegisterButton = root.Q<Button>("BackToLoginPanelFromRegisterButton");
+            _usernameRegisterField = root.Q<TextField>("UsernameRegisterField");
+            _emailRegisterField = root.Q<TextField>("EmailRegisterField");
+            _passwordRegisterField = root.Q<TextField>("PasswordRegisterField");
+            _repeatPasswordRegisterField = root.Q<TextField>("RepeatPasswordRegisterField");
         }
 
         private void GetRecoverPasswordPanelComponents(VisualElement root)
@@ -551,6 +804,7 @@ namespace _Scripts.Controller
             _closeRecoverPasswordButton = root.Q<Button>("CloseRecoverPasswordButton");
             _recoverPasswordButton = root.Q<Button>("RecoverPasswordButton");
             _backToLoginPanelFromRecoverPasswordButton = root.Q<Button>("BackToLoginPanelFromRecoverPasswordButton");
+            _emailRecoverField = root.Q<TextField>("EmailRecoverField");
         }
         #endregion
 
