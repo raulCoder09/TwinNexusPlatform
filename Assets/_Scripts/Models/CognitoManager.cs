@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Amazon.CognitoIdentityProvider;
@@ -64,9 +65,15 @@ namespace _Scripts.Models
         public event Action<bool, string> OnAuthenticationComplete;
         public event Action<bool, string> OnRegistrationComplete;
         public event Action<bool, string> OnPasswordRecoveryComplete;
+        public event Action<bool, string> OnEmailVerificationComplete;
+        public event Action<bool, string> OnResendVerificationComplete;
 
         // Singleton instance
         public static CognitoManager Instance { get; private set; }
+        
+        // Pending verification data
+        public string PendingUsername { get; private set; }
+        public string PendingEmail { get; private set; }
 
         private void Awake()
         {
@@ -182,6 +189,10 @@ namespace _Scripts.Models
 
                 var response = await cognitoUserPool.SignUpAsync(signUpRequest);
                 
+                // Store pending verification data
+                PendingUsername = username;
+                PendingEmail = email;
+                
                 Debug.Log($"Registration successful. User sub: {response.UserSub}");
                 OnRegistrationComplete?.Invoke(true, "Registration successful. Please check your email for verification.");
                 return true;
@@ -234,6 +245,10 @@ namespace _Scripts.Models
                 };
 
                 var response = await cognitoUserPool.SignUpAsync(signUpRequest);
+                
+                // Store pending verification data
+                PendingUsername = username;
+                PendingEmail = email;
                 
                 Debug.Log($"Registration successful. User sub: {response.UserSub}");
                 OnRegistrationComplete?.Invoke(true, "Registration successful. Please check your email for verification.");
@@ -295,6 +310,49 @@ namespace _Scripts.Models
         }
 
         /// <summary>
+        /// Validates verification code format
+        /// </summary>
+        public bool IsValidVerificationCode(string code)
+        {
+            if (string.IsNullOrEmpty(code))
+                return false;
+
+            // Remove any spaces or special characters
+            var cleanCode = System.Text.RegularExpressions.Regex.Replace(code, @"[^\d]", "");
+            
+            // Verification codes are typically 6 digits
+            return cleanCode.Length == 6 && cleanCode.All(char.IsDigit);
+        }
+
+        /// <summary>
+        /// Cleans verification code (removes spaces, special characters)
+        /// </summary>
+        public string CleanVerificationCode(string code)
+        {
+            if (string.IsNullOrEmpty(code))
+                return code;
+
+            return System.Text.RegularExpressions.Regex.Replace(code, @"[^\d]", "");
+        }
+
+        /// <summary>
+        /// Checks if there's a pending verification
+        /// </summary>
+        public bool HasPendingVerification()
+        {
+            return !string.IsNullOrEmpty(PendingUsername) && !string.IsNullOrEmpty(PendingEmail);
+        }
+
+        /// <summary>
+        /// Clears pending verification data
+        /// </summary>
+        public void ClearPendingVerification()
+        {
+            PendingUsername = null;
+            PendingEmail = null;
+        }
+
+        /// <summary>
         /// Confirms user registration with verification code
         /// </summary>
         public async Task<bool> ConfirmSignUpAsync(string username, string confirmationCode)
@@ -310,12 +368,75 @@ namespace _Scripts.Models
 
                 await cognitoUserPool.ConfirmSignUpAsync(confirmRequest);
                 
+                // Clear pending verification data
+                PendingUsername = null;
+                PendingEmail = null;
+                
                 Debug.Log("Email verification successful");
+                OnEmailVerificationComplete?.Invoke(true, "Email verification successful! You can now login.");
                 return true;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Email verification error: {ex.Message}");
+                OnEmailVerificationComplete?.Invoke(false, ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Confirms user registration with verification code using pending username
+        /// </summary>
+        public async Task<bool> ConfirmSignUpAsync(string confirmationCode)
+        {
+            if (string.IsNullOrEmpty(PendingUsername))
+            {
+                Debug.LogError("No pending username for verification");
+                OnEmailVerificationComplete?.Invoke(false, "No pending verification. Please register again.");
+                return false;
+            }
+            
+            return await ConfirmSignUpAsync(PendingUsername, confirmationCode);
+        }
+
+        /// <summary>
+        /// Resends verification code for pending user
+        /// </summary>
+        public async Task<bool> ResendConfirmationCodeAsync()
+        {
+            if (string.IsNullOrEmpty(PendingUsername))
+            {
+                Debug.LogError("No pending username for resending code");
+                OnResendVerificationComplete?.Invoke(false, "No pending verification. Please register again.");
+                return false;
+            }
+
+            return await ResendConfirmationCodeAsync(PendingUsername);
+        }
+
+        /// <summary>
+        /// Resends verification code for specific username
+        /// </summary>
+        public async Task<bool> ResendConfirmationCodeAsync(string username)
+        {
+            try
+            {
+                var resendRequest = new ResendConfirmationCodeRequest
+                {
+                    ClientId = clientId,
+                    Username = username
+                };
+
+                await cognitoUserPool.ResendConfirmationCodeAsync(resendRequest);
+                
+                Debug.Log("Verification code resent successfully");
+                OnResendVerificationComplete?.Invoke(true, "Verification code sent! Please check your email.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Resend verification code error: {ex.Message}");
+                OnResendVerificationComplete?.Invoke(false, ex.Message);
                 return false;
             }
         }
@@ -384,6 +505,10 @@ namespace _Scripts.Models
             RefreshToken = null;
             CurrentUsername = null;
             IsUserAuthenticated = false;
+            
+            // Clear pending verification data
+            PendingUsername = null;
+            PendingEmail = null;
             
             Debug.Log("User signed out successfully");
         }

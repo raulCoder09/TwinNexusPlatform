@@ -21,6 +21,7 @@ namespace _Scripts.Controller
         private VisualElement _loginPanel;
         private VisualElement _registerPanel;
         private VisualElement _recoverPasswordPanel;
+        private VisualElement _emailVerificationPanel; // NEW: Added for email verification panel
         #endregion
 
         #region UI Components - Login Panel
@@ -50,6 +51,16 @@ namespace _Scripts.Controller
         private TextField _emailRecoverField;
         #endregion
 
+        #region UI Components - Email Verification Panel
+        // NEW: Added UI components for email verification panel
+        private Button _closeEmailVerificationButton;
+        private Button _verifyEmailButton;
+        private Button _resendVerificationCodeButton;
+        private Button _backToLoginFromVerificationButton;
+        private TextField _verificationCodeField;
+        private Label _emailVerificationEmail;
+        #endregion
+
         #region Dependencies
         private DashboardController _dashboardController;
         private CognitoManager _cognitoManager;
@@ -70,7 +81,8 @@ namespace _Scripts.Controller
             None,
             Login,
             Register,
-            RecoverPassword
+            RecoverPassword,
+            EmailVerification // NEW: Added for email verification panel
         }
         #endregion
 
@@ -93,28 +105,18 @@ namespace _Scripts.Controller
         #endregion
 
         #region Public Methods
-        /// <summary>
-        /// Muestra la interfaz de bienvenida
-        /// </summary>
         public void ShowUi()
         {
             _body.style.display = DisplayStyle.Flex;
             Debug.Log("Welcome UI shown");
         }
 
-        /// <summary>
-        /// Oculta la interfaz de bienvenida
-        /// </summary>
         public void HideUi()
         {
             _body.style.display = DisplayStyle.None;
             Debug.Log("Welcome UI hidden");
         }
 
-        /// <summary>
-        /// Abre un panel específico
-        /// </summary>
-        /// <param name="panelType">Tipo de panel a abrir</param>
         public void OpenPanel(PanelType panelType)
         {
             if (panelType == PanelType.None)
@@ -127,9 +129,6 @@ namespace _Scripts.Controller
             ShowPanel(panelType);
         }
 
-        /// <summary>
-        /// Cierra el panel actualmente activo
-        /// </summary>
         public void CloseCurrentPanel()
         {
             if (_currentActivePanel != PanelType.None)
@@ -185,10 +184,19 @@ namespace _Scripts.Controller
                         ShowClass = "RecoverPasswordPanelInMainScreen",
                         HideClass = "RecoverPasswordPanelOutMainScreen"
                     }
+                },
+                // NEW: Added email verification panel
+                {
+                    PanelType.EmailVerification,
+                    new PanelInfo
+                    {
+                        Panel = _emailVerificationPanel,
+                        ShowClass = "EmailVerificationPanelInMainScreen",
+                        HideClass = "EmailVerificationPanelOutMainScreen"
+                    }
                 }
             };
 
-            // Registrar eventos de transición para cada panel
             foreach (var panelInfo in _panels.Values)
             {
                 panelInfo.Panel.RegisterCallback<TransitionEndEvent>(OnPanelTransitionComplete);
@@ -231,6 +239,9 @@ namespace _Scripts.Controller
                 _cognitoManager.OnAuthenticationComplete += OnCognitoAuthenticationComplete;
                 _cognitoManager.OnRegistrationComplete += OnCognitoRegistrationComplete;
                 _cognitoManager.OnPasswordRecoveryComplete += OnCognitoPasswordRecoveryComplete;
+                // NEW: Subscribe to email verification events
+                _cognitoManager.OnEmailVerificationComplete += OnCognitoEmailVerificationComplete;
+                _cognitoManager.OnResendVerificationComplete += OnCognitoResendVerificationComplete;
             }
         }
 
@@ -241,6 +252,9 @@ namespace _Scripts.Controller
                 _cognitoManager.OnAuthenticationComplete -= OnCognitoAuthenticationComplete;
                 _cognitoManager.OnRegistrationComplete -= OnCognitoRegistrationComplete;
                 _cognitoManager.OnPasswordRecoveryComplete -= OnCognitoPasswordRecoveryComplete;
+                // NEW: Unsubscribe from email verification events
+                _cognitoManager.OnEmailVerificationComplete -= OnCognitoEmailVerificationComplete;
+                _cognitoManager.OnResendVerificationComplete -= OnCognitoResendVerificationComplete;
             }
         }
         #endregion
@@ -260,6 +274,13 @@ namespace _Scripts.Controller
             
             _currentActivePanel = panelType;
             ClearMessage();
+            
+            // NEW: Update email verification panel with pending email
+            if (panelType == PanelType.EmailVerification && _cognitoManager != null)
+            {
+                _emailVerificationEmail.text = _cognitoManager.PendingEmail ?? "Unknown email";
+            }
+            
             Debug.Log($"Panel {panelType} opened");
         }
 
@@ -307,9 +328,6 @@ namespace _Scripts.Controller
         #endregion
 
         #region Authentication Methods
-        /// <summary>
-        /// Maneja el proceso de autenticación con AWS Cognito
-        /// </summary>
         private async void HandleAuthentication()
         {
             if (_cognitoManager == null)
@@ -350,9 +368,6 @@ namespace _Scripts.Controller
             }
         }
 
-        /// <summary>
-        /// Maneja el proceso de registro con AWS Cognito
-        /// </summary>
         private async void HandleRegisterAndLogin()
         {
             if (_cognitoManager == null)
@@ -367,7 +382,6 @@ namespace _Scripts.Controller
             string password = _passwordRegisterField.value;
             string repeatPassword = _repeatPasswordRegisterField.value;
 
-            // Validaciones
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || 
                 string.IsNullOrEmpty(password) || string.IsNullOrEmpty(repeatPassword))
             {
@@ -381,7 +395,6 @@ namespace _Scripts.Controller
                 return;
             }
 
-            // Validate phone number if provided
             if (!string.IsNullOrEmpty(phone) && !_cognitoManager.IsValidPhoneNumber(phone))
             {
                 ShowMessage("Please enter a valid phone number (include country code, e.g., +52 for Mexico)", true);
@@ -431,9 +444,6 @@ namespace _Scripts.Controller
             }
         }
 
-        /// <summary>
-        /// Maneja el proceso de recuperación de contraseña con AWS Cognito
-        /// </summary>
         private async void HandlePasswordRecovery()
         {
             if (_cognitoManager == null)
@@ -478,6 +488,84 @@ namespace _Scripts.Controller
                 SetRecoverButtonEnabled(true);
             }
         }
+
+        // NEW: Handle email verification code submission
+        private async void HandleEmailVerification()
+        {
+            if (_cognitoManager == null)
+            {
+                ShowMessage("Verification service not available", true);
+                return;
+            }
+
+            string verificationCode = _verificationCodeField.value?.Trim();
+
+            if (string.IsNullOrEmpty(verificationCode))
+            {
+                ShowMessage("Please enter the verification code", true);
+                return;
+            }
+
+            if (!_cognitoManager.IsValidVerificationCode(verificationCode))
+            {
+                ShowMessage("Please enter a valid 6-digit verification code", true);
+                return;
+            }
+
+            try
+            {
+                ShowMessage("Verifying email...", false);
+                SetVerifyEmailButtonEnabled(false);
+                
+                bool success = await _cognitoManager.ConfirmSignUpAsync(_cognitoManager.CleanVerificationCode(verificationCode));
+                
+                if (!success)
+                {
+                    ShowMessage("Email verification failed. Please try again.", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Email verification error: {ex.Message}");
+                ShowMessage($"Verification failed: {ex.Message}", true);
+            }
+            finally
+            {
+                SetVerifyEmailButtonEnabled(true);
+            }
+        }
+
+        // NEW: Handle resending verification code
+        private async void HandleResendVerificationCode()
+        {
+            if (_cognitoManager == null)
+            {
+                ShowMessage("Verification service not available", true);
+                return;
+            }
+
+            try
+            {
+                ShowMessage("Resending verification code...", false);
+                SetResendCodeButtonEnabled(false);
+                
+                bool success = await _cognitoManager.ResendConfirmationCodeAsync();
+                
+                if (!success)
+                {
+                    ShowMessage("Failed to resend verification code", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Resend verification code error: {ex.Message}");
+                ShowMessage($"Resend failed: {ex.Message}", true);
+            }
+            finally
+            {
+                SetResendCodeButtonEnabled(true);
+            }
+        }
         #endregion
 
         #region Cognito Event Handlers
@@ -517,12 +605,37 @@ namespace _Scripts.Controller
             }
         }
 
+        // NEW: Handle email verification completion
+        private void OnCognitoEmailVerificationComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnEmailVerificationSuccess(message);
+            }
+            else
+            {
+                OnEmailVerificationFailure(message);
+            }
+        }
+
+        // NEW: Handle resend verification code completion
+        private void OnCognitoResendVerificationComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnResendVerificationSuccess(message);
+            }
+            else
+            {
+                OnResendVerificationFailure(message);
+            }
+        }
+
         private void OnAuthenticationSuccess()
         {
             Debug.Log("Authentication successful - navigating to dashboard");
             ShowMessage("Login successful!", false);
             
-            // Delay before switching to dashboard
             Invoke(nameof(NavigateToDashboard), 1f);
         }
 
@@ -542,10 +655,23 @@ namespace _Scripts.Controller
         private void OnRegistrationSuccess(string message)
         {
             Debug.Log($"Registration successful: {message}");
-            ShowMessage("Registration successful! Please check your email to verify your account.", false);
+            ShowMessage("Registration successful! Please verify your email.", false);
             
-            // Switch to login panel after delay
-            Invoke(nameof(SwitchToLoginFromRegister), 2f);
+            // NEW: Switch to email verification panel if verification is pending
+            if (_cognitoManager.HasPendingVerification())
+            {
+                Invoke(nameof(SwitchToEmailVerification), 2f);
+            }
+            else
+            {
+                Invoke(nameof(SwitchToLoginFromRegister), 2f);
+            }
+        }
+
+        // NEW: Switch to email verification panel
+        private void SwitchToEmailVerification()
+        {
+            SwitchPanel(PanelType.Register, PanelType.EmailVerification);
         }
 
         private void SwitchToLoginFromRegister()
@@ -564,7 +690,6 @@ namespace _Scripts.Controller
             Debug.Log("Password recovery email sent successfully");
             ShowMessage("Recovery email sent! Please check your inbox.", false);
             
-            // Switch to login panel after delay
             Invoke(nameof(SwitchToLoginFromRecover), 2f);
         }
 
@@ -577,6 +702,42 @@ namespace _Scripts.Controller
         {
             Debug.LogError($"Password recovery failed: {errorMessage}");
             ShowMessage($"Recovery failed: {errorMessage}", true);
+        }
+
+        // NEW: Handle successful email verification
+        private void OnEmailVerificationSuccess(string message)
+        {
+            Debug.Log($"Email verification successful: {message}");
+            ShowMessage("Email verified successfully! You can now log in.", false);
+            
+            Invoke(nameof(SwitchToLoginFromVerification), 2f);
+        }
+
+        // NEW: Switch to login panel from verification
+        private void SwitchToLoginFromVerification()
+        {
+            SwitchPanel(PanelType.EmailVerification, PanelType.Login);
+        }
+
+        // NEW: Handle email verification failure
+        private void OnEmailVerificationFailure(string errorMessage)
+        {
+            Debug.LogError($"Email verification failed: {errorMessage}");
+            ShowMessage($"Verification failed: {errorMessage}", true);
+        }
+
+        // NEW: Handle successful resend verification code
+        private void OnResendVerificationSuccess(string message)
+        {
+            Debug.Log($"Resend verification code successful: {message}");
+            ShowMessage("Verification code resent! Please check your email.", false);
+        }
+
+        // NEW: Handle resend verification code failure
+        private void OnResendVerificationFailure(string errorMessage)
+        {
+            Debug.LogError($"Resend verification code failed: {errorMessage}");
+            ShowMessage($"Resend failed: {errorMessage}", true);
         }
         #endregion
 
@@ -604,19 +765,19 @@ namespace _Scripts.Controller
 
         private void ClearInputFields()
         {
-            // Clear login fields
             if (_usernameLoginField != null) _usernameLoginField.value = "";
             if (_passwordLoginField != null) _passwordLoginField.value = "";
             
-            // Clear register fields
             if (_usernameRegisterField != null) _usernameRegisterField.value = "";
             if (_emailRegisterField != null) _emailRegisterField.value = "";
             if (_phoneRegisterField != null) _phoneRegisterField.value = "";
             if (_passwordRegisterField != null) _passwordRegisterField.value = "";
             if (_repeatPasswordRegisterField != null) _repeatPasswordRegisterField.value = "";
             
-            // Clear recover field
             if (_emailRecoverField != null) _emailRecoverField.value = "";
+            
+            // NEW: Clear verification code field
+            if (_verificationCodeField != null) _verificationCodeField.value = "";
         }
 
         private void SetLoginButtonEnabled(bool enabled)
@@ -643,6 +804,26 @@ namespace _Scripts.Controller
             {
                 _recoverPasswordButton.SetEnabled(enabled);
                 _recoverPasswordButton.text = enabled ? "Recover" : "Sending email...";
+            }
+        }
+
+        // NEW: Enable/disable verify email button
+        private void SetVerifyEmailButtonEnabled(bool enabled)
+        {
+            if (_verifyEmailButton != null)
+            {
+                _verifyEmailButton.SetEnabled(enabled);
+                _verifyEmailButton.text = enabled ? "Verify Email" : "Verifying...";
+            }
+        }
+
+        // NEW: Enable/disable resend code button
+        private void SetResendCodeButtonEnabled(bool enabled)
+        {
+            if (_resendVerificationCodeButton != null)
+            {
+                _resendVerificationCodeButton.SetEnabled(enabled);
+                _resendVerificationCodeButton.text = enabled ? "Resend Code" : "Resending...";
             }
         }
         #endregion
@@ -729,6 +910,29 @@ namespace _Scripts.Controller
         }
         #endregion
 
+        #region Event Handlers - Email Verification Panel
+        // NEW: Event handlers for email verification panel
+        private void OnVerifyEmailClicked(ClickEvent evt)
+        {
+            HandleEmailVerification();
+        }
+
+        private void OnResendVerificationCodeClicked(ClickEvent evt)
+        {
+            HandleResendVerificationCode();
+        }
+
+        private void OnCloseEmailVerificationPanelClicked(ClickEvent evt)
+        {
+            HidePanel(PanelType.EmailVerification);
+        }
+
+        private void OnBackToLoginFromVerificationClicked(ClickEvent evt)
+        {
+            SwitchPanel(PanelType.EmailVerification, PanelType.Login);
+        }
+        #endregion
+
         #region Event Registration
         private void RegisterAllEvents()
         {
@@ -736,6 +940,7 @@ namespace _Scripts.Controller
             RegisterLoginPanelEvents();
             RegisterRegisterPanelEvents();
             RegisterRecoverPasswordPanelEvents();
+            RegisterEmailVerificationPanelEvents(); // NEW: Register email verification events
         }
 
         private void RegisterMainEvents()
@@ -765,6 +970,15 @@ namespace _Scripts.Controller
             _closeRecoverPasswordButton.RegisterCallback<ClickEvent>(OnCloseRecoverPasswordPanelClicked);
             _backToLoginPanelFromRecoverPasswordButton.RegisterCallback<ClickEvent>(OnBackToLoginFromRecoverPasswordClicked);
         }
+
+        // NEW: Register events for email verification panel
+        private void RegisterEmailVerificationPanelEvents()
+        {
+            _verifyEmailButton.RegisterCallback<ClickEvent>(OnVerifyEmailClicked);
+            _resendVerificationCodeButton.RegisterCallback<ClickEvent>(OnResendVerificationCodeClicked);
+            _closeEmailVerificationButton.RegisterCallback<ClickEvent>(OnCloseEmailVerificationPanelClicked);
+            _backToLoginFromVerificationButton.RegisterCallback<ClickEvent>(OnBackToLoginFromVerificationClicked);
+        }
         #endregion
 
         #region UI Component Retrieval
@@ -777,6 +991,7 @@ namespace _Scripts.Controller
             GetLoginPanelComponents(root);
             GetRegisterPanelComponents(root);
             GetRecoverPasswordPanelComponents(root);
+            GetEmailVerificationPanelComponents(root); // NEW: Retrieve email verification components
         }
 
         private void GetMainComponents(VisualElement root)
@@ -786,7 +1001,7 @@ namespace _Scripts.Controller
             _scrim = root.Q<VisualElement>("Scrim");
             _launchButton = root.Q<Button>("LaunchButton");
             _exitAppButton = root.Q<Button>("ExitButton");
-            _messageLabel = root.Q<Label>("MessageLabel"); // Opcional: para mostrar mensajes
+            _messageLabel = root.Q<Label>("MessageLabel");
         }
 
         private void GetPanelComponents(VisualElement root)
@@ -794,6 +1009,7 @@ namespace _Scripts.Controller
             _loginPanel = root.Q<VisualElement>("LoginPanel");
             _registerPanel = root.Q<VisualElement>("RegisterPanel");
             _recoverPasswordPanel = root.Q<VisualElement>("RecoverPasswordPanel");
+            _emailVerificationPanel = root.Q<VisualElement>("EmailVerificationPanel"); // NEW: Retrieve email verification panel
         }
 
         private void GetLoginPanelComponents(VisualElement root)
@@ -824,6 +1040,17 @@ namespace _Scripts.Controller
             _recoverPasswordButton = root.Q<Button>("RecoverPasswordButton");
             _backToLoginPanelFromRecoverPasswordButton = root.Q<Button>("BackToLoginPanelFromRecoverPasswordButton");
             _emailRecoverField = root.Q<TextField>("EmailRecoverField");
+        }
+
+        // NEW: Retrieve components for email verification panel
+        private void GetEmailVerificationPanelComponents(VisualElement root)
+        {
+            _closeEmailVerificationButton = root.Q<Button>("CloseEmailVerificationButton");
+            _verifyEmailButton = root.Q<Button>("VerifyEmailButton");
+            _resendVerificationCodeButton = root.Q<Button>("ResendVerificationCodeButton");
+            _backToLoginFromVerificationButton = root.Q<Button>("BackToLoginFromVerificationButton");
+            _verificationCodeField = root.Q<TextField>("VerificationCodeField");
+            _emailVerificationEmail = root.Q<Label>("EmailVerificationEmail");
         }
         #endregion
 
