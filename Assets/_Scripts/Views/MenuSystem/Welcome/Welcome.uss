@@ -7,6 +7,9 @@
     align-self: stretch;
     align-content: stretch;
     background-color: rgb(0, 0, 0);
+    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg");
+    background-size: 100% 4px;
+    background-repeat: repeat-y;
     border-left-color: rgb(0, 0, 0);
     border-right-color: rgb(0, 0, 0);
     border-top-color: rgb(0, 0, 0);
@@ -37,7 +40,7 @@
     font-size: 30px;
     -unity-text-align: upper-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 /* Main Styles */
@@ -66,7 +69,16 @@
     -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-font-style: normal;
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8); /* NEW: Neon glow */
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    transition-property: opacity, translate, text-shadow; /* NEW: Transitions for glitch */
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+#Title.glitch {
+    opacity: 0.8;
+    translate: 2px 0;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.8); /* NEW: Magenta glitch */
 }
 
 #SubtitlePanel {
@@ -85,7 +97,7 @@
     white-space: normal;
     -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 #ButtonsPanel {
@@ -124,7 +136,7 @@
     color: rgb(0, 255, 0);
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 24px;
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 #MessageLabel {
@@ -134,7 +146,7 @@
     -unity-text-align: middle-center;
     margin-top: 10px;
     display: none;
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 /* Panel Container */
@@ -158,10 +170,9 @@
 .ScrimFadein {
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.8);
-    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3); /* NEW: Subtle neon glow */
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
-/* Panel Animations */
 .LoginPanelMoveA {
     flex-grow: 1;
     position: absolute;
@@ -182,13 +193,21 @@
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
     translate: 0 100%;
+    scale: 0.9; /* NEW: Reduced scale on exit */
+    opacity: 0; /* NEW: Fade out */
+    skew: 2deg; /* NEW: Slight skew on exit */
     transition-duration: 0.5s;
-    transition-timing-function: linear;
+    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
+    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
 }
+
 
 .LoginPanelMoveB {
     translate: 0 0%;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* NEW: Neon glow when visible */
+    scale: 1; /* NEW: Full scale on entry */
+    opacity: 1; /* NEW: Fully visible */
+    skew: 0deg; /* NEW: No skew on entry */
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
 .RegisterPanelOutMainScreen {
@@ -207,13 +226,20 @@
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
     translate: 100% 0;
+    scale: 0.9; /* NEW: Reduced scale on exit */
+    opacity: 0; /* NEW: Fade out */
+    skew: -2deg; /* NEW: Slight skew on exit */
     transition-duration: 0.5s;
-    transition-timing-function: linear;
+    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
+    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
 }
 
 .RegisterPanelInMainScreen {
     translate: 0% 0;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* NEW: Neon glow when visible */
+    scale: 1; /* NEW: Full scale on entry */
+    opacity: 1; /* NEW: Fully visible */
+    skew: 0deg; /* NEW: No skew on entry */
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
 .RecoverPasswordPanelOutMainScreen {
@@ -232,13 +258,20 @@
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
     translate: -100% 0;
+    scale: 0.9; /* NEW: Reduced scale on exit */
+    opacity: 0; /* NEW: Fade out */
+    skew: 2deg; /* NEW: Slight skew on exit */
     transition-duration: 0.5s;
-    transition-timing-function: linear;
+    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
+    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
 }
 
 .RecoverPasswordPanelInMainScreen {
     translate: 0% 0;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* NEW: Neon glow when visible */
+    scale: 1; /* NEW: Full scale on entry */
+    opacity: 1; /* NEW: Fully visible */
+    skew: 0deg; /* NEW: No skew on entry */
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
 .EmailVerificationPanelOutMainScreen {
@@ -257,13 +290,20 @@
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
     translate: 100% 0;
+    scale: 0.9; /* NEW: Reduced scale on exit */
+    opacity: 0; /* NEW: Fade out */
+    skew: -2deg; /* NEW: Slight skew on exit */
     transition-duration: 0.5s;
-    transition-timing-function: linear;
+    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
+    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
 }
 
 .EmailVerificationPanelInMainScreen {
     translate: 0% 0;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* NEW: Neon glow when visible */
+    scale: 1; /* NEW: Full scale on entry */
+    opacity: 1; /* NEW: Fully visible */
+    skew: 0deg; /* NEW: No skew on entry */
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
 /* Generic Cyberpunk Styles */
@@ -287,19 +327,19 @@
     -unity-font-style: normal;
     transition-duration: 0.2s;
     transition-timing-function: linear;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7), 0 0 20px rgba(0, 255, 0, 0.3); /* NEW: Neon glow */
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7), 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
 .button-cyberpunk:hover {
     background-color: rgb(0, 255, 0);
     color: rgb(0, 0, 0);
-    box-shadow: 0 0 15px rgba(255, 0, 255, 1), 0 0 25px rgba(255, 0, 255, 0.5); /* NEW: Magenta neon glow */
+    box-shadow: 0 0 15px rgba(255, 0, 255, 1), 0 0 25px rgba(255, 0, 255, 0.5);
 }
 
 .button-cyberpunk:active {
     background-color: rgb(0, 200, 0);
     color: rgb(0, 0, 0);
-    box-shadow: 0 0 10px rgba(255, 0, 255, 0.8); /* NEW: Reduced magenta glow */
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
 }
 
 .small-button {
@@ -320,7 +360,7 @@
     -unity-font-style: bold;
     right: 46px;
     top: 29px;
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 .textfield-cyberpunk {
@@ -338,7 +378,7 @@
     border-right-color: rgb(0, 255, 0);
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
 }
 
 .label-cyberpunk {
@@ -347,7 +387,7 @@
     font-size: 32px;
     -unity-text-align: middle-center;
     white-space: normal;
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* NEW: Neon glow */
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 /* Panel-Specific Styles */
@@ -398,7 +438,16 @@
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 100px;
     -unity-font-style: normal;
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8); /* NEW: Neon glow */
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    transition-property: opacity, translate, text-shadow; /* NEW: Transitions for glitch */
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+#TitleLogin.glitch, #TitleRegister.glitch, #TitleRecoverPassword.glitch {
+    opacity: 0.8;
+    translate: 2px 0;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.8); /* NEW: Magenta glitch */
 }
 
 #TitleEmailVerification {
@@ -406,7 +455,16 @@
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 80px;
     -unity-font-style: normal;
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8); /* NEW: Neon glow */
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    transition-property: opacity, translate, text-shadow; /* NEW: Transitions for glitch */
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+#TitleEmailVerification.glitch {
+    opacity: 0.8;
+    translate: 2px 0;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.8); /* NEW: Magenta glitch */
 }
 
 #CloseLoginPanel, #CloseRegisterPanel, #CloseRecoverPasswordPanel, #CloseEmailVerificationPanel {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -15,13 +16,18 @@ namespace _Scripts.Controller
         private Button _launchButton;
         private Button _exitAppButton;
         private Label _messageLabel;
+        private Label _mainTitle; 
         #endregion
 
         #region UI Components - Panels
         private VisualElement _loginPanel;
         private VisualElement _registerPanel;
         private VisualElement _recoverPasswordPanel;
-        private VisualElement _emailVerificationPanel; // NEW: Added for email verification panel
+        private VisualElement _emailVerificationPanel;
+        private Label _loginTitle; // NEW: Reference to login panel title
+        private Label _registerTitle; // NEW: Reference to register panel title
+        private Label _recoverPasswordTitle; // NEW: Reference to recover password title
+        private Label _emailVerificationTitle; // NEW: Reference to email verification title
         #endregion
 
         #region UI Components - Login Panel
@@ -96,11 +102,13 @@ namespace _Scripts.Controller
         {
             InitializeUI();
             SubscribeToCognitoEvents();
+            StartGlitchEffect();
         }
 
         private void OnDestroy()
         {
             UnsubscribeFromCognitoEvents();
+            StopAllCoroutines();
         }
         #endregion
 
@@ -1002,6 +1010,7 @@ namespace _Scripts.Controller
             _launchButton = root.Q<Button>("LaunchButton");
             _exitAppButton = root.Q<Button>("ExitButton");
             _messageLabel = root.Q<Label>("MessageLabel");
+            _mainTitle = root.Q<Label>("Title");
         }
 
         private void GetPanelComponents(VisualElement root)
@@ -1009,7 +1018,11 @@ namespace _Scripts.Controller
             _loginPanel = root.Q<VisualElement>("LoginPanel");
             _registerPanel = root.Q<VisualElement>("RegisterPanel");
             _recoverPasswordPanel = root.Q<VisualElement>("RecoverPasswordPanel");
-            _emailVerificationPanel = root.Q<VisualElement>("EmailVerificationPanel"); // NEW: Retrieve email verification panel
+            _emailVerificationPanel = root.Q<VisualElement>("EmailVerificationPanel"); 
+            _loginTitle = root.Q<Label>("TitleLogin"); // NEW: Get login title
+            _registerTitle = root.Q<Label>("TitleRegister"); // NEW: Get register title
+            _recoverPasswordTitle = root.Q<Label>("TitleRecoverPassword"); // NEW: Get recover title
+            _emailVerificationTitle = root.Q<Label>("TitleEmailVerification"); // NEW: Get verification title// NEW: Retrieve email verification panel
         }
 
         private void GetLoginPanelComponents(VisualElement root)
@@ -1053,6 +1066,33 @@ namespace _Scripts.Controller
             _emailVerificationEmail = root.Q<Label>("EmailVerificationEmail");
         }
         #endregion
+        #region Glitch Effect
+        private const string GLITCH_CLASS = "glitch"; // NEW: Constant for glitch class
+
+        private void StartGlitchEffect()
+        {
+            StartCoroutine(GlitchTitle(_mainTitle, 3f)); // Glitch for main title
+            StartCoroutine(GlitchTitle(_loginTitle, 4f)); // Glitch for login title
+            StartCoroutine(GlitchTitle(_registerTitle, 4f)); // Glitch for register title
+            StartCoroutine(GlitchTitle(_recoverPasswordTitle, 4f)); // Glitch for recover title
+            StartCoroutine(GlitchTitle(_emailVerificationTitle, 4f)); // Glitch for verification title
+        }
+
+        private IEnumerator GlitchTitle(Label title, float interval)
+        {
+            while (true)
+            {
+                if (title != null)
+                {
+                    title.AddToClassList(GLITCH_CLASS);
+                    yield return new WaitForSeconds(0.2f); // Duration of glitch
+                    title.RemoveFromClassList(GLITCH_CLASS);
+                }
+                yield return new WaitForSeconds(interval); // Wait before next glitch
+            }
+        }
+        #endregion
+
 
         #region Data Classes
         [System.Serializable]
