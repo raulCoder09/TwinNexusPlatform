@@ -1,6 +1,7 @@
 using _Scripts.Models;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Newtonsoft.Json;
 
 namespace _Scripts.Testing
 {
@@ -10,25 +11,18 @@ namespace _Scripts.Testing
 
         void Start()
         {
-            // Configurar la acción de input
             testAction = new InputAction("TestLambda", InputActionType.Button, "<Keyboard>/t");
             testAction.performed += OnTestKeyPressed;
             testAction.Enable();
-
-            // Suscribirse al evento de LambdaManager para ver los resultados
+            
             if (LambdaManager.Instance != null)
             {
                 LambdaManager.Instance.OnLambdaExecutionComplete += OnLambdaResult;
-            }
-            else
-            {
-                Debug.LogError("LambdaManager no encontrado en la escena.");
             }
         }
 
         void OnDestroy()
         {
-            // Limpiar la acción de input
             if (testAction != null)
             {
                 testAction.performed -= OnTestKeyPressed;
@@ -46,20 +40,38 @@ namespace _Scripts.Testing
         {
             if (LambdaManager.Instance == null)
             {
-
                 return;
             }
-            
-            bool success = await LambdaManager.Instance.ExecuteDefaultFunctionAsync();
+            // bool success = await LambdaManager.Instance.ExecuteDefaultFunctionAsync();
+            bool success = await LambdaManager.Instance.ExecuteLambdaFunctionAsync("TwinNexusPlatform-LambdaTest", new { test = "Hola desde Unity!" });
         }
-
-
 
         void OnLambdaResult(bool success, string message, object result)
         {
             if (result != null)
             {
-                Debug.Log($"Respondiendo a rulo con: {JsonUtility.ToJson(result)}");
+                try
+                {
+                    string resultJson = JsonConvert.SerializeObject(result, Formatting.Indented);
+                    var jsonObject = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(resultJson);
+                    
+                    if (jsonObject.ContainsKey("data"))
+                    {
+                        var dataObject = jsonObject["data"] as Newtonsoft.Json.Linq.JObject;
+                        if (dataObject != null)
+                        {
+                            if (dataObject.ContainsKey("message"))
+                            {
+                                string lambdaMessage = dataObject["message"].ToString();
+                                Debug.Log($"💬 Mensaje: {lambdaMessage}");
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+
+                }
             }
         }
     }

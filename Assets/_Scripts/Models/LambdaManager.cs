@@ -62,6 +62,49 @@ namespace _Scripts.Models
         }
 
         /// <summary>
+        /// Processes Lambda response and extracts meaningful data
+        /// </summary>
+        private object ProcessLambdaResponse(string responsePayload)
+        {
+            try
+            {
+                // Parse the main response as JObject for safe property access
+                var mainResponse = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(responsePayload);
+                
+                // Check if it's an HTTP response format (has statusCode and body)
+                if (mainResponse.ContainsKey("statusCode") && mainResponse.ContainsKey("body"))
+                {
+                    int statusCode = mainResponse["statusCode"].ToObject<int>();
+                    Debug.Log($"HTTP Response - Status Code: {statusCode}");
+                    
+                    // Extract and parse the body
+                    string bodyString = mainResponse["body"].ToString();
+                    var bodyObject = JsonConvert.DeserializeObject(bodyString);
+                    
+                    // Return a clean response object
+                    return new
+                    {
+                        statusCode = statusCode,
+                        headers = mainResponse["headers"],
+                        data = bodyObject, // This is the actual Lambda function response
+                        rawBody = bodyString
+                    };
+                }
+                else
+                {
+                    // If it's a direct response (not HTTP format), return as is
+                    return mainResponse;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"Could not process Lambda response as structured data: {ex.Message}");
+                // Return the raw response if parsing fails
+                return responsePayload;
+            }
+        }
+
+        /// <summary>
         /// Executes a Lambda function with default settings
         /// </summary>
         public async Task<bool> ExecuteDefaultFunctionAsync()
@@ -123,18 +166,10 @@ namespace _Scripts.Models
                     var responsePayload = System.Text.Encoding.UTF8.GetString(response.Payload.ToArray());
                     Debug.Log($"Lambda execution successful. Response: {responsePayload}");
 
-                    // Try to parse response as JSON
-                    object parsedResponse = null;
-                    try
-                    {
-                        parsedResponse = JsonConvert.DeserializeObject(responsePayload);
-                    }
-                    catch
-                    {
-                        parsedResponse = responsePayload;
-                    }
-
-                    OnLambdaExecutionComplete?.Invoke(true, "Function executed successfully", parsedResponse);
+                    // Process the response using the new method
+                    object processedResponse = ProcessLambdaResponse(responsePayload);
+                    
+                    OnLambdaExecutionComplete?.Invoke(true, "Function executed successfully", processedResponse);
                     return true;
                 }
                 else
