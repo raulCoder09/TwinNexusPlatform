@@ -30,7 +30,6 @@ TagManager:
   - CognitoManager
   - LambdaManager
   - S3Manager
-  - S3Tester
   layers:
   - Default
   - TransparentFX
