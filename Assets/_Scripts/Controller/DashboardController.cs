@@ -19,7 +19,7 @@ namespace _Scripts.Controller
         private Button _trainingButton;
         private Button _settingsButton;
         
-        private WelcomeControllerUI _welcomeController;
+        private WelcomeController _welcomeController;
         private DeviceSelectionController _deviceSelectionController;
         private SettingsController _settingsController;
         private GameManager _gameManager;
@@ -179,7 +179,7 @@ namespace _Scripts.Controller
 
         private void FindObjects()
         {
-            _welcomeController=GameObject.FindGameObjectWithTag("Welcome").GetComponent<WelcomeControllerUI>();
+            _welcomeController=GameObject.FindGameObjectWithTag("Welcome").GetComponent<WelcomeController>();
             _deviceSelectionController=GameObject.FindGameObjectWithTag("DeviceSelection").GetComponent<DeviceSelectionController>();
             _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
             _settingsController=GameObject.FindGameObjectWithTag("Settings").GetComponent<SettingsController>();

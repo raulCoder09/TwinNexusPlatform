@@ -7,6 +7,10 @@ using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.CognitoIdentity;
 using Amazon;
+using Amazon.CognitoIdentity.Model;
+using Amazon.Runtime;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace _Scripts.Models
 {
@@ -60,6 +64,7 @@ namespace _Scripts.Models
         public string RefreshToken { get; private set; }
         public bool IsUserAuthenticated { get; private set; }
         public string CurrentUsername { get; private set; }
+        
 
         // Events for UI callbacks
         public event Action<bool, string> OnAuthenticationComplete;
@@ -74,6 +79,14 @@ namespace _Scripts.Models
         // Pending verification data
         public string PendingUsername { get; private set; }
         public string PendingEmail { get; private set; }
+        
+        // AWS Credentials and user group info
+        public Amazon.Runtime.AWSCredentials CurrentAWSCredentials { get; private set; }
+        public string CurrentUserGroup { get; private set; }
+        public List<string> UserGroups { get; private set; } = new List<string>();
+
+        // Events for AWS credentials
+        public event Action<bool, string> OnAWSCredentialsObtained;
 
         private void Awake()
         {
@@ -142,6 +155,11 @@ namespace _Scripts.Models
                     IsUserAuthenticated = true;
 
                     Debug.Log("Authentication successful");
+
+                    // Get AWS credentials and user groups
+                    await GetAWSCredentialsAsync();
+                    await GetUserGroupsAsync();
+
                     OnAuthenticationComplete?.Invoke(true, "Authentication successful");
                     return true;
                 }
@@ -720,6 +738,162 @@ namespace _Scripts.Models
 
         #endregion
 
+        #region AWS Credentials and Identity Pool
+
+/// <summary>
+/// Gets AWS credentials from Identity Pool after successful authentication
+/// </summary>
+public async Task<bool> GetAWSCredentialsAsync()
+{
+    if (string.IsNullOrEmpty(IdToken))
+    {
+        Debug.LogWarning("No ID token available for getting AWS credentials");
+        return false;
+    }
+
+    try
+    {
+        // Get identity ID
+        var getIdRequest = new GetIdRequest
+        {
+            IdentityPoolId = identityPoolId,
+            Logins = new Dictionary<string, string>
+            {
+                { $"cognito-idp.{GetRegionEndpoint().SystemName}.amazonaws.com/{userPoolId}", IdToken }
+            }
+        };
+
+        var getIdResponse = await cognitoIdentity.GetIdAsync(getIdRequest);
+        
+        // Get credentials for identity
+        var getCredentialsRequest = new GetCredentialsForIdentityRequest
+        {
+            IdentityId = getIdResponse.IdentityId,
+            Logins = new Dictionary<string, string>
+            {
+                { $"cognito-idp.{GetRegionEndpoint().SystemName}.amazonaws.com/{userPoolId}", IdToken }
+            }
+        };
+
+        var getCredentialsResponse = await cognitoIdentity.GetCredentialsForIdentityAsync(getCredentialsRequest);
+        
+        // Create AWS credentials
+        CurrentAWSCredentials = new SessionAWSCredentials(
+            getCredentialsResponse.Credentials.AccessKeyId,
+            getCredentialsResponse.Credentials.SecretKey,
+            getCredentialsResponse.Credentials.SessionToken
+        );
+
+        Debug.Log("AWS credentials obtained successfully");
+        OnAWSCredentialsObtained?.Invoke(true, "AWS credentials obtained successfully");
+        return true;
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error getting AWS credentials: {ex.Message}");
+        OnAWSCredentialsObtained?.Invoke(false, ex.Message);
+        return false;
+    }
+}
+
+/// <summary>
+/// Gets user groups from the current user
+/// </summary>
+public async Task<List<string>> GetUserGroupsAsync()
+{
+    try
+    {
+        var userResponse = await GetCurrentUserAsync();
+        if (userResponse == null)
+        {
+            Debug.LogWarning("Could not get current user information");
+            return new List<string>();
+        }
+
+        // Parse groups from user attributes or from ID token
+        var groups = await ParseUserGroupsFromToken();
+        UserGroups = groups;
+        CurrentUserGroup = groups.FirstOrDefault() ?? "usuarios-basicos";
+        
+        Debug.Log($"User groups: {string.Join(", ", groups)}");
+        Debug.Log($"Primary group: {CurrentUserGroup}");
+        
+        return groups;
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error getting user groups: {ex.Message}");
+        return new List<string>();
+    }
+}
+
+/// <summary>
+/// Parses user groups from ID token
+/// </summary>
+private async Task<List<string>> ParseUserGroupsFromToken()
+{
+    try
+    {
+        if (string.IsNullOrEmpty(IdToken))
+            return new List<string>();
+
+        var parts = IdToken.Split('.');
+        if (parts.Length != 3)
+            return new List<string>();
+
+        var payload = parts[1];
+        while (payload.Length % 4 != 0)
+            payload += "=";
+
+        var jsonBytes = Convert.FromBase64String(payload);
+        var json = Encoding.UTF8.GetString(jsonBytes);
+        
+        // Parse JSON to extract groups
+        var tokenData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        
+        if (tokenData.ContainsKey("cognito:groups"))
+        {
+            var groupsObj = tokenData["cognito:groups"];
+            if (groupsObj is Newtonsoft.Json.Linq.JArray groupsArray)
+            {
+                return groupsArray.Select(g => g.ToString()).ToList();
+            }
+        }
+        
+        // If no groups found, return default
+        return new List<string> { "usuarios-basicos" };
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error parsing groups from token: {ex.Message}");
+        return new List<string> { "usuarios-basicos" };
+    }
+}
+
+/// <summary>
+/// Checks if user belongs to a specific group
+/// </summary>
+public bool IsUserInGroup(string groupName)
+{
+    return UserGroups.Contains(groupName);
+}
+
+/// <summary>
+/// Gets the user's primary role based on group hierarchy
+/// </summary>
+public string GetUserRole()
+{
+    if (IsUserInGroup("super-admin"))
+        return "super-admin";
+    if (IsUserInGroup("operadores"))
+        return "operadores";
+    if (IsUserInGroup("estudiantes"))
+        return "estudiantes";
+    
+    return "usuarios-basicos";
+}
+
+#endregion
         private void OnDestroy()
         {
             cognitoUserPool?.Dispose();

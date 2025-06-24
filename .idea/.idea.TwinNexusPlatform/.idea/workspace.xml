@@ -6,8 +6,33 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/.signature.p7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/AWSSDK.Core.nuspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/AWSSDK.Core.nuspec.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/images.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/images/AWSLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/images/AWSLogo.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/lib.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/lib/netstandard2.0.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/lib/netstandard2.0/AWSSDK.Core.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/lib/netstandard2.0/AWSSDK.Core.dll.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/lib/netstandard2.0/AWSSDK.Core.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Packages/AWSSDK.Core.4.0.0.12/lib/netstandard2.0/AWSSDK.Core.xml.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_References/ReferenceImageLibrary.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_References/ReferenceImageLibrary.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/AbstractController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/AbstractController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DashboardController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/DashboardController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/WelcomeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/WelcomeController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/EC2Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/EC2Manager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/S3Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/S3Manager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Welcome/Welcome.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Welcome/Welcome.uss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Welcome/Welcome.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Welcome/Welcome.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/packages.config" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/packages.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/AWSSDK.Core.4.0.0.12/tools/account-management.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +46,8 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Models/SaveSystem.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Testing/S3Tester.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ai.toolkit@97783faabe3b/Modules/Accounts/Services/Core/AccountApi.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
@@ -166,6 +192,7 @@
       <workItem from="1750276277669" duration="19949000" />
       <workItem from="1750354912219" duration="18145000" />
       <workItem from="1750451301427" duration="2331000" />
+      <workItem from="1750710569628" duration="16124000" />
     </task>
     <servers />
   </component>

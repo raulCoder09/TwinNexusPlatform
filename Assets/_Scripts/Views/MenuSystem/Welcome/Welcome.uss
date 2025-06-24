@@ -260,19 +260,19 @@
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
     translate: -100% 0;
-    scale: 0.9; /* NEW: Reduced scale on exit */
-    opacity: 0; /* NEW: Fade out */
-    skew: 2deg; /* NEW: Slight skew on exit */
+    scale: 0.9;
+    opacity: 0;
+    skew: 2deg; 
     transition-duration: 0.5s;
-    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
-    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
+    transition-timing-function: ease-in-out; 
+    transition-property: translate, scale, opacity, skew; 
 }
 
 .RecoverPasswordPanelInMainScreen {
     translate: 0% 0;
-    scale: 1; /* NEW: Full scale on entry */
-    opacity: 1; /* NEW: Fully visible */
-    skew: 0deg; /* NEW: No skew on entry */
+    scale: 1; 
+    opacity: 1; 
+    skew: 0deg; 
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
@@ -292,19 +292,19 @@
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
     translate: 100% 0;
-    scale: 0.9; /* NEW: Reduced scale on exit */
-    opacity: 0; /* NEW: Fade out */
-    skew: -2deg; /* NEW: Slight skew on exit */
+    scale: 0.9;
+    opacity: 0; 
+    skew: -2deg; 
     transition-duration: 0.5s;
-    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
-    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
+    transition-timing-function: ease-in-out; 
+    transition-property: translate, scale, opacity, skew; 
 }
 
 .EmailVerificationPanelInMainScreen {
     translate: 0% 0;
-    scale: 1; /* NEW: Full scale on entry */
-    opacity: 1; /* NEW: Fully visible */
-    skew: 0deg; /* NEW: No skew on entry */
+    scale: 1;
+    opacity: 1; 
+    skew: 0deg;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
@@ -441,7 +441,7 @@
     font-size: 100px;
     -unity-font-style: normal;
     text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
-    transition-property: opacity, translate, text-shadow; /* NEW: Transitions for glitch */
+    transition-property: opacity, translate, text-shadow; 
     transition-duration: 0.2s;
     transition-timing-function: linear;
 }
@@ -449,7 +449,7 @@
 #TitleLogin.glitch, #TitleRegister.glitch, #TitleRecoverPassword.glitch {
     opacity: 0.8;
     translate: 2px 0;
-    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5); /* NEW: Lower opacity for subtlety */
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5); 
 }
 
 #TitleEmailVerification {
@@ -550,9 +550,9 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background-image: url("project://database/Assets/_Images/Backgrounds/code-rain1.jpg"); /* NEW: Code rain image */
-    background-size: 100% 100%; /* NEW: Fill the container */
-    background-repeat: repeat; /* NEW: Repeat horizontally and vertically */
-    opacity: 0.15; /* NEW: Subtle opacity */
-    z-index: -1; /* NEW: Behind other elements */
+    background-image: url("project://database/Assets/_Images/Backgrounds/code-rain1.jpg");
+    background-size: 100% 100%;
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: -1;
 }

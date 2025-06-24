@@ -15,7 +15,7 @@ namespace _Scripts.Controller
         private VisualElement _scrim;
         private Button _menuButton;
         private Button _hideMenuButton;
-        private WelcomeControllerUI _welcomeController;
+        private WelcomeController _welcomeController;
         private DeviceSelectionController _deviceSelectionController;
         private Button _operationsButton;
         private Button _logoutButton;

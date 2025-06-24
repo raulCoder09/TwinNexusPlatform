@@ -7,7 +7,7 @@ using _Scripts.Models;
 
 namespace _Scripts.Controller
 {
-    public class WelcomeControllerUI : MonoBehaviour
+    public class WelcomeController : MonoBehaviour
     {
         #region UI Components - Main
         private VisualElement _body;
