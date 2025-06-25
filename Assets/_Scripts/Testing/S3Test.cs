@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using _Scripts.Models;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace _Scripts.Testing
         private InputAction uploadImageAction;
         private InputAction downloadLastAction;
         private InputAction downloadSpecificAction;
+        private InputAction listFilesAction;
+        private InputAction deleteAction;
 
         void Start()
         {
@@ -19,21 +22,29 @@ namespace _Scripts.Testing
             uploadImageAction = new InputAction("UploadImage", InputActionType.Button, "<Keyboard>/i");
             downloadLastAction = new InputAction("DownloadLast", InputActionType.Button, "<Keyboard>/d");
             downloadSpecificAction = new InputAction("DownloadSpecific", InputActionType.Button, "<Keyboard>/s");
+            listFilesAction = new InputAction("ListFiles", InputActionType.Button, "<Keyboard>/l");
+            deleteAction = new InputAction("DeleteFile", InputActionType.Button, "<Keyboard>/x");
             
             uploadTextAction.performed += OnUploadTextPressed;
             uploadImageAction.performed += OnUploadImagePressed;
             downloadLastAction.performed += OnDownloadLastPressed;
             downloadSpecificAction.performed += OnDownloadSpecificPressed;
+            listFilesAction.performed += OnListFilesPressed;
+            deleteAction.performed += OnDeletePressed;
             
             uploadTextAction.Enable();
             uploadImageAction.Enable();
             downloadLastAction.Enable();
             downloadSpecificAction.Enable();
+            listFilesAction.Enable();
+            deleteAction.Enable();
             
             if (S3Manager.Instance != null)
             {
                 S3Manager.Instance.OnUploadComplete += OnUploadResult;
                 S3Manager.Instance.OnDownloadComplete += OnDownloadResult;
+                S3Manager.Instance.OnFileListComplete += OnFileListResult;
+                S3Manager.Instance.OnFileDeleteComplete += OnDeleteResult;
             }
             
             Debug.Log("🚀 S3Test iniciado:");
@@ -41,6 +52,8 @@ namespace _Scripts.Testing
             Debug.Log("🖼️ Presiona 'I' para subir imagen de prueba");
             Debug.Log("📥 Presiona 'D' para descargar último archivo subido");
             Debug.Log("🎯 Presiona 'S' para descargar archivo específico (configurado en Inspector)");
+            Debug.Log("📋 Presiona 'L' para listar archivos de tu carpeta");
+            Debug.Log("🗑️ Presiona 'X' para eliminar archivo específico (configurado en Inspector)");
         }
 
         void OnDestroy()
@@ -72,6 +85,20 @@ namespace _Scripts.Testing
                 downloadSpecificAction.Disable();
                 downloadSpecificAction.Dispose();
             }
+            
+            if (listFilesAction != null)
+            {
+                listFilesAction.performed -= OnListFilesPressed;
+                listFilesAction.Disable();
+                listFilesAction.Dispose();
+            }
+            
+            if (deleteAction != null)
+            {
+                deleteAction.performed -= OnDeletePressed;
+                deleteAction.Disable();
+                deleteAction.Dispose();
+            }
         }
 
         private void OnUploadTextPressed(InputAction.CallbackContext context)
@@ -93,9 +120,16 @@ namespace _Scripts.Testing
         {
             ExecuteDownloadSpecificTest();
         }
-        
-        
-        
+
+        private void OnListFilesPressed(InputAction.CallbackContext context)
+        {
+            ExecuteListFilesTest();
+        }
+
+        private void OnDeletePressed(InputAction.CallbackContext context)
+        {
+            ExecuteDeleteTest();
+        }
 
         async void ExecuteDownloadLastTest()
         {
@@ -121,6 +155,33 @@ namespace _Scripts.Testing
             Debug.Log("🎯 Iniciando descarga de archivo específico...");
             bool success = await S3Manager.Instance.DownloadSpecificFileAsync();
             Debug.Log(success ? "✅ Download específico completado" : "❌ Download específico falló");
+        }
+
+        async void ExecuteListFilesTest()
+        {
+            if (S3Manager.Instance == null)
+            {
+                Debug.LogError("S3Manager no disponible.");
+                return;
+            }
+
+            Debug.Log("📋 Iniciando listado de archivos...");
+            bool success = await S3Manager.Instance.ListUserFilesTestAsync();
+            Debug.Log(success ? "✅ Listado completado" : "❌ Listado falló o carpeta vacía");
+        }
+
+        async void ExecuteDeleteTest()
+        {
+            if (S3Manager.Instance == null)
+            {
+                Debug.LogError("S3Manager no disponible.");
+                return;
+            }
+
+            Debug.Log("🗑️ Iniciando eliminación de archivo específico...");
+            Debug.LogWarning("⚠️ ATENCIÓN: Esta acción eliminará permanentemente el archivo configurado!");
+            bool success = await S3Manager.Instance.DeleteSpecificFileAsync();
+            Debug.Log(success ? "✅ Eliminación completada" : "❌ Eliminación falló");
         }
 
         async void ExecuteTextUploadTest()
@@ -193,6 +254,50 @@ Este es un archivo de prueba subido desde Unity a AWS S3.
             else
             {
                 Debug.LogError($"❌ Error en download: {message}");
+            }
+        }
+
+        void OnFileListResult(bool success, string message, List<S3FileInfo> fileList)
+        {
+            if (success)
+            {
+                Debug.Log($"📋 ¡Listado completado exitosamente!");
+                Debug.Log($"📊 Total de archivos: {fileList?.Count ?? 0}");
+                Debug.Log($"💬 Mensaje: {message}");
+
+                if (fileList != null && fileList.Count > 0)
+                {
+                    Debug.Log("📁 Vista resumida de archivos:");
+                    for (int i = 0; i < Math.Min(fileList.Count, 5); i++) // Solo mostrar los primeros 5
+                    {
+                        var file = fileList[i];
+                        Debug.Log($"   {i + 1}. {file.fileName} ({file.formattedSize})");
+                    }
+
+                    if (fileList.Count > 5)
+                    {
+                        Debug.Log($"   ... y {fileList.Count - 5} archivos más");
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError($"❌ Error en listado: {message}");
+            }
+        }
+
+        void OnDeleteResult(bool success, string message, string deletedFileKey)
+        {
+            if (success)
+            {
+                Debug.Log($"🗑️ ¡Archivo eliminado exitosamente!");
+                Debug.Log($"🗂️ Archivo eliminado: {deletedFileKey}");
+                Debug.Log($"💬 Mensaje: {message}");
+                Debug.Log("✨ El archivo ya no existe en S3");
+            }
+            else
+            {
+                Debug.LogError($"❌ Error en eliminación: {message}");
             }
         }
 

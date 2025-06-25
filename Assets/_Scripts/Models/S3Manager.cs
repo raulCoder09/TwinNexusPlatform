@@ -6,10 +6,55 @@ using UnityEngine;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon;
-using _Scripts.Models;
-
 namespace _Scripts.Models
 {
+    // Data class for S3 file information
+    [System.Serializable]
+    public class S3FileInfo
+    {
+        public string fileName;
+        public string fullKey;
+        public long sizeBytes;
+        public DateTime lastModified;
+        public string fileType;
+        public string formattedSize;
+
+        public S3FileInfo(string fileName, string fullKey, long sizeBytes, DateTime lastModified)
+        {
+            this.fileName = fileName;
+            this.fullKey = fullKey;
+            this.sizeBytes = sizeBytes;
+            this.lastModified = lastModified;
+            this.fileType = GetFileTypeFromExtension(fileName);
+            this.formattedSize = FormatFileSize(sizeBytes);
+        }
+
+        private string GetFileTypeFromExtension(string fileName)
+        {
+            string extension = Path.GetExtension(fileName).ToLower();
+            return extension switch
+            {
+                ".jpg" or ".jpeg" => "Image (JPEG)",
+                ".png" => "Image (PNG)",
+                ".gif" => "Image (GIF)",
+                ".txt" => "Text File",
+                ".json" => "JSON Data",
+                ".pdf" => "PDF Document",
+                ".mp4" => "Video (MP4)",
+                ".mp3" => "Audio (MP3)",
+                _ => "Unknown File"
+            };
+        }
+
+        private string FormatFileSize(long bytes)
+        {
+            if (bytes < 1024) return $"{bytes} B";
+            if (bytes < 1048576) return $"{bytes / 1024.0:F1} KB";
+            if (bytes < 1073741824) return $"{bytes / 1048576.0:F1} MB";
+            return $"{bytes / 1073741824.0:F1} GB";
+        }
+    }
+
     public class S3Manager : MonoBehaviour
     {
         [Header("S3 Configuration")]
@@ -20,12 +65,17 @@ namespace _Scripts.Models
         [SerializeField] private string downloadPath = "downloads"; // Carpeta de descarga relativa a persistentDataPath
         [SerializeField] private string specificFileKey = ""; // Archivo específico para descargar (ej: "super-admin/test-image-20250624-143052.jpg")
         
+        [Header("Delete Configuration")]
+        [SerializeField] private string fileToDelete = ""; // Archivo específico para eliminar (ej: "super-admin/old-file.jpg")
+        
         // S3 client
         private AmazonS3Client s3Client;
         
         // Events for S3 operations
         public event Action<bool, string, string> OnUploadComplete; // success, message, fileKey
         public event Action<bool, string, byte[]> OnDownloadComplete; // success, message, fileData
+        public event Action<bool, string, List<S3FileInfo>> OnFileListComplete; // success, message, fileList
+        public event Action<bool, string, string> OnFileDeleteComplete; // success, message, deletedFileKey
         
         // Store the last uploaded file key for testing downloads
         private string lastUploadedFileKey;
@@ -437,6 +487,250 @@ namespace _Scripts.Models
                 return false;
             }
         }
+
+        /// <summary>
+        /// Deletes a file from S3 by file key
+        /// </summary>
+        public async Task<bool> DeleteFileAsync(string fileKey)
+        {
+            try
+            {
+                // Check if user is authenticated
+                if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+                {
+                    Debug.LogError("User must be authenticated to delete files");
+                    OnFileDeleteComplete?.Invoke(false, "User not authenticated", null);
+                    return false;
+                }
+
+                // Initialize S3 client if needed
+                if (s3Client == null)
+                {
+                    InitializeS3Client();
+                    if (s3Client == null)
+                    {
+                        OnFileDeleteComplete?.Invoke(false, "Failed to initialize S3 client", null);
+                        return false;
+                    }
+                }
+
+                // Security check: only allow deletion of files in user's folder
+                string userFolder = GetUserFolderPath();
+                if (!fileKey.StartsWith(userFolder) && CognitoManager.Instance.GetUserRole() != "super-admin")
+                {
+                    Debug.LogError($"Access denied: Cannot delete files outside your folder ({userFolder})");
+                    OnFileDeleteComplete?.Invoke(false, "Access denied - can only delete files in your folder", null);
+                    return false;
+                }
+
+                Debug.Log($"Deleting file from S3...");
+                Debug.Log($"Bucket: {bucketName}");
+                Debug.Log($"Key: {fileKey}");
+
+                // Create delete request
+                var deleteRequest = new DeleteObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = fileKey
+                };
+
+                // Delete the file
+                var response = await s3Client.DeleteObjectAsync(deleteRequest);
+
+                if (response.HttpStatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    Debug.Log($"File deleted successfully: {fileKey}");
+                    OnFileDeleteComplete?.Invoke(true, "File deleted successfully", fileKey);
+                    return true;
+                }
+                else
+                {
+                    Debug.LogError($"Delete failed with status: {response.HttpStatusCode}");
+                    OnFileDeleteComplete?.Invoke(false, $"Delete failed: {response.HttpStatusCode}", null);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"S3 delete error: {ex.Message}");
+                OnFileDeleteComplete?.Invoke(false, ex.Message, null);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Deletes the specific file configured in the inspector
+        /// </summary>
+        public async Task<bool> DeleteSpecificFileAsync()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(fileToDelete))
+                {
+                    Debug.LogWarning("No file specified for deletion in inspector");
+                    OnFileDeleteComplete?.Invoke(false, "No file specified for deletion", null);
+                    return false;
+                }
+
+                Debug.Log($"Preparing to delete specific file: {fileToDelete}");
+                
+                // Safety confirmation (in a real app, you'd show a UI dialog)
+                Debug.LogWarning($"⚠️ ATTENTION: About to delete file: {fileToDelete}");
+                Debug.LogWarning("⚠️ This action cannot be undone!");
+                
+                bool success = await DeleteFileAsync(fileToDelete);
+                
+                if (success)
+                {
+                    Debug.Log($"✅ Specific file deletion completed!");
+                    // Clear the field after successful deletion to prevent accidental re-deletion
+                    fileToDelete = "";
+                    return true;
+                }
+                
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Specific file deletion failed: {ex.Message}");
+                OnFileDeleteComplete?.Invoke(false, ex.Message, null);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test method to delete the last uploaded file (with safety confirmation)
+        /// </summary>
+        public async Task<bool> DeleteLastUploadedFileAsync()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(lastUploadedFileKey))
+                {
+                    Debug.LogWarning("No file has been uploaded yet to delete");
+                    OnFileDeleteComplete?.Invoke(false, "No previous upload found to delete", null);
+                    return false;
+                }
+
+                Debug.Log($"⚠️ Preparing to delete last uploaded file: {lastUploadedFileKey}");
+                Debug.LogWarning("⚠️ This will permanently delete your last uploaded file!");
+                
+                bool success = await DeleteFileAsync(lastUploadedFileKey);
+                
+                if (success)
+                {
+                    Debug.Log($"✅ Last uploaded file deleted successfully!");
+                    lastUploadedFileKey = ""; // Clear the reference
+                    return true;
+                }
+                
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Delete last uploaded file failed: {ex.Message}");
+                OnFileDeleteComplete?.Invoke(false, ex.Message, null);
+                return false;
+            }
+        }
+        public async Task<List<S3FileInfo>> ListUserFilesAsync()
+        {
+            try
+            {
+                // Check if user is authenticated
+                if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+                {
+                    Debug.LogError("User must be authenticated to list files");
+                    OnFileListComplete?.Invoke(false, "User not authenticated", new List<S3FileInfo>());
+                    return new List<S3FileInfo>();
+                }
+
+                // Initialize S3 client if needed
+                if (s3Client == null)
+                {
+                    InitializeS3Client();
+                    if (s3Client == null)
+                    {
+                        OnFileListComplete?.Invoke(false, "Failed to initialize S3 client", new List<S3FileInfo>());
+                        return new List<S3FileInfo>();
+                    }
+                }
+
+                string userFolder = GetUserFolderPath();
+                Debug.Log($"Listing files in user folder: {userFolder}");
+
+                // Create list request for user's folder
+                var listRequest = new ListObjectsV2Request
+                {
+                    BucketName = bucketName,
+                    Prefix = userFolder,
+                    MaxKeys = 100 // Limit to 100 files for performance
+                };
+
+                var response = await s3Client.ListObjectsV2Async(listRequest);
+                var fileList = new List<S3FileInfo>();
+
+                foreach (var obj in response.S3Objects)
+                {
+                    // Skip folder entries (keys ending with /)
+                    if (obj.Key.EndsWith("/")) continue;
+
+                    string fileName = Path.GetFileName(obj.Key);
+                    var fileInfo = new S3FileInfo(fileName, obj.Key, obj.Size ?? 0, obj.LastModified ?? DateTime.UtcNow);
+                    fileList.Add(fileInfo);
+                }
+
+                Debug.Log($"Found {fileList.Count} files in user folder");
+                OnFileListComplete?.Invoke(true, $"Found {fileList.Count} files", fileList);
+                return fileList;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error listing user files: {ex.Message}");
+                OnFileListComplete?.Invoke(false, ex.Message, new List<S3FileInfo>());
+                return new List<S3FileInfo>();
+            }
+        }
+
+        /// <summary>
+        /// Test method to list user files and display results
+        /// </summary>
+        public async Task<bool> ListUserFilesTestAsync()
+        {
+            try
+            {
+                Debug.Log("📋 Iniciando listado de archivos del usuario...");
+                
+                var fileList = await ListUserFilesAsync();
+                
+                if (fileList.Count > 0)
+                {
+                    Debug.Log($"📁 Archivos encontrados en tu carpeta:");
+                    for (int i = 0; i < fileList.Count; i++)
+                    {
+                        var file = fileList[i];
+                        Debug.Log($"{i + 1}. 📄 {file.fileName}");
+                        Debug.Log($"   📊 Tamaño: {file.formattedSize}");
+                        Debug.Log($"   🕐 Modificado: {file.lastModified:yyyy-MM-dd HH:mm:ss}");
+                        Debug.Log($"   🔍 Tipo: {file.fileType}");
+                        Debug.Log($"   📍 Ruta: {file.fullKey}");
+                        Debug.Log("   ---");
+                    }
+                    return true;
+                }
+                else
+                {
+                    Debug.Log("📭 No se encontraron archivos en tu carpeta");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error en test de listado: {ex.Message}");
+                return false;
+            }
+        }
+
         public async Task<bool> UploadTestImageAsync()
         {
             try
