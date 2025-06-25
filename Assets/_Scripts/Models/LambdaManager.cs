@@ -12,7 +12,7 @@ namespace _Scripts.Models
     public class LambdaManager : MonoBehaviour
     {
         [Header("Lambda Configuration")]
-        [SerializeField] private string defaultFunctionName = "TwinNexusPlatform-LambdaTest";
+        [SerializeField] private string defaultFunctionName = "test";
         
         // Lambda client
         private AmazonLambdaClient lambdaClient;
@@ -119,11 +119,17 @@ namespace _Scripts.Models
         {
             try
             {
-                // Check if user is authenticated
                 if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
                 {
                     Debug.LogError("User must be authenticated to execute Lambda functions");
                     OnLambdaExecutionComplete?.Invoke(false, "User not authenticated", null);
+                    return false;
+                }
+                
+                if (!CanUserExecuteFunction(functionName))
+                {
+                    Debug.LogError($"User does not have permission to execute function: {functionName}");
+                    OnLambdaExecutionComplete?.Invoke(false, $"Permission denied for function: {functionName}", null);
                     return false;
                 }
 
@@ -230,18 +236,14 @@ namespace _Scripts.Models
                 case "super-admin":
                     return true; // Super admin can execute all functions
 
-                case "operadores":
+                case "operators":
                     // Operators can execute operational and monitoring functions
-                    return functionName.Contains("Monitor") || 
-                           functionName.Contains("IoT") || 
-                           functionName.Contains("Operation") ||
-                           functionName == defaultFunctionName;
+                    return functionName == defaultFunctionName;
 
-                case "estudiantes":
+                case "students":
                     // Students can execute learning and personal functions
-                    return functionName.Contains("Student") || 
-                           functionName.Contains("Learning") || 
-                           functionName.Contains("Personal") ||
+                    return functionName.Contains("Student") ||
+                           functionName.Contains("Learning") ||
                            functionName == defaultFunctionName;
 
                 case "usuarios-basicos":

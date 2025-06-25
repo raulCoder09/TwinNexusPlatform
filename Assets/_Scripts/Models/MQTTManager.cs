@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _Scripts.Models
 {
-    public class LocalIoT : MonoBehaviour
+    public class MQTTManager : MonoBehaviour
     {
         #region Private Fields
         private MqttFactory _factory;

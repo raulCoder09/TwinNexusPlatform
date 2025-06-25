@@ -64,7 +64,7 @@ namespace _Scripts.Controller
         #endregion
 
         #region Dependencies
-        private LocalIoT _localIoT;
+        private MQTTManager _mqttManager;
         private CloudIoT _ioTCoreManager;
         private VMIoT _vmIoT;
         private SaveDataManager _saveDataManager;
@@ -124,7 +124,7 @@ namespace _Scripts.Controller
 
         private void FindDependencies()
         {
-            _localIoT = FindComponentByTag<LocalIoT>("LocalIoT");
+            _mqttManager = FindComponentByTag<MQTTManager>("LocalIoT");
             _ioTCoreManager = FindComponentByTag<CloudIoT>("CloudIoT");
             _vmIoT = FindComponentByTag<VMIoT>("VMIoT");
             _saveDataManager = FindComponentByTag<SaveDataManager>("GameManager");
@@ -244,7 +244,7 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _localIoT.ConnectToBroker();
+                var result = await _mqttManager.ConnectToBroker();
                 var status = result ? ONLINE_STATUS : OFFLINE_STATUS;
                 SetConnectionStatus(_statusLocalLabel, _dashboardController.localIoTStatusLabel, status);
             }
@@ -259,7 +259,7 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _localIoT.DisconnectFromBroker();
+                var result = await _mqttManager.DisconnectFromBroker();
                 var status = result ? OFFLINE_STATUS : CLIENT_NOT_CONNECTED;
                 SetConnectionStatus(_statusLocalLabel, _dashboardController.localIoTStatusLabel, status);
             }
@@ -272,7 +272,7 @@ namespace _Scripts.Controller
 
         private void SendLocalTestMessage(ClickEvent evt)
         {
-            _ = _localIoT.SendTestMessage();
+            _ = _mqttManager.SendTestMessage();
         }
         #endregion
 
@@ -363,7 +363,7 @@ namespace _Scripts.Controller
         {
             _ipOrHostnameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.brokerAddress = _localIoT.brokerAddress = evt.newValue;
+                iotConfigurationData.brokerAddress = _mqttManager.brokerAddress = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
@@ -371,33 +371,33 @@ namespace _Scripts.Controller
             {
                 if (int.TryParse(evt.newValue, out var port))
                 {
-                    iotConfigurationData.BrokerPort = _localIoT.brokerPort = port;
+                    iotConfigurationData.BrokerPort = _mqttManager.brokerPort = port;
                     _saveDataManager.SaveData();
                 }
             });
             
             _clientIDTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.ClientId = _localIoT.clientId = evt.newValue;
+                iotConfigurationData.ClientId = _mqttManager.clientId = evt.newValue;
                 _saveDataManager.SaveData();
             });
 
             _modeConnectionDropdownField.RegisterValueChangedCallback(evt =>
             {
-                _dashboardController.localIoTModeLabel.text = _localIoT.modeConnection = 
+                _dashboardController.localIoTModeLabel.text = _mqttManager.modeConnection = 
                     iotConfigurationData.ModeConnection = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _usernameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.Username = _localIoT.username = evt.newValue;
+                iotConfigurationData.Username = _mqttManager.username = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _passwordTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.Password = _localIoT.password = evt.newValue;
+                iotConfigurationData.Password = _mqttManager.password = evt.newValue;
                 _saveDataManager.SaveData();
             });
         }

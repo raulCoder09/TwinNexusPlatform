@@ -24,6 +24,9 @@ namespace _Scripts.Models
         [Header("AWS Region Configuration")]
         [SerializeField] private AWSRegion awsRegion = AWSRegion.USEast1;
         
+        [Header("roles definition")]
+        [SerializeField] private string[] roleName;
+        
         // Enum para regions que Unity puede serializar
         public enum AWSRegion
         {
@@ -813,7 +816,7 @@ public async Task<List<string>> GetUserGroupsAsync()
         // Parse groups from user attributes or from ID token
         var groups = await ParseUserGroupsFromToken();
         UserGroups = groups;
-        CurrentUserGroup = groups.FirstOrDefault() ?? "usuarios-basicos";
+        CurrentUserGroup = groups.FirstOrDefault() ?? "basic-users";
         
         Debug.Log($"User groups: {string.Join(", ", groups)}");
         Debug.Log($"Primary group: {CurrentUserGroup}");
@@ -883,14 +886,14 @@ public bool IsUserInGroup(string groupName)
 /// </summary>
 public string GetUserRole()
 {
-    if (IsUserInGroup("super-admin"))
-        return "super-admin";
-    if (IsUserInGroup("operadores"))
-        return "operadores";
-    if (IsUserInGroup("estudiantes"))
-        return "estudiantes";
+    if (IsUserInGroup(roleName[0]))
+        return roleName[0];
+    if (IsUserInGroup(roleName[1]))
+        return roleName[1];
+    if (IsUserInGroup(roleName[2]))
+        return roleName[2];
     
-    return "usuarios-basicos";
+    return roleName[3];
 }
 
 #endregion
