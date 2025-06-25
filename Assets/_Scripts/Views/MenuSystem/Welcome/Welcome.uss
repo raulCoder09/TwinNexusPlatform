@@ -1,3 +1,4 @@
+/* General Styles */
 #Body {
     flex-grow: 1;
     width: 100%;
@@ -5,10 +6,21 @@
     justify-content: space-between;
     align-self: stretch;
     align-content: stretch;
-    background-image: url("project://database/Assets/_Images/Backgrounds/peter-gargiulo-cGNCepznaV8-unsplash.jpg?fileID=2800000&guid=54cc3fd443fc24251a21c5cdfd43ef4c&type=3#peter-gargiulo-cGNCepznaV8-unsplash");
     background-color: rgb(0, 0, 0);
+    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg");
+    background-size: 100% 4px;
+    background-repeat: repeat-y;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
 }
 
+/* Header Styles */
 #Header {
     flex-grow: 1;
     width: 100%;
@@ -20,40 +32,18 @@
     flex-grow: 1;
     height: auto;
     justify-content: center;
-    width: 50%;
+    width: 100%;
 }
 
 #UniversityName {
-    color: rgb(255, 255, 255);
-    font-size: 25px;
+    color: rgb(0, 255, 0);
+    font-size: 30px;
     -unity-text-align: upper-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/RobotoSerif-VariableFont_GRAD,opsz,wdth,wght.ttf?fileID=12800000&guid=107b25d6011d5425e8d420338534b760&type=3#RobotoSerif-VariableFont_GRAD,opsz,wdth,wght");
-    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
-#LogoPanel {
-    flex-grow: 1;
-    justify-content: center;
-    align-self: stretch;
-    align-content: center;
-    align-items: center;
-    width: 50%;
-}
-
-#Logo {
-    flex-grow: 1;
-    background-color: rgba(0, 0, 0, 0);
-    width: 70px;
-    height: auto;
-    background-image: url("project://database/Assets/_Images/Logos/UdeGLogo.png?fileID=2800000&guid=35cb058d0f87c40588a599803f141ec5&type=3#UdeGLogo");
-    align-items: center;
-    justify-content: center;
-    align-self: center;
-    align-content: center;
-    margin-top: 3px;
-    padding-top: 0;
-}
-
+/* Main Styles */
 #Main {
     flex-grow: 1;
     width: 100%;
@@ -74,11 +64,21 @@
 }
 
 #Title {
-    color: rgb(163, 218, 89);
-    font-size: 100px;
+    color: rgb(0, 255, 0);
+    font-size: 120px;
     -unity-text-align: middle-center;
-    -unity-font-style: bold;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&guid=4188192a02890489d82f09c0fa1f97ce&type=3#Cinzel-VariableFont_wght");
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: normal;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    transition-property: opacity, translate, text-shadow; /* NEW: Transitions for glitch */
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+#Title.glitch {
+    opacity: 0.8;
+    translate: 2px 0;
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5); /* NEW: Lower opacity for subtlety */
 }
 
 #SubtitlePanel {
@@ -92,11 +92,12 @@
 }
 
 #Subtitle {
-    color: rgb(176, 169, 218);
-    font-size: 30px;
+    color: rgb(0, 255, 0);
+    font-size: 60px;
     white-space: normal;
     -unity-text-align: middle-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/RobotoSerif-VariableFont_GRAD,opsz,wdth,wght.ttf?fileID=12800000&guid=107b25d6011d5425e8d420338534b760&type=3#RobotoSerif-VariableFont_GRAD,opsz,wdth,wght");
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 #ButtonsPanel {
@@ -110,7 +111,7 @@
     align-items: stretch;
 }
 
-#ExitButtonPanel {
+#ExitButtonPanel, #LaunchButtonPanel {
     flex-grow: 1;
     width: 100%;
     height: 100%;
@@ -120,146 +121,7 @@
     align-content: center;
 }
 
-#LaunchButtonPanel {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    align-self: center;
-    align-content: center;
-}
-
-#ExitButton {
-    width: 25%;
-    height: 25%;
-    font-size: 30px;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&guid=4188192a02890489d82f09c0fa1f97ce&type=3#Cinzel-VariableFont_wght");
-    background-color: rgb(75, 42, 87);
-    color: rgb(163, 218, 89);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
-    border-top-left-radius: 50px;
-    border-top-right-radius: 50px;
-    border-bottom-right-radius: 50px;
-    border-bottom-left-radius: 50px;
-    -unity-font-style: bold;
-    transition: all 0.3s ease-out;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-    top: 0;
-}
-
-#LaunchButton {
-    width: 25%;
-    height: 25%;
-    font-size: 30px;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&guid=4188192a02890489d82f09c0fa1f97ce&type=3#Cinzel-VariableFont_wght");
-    background-color: rgb(75, 42, 87);
-    color: rgb(163, 218, 89);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
-    border-top-left-radius: 50px;
-    border-top-right-radius: 50px;
-    border-bottom-right-radius: 50px;
-    border-bottom-left-radius: 50px;
-    -unity-font-style: bold;
-    transition: all 0.3s ease-out;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-    top: 0;
-}
-
-#ExitButton:hover {
-    width: 28%;
-    height: 28%;
-    font-size: 33px;
-    scale: 1.05;
-    background-color: rgb(85, 50, 100);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    top: -2px;
-}
-
-#LaunchButton:hover {
-    width: 28%;
-    height: 28%;
-    font-size: 33px;
-    scale: 1.05;
-    background-color: rgb(85, 50, 100);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    top: -2px;
-}
-
-#ExitButton:active {
-    background-color: rgb(55, 30, 64);
-    color: rgb(143, 198, 69);
-    scale: 0.95;
-    top: 2px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    transition: all 0.1s ease-in;
-}
-
-#LaunchButton:active {
-    background-color: rgb(55, 30, 64);
-    color: rgb(143, 198, 69);
-    scale: 0.95;
-    top: 2px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    transition: all 0.1s ease-in;
-}
-
-#LaunchButton {
-    -unity-background-image-tint-color: rgb(255, 255, 255);
-}
-
-#ExitButton:hover {
-    width: 28%;
-    height: 28%;
-    font-size: 33px;
-    scale: 1.05;
-    background-color: rgb(85, 50, 100);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    top: -2px;
-}
-
-#LaunchButton:hover {
-    width: 28%;
-    height: 28%;
-    font-size: 33px;
-    scale: 1.05;
-    background-color: rgb(85, 50, 100);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    top: -2px;
-}
-
-#ExitButton:active {
-    background-color: rgb(55, 30, 64);
-    color: rgb(143, 198, 69);
-    scale: 0.95;
-    top: 2px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    transition-duration: 0.1s;
-    transition-timing-function: ease-in;
-}
-
-#LaunchButton:active {
-    background-color: rgb(55, 30, 64);
-    color: rgb(143, 198, 69);
-    scale: 0.95;
-    top: 2px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    transition-duration: 0.1s;
-    transition-timing-function: ease-in;
-}
-
-#LaunchButton {
-    -unity-background-image-tint-color: rgb(255, 255, 255);
-}
-
+/* Footer Styles */
 #Footer {
     flex-grow: 1;
     width: 100%;
@@ -271,8 +133,46 @@
 }
 
 #AdditionalInformation {
-    color: rgb(247, 187, 39);
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/RobotoSerif-VariableFont_GRAD,opsz,wdth,wght.ttf?fileID=12800000&guid=107b25d6011d5425e8d420338534b760&type=3#RobotoSerif-VariableFont_GRAD,opsz,wdth,wght");
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 24px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+#MessageLabel {
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 24px;
+    -unity-text-align: middle-center;
+    margin-top: 10px;
+    display: none;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+
+
+/* Panel Container */
+#SubpanelsAndSmokeMaskContainer {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: auto;
+    opacity: 1;
+    visibility: visible;
+}
+
+.Scrim {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 0;
+    transition-duration: 0.5s;
+}
+
+.ScrimFadein {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.8);
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 .LoginPanelMoveA {
@@ -281,57 +181,378 @@
     width: 100%;
     height: 50%;
     bottom: 0;
-    background-color: rgb(255, 255, 255);
-    border-top-left-radius: 50px;
-    border-top-right-radius: 50px;
+    background-color: rgb(0, 0, 0);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
     translate: 0 100%;
-    transition-duration: 1s;
-    transition-timing-function: ease-in-bounce;
+    scale: 0.9; /* NEW: Reduced scale on exit */
+    opacity: 0; /* NEW: Fade out */
+    skew: 2deg; /* NEW: Slight skew on exit */
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
+    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
 }
+
 
 .LoginPanelMoveB {
     translate: 0 0%;
-}
-
-.Scrim {
-    flex-grow: 1;
-    background-color: rgba(0, 0, 0, 0.78);
-    opacity: 0;
-    transition-duration: 1s;
+    scale: 1; /* NEW: Full scale on entry */
+    opacity: 1; /* NEW: Fully visible */
+    skew: 0deg; /* NEW: No skew on entry */
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
 .RegisterPanelOutMainScreen {
-    background-color: rgb(75, 42, 87);
+    flex-grow: 1;
     position: absolute;
     width: 100%;
     height: 50%;
     bottom: 0;
+    background-color: rgb(0, 0, 0);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
     translate: 100% 0;
-    transition-timing-function: ease-in-bounce;
-    transition-duration: 1s;
+    scale: 0.9; /* NEW: Reduced scale on exit */
+    opacity: 0; /* NEW: Fade out */
+    skew: -2deg; /* NEW: Slight skew on exit */
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
+    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
 }
 
 .RegisterPanelInMainScreen {
     translate: 0% 0;
+    scale: 1; /* NEW: Full scale on entry */
+    opacity: 1; /* NEW: Fully visible */
+    skew: 0deg; /* NEW: No skew on entry */
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
 .RecoverPasswordPanelOutMainScreen {
-    background-color: rgb(75, 42, 87);
+    flex-grow: 1;
     position: absolute;
     width: 100%;
     height: 50%;
     bottom: 0;
+    background-color: rgb(0, 0, 0);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
     translate: -100% 0;
-    right: auto;
-    transition-timing-function: ease-in-bounce;
-    transition-duration: 1s;
+    scale: 0.9;
+    opacity: 0;
+    skew: 2deg; 
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out; 
+    transition-property: translate, scale, opacity, skew; 
 }
 
 .RecoverPasswordPanelInMainScreen {
     translate: 0% 0;
+    scale: 1; 
+    opacity: 1; 
+    skew: 0deg; 
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
-.ScrimFadein {
-    opacity: 1;
-    background-color: rgba(0, 0, 0, 0.88);
+.EmailVerificationPanelOutMainScreen {
+    flex-grow: 1;
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+    background-color: rgb(0, 0, 0);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    translate: 100% 0;
+    scale: 0.9;
+    opacity: 0; 
+    skew: -2deg; 
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out; 
+    transition-property: translate, scale, opacity, skew; 
+}
+
+.EmailVerificationPanelInMainScreen {
+    translate: 0% 0;
+    scale: 1;
+    opacity: 1; 
+    skew: 0deg;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+}
+
+/* Generic Cyberpunk Styles */
+.button-cyberpunk {
+    color: rgb(0, 255, 0);
+    background-color: rgb(0, 0, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 50px;
+    -unity-font-style: normal;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7), 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.button-cyberpunk:hover {
+    background-color: rgb(0, 255, 0);
+    color: rgb(0, 0, 0);
+    box-shadow: 0 0 15px rgba(0, 200, 0, 0.8), 0 0 25px rgba(0, 200, 0, 0.6);
+}
+
+.button-cyberpunk:active {
+    background-color: rgb(0, 200, 0);
+    color: rgb(0, 0, 0);
+    box-shadow: 0 0 10px rgba(0, 200, 0, 0.8);
+}
+
+.small-button {
+    width: 25%;
+    height: 25%;
+    font-size: 30px;
+}
+
+.close-button {
+    color: rgb(0, 255, 0);
+    background-color: rgba(188, 188, 188, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 60px;
+    -unity-font-style: bold;
+    right: 46px;
+    top: 29px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.textfield-cyberpunk {
+    width: 50%;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 28px;
+    color: rgb(0, 255, 0);
+    background-color: rgb(0, 0, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+}
+
+.label-cyberpunk {
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 32px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+/* Panel-Specific Styles */
+#LoginPanel, #RegisterPanel, #RecoverPasswordPanel, #EmailVerificationPanel {
+    background-color: rgb(0, 0, 0);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#HeaderLogin, #HeaderRecoverPassword {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 33%;
+}
+
+#HeaderRegister, #HeaderEmailVerification {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 25%;
+}
+
+#TitleLoginPanel, #TitleRecoverPasswordPanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+#TitleRegisterPanel, #TitleEmailVerificationPanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+#TitleLogin, #TitleRegister, #TitleRecoverPassword {
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 100px;
+    -unity-font-style: normal;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    transition-property: opacity, translate, text-shadow; 
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+#TitleLogin.glitch, #TitleRegister.glitch, #TitleRecoverPassword.glitch {
+    opacity: 0.8;
+    translate: 2px 0;
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5); 
+}
+
+#TitleEmailVerification {
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 80px;
+    -unity-font-style: normal;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    transition-property: opacity, translate, text-shadow; /* NEW: Transitions for glitch */
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+#TitleEmailVerification.glitch {
+    opacity: 0.8;
+    translate: 2px 0;
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5); /* NEW: Lower opacity for subtlety */
+}
+
+#CloseLoginPanel, #CloseRegisterPanel, #CloseRecoverPasswordPanel, #CloseEmailVerificationPanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    align-items: flex-end;
+    align-self: flex-end;
+    right: auto;
+}
+
+#InputLoginPanel, #InputRecoverPasswordPanel, #InputEmailVerificationPanel {
+    flex-grow: 1;
+    width: 100%;
+    height: 33%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-self: stretch;
+    align-content: center;
+}
+
+#InputRegisterPanel {
+    flex-grow: 1;
+    width: 100%;
+    height: 50%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-self: stretch;
+    align-content: center;
+}
+
+#ButtonLoginPanel, #ButtonRecoverPasswordPanel {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 33%;
+    justify-content: space-evenly;
+    align-self: center;
+    align-items: center;
+    align-content: stretch;
+}
+
+#ButtonRegisterPanel, #ButtonEmailVerificationPanel {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 25%;
+    justify-content: space-evenly;
+    align-self: center;
+    align-items: center;
+    align-content: stretch;
+}
+
+#InstructionsEmailVerificationPanel {
+    flex-grow: 1;
+    width: 100%;
+    height: 25%;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+    align-content: center;
+}
+
+#EmailVerificationInstructions {
+    width: 80%;
+}
+
+#EmailVerificationEmail {
+    font-size: 28px;
+    -unity-font-style: bold;
+    margin-top: 10px;
+}
+
+#VerificationCodeField {
+    font-size: 32px;
+    letter-spacing: 5px;
+}
+
+/* Code Rain Styles */
+.code-rain {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url("project://database/Assets/_Images/Backgrounds/code-rain1.jpg");
+    background-size: 100% 100%;
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: -1;
 }

@@ -23,7 +23,50 @@ namespace _ScriptableObjects
         [SerializeField] private string _cloudModeConnection;
         [SerializeField] private string _pfxFilePath;
 
-        public string pfxFilePath
+        [SerializeField] private string _cloudVmIoTipOrHostname;
+        [SerializeField] private int _cloudVmIoTPort;
+        [SerializeField] private string _cloudVmIoTClientID;
+        [SerializeField] private string _cloudVmIoTModeConnection;
+        [SerializeField] private string _cloudVmIoTUsername;
+        [SerializeField] private string _cloudVmIoTPassword;
+
+        internal string cloudVmIoTipOrHostname
+        {
+            get => _cloudVmIoTipOrHostname;
+            set => _cloudVmIoTipOrHostname = value;
+        }
+
+        internal int cloudVmIoTPort
+        {
+            get => _cloudVmIoTPort;
+            set => _cloudVmIoTPort = value;
+        }
+
+        internal string cloudVmIoTClientID
+        {
+            get => _cloudVmIoTClientID;
+            set => _cloudVmIoTClientID = value;
+        }
+
+        internal string cloudVmIoTModeConnection
+        {
+            get => _cloudVmIoTModeConnection;
+            set => _cloudVmIoTModeConnection = value;
+        }
+
+        internal string cloudVmIoTUsername
+        {
+            get => _cloudVmIoTUsername;
+            set => _cloudVmIoTUsername = value;
+        }
+
+        internal string cloudVmIoTPassword
+        {
+            get => _cloudVmIoTPassword;
+            set => _cloudVmIoTPassword = value;
+        }
+
+        internal string pfxFilePath
         {
             get => _pfxFilePath;
             set => _pfxFilePath = value;

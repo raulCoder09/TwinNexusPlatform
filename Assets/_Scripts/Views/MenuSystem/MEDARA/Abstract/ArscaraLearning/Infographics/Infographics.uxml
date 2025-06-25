@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/Infographics/Infographics.uss?fileID=7433441132597879392&amp;guid=29bf0cefb2e3d405badae67f49378f50&amp;type=3#Infographics" />
+    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Infographics/Infographics.uss?fileID=7433441132597879392&amp;guid=29bf0cefb2e3d405badae67f49378f50&amp;type=3#Infographics" />
     <ui:VisualElement name="Body" style="flex-grow: 1; background-color: rgb(0, 0, 0);">
         <ui:VisualElement name="Header" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
             <ui:VisualElement style="flex-grow: 1; width: 10%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
@@ -17,13 +17,13 @@
             <ui:Button text="Infografia" style="width: 15%; height: 30%;" />
         </ui:VisualElement>
         <ui:VisualElement name="Footer" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
-            <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-evenly; width: 20%; height: 100%; align-items: center; align-self: center; align-content: center;" >
+            <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-evenly; width: 20%; height: 100%; align-items: center; align-self: center; align-content: center;">
                 <ui:Button text="Back" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); background-color: rgb(12, 53, 17); color: rgb(3, 255, 0); font-size: 30px;" />
             </ui:VisualElement>
-                <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%; align-items: center; justify-content: center;" />
+            <ui:VisualElement style="flex-grow: 1; width: 60%; height: 100%; align-items: center; justify-content: center;" />
             <ui:VisualElement style="flex-grow: 1; flex-direction: row; width: 20%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;" />
         </ui:VisualElement>
-        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; display: none; opacity: 1;">
+        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; display: flex; opacity: 1;">
             <ui:VisualElement name="Scrim" />
             <ui:VisualElement name="NavigationMenuPanel" style="flex-direction: row; position: absolute; width: 100%; height: 100%;">
                 <ui:VisualElement name="NavigationMenu" style="flex-grow: 1; position: relative; width: 25%; height: 100%; translate: 0% 0; background-color: rgb(0, 0, 0); border-top-right-radius: 0; border-bottom-right-radius: 0; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0;">
