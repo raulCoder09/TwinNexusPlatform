@@ -398,35 +398,41 @@ namespace _Scripts.Models
         }
 
         /// <summary>
-        /// Downloads a file and saves it to the configured download path
+        /// Downloads a file and saves it maintaining folder structure
         /// </summary>
         public async Task<bool> DownloadFileToConfiguredPathAsync(string fileKey)
         {
             try
             {
                 byte[] fileData = await DownloadFileAsync(fileKey);
-                
+        
                 if (fileData == null || fileData.Length == 0)
                 {
                     Debug.LogError("No data received from download");
                     return false;
                 }
 
-                // Use configured download path
+                // *** CAMBIO: Mantener estructura de carpetas ***
                 string downloadFolder = Path.Combine(Application.persistentDataPath, downloadPath);
-                string fileName = Path.GetFileName(fileKey);
-                string localPath = Path.Combine(downloadFolder, $"downloaded_{fileName}");
+        
+                // Extraer la estructura de carpetas del fileKey
+                string relativePath = Path.GetDirectoryName(fileKey); // "super-admin/username/images"
+                string fileName = Path.GetFileName(fileKey); // "uploaded-20250626-003958.jpeg"
+        
+                // Crear ruta completa manteniendo estructura
+                string fullDownloadPath = Path.Combine(downloadFolder, relativePath);
+                string localPath = Path.Combine(fullDownloadPath, $"downloaded_{fileName}");
 
-                // Ensure directory exists
-                if (!Directory.Exists(downloadFolder))
+                // Crear todos los directorios necesarios
+                if (!Directory.Exists(fullDownloadPath))
                 {
-                    Directory.CreateDirectory(downloadFolder);
+                    Directory.CreateDirectory(fullDownloadPath);
                 }
 
                 // Write file to disk
                 await Task.Run(() => File.WriteAllBytes(localPath, fileData));
-                
-                Debug.Log($"✅ File saved to configured path: {localPath}");
+        
+                Debug.Log($"✅ File saved maintaining structure: {localPath}");
                 return true;
             }
             catch (Exception ex)
@@ -741,20 +747,22 @@ namespace _Scripts.Models
     }
 }
 
-// *** AGREGAR ESTE MÉTODO NUEVO ***
-private string GetBaseUserFolder()
-{
-    if (CognitoManager.Instance == null)
-        return "basic-users/";
 
-    var userRole = CognitoManager.Instance.GetUserRole();
-    return userRole switch
-    {
-        "super-admin" => "super-admin/",
-        "students" => "students/",
-        _ => "basic-users/"
-    };
-}
+        private string GetBaseUserFolder()
+        {
+            if (CognitoManager.Instance == null)
+                return "basic-users/unknown/";
+
+            var userRole = CognitoManager.Instance.GetUserRole();
+            var username = CognitoManager.Instance.CurrentUsername ?? "unknown";
+    
+            return userRole switch
+            {
+                "super-admin" => $"super-admin/{username}/",
+                "students" => $"students/{username}/",
+                _ => $"basic-users/{username}/"
+            };
+        }
 
         /// <summary>
         /// Test method to list user files and display results
