@@ -6,6 +6,8 @@ using UnityEngine;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon;
+using UnityEngine.Serialization;
+
 namespace _Scripts.Models
 {
     // Data class for S3 file information
@@ -58,8 +60,8 @@ namespace _Scripts.Models
     public class S3Manager : MonoBehaviour
     {
         [Header("S3 Configuration")]
-        [SerializeField] private string bucketName = "twin-nexus-storage";
-        [SerializeField] private string testImagePath = "StreamingAssets/test-image.jpg"; // Path relativo desde proyecto
+        [SerializeField] private string bucketName = "twin-nexus-platform-storage";
+        [SerializeField] private string sourceFilePath = "Test/sample-file.jpg"; // Path relativo desde proyecto
         
         [Header("Download Configuration")]
         [SerializeField] private string downloadPath = "downloads"; // Carpeta de descarga relativa a persistentDataPath
@@ -67,6 +69,18 @@ namespace _Scripts.Models
         
         [Header("Delete Configuration")]
         [SerializeField] private string fileToDelete = ""; // Archivo específico para eliminar (ej: "super-admin/old-file.jpg")
+        [Header("Upload Category")]
+        [SerializeField] private ContentCategory uploadCategory = ContentCategory.Documents;
+
+        public enum ContentCategory
+        {
+            Images,
+            Videos, 
+            Documents,
+            Texts,
+            Assignments,
+            General
+        }
         
         // S3 client
         private AmazonS3Client s3Client;
@@ -124,20 +138,32 @@ namespace _Scripts.Models
         /// <summary>
         /// Gets the folder path based on user role
         /// </summary>
-        private string GetUserFolderPath()
+        private string GetUserFolderPath(ContentCategory category = ContentCategory.General)
         {
             if (CognitoManager.Instance == null)
-                return "basic-users/";
+                return "basic-users/unknown/general/";
 
             var userRole = CognitoManager.Instance.GetUserRole();
-            return userRole switch
+            var username = CognitoManager.Instance.CurrentUsername ?? "unknown";
+    
+            string baseFolder = userRole switch
             {
-                "super-admin" => "super-admin/",
-                "operadores" => "operators/",
-                "estudiantes" => "students/",
-                "usuarios-basicos" => "basic-users/",
-                _ => "basic-users/"
+                "super-admin" => $"super-admin/{username}/",
+                "students" => $"students/{username}/",
+                _ => $"basic-users/{username}/"
             };
+
+            string categoryFolder = category switch
+            {
+                ContentCategory.Images => "images/",
+                ContentCategory.Videos => "videos/",
+                ContentCategory.Documents => "documents/", 
+                ContentCategory.Texts => "texts/",
+                ContentCategory.Assignments => "assignments/",
+                _ => "general/"
+            };
+
+            return baseFolder + categoryFolder;
         }
 
         /// <summary>
@@ -167,7 +193,7 @@ namespace _Scripts.Models
                 }
 
                 // Create the full key (path + filename)
-                string userFolder = GetUserFolderPath();
+                string userFolder = GetUserFolderPath(uploadCategory);
                 string fileKey = $"{userFolder}{fileName}";
 
                 Debug.Log($"Uploading file to S3...");
@@ -634,128 +660,141 @@ namespace _Scripts.Models
             }
         }
         public async Task<List<S3FileInfo>> ListUserFilesAsync()
+{
+    try
+    {
+        // Check if user is authenticated
+        if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
         {
-            try
+            Debug.LogError("User must be authenticated to list files");
+            OnFileListComplete?.Invoke(false, "User not authenticated", new List<S3FileInfo>());
+            return new List<S3FileInfo>();
+        }
+
+        // Initialize S3 client if needed
+        if (s3Client == null)
+        {
+            InitializeS3Client();
+            if (s3Client == null)
             {
-                // Check if user is authenticated
-                if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
-                {
-                    Debug.LogError("User must be authenticated to list files");
-                    OnFileListComplete?.Invoke(false, "User not authenticated", new List<S3FileInfo>());
-                    return new List<S3FileInfo>();
-                }
-
-                // Initialize S3 client if needed
-                if (s3Client == null)
-                {
-                    InitializeS3Client();
-                    if (s3Client == null)
-                    {
-                        OnFileListComplete?.Invoke(false, "Failed to initialize S3 client", new List<S3FileInfo>());
-                        return new List<S3FileInfo>();
-                    }
-                }
-
-                string userFolder = GetUserFolderPath();
-                Debug.Log($"Listing files in user folder: {userFolder}");
-
-                // Create list request for user's folder
-                var listRequest = new ListObjectsV2Request
-                {
-                    BucketName = bucketName,
-                    Prefix = userFolder,
-                    MaxKeys = 100 // Limit to 100 files for performance
-                };
-
-                var response = await s3Client.ListObjectsV2Async(listRequest);
-                var fileList = new List<S3FileInfo>();
-
-                foreach (var obj in response.S3Objects)
-                {
-                    // Skip folder entries (keys ending with /)
-                    if (obj.Key.EndsWith("/")) continue;
-
-                    string fileName = Path.GetFileName(obj.Key);
-                    var fileInfo = new S3FileInfo(fileName, obj.Key, obj.Size ?? 0, obj.LastModified ?? DateTime.UtcNow);
-                    fileList.Add(fileInfo);
-                }
-
-                Debug.Log($"Found {fileList.Count} files in user folder");
-                OnFileListComplete?.Invoke(true, $"Found {fileList.Count} files", fileList);
-                return fileList;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error listing user files: {ex.Message}");
-                OnFileListComplete?.Invoke(false, ex.Message, new List<S3FileInfo>());
+                OnFileListComplete?.Invoke(false, "Failed to initialize S3 client", new List<S3FileInfo>());
                 return new List<S3FileInfo>();
             }
         }
 
+        // Get base user folder (without category) to list ALL user files
+        string userFolder = GetBaseUserFolder();
+        Debug.Log($"📋 Iniciando listado de archivos del usuario...");
+        Debug.Log($"Listing files in user folder: {userFolder}");
+
+        // Create list request for user's folder
+        var listRequest = new ListObjectsV2Request
+        {
+            BucketName = bucketName,
+            Prefix = userFolder,
+            MaxKeys = 100 // Limit to 100 files for performance
+        };
+
+        var response = await s3Client.ListObjectsV2Async(listRequest);
+        var fileList = new List<S3FileInfo>();
+
+        foreach (var obj in response.S3Objects)
+        {
+            // Skip folder entries (keys ending with /)
+            if (obj.Key.EndsWith("/")) continue;
+
+            string fileName = Path.GetFileName(obj.Key);
+            var fileInfo = new S3FileInfo(fileName, obj.Key, obj.Size ?? 0, obj.LastModified ?? DateTime.UtcNow);
+            fileList.Add(fileInfo);
+        }
+
+        Debug.Log($"Found {fileList.Count} files in user folder");
+        
+        // Display results in console
+        if (fileList.Count > 0)
+        {
+            Debug.Log($"📁 Archivos encontrados en tu carpeta:");
+            for (int i = 0; i < fileList.Count; i++)
+            {
+                var file = fileList[i];
+                Debug.Log($"{i + 1}. 📄 {file.fileName}");
+                Debug.Log($"   📊 Tamaño: {file.formattedSize}");
+                Debug.Log($"   🕐 Modificado: {file.lastModified:yyyy-MM-dd HH:mm:ss}");
+                Debug.Log($"   🔍 Tipo: {file.fileType}");
+                Debug.Log($"   📍 Ruta: {file.fullKey}");
+                Debug.Log("   ---");
+            }
+        }
+        else
+        {
+            Debug.Log("📭 No se encontraron archivos en tu carpeta");
+        }
+
+        OnFileListComplete?.Invoke(true, $"Found {fileList.Count} files", fileList);
+        return fileList;
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error listing user files: {ex.Message}");
+        OnFileListComplete?.Invoke(false, ex.Message, new List<S3FileInfo>());
+        return new List<S3FileInfo>();
+    }
+}
+
+// *** AGREGAR ESTE MÉTODO NUEVO ***
+private string GetBaseUserFolder()
+{
+    if (CognitoManager.Instance == null)
+        return "basic-users/";
+
+    var userRole = CognitoManager.Instance.GetUserRole();
+    return userRole switch
+    {
+        "super-admin" => "super-admin/",
+        "students" => "students/",
+        _ => "basic-users/"
+    };
+}
+
         /// <summary>
         /// Test method to list user files and display results
         /// </summary>
-        public async Task<bool> ListUserFilesTestAsync()
+        
+
+        public async Task<bool> UploadConfiguredFileAsync()
         {
             try
             {
-                Debug.Log("📋 Iniciando listado de archivos del usuario...");
-                
-                var fileList = await ListUserFilesAsync();
-                
-                if (fileList.Count > 0)
-                {
-                    Debug.Log($"📁 Archivos encontrados en tu carpeta:");
-                    for (int i = 0; i < fileList.Count; i++)
-                    {
-                        var file = fileList[i];
-                        Debug.Log($"{i + 1}. 📄 {file.fileName}");
-                        Debug.Log($"   📊 Tamaño: {file.formattedSize}");
-                        Debug.Log($"   🕐 Modificado: {file.lastModified:yyyy-MM-dd HH:mm:ss}");
-                        Debug.Log($"   🔍 Tipo: {file.fileType}");
-                        Debug.Log($"   📍 Ruta: {file.fullKey}");
-                        Debug.Log("   ---");
-                    }
-                    return true;
-                }
-                else
-                {
-                    Debug.Log("📭 No se encontraron archivos en tu carpeta");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error en test de listado: {ex.Message}");
-                return false;
-            }
-        }
+                Debug.Log($"Loading file from: {sourceFilePath}");
 
-        public async Task<bool> UploadTestImageAsync()
-        {
-            try
-            {
-                Debug.Log($"Loading test image from: {testImagePath}");
-                
-                string fullPath = GetPlatformFilePath(testImagePath);
-                byte[] imageData = await LoadFileDataAsync(fullPath);
-                
-                if (imageData == null || imageData.Length == 0)
+                string fullPath = GetPlatformFilePath(sourceFilePath);
+                byte[] fileData = await LoadFileDataAsync(fullPath);
+
+                if (fileData == null || fileData.Length == 0)
                 {
-                    Debug.LogError("Failed to load test image data");
-                    OnUploadComplete?.Invoke(false, "Failed to load image file", null);
+                    Debug.LogError("Failed to load file data");
+                    OnUploadComplete?.Invoke(false, "Failed to load file", null);
                     return false;
                 }
 
-                string fileName = $"test-image-{DateTime.UtcNow:yyyyMMdd-HHmmss}.jpg";
+                // *** MEJORAR ESTO: ***
+                // Detectar automáticamente el nombre y tipo desde el archivo configurado
+                string originalFileName = Path.GetFileName(sourceFilePath);
+                string fileExtension = Path.GetExtension(originalFileName);
+                string fileName = $"uploaded-{DateTime.UtcNow:yyyyMMdd-HHmmss}{fileExtension}";
                 string contentType = GetContentType(fileName);
-                
-                Debug.Log($"Image loaded: {imageData.Length} bytes");
-                return await UploadFileAsync(fileName, imageData, contentType);
+
+                Debug.Log($"File loaded: {fileData.Length} bytes");
+                Debug.Log($"Using category: {uploadCategory}");
+
+                // Usar la categoría configurada directamente
+                bool result = await UploadFileAsync(fileName, fileData, contentType);
+
+                return result;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Test image upload failed: {ex.Message}");
+                Debug.LogError($"File upload failed: {ex.Message}");
                 OnUploadComplete?.Invoke(false, ex.Message, null);
                 return false;
             }

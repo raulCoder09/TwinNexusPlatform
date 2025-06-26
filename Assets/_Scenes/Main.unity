@@ -344,7 +344,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &60426651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -530,7 +530,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1058238812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -927,7 +927,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2032840323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -940,11 +940,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbb38846b34094b27863cf587f8adcc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.S3Manager
-  bucketName: twin-nexus-storage
-  testImagePath: Test/00.jpeg
+  bucketName: twin-nexus-platform-storage
+  sourceFilePath: Test/00.jpeg
   downloadPath: downloads
-  specificFileKey: super-admin/test-image-20250624-221304.jpg
-  fileToDelete: 
+  specificFileKey: super-admin/images/uploaded-20250626-003958.jpeg
+  fileToDelete: super-admin/images/uploaded-20250626-003958.jpeg
+  uploadCategory: 0
 --- !u!4 &2032840324
 Transform:
   m_ObjectHideFlags: 0
@@ -976,7 +977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2033088597
 MonoBehaviour:
   m_ObjectHideFlags: 0
