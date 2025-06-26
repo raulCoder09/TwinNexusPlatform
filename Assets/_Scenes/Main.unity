@@ -417,6 +417,140 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4365078344a46ba8cf459cc0198dcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MQTTprotocol
+--- !u!1 &281711846
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 281711848}
+  - component: {fileID: 281711847}
+  m_Layer: 0
+  m_Name: SESTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &281711847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 281711846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c76fb8b61a3e4c12bf387afe83a40f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SESTest
+  testToEmail: mechar09@gmail.com
+  verifyEmail: mechar09@gmail.com
+--- !u!4 &281711848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 281711846}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &458428045
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 458428047}
+  - component: {fileID: 458428046}
+  m_Layer: 0
+  m_Name: CloudWatchTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &458428046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458428045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22d8d222f2b11496e9250ca44c96e768, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CloudWatchTest
+--- !u!4 &458428047
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458428045}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &910406356
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 910406358}
+  - component: {fileID: 910406357}
+  m_Layer: 0
+  m_Name: CloudWatchManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &910406357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910406356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ef3e97a2fd594c729cc6982d0819964, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CloudWatchManager
+--- !u!4 &910406358
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910406356}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &970288464
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,7 +664,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1058238812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -587,19 +721,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9490f7803fb714cd3b982603f48e9404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.IoTCoreManager
-  thingName: TwinNexusPlatformGalaxyA52
-  deviceType: AndroidDevice
-  enableHeartbeat: 1
-  heartbeatInterval: 30
-  baseTopic: twin-nexus
-  telemetryTopic: telemetry
-  commandTopic: commands
-  statusTopic: status
-  enableDeviceShadow: 1
-  shadowUpdateTopic: $aws/things/{thingName}/shadow/update
-  shadowGetTopic: $aws/things/{thingName}/shadow/get
-  domainName: aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com
-  domainArn: arn:aws:iot:us-east-1:156041417101:domainconfiguration/iot:Data-ATS
+  domainName: d06815421so7uq8jzy8ln-ats.iot.us-east-1.amazonaws.com
+  domainArn: arn:aws:iot:us-east-1:156041417101:domainconfiguration/TwinNexusPlatformDomainConfiguration/axnbn
 --- !u!4 &1396046472
 Transform:
   m_ObjectHideFlags: 0
@@ -927,7 +1050,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2032840323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1006,6 +1129,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2057350309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2057350311}
+  - component: {fileID: 2057350310}
+  m_Layer: 0
+  m_Name: SESManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2057350310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057350309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ddcffd60f8ea424d9753bb598c695ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SESManager
+  senderEmail: mechar09@gmail.com
+  senderName: Twin Nexus Platform
+  testRecipientEmail: mechar09@gmail.com
+  testSubject: Test Email from Unity
+  testMessage: "\xA1Hola! Este es un email de prueba desde Unity usando AWS SES."
+--- !u!4 &2057350311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057350309}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1026,3 +1198,7 @@ SceneRoots:
   - {fileID: 1058238813}
   - {fileID: 1514640463}
   - {fileID: 1396046472}
+  - {fileID: 910406358}
+  - {fileID: 2057350311}
+  - {fileID: 281711848}
+  - {fileID: 458428047}
