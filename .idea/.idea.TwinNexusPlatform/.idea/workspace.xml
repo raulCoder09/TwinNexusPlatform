@@ -7,9 +7,8 @@
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/CloudWatchTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/CloudWatchTest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/packages.config" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/packages.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/IoTCoreTesting.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/IoTCoreTesting.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,7 +169,7 @@
       <workItem from="1750354912219" duration="18145000" />
       <workItem from="1750451301427" duration="2331000" />
       <workItem from="1750710569628" duration="31914000" />
-      <workItem from="1750832083557" duration="58874000" />
+      <workItem from="1750832083557" duration="70129000" />
     </task>
     <servers />
   </component>

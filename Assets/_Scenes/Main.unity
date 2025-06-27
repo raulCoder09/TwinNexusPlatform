@@ -479,7 +479,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &458428046
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -523,7 +523,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &910406357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -537,6 +537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloudWatchManager
   defaultNamespace: TwinNexusPlatform
+  defaultLogGroup: /twin-nexus-platform
   testMetricName: TestMetric
   testMetricValue: 42
 --- !u!4 &910406358
@@ -711,7 +712,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1396046471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -726,6 +727,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.IoTCoreManager
   domainName: d06815421so7uq8jzy8ln-ats.iot.us-east-1.amazonaws.com
   domainArn: arn:aws:iot:us-east-1:156041417101:domainconfiguration/TwinNexusPlatformDomainConfiguration/axnbn
+  newThingName: ARSCARA
+  newThingType: ExperimentalRobot
 --- !u!4 &1396046472
 Transform:
   m_ObjectHideFlags: 0
@@ -757,7 +760,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1514640462
 MonoBehaviour:
   m_ObjectHideFlags: 0
