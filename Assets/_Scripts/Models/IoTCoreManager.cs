@@ -25,7 +25,6 @@ namespace _Scripts.Models
         [Header("Get Thing Configuration")]
         [SerializeField] private string thingNameToGet = ""; // Thing específico a consultar
         
-
         // AWS IoT clients
         private AmazonIoTClient iotClient;
         
@@ -33,6 +32,7 @@ namespace _Scripts.Models
         public event Action<bool, string, List<ThingInfo>> OnThingsListed; // success, message, things
         public event Action<bool, string, string> OnThingCreated; // success, message, thingName
         public event Action<bool, string, ThingInfo> OnThingRetrieved; // success, message, thingInfo
+        
         // Singleton instance
         public static IoTCoreManager Instance { get; private set; }
 
@@ -74,7 +74,6 @@ namespace _Scripts.Models
             }
         }
         
-
         /// <summary>
         /// Lists all Things in the AWS IoT registry
         /// </summary>
@@ -346,7 +345,6 @@ namespace _Scripts.Models
             }
         }
         
-
         /// <summary>
         /// Test method to verify IoT connectivity
         /// </summary>
@@ -391,7 +389,6 @@ namespace _Scripts.Models
         {
             return await GetThingAsync();
         }
-        
 
         private void OnDestroy()
         {
@@ -412,7 +409,6 @@ namespace _Scripts.Models
         public DateTime LastModifiedDate;
         public string AttributesInfo;
     }
-    
 
     #endregion
 }

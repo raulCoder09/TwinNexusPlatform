@@ -13,11 +13,8 @@ namespace _Scripts.Testing
         private InputAction createThingAction;
         private InputAction getThingAction;
 
-
         void Start()
         {
-            
-            Debug.Log("📡 Presiona 'P' para publicar mensaje a topic (configurado en Inspector)");
             // Initialize input actions
             listThingsAction = new InputAction("ListThings", InputActionType.Button, "<Keyboard>/l");
             testConnectivityAction = new InputAction("TestConnectivity", InputActionType.Button, "<Keyboard>/k");
@@ -105,7 +102,6 @@ namespace _Scripts.Testing
             ExecuteGetThing();
         }
         
-        
         #endregion
 
         #region Test Execution Methods
@@ -161,7 +157,6 @@ namespace _Scripts.Testing
             var thingInfo = await IoTCoreManager.Instance.GetConfiguredThingAsync();
             Debug.Log(thingInfo != null ? "✅ Detalles obtenidos" : "❌ Obtención falló");
         }
-        
         
         #endregion
 
