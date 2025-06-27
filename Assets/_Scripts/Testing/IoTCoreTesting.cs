@@ -12,6 +12,11 @@ namespace _Scripts.Testing
         private InputAction testConnectivityAction;
         private InputAction createThingAction;
         private InputAction getThingAction;
+        private InputAction createCertificateAction;
+        private InputAction attachCertificateAction;
+        private InputAction listCertificatesAction;
+        private InputAction createPolicyAction;
+        private InputAction attachPolicyAction;
 
         void Start()
         {
@@ -20,18 +25,33 @@ namespace _Scripts.Testing
             testConnectivityAction = new InputAction("TestConnectivity", InputActionType.Button, "<Keyboard>/k");
             createThingAction = new InputAction("CreateThing", InputActionType.Button, "<Keyboard>/c");
             getThingAction = new InputAction("GetThing", InputActionType.Button, "<Keyboard>/g");
+            createCertificateAction = new InputAction("CreateCertificate", InputActionType.Button, "<Keyboard>/t");
+            attachCertificateAction = new InputAction("AttachCertificate", InputActionType.Button, "<Keyboard>/a");
+            listCertificatesAction = new InputAction("ListCertificates", InputActionType.Button, "<Keyboard>/r");
+            createPolicyAction = new InputAction("CreatePolicy", InputActionType.Button, "<Keyboard>/p");
+            attachPolicyAction = new InputAction("AttachPolicy", InputActionType.Button, "<Keyboard>/s");
             
             // Register callbacks
             listThingsAction.performed += OnListThingsPressed;
             testConnectivityAction.performed += OnTestConnectivityPressed;
             createThingAction.performed += OnCreateThingPressed;
             getThingAction.performed += OnGetThingPressed;
+            createCertificateAction.performed += OnCreateCertificatePressed;
+            attachCertificateAction.performed += OnAttachCertificatePressed;
+            listCertificatesAction.performed += OnListCertificatesPressed;
+            createPolicyAction.performed += OnCreatePolicyPressed;
+            attachPolicyAction.performed += OnAttachPolicyPressed;
             
             // Enable actions
             listThingsAction.Enable();
             testConnectivityAction.Enable();
             createThingAction.Enable();
             getThingAction.Enable();
+            createCertificateAction.Enable();
+            attachCertificateAction.Enable();
+            listCertificatesAction.Enable();
+            createPolicyAction.Enable();
+            attachPolicyAction.Enable();
             
             // Subscribe to IoT Core events
             if (IoTCoreManager.Instance != null)
@@ -39,6 +59,11 @@ namespace _Scripts.Testing
                 IoTCoreManager.Instance.OnThingsListed += OnThingsListedResult;
                 IoTCoreManager.Instance.OnThingCreated += OnThingCreatedResult;
                 IoTCoreManager.Instance.OnThingRetrieved += OnThingRetrievedResult;
+                IoTCoreManager.Instance.OnCertificateCreated += OnCertificateCreatedResult;
+                IoTCoreManager.Instance.OnCertificateAttached += OnCertificateAttachedResult;
+                IoTCoreManager.Instance.OnThingCertificatesListed += OnThingCertificatesListedResult;
+                IoTCoreManager.Instance.OnPolicyCreated += OnPolicyCreatedResult;
+                IoTCoreManager.Instance.OnPolicyAttached += OnPolicyAttachedResult;
             }
             
             Debug.Log("🚀 IoTCoreTesting iniciado:");
@@ -46,6 +71,11 @@ namespace _Scripts.Testing
             Debug.Log("🔗 Presiona 'K' para test de conectividad IoT");
             Debug.Log("📱 Presiona 'C' para crear Thing (configurado en Inspector)");
             Debug.Log("🔍 Presiona 'G' para obtener detalles de Thing (configurado en Inspector)");
+            Debug.Log("🔐 Presiona 'T' para crear cerTificado X.509 (Certificate)");
+            Debug.Log("🔗 Presiona 'A' para Asociar certificado a Thing (configurado en Inspector)");
+            Debug.Log("📋 Presiona 'R' para listaR certificados de Thing (configurado en Inspector)");
+            Debug.Log("🛡️ Presiona 'P' para crear Política IoT (configurado en Inspector)");
+            Debug.Log("🔗 Presiona 'S' para aSociar política a certificado (configurado en Inspector)");
             Debug.Log("⚙️ Asegúrate de estar autenticado primero");
         }
 
@@ -78,6 +108,41 @@ namespace _Scripts.Testing
                 getThingAction.Disable();
                 getThingAction.Dispose();
             }
+            
+            if (createCertificateAction != null)
+            {
+                createCertificateAction.performed -= OnCreateCertificatePressed;
+                createCertificateAction.Disable();
+                createCertificateAction.Dispose();
+            }
+            
+            if (attachCertificateAction != null)
+            {
+                attachCertificateAction.performed -= OnAttachCertificatePressed;
+                attachCertificateAction.Disable();
+                attachCertificateAction.Dispose();
+            }
+            
+            if (listCertificatesAction != null)
+            {
+                listCertificatesAction.performed -= OnListCertificatesPressed;
+                listCertificatesAction.Disable();
+                listCertificatesAction.Dispose();
+            }
+            
+            if (createPolicyAction != null)
+            {
+                createPolicyAction.performed -= OnCreatePolicyPressed;
+                createPolicyAction.Disable();
+                createPolicyAction.Dispose();
+            }
+            
+            if (attachPolicyAction != null)
+            {
+                attachPolicyAction.performed -= OnAttachPolicyPressed;
+                attachPolicyAction.Disable();
+                attachPolicyAction.Dispose();
+            }
         }
 
         #region Input Action Callbacks
@@ -100,6 +165,31 @@ namespace _Scripts.Testing
         private void OnGetThingPressed(InputAction.CallbackContext context)
         {
             ExecuteGetThing();
+        }
+        
+        private void OnCreateCertificatePressed(InputAction.CallbackContext context)
+        {
+            ExecuteCreateCertificate();
+        }
+        
+        private void OnAttachCertificatePressed(InputAction.CallbackContext context)
+        {
+            ExecuteAttachCertificate();
+        }
+        
+        private void OnListCertificatesPressed(InputAction.CallbackContext context)
+        {
+            ExecuteListCertificates();
+        }
+
+        private void OnCreatePolicyPressed(InputAction.CallbackContext context)
+        {
+            ExecuteCreatePolicy();
+        }
+        
+        private void OnAttachPolicyPressed(InputAction.CallbackContext context)
+        {
+            ExecuteAttachPolicy();
         }
         
         #endregion
@@ -156,6 +246,72 @@ namespace _Scripts.Testing
             Debug.Log("🔍 Iniciando obtención de detalles de Thing...");
             var thingInfo = await IoTCoreManager.Instance.GetConfiguredThingAsync();
             Debug.Log(thingInfo != null ? "✅ Detalles obtenidos" : "❌ Obtención falló");
+        }
+        
+        async void ExecuteCreateCertificate()
+        {
+            if (IoTCoreManager.Instance == null)
+            {
+                Debug.LogError("IoTCoreManager no disponible.");
+                return;
+            }
+            
+            Debug.Log("🔐 Iniciando creación de certificado X.509...");
+            Debug.LogWarning("⚠️ IMPORTANTE: La clave privada solo se mostrará UNA VEZ!");
+            var certificateData = await IoTCoreManager.Instance.CreateConfiguredCertificateAsync();
+            Debug.Log(certificateData != null ? "✅ Certificado creado" : "❌ Creación de certificado falló");
+        }
+        
+        async void ExecuteAttachCertificate()
+        {
+            if (IoTCoreManager.Instance == null)
+            {
+                Debug.LogError("IoTCoreManager no disponible.");
+                return;
+            }
+    
+            Debug.Log("🔗 Iniciando asociación de certificado a Thing...");
+            bool success = await IoTCoreManager.Instance.AttachConfiguredCertificateAsync();
+            Debug.Log(success ? "✅ Certificado asociado" : "❌ Asociación falló");
+        }
+        
+        async void ExecuteListCertificates()
+        {
+            if (IoTCoreManager.Instance == null)
+            {
+                Debug.LogError("IoTCoreManager no disponible.");
+                return;
+            }
+    
+            Debug.Log("📋 Iniciando listado de certificados de Thing...");
+            var certificates = await IoTCoreManager.Instance.ListConfiguredThingCertificatesAsync();
+            Debug.Log(certificates.Count > 0 ? "✅ Certificados listados" : "❌ No hay certificados o listado falló");
+        }
+
+        async void ExecuteCreatePolicy()
+        {
+            if (IoTCoreManager.Instance == null)
+            {
+                Debug.LogError("IoTCoreManager no disponible.");
+                return;
+            }
+    
+            Debug.Log("🛡️ Iniciando creación de política IoT...");
+            bool success = await IoTCoreManager.Instance.CreateConfiguredPolicyAsync();
+            Debug.Log(success ? "✅ Política creada" : "❌ Creación de política falló");
+        }
+        
+        async void ExecuteAttachPolicy()
+        {
+            if (IoTCoreManager.Instance == null)
+            {
+                Debug.LogError("IoTCoreManager no disponible.");
+                return;
+            }
+    
+            Debug.Log("🔗 Iniciando asociación de política a certificado...");
+            bool success = await IoTCoreManager.Instance.AttachConfiguredPolicyAsync();
+            Debug.Log(success ? "✅ Política asociada" : "❌ Asociación de política falló");
         }
         
         #endregion
@@ -241,7 +397,148 @@ namespace _Scripts.Testing
                 Debug.LogError("💡 Verifica que el nombre en 'thingNameToGet' sea correcto");
             }
         }
-        #endregion
         
+        void OnCertificateCreatedResult(bool success, string message, CertificateData certificateData)
+        {
+            if (success && certificateData != null)
+            {
+                Debug.Log($"🎉 ¡Certificado X.509 creado exitosamente!");
+                Debug.Log($"🆔 Certificate ID: {certificateData.CertificateId}");
+                Debug.Log($"📍 Certificate ARN: {certificateData.CertificateArn}");
+                Debug.Log($"🔓 Estado: {(certificateData.IsActive ? "ACTIVO" : "INACTIVO")}");
+                Debug.Log($"💬 Mensaje: {message}");
+                Debug.Log($"📅 Creado: {certificateData.CreationDate:yyyy-MM-dd HH:mm:ss}");
+                
+                // Show data lengths for verification (but NOT the actual keys!)
+                Debug.Log($"📄 Datos del certificado:");
+                Debug.Log($"   🔖 Certificate PEM: {certificateData.CertificatePem?.Length ?? 0} caracteres");
+                Debug.Log($"   🔑 Public Key: {certificateData.PublicKey?.Length ?? 0} caracteres");
+                Debug.Log($"   🔐 Private Key: {certificateData.PrivateKey?.Length ?? 0} caracteres");
+                
+                // Security warnings
+                Debug.LogWarning("🚨 SEGURIDAD CRÍTICA:");
+                Debug.LogWarning("   • La clave privada NO se puede recuperar después");
+                Debug.LogWarning("   • Guarda TODOS los datos del certificado de forma segura");
+                Debug.LogWarning("   • Nunca compartas la clave privada");
+                
+                // Next steps guidance
+                Debug.Log("🎯 Próximos pasos recomendados:");
+                Debug.Log("   1. Guardar certificado y claves en lugar seguro");
+                Debug.Log("   2. Asociar certificado a un Thing específico");
+                Debug.Log("   3. Configurar políticas de acceso");
+                Debug.Log("   4. Probar conectividad MQTT");
+                
+                Debug.Log($"🔍 Ve a AWS Console → IoT Core → Security → Certificates para verificar");
+            }
+            else
+            {
+                Debug.LogError($"❌ Error creando certificado: {message}");
+                Debug.LogError("💡 Verifica permisos y configuración de AWS IoT Core");
+                Debug.LogError("🔧 Soluciones posibles:");
+                Debug.LogError("   • Verificar autenticación de AWS");
+                Debug.LogError("   • Revisar políticas IAM");
+                Debug.LogError("   • Comprobar límites de la cuenta AWS");
+            }
+        }
+        
+        void OnCertificateAttachedResult(bool success, string message, string thingName, string certificateId)
+        {
+            if (success)
+            {
+                Debug.Log($"🎉 ¡Certificado asociado exitosamente!");
+                Debug.Log($"📱 Thing: {thingName}");
+                Debug.Log($"🆔 Certificate: {certificateId?.Substring(0, 8)}...");
+                Debug.Log($"💬 Mensaje: {message}");
+                Debug.Log($"🔐 Ahora {thingName} puede autenticarse con este certificado");
+                Debug.Log($"🔍 Ve a AWS Console → IoT Core → Things → {thingName} → Security");
+            }
+            else
+            {
+                Debug.LogError($"❌ Error asociando certificado: {message}");
+                Debug.LogError($"📱 Thing: {thingName}");
+                Debug.LogError($"🆔 Certificate: {certificateId}");
+                Debug.LogError("💡 Verifica que el Certificate ID y Thing Name sean correctos en Inspector");
+            }
+        }
+        
+        void OnThingCertificatesListedResult(bool success, string message, string thingName, List<string> certificateArns)
+        {
+            if (success)
+            {
+                Debug.Log($"🎉 ¡Certificados listados exitosamente!");
+                Debug.Log($"📱 Thing: {thingName}");
+                Debug.Log($"📊 Total certificados: {certificateArns?.Count ?? 0}");
+                Debug.Log($"💬 Mensaje: {message}");
+        
+                if (certificateArns != null && certificateArns.Count > 0)
+                {
+                    Debug.Log("🔐 Certificados encontrados:");
+                    for (int i = 0; i < certificateArns.Count; i++)
+                    {
+                        string arn = certificateArns[i];
+                        string certId = arn.Split('/').Length > 1 ? arn.Split('/')[1] : "Unknown";
+                        Debug.Log($"   {i + 1}. 🆔 ID: {certId.Substring(0, Math.Min(12, certId.Length))}...");
+                        Debug.Log($"      📍 Status: ATTACHED");
+                    }
+                    Debug.Log($"🔍 Ve a AWS Console → IoT Core → Things → {thingName} → Security");
+                }
+                else
+                {
+                    Debug.Log("📭 No hay certificados asociados a este Thing");
+                    Debug.Log("💡 Usa AttachCertificateToThingAsync() primero");
+                }
+            }
+            else
+            {
+                Debug.LogError($"❌ Error listando certificados: {message}");
+                Debug.LogError($"📱 Thing: {thingName}");
+                Debug.LogError("💡 Verifica que el nombre en 'thingNameToListCertificates' sea correcto");
+            }
+        }
+        
+        void OnPolicyCreatedResult(bool success, string message, string policyName)
+        {
+            if (success)
+            {
+                Debug.Log($"🎉 ¡Política IoT creada exitosamente!");
+                Debug.Log($"🛡️ Policy: {policyName}");
+                Debug.Log($"💬 Mensaje: {message}");
+                Debug.Log($"🔑 Permisos incluidos:");
+                Debug.Log($"   • ✅ MQTT Connect");
+                Debug.Log($"   • ✅ MQTT Publish/Subscribe");
+                Debug.Log($"   • ✅ Thing Shadow operations");
+                Debug.Log($"🎯 Próximo paso: Asociar política a certificado");
+                Debug.Log($"🔍 Ve a AWS Console → IoT Core → Security → Policies");
+            }
+            else
+            {
+                Debug.LogError($"❌ Error creando política: {message}");
+                Debug.LogError($"🛡️ Policy: {policyName}");
+            }
+        }
+        
+        void OnPolicyAttachedResult(bool success, string message, string policyName, string certificateId)
+        {
+            if (success)
+            {
+                Debug.Log($"🎉 ¡Política asociada exitosamente!");
+                Debug.Log($"🛡️ Policy: {policyName}");
+                Debug.Log($"🆔 Certificate: {certificateId?.Substring(0, 8)}...");
+                Debug.Log($"💬 Mensaje: {message}");
+                Debug.Log($"🔥 ¡El certificado ahora tiene permisos completos!");
+                Debug.Log($"✅ Puede conectarse, publicar, suscribirse y usar Thing Shadow");
+                Debug.Log($"🎯 Próximo paso: Probar MQTT o Thing Shadow");
+                Debug.Log($"🔍 Ve a AWS Console → IoT Core → Security → Certificates → Policies");
+            }
+            else
+            {
+                Debug.LogError($"❌ Error asociando política: {message}");
+                Debug.LogError($"🛡️ Policy: {policyName}");
+                Debug.LogError($"🆔 Certificate: {certificateId}");
+                Debug.LogError("💡 Verifica que el Policy Name y Certificate ID sean correctos en Inspector");
+            }
+        }
+        
+        #endregion
     }
 }

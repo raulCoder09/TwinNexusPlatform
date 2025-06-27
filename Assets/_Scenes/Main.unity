@@ -728,7 +728,18 @@ MonoBehaviour:
   domainName: d06815421so7uq8jzy8ln-ats.iot.us-east-1.amazonaws.com
   domainArn: arn:aws:iot:us-east-1:156041417101:domainconfiguration/TwinNexusPlatformDomainConfiguration/axnbn
   newThingName: ARSCARA
-  newThingType: ExperimentalRobot
+  newThingType: 
+  thingNameToGet: ARSCARA
+  setAsActive: 1
+  certificateIdToAttach: 
+  thingNameForCertificate: 
+  thingNameToListCertificates: 
+  newPolicyName: tnp-IoT-Policy
+  policyDocument: 
+  platformPrefix: tnp
+  useTimestampInNames: 1
+  policyNameToAttach: 
+  certificateIdForPolicy: 
 --- !u!4 &1396046472
 Transform:
   m_ObjectHideFlags: 0
