@@ -729,7 +729,7 @@ MonoBehaviour:
   domainArn: arn:aws:iot:us-east-1:156041417101:domainconfiguration/TwinNexusPlatformDomainConfiguration/axnbn
   newThingName: ARSCARA
   newThingType: 
-  thingNameToGet: ARSCARA
+  thingNameToGet: 
   setAsActive: 1
   certificateIdToAttach: 
   thingNameForCertificate: 
@@ -740,6 +740,7 @@ MonoBehaviour:
   useTimestampInNames: 1
   policyNameToAttach: 
   certificateIdForPolicy: 
+  thingNameForShadow: tnp-ARSCARA-20250627-075348
 --- !u!4 &1396046472
 Transform:
   m_ObjectHideFlags: 0

@@ -363,7 +363,7 @@ namespace _Scripts.Controller
         {
             _ipOrHostnameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.brokerAddress = _mqttManager.brokerAddress = evt.newValue;
+                // iotConfigurationData.brokerAddress = _mqttManager.brokerAddress = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
@@ -371,33 +371,33 @@ namespace _Scripts.Controller
             {
                 if (int.TryParse(evt.newValue, out var port))
                 {
-                    iotConfigurationData.BrokerPort = _mqttManager.brokerPort = port;
+                    // iotConfigurationData.BrokerPort = _mqttManager.brokerPort = port;
                     _saveDataManager.SaveData();
                 }
             });
             
             _clientIDTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.ClientId = _mqttManager.clientId = evt.newValue;
+                // iotConfigurationData.ClientId = _mqttManager.clientId = evt.newValue;
                 _saveDataManager.SaveData();
             });
 
             _modeConnectionDropdownField.RegisterValueChangedCallback(evt =>
             {
-                _dashboardController.localIoTModeLabel.text = _mqttManager.modeConnection = 
+                // _dashboardController.localIoTModeLabel.text = _mqttManager.modeConnection = 
                     iotConfigurationData.ModeConnection = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _usernameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.Username = _mqttManager.username = evt.newValue;
+                // iotConfigurationData.Username = _mqttManager.username = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _passwordTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.Password = _mqttManager.password = evt.newValue;
+                // iotConfigurationData.Password = _mqttManager.password = evt.newValue;
                 _saveDataManager.SaveData();
             });
         }

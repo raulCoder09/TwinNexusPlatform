@@ -20,6 +20,7 @@ namespace _Scripts.Testing
 
         void Start()
         {
+            
             // Initialize input actions
             listThingsAction = new InputAction("ListThings", InputActionType.Button, "<Keyboard>/l");
             testConnectivityAction = new InputAction("TestConnectivity", InputActionType.Button, "<Keyboard>/k");
@@ -147,6 +148,8 @@ namespace _Scripts.Testing
 
         #region Input Action Callbacks
         
+
+        
         private void OnListThingsPressed(InputAction.CallbackContext context)
         {
             ExecuteListThings();
@@ -195,6 +198,7 @@ namespace _Scripts.Testing
         #endregion
 
         #region Test Execution Methods
+        
         
         async void ExecuteListThings()
         {
@@ -317,6 +321,8 @@ namespace _Scripts.Testing
         #endregion
 
         #region Event Handlers
+        
+
         
         void OnThingsListedResult(bool success, string message, List<ThingInfo> things)
         {

@@ -47,9 +47,10 @@ namespace _Scripts.Models
         [SerializeField] private string policyNameToAttach = ""; // Policy name to attach
         [SerializeField] private string certificateIdForPolicy = ""; // Certificate ID to receive policy
         
+
         // AWS IoT clients
         private AmazonIoTClient iotClient;
-        
+      
         // Events for IoT operations
         public event Action<bool, string, List<ThingInfo>> OnThingsListed; // success, message, things
         public event Action<bool, string, string> OnThingCreated; // success, message, thingName
@@ -62,6 +63,7 @@ namespace _Scripts.Models
         public event Action<bool, string, string> OnPolicyCreated; // success, message, policyName
         
         public event Action<bool, string, string, string> OnPolicyAttached; // success, message, policyName, certificateId
+
         
         // Singleton instance
         public static IoTCoreManager Instance { get; private set; }
@@ -93,14 +95,16 @@ namespace _Scripts.Models
                     return;
                 }
 
-                var regionEndpoint = RegionEndpoint.USEast1; // Same region as other services
+                var regionEndpoint = RegionEndpoint.USEast1;
                 iotClient = new AmazonIoTClient(CognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
+        
                 
-                Debug.Log("IoT Core client initialized successfully");
+        
+                Debug.Log("IoT Core and IoT Data clients initialized successfully");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to initialize IoT Core client: {ex.Message}");
+                Debug.LogError($"Failed to initialize IoT clients: {ex.Message}");
             }
         }
         
@@ -852,7 +856,7 @@ public async Task<bool> AttachPolicyAsync(string policyName = null, string certi
         var attachRequest = new AttachPolicyRequest
         {
             PolicyName = finalPolicyName,
-            Target = finalCertificateId // Certificate ID is the target
+            Target = $"arn:aws:iot:us-east-1:156041417101:cert/{finalCertificateId}" // ← ARN completo
         };
         
 
@@ -881,6 +885,9 @@ public async Task<bool> AttachPolicyAsync(string policyName = null, string certi
     }
 }
 
+
+
+
 /// <summary>
 /// Test method to attach policy using Inspector configuration
 /// </summary>
@@ -889,10 +896,11 @@ public async Task<bool> AttachConfiguredPolicyAsync()
     return await AttachPolicyAsync();
 }
 
-        private void OnDestroy()
-        {
-            iotClient?.Dispose();
-        }
+private void OnDestroy()
+{
+    iotClient?.Dispose();
+
+}
     }
 
     #region Data Classes
