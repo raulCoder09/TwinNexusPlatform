@@ -7,13 +7,19 @@ namespace _Scripts.Testing
 {
     public class LambdaTest : MonoBehaviour
     {
-        private InputAction testAction;
+        private InputAction _testAction;
+        [SerializeField] private string functionName;
+        private InputAction _executeFunctionLambda;
 
         void Start()
         {
-            testAction = new InputAction("TestLambda", InputActionType.Button, "<Keyboard>/t");
-            testAction.performed += OnTestKeyPressed;
-            testAction.Enable();
+            _testAction = new InputAction("TestLambda", InputActionType.Button, "<Keyboard>/t");
+            _testAction.performed += OnTestKeyPressed;
+            _testAction.Enable();
+            
+            _executeFunctionLambda=new InputAction("ExecuteFunctionLambda", InputActionType.Button, "<Keyboard>/f");
+            _executeFunctionLambda.performed += OnExecuteFunctionLambdaKeyPressed;
+            _executeFunctionLambda.Enable();
             
             if (LambdaManager.Instance != null)
             {
@@ -23,27 +29,46 @@ namespace _Scripts.Testing
 
         void OnDestroy()
         {
-            if (testAction != null)
+            if (_testAction != null)
             {
-                testAction.performed -= OnTestKeyPressed;
-                testAction.Disable();
-                testAction.Dispose();
+                _testAction.performed -= OnTestKeyPressed;
+                _testAction.Disable();
+                _testAction.Dispose();
+            }
+            if (_executeFunctionLambda != null)
+            {
+                _executeFunctionLambda.performed -= OnExecuteFunctionLambdaKeyPressed;
+                _executeFunctionLambda.Disable();
+                _executeFunctionLambda.Dispose();
             }
         }
 
         private void OnTestKeyPressed(InputAction.CallbackContext context)
         {
-            ExecuteHelloWorldFunction();
+            ExecuteTestFunctionLambda();
+        }
+        
+        private void OnExecuteFunctionLambdaKeyPressed(InputAction.CallbackContext context)
+        {
+            ExecuteFunctionLambda();
         }
 
-        async void ExecuteHelloWorldFunction()
+        async void ExecuteTestFunctionLambda()
         {
             if (LambdaManager.Instance == null)
             {
                 return;
             }
-            // bool success = await LambdaManager.Instance.ExecuteDefaultFunctionAsync();
-            bool success = await LambdaManager.Instance.ExecuteLambdaFunctionAsync("TwinNexusPlatform-LambdaTest", new { test = "Hola desde Unity!" });
+            bool success = await LambdaManager.Instance.ExecuteDefaultFunctionAsync();
+        }
+        
+        async void ExecuteFunctionLambda()
+        {
+            if (LambdaManager.Instance == null)
+            {
+                return;
+            }
+            bool success = await LambdaManager.Instance.ExecuteLambdaFunctionAsync(functionName, new { test = "Hola desde Unity!" });
         }
 
         void OnLambdaResult(bool success, string message, object result)

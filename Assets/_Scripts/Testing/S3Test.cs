@@ -166,8 +166,8 @@ namespace _Scripts.Testing
             }
 
             Debug.Log("📋 Iniciando listado de archivos...");
-            bool success = await S3Manager.Instance.ListUserFilesTestAsync();
-            Debug.Log(success ? "✅ Listado completado" : "❌ Listado falló o carpeta vacía");
+            var fileList = await S3Manager.Instance.ListUserFilesAsync();
+            Debug.Log(fileList.Count > 0 ? "✅ Listado completado" : "❌ Listado falló o carpeta vacía");
         }
 
         async void ExecuteDeleteTest()
@@ -217,7 +217,7 @@ Este es un archivo de prueba subido desde Unity a AWS S3.
             }
             
             Debug.Log("🖼️ Iniciando upload de imagen de prueba...");
-            bool success = await S3Manager.Instance.UploadTestImageAsync();
+            bool success = await S3Manager.Instance.UploadConfiguredFileAsync();
             Debug.Log(success ? "✅ Upload de imagen completado" : "❌ Upload de imagen falló");
         }
 

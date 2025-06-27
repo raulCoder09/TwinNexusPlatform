@@ -344,7 +344,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &60426651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -357,7 +357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b5ab681497a41688d54a42bcd8a2bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.LambdaManager
-  defaultFunctionName: TwinNexusPlatform-LambdaTest
+  defaultFunctionName: test
 --- !u!4 &60426652
 Transform:
   m_ObjectHideFlags: 0
@@ -417,6 +417,144 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4365078344a46ba8cf459cc0198dcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MQTTprotocol
+--- !u!1 &281711846
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 281711848}
+  - component: {fileID: 281711847}
+  m_Layer: 0
+  m_Name: SESTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &281711847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 281711846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c76fb8b61a3e4c12bf387afe83a40f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SESTest
+  testToEmail: mechar09@gmail.com
+  verifyEmail: mechar09@gmail.com
+--- !u!4 &281711848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 281711846}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &458428045
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 458428047}
+  - component: {fileID: 458428046}
+  m_Layer: 0
+  m_Name: CloudWatchTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &458428046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458428045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22d8d222f2b11496e9250ca44c96e768, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CloudWatchTest
+--- !u!4 &458428047
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458428045}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &910406356
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 910406358}
+  - component: {fileID: 910406357}
+  m_Layer: 0
+  m_Name: CloudWatchManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &910406357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910406356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ef3e97a2fd594c729cc6982d0819964, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CloudWatchManager
+  defaultNamespace: TwinNexusPlatform
+  defaultLogGroup: /twin-nexus-platform
+  testMetricName: TestMetric
+  testMetricValue: 42
+--- !u!4 &910406358
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910406356}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &970288464
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,10 +584,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5989c8bab661b4246a75a8e1650cd232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.CognitoManager
-  userPoolId: us-east-1_aisxkak4o
-  clientId: 1g5cira14hdg9clsfen97h2g7o
-  identityPoolId: us-east-1:64f2d485-dc0e-4f60-845f-e08d66256bff
+  userPoolId: us-east-1_mU7U4n0kL
+  clientId: 2oii4cgkdlb9i07j69p20eq6
+  identityPoolId: us-east-1:bf682dd9-4084-437d-8d10-adfd3e2261bd
   awsRegion: 0
+  roleName:
+  - super-admin
+  - operators
+  - students
+  - basic-users
 --- !u!4 &970288466
 Transform:
   m_ObjectHideFlags: 0
@@ -525,7 +668,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1058238812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,6 +688,110 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1058238811}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1396046470
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1396046472}
+  - component: {fileID: 1396046471}
+  m_Layer: 0
+  m_Name: IoTCoreManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1396046471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396046470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9490f7803fb714cd3b982603f48e9404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.IoTCoreManager
+  domainName: d06815421so7uq8jzy8ln-ats.iot.us-east-1.amazonaws.com
+  domainArn: arn:aws:iot:us-east-1:156041417101:domainconfiguration/TwinNexusPlatformDomainConfiguration/axnbn
+  newThingName: ARSCARA
+  newThingType: 
+  thingNameToGet: 
+  setAsActive: 1
+  certificateIdToAttach: 
+  thingNameForCertificate: 
+  thingNameToListCertificates: 
+  newPolicyName: tnp-IoT-Policy
+  policyDocument: 
+  platformPrefix: tnp
+  useTimestampInNames: 1
+  policyNameToAttach: 
+  certificateIdForPolicy: 
+  thingNameForShadow: tnp-ARSCARA-20250627-075348
+--- !u!4 &1396046472
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396046470}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1514640461
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1514640463}
+  - component: {fileID: 1514640462}
+  m_Layer: 0
+  m_Name: IoTCoreTesting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1514640462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514640461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfd5bd60bbf5647cbae05694e7ff5f53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.IoTCoreTesting
+--- !u!4 &1514640463
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514640461}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -821,7 +1068,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2032840323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -834,10 +1081,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbb38846b34094b27863cf587f8adcc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.S3Manager
-  bucketName: twin-nexus-storage
-  testImagePath: Test/00.jpeg
+  bucketName: twin-nexus-platform-storage
+  sourceFilePath: Test/00.jpeg
   downloadPath: downloads
-  specificFileKey: super-admin/test-image-20250624-221304.jpg
+  specificFileKey: super-admin/images/uploaded-20250626-003958.jpeg
+  fileToDelete: super-admin/images/uploaded-20250626-003958.jpeg
+  uploadCategory: 0
 --- !u!4 &2032840324
 Transform:
   m_ObjectHideFlags: 0
@@ -869,7 +1118,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2033088597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -882,6 +1131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7c43f11db3b46c6b5039b681c46f1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.LambdaTest
+  functionName: test2
 --- !u!4 &2033088598
 Transform:
   m_ObjectHideFlags: 0
@@ -889,6 +1139,55 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2033088596}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2057350309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2057350311}
+  - component: {fileID: 2057350310}
+  m_Layer: 0
+  m_Name: SESManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &2057350310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057350309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ddcffd60f8ea424d9753bb598c695ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SESManager
+  senderEmail: mechar09@gmail.com
+  senderName: Twin Nexus Platform
+  testRecipientEmail: mechar09@gmail.com
+  testSubject: Test Email from Unity
+  testMessage: "\xA1Hola! Este es un email de prueba desde Unity usando AWS SES."
+--- !u!4 &2057350311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057350309}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -915,3 +1214,9 @@ SceneRoots:
   - {fileID: 2033088598}
   - {fileID: 2032840324}
   - {fileID: 1058238813}
+  - {fileID: 1514640463}
+  - {fileID: 1396046472}
+  - {fileID: 910406358}
+  - {fileID: 2057350311}
+  - {fileID: 281711848}
+  - {fileID: 458428047}
