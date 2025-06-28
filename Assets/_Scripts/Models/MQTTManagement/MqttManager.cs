@@ -59,20 +59,26 @@ namespace _Scripts.Models.MQTTManagement
         }
         #endregion
 
-        [Header("MQTT Broker Configuration")]
-        [SerializeField] private string brokerAddress = "localhost";
-        [SerializeField] private int brokerPort = 1883;
-        [SerializeField] private string clientId = "";
+        [Header("MQTT Broker Configuration - AWS IoT Core")]
+        [SerializeField] private string brokerAddress = "aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com"; // ✅ Tu endpoint correcto
+        [SerializeField] private int brokerPort = 8883; // ✅ Puerto SSL
+        [SerializeField] private string clientId = "TNPSGA52"; // ✅ Tu Thing name
         [SerializeField] private string username = "";
         [SerializeField] private string password = "";
-        [SerializeField] private bool useSSL = false;
+        [SerializeField] private bool useSSL = true; // ✅ SSL habilitado por defecto
         [SerializeField] private bool cleanSession = true;
         [SerializeField] private int connectionTimeoutMs = 30000;
         [SerializeField] private int keepAliveSeconds = 60;
         [SerializeField] private int reconnectDelayMs = 5000;
+        
+        [Header("Certificate Configuration")]
+        [SerializeField] private string certificateFileName = "aws-iot-core.pfx"; // ✅ Nombre del certificado
+        [SerializeField] private string certificatePassword = "5859"; // ✅ Password configurable
+        
+        [Header("Connection Settings")]
         [SerializeField] private MqttInfo.ConnectionMode connectionMode = MqttInfo.ConnectionMode.Manual;
         [SerializeField] private List<string> autoSubscribeTopics = new List<string>();
-        [SerializeField] private string testTopic = "test/topic";
+        [SerializeField] private string testTopic = "tnp/TNPSGA52/test"; // ✅ Topic específico
         [SerializeField] private bool enableDebugLogs = true;
         [SerializeField] private bool logReceivedMessages = true;
 
@@ -91,7 +97,7 @@ namespace _Scripts.Models.MQTTManagement
                 {
                     connectionHandler = new MqttConnectionHandler(brokerAddress, brokerPort, clientId, username, password,
                         useSSL, cleanSession, connectionTimeoutMs, keepAliveSeconds, reconnectDelayMs,
-                        CertificateManager.Instance, eventManager);
+                        CertificateManager.Instance, eventManager, certificateFileName, certificatePassword); // ✅ Pasar password
                 }
             }
         }
@@ -106,7 +112,7 @@ namespace _Scripts.Models.MQTTManagement
                 {
                     connectionHandler = new MqttConnectionHandler(brokerAddress, brokerPort, clientId, username, password,
                         useSSL, cleanSession, connectionTimeoutMs, keepAliveSeconds, reconnectDelayMs,
-                        CertificateManager.Instance, eventManager);
+                        CertificateManager.Instance, eventManager, certificateFileName, certificatePassword); // ✅ Pasar password
                 }
             }
         }
@@ -121,7 +127,7 @@ namespace _Scripts.Models.MQTTManagement
                 {
                     connectionHandler = new MqttConnectionHandler(brokerAddress, brokerPort, clientId, username, password,
                         useSSL, cleanSession, connectionTimeoutMs, keepAliveSeconds, reconnectDelayMs,
-                        CertificateManager.Instance, eventManager);
+                        CertificateManager.Instance, eventManager, certificateFileName, certificatePassword); // ✅ Pasar password
                 }
             }
         }
@@ -155,10 +161,16 @@ namespace _Scripts.Models.MQTTManagement
             try
             {
                 LogDebug("Initializing MqttManager...");
+                LogDebug($"✅ AWS IoT Core Configuration:");
+                LogDebug($"  Broker: {brokerAddress}:{brokerPort}");
+                LogDebug($"  SSL: {useSSL}");
+                LogDebug($"  Client ID: {clientId}");
+                LogDebug($"  Certificate: {certificateFileName}");
+                
                 eventManager = new MqttEventManager();
                 connectionHandler = new MqttConnectionHandler(brokerAddress, brokerPort, clientId, username, password,
                     useSSL, cleanSession, connectionTimeoutMs, keepAliveSeconds, reconnectDelayMs,
-                    CertificateManager.Instance, eventManager);
+                    CertificateManager.Instance, eventManager, certificateFileName, certificatePassword); // ✅ Pasar password
                 messageHandler = new MqttMessageHandler(connectionHandler, eventManager);
                 eventManager.SubscribeToMessageReceived(messageHandler.HandleReceivedMessage);
                 isInitialized = true;

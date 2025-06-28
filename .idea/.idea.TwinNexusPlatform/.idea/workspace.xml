@@ -5,14 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchAlarms.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchAlarms.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchLogs.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchLogs.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Scripts/devices.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Scripts/devices/TNPSGA52.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/_Scripts/devices/TNPSGA52.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.plastic/plastic.changes" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.changes" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.plastic/plastic.changes" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.plastic/plastic.wktree" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.wktree" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/StreamingAssets/resources/4cce0d28d072481fd01a0abe563f33b89690281b2c9b1160dc3c95c84c63f0e4-certificate.pem.crt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/StreamingAssets/resources/4cce0d28d072481fd01a0abe563f33b89690281b2c9b1160dc3c95c84c63f0e4-certificate.pem.crt.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/StreamingAssets/resources/4cce0d28d072481fd01a0abe563f33b89690281b2c9b1160dc3c95c84c63f0e4-private.pem.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/StreamingAssets/resources/4cce0d28d072481fd01a0abe563f33b89690281b2c9b1160dc3c95c84c63f0e4-private.pem.key.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/StreamingAssets/resources/4cce0d28d072481fd01a0abe563f33b89690281b2c9b1160dc3c95c84c63f0e4-public.pem.key" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/StreamingAssets/resources/4cce0d28d072481fd01a0abe563f33b89690281b2c9b1160dc3c95c84c63f0e4-public.pem.key.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/StreamingAssets/resources/aws-iot-core.pfx" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/StreamingAssets/resources/aws-iot-core.pfx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/IoTController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/IoTController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CertificateManagement/CertificateLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CertificateManagement/CertificateLoader.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/CertificateTesting.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/CertificateTesting.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/TNPSGA52.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/TNPSGA52.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudIoT.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudIoT.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManager.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchManager.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttConnectionHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttConnectionHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/VMIoT.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/VMIoT.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/CloudWatchTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/CloudWatchTest.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/TNPSGA52.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/TNPSGA52.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/certificates/aws-iot-core.pfx" beforeDir="false" afterPath="$PROJECT_DIR$/certificates/aws-iot-core.pfx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,7 +203,7 @@
       <workItem from="1751021029184" duration="2459000" />
       <workItem from="1751068018308" duration="394000" />
       <workItem from="1751068675095" duration="19666000" />
-      <workItem from="1751094031601" duration="4564000" />
+      <workItem from="1751094031601" duration="23881000" />
     </task>
     <servers />
   </component>

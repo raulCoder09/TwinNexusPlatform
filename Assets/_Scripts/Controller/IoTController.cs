@@ -65,8 +65,8 @@ namespace _Scripts.Controller
 
         #region Dependencies
         // private MqttManager _mqttManager;
-        private CloudIoT _ioTCoreManager;
-        private VMIoT _vmIoT;
+        // private CloudIoT _ioTCoreManager;
+        // private VMIoT _vmIoT;
         private SaveDataManager _saveDataManager;
         private DashboardController _dashboardController;
         #endregion
@@ -125,8 +125,8 @@ namespace _Scripts.Controller
         private void FindDependencies()
         {
             // _mqttManager = FindComponentByTag<MqttManager>("LocalIoT");
-            _ioTCoreManager = FindComponentByTag<CloudIoT>("CloudIoT");
-            _vmIoT = FindComponentByTag<VMIoT>("VMIoT");
+            // _ioTCoreManager = FindComponentByTag<CloudIoT>("CloudIoT");
+            // _vmIoT = FindComponentByTag<VMIoT>("VMIoT");
             _saveDataManager = FindComponentByTag<SaveDataManager>("GameManager");
             _dashboardController = FindComponentByTag<DashboardController>("Dashboard");
         }
@@ -279,21 +279,21 @@ namespace _Scripts.Controller
         #region Connection Methods - Cloud IoT
         private async void ConnectToCloudBroker(ClickEvent evt = null)
         {
-            var isConnected = await _ioTCoreManager.ConnectToAwsIoT();
-            var status = isConnected ? ONLINE_STATUS : OFFLINE_STATUS;
-            SetConnectionStatus(_cloudStatusLabel, _dashboardController.cloudIoTStatusLabel, status);
+            // var isConnected = await _ioTCoreManager.ConnectToAwsIoT();
+            // var status = isConnected ? ONLINE_STATUS : OFFLINE_STATUS;
+            // SetConnectionStatus(_cloudStatusLabel, _dashboardController.cloudIoTStatusLabel, status);
         }
 
         private async void DisconnectFromCloudBroker(ClickEvent evt)
         {
-            var isDisconnected = await _ioTCoreManager.DisconnectFromAwsIoT();
-            var status = isDisconnected ? OFFLINE_STATUS : CLIENT_NOT_CONNECTED;
-            SetConnectionStatus(_cloudStatusLabel, _dashboardController.cloudIoTStatusLabel, status);
+            // var isDisconnected = await _ioTCoreManager.DisconnectFromAwsIoT();
+            // var status = isDisconnected ? OFFLINE_STATUS : CLIENT_NOT_CONNECTED;
+            // SetConnectionStatus(_cloudStatusLabel, _dashboardController.cloudIoTStatusLabel, status);
         }
 
         private void SendCloudTestMessage(ClickEvent evt)
         {
-            _ = _ioTCoreManager.SendTestMessage();
+            // _ = _ioTCoreManager.SendTestMessage();
         }
         #endregion
 
@@ -302,9 +302,9 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _vmIoT.ConnectToEC2Broker();
-                var status = result ? ONLINE_STATUS : OFFLINE_STATUS;
-                SetConnectionStatus(_statusCloudVmIoTLabel, _dashboardController.vMIoTStatusLabel, status);
+                // var result = await _vmIoT.ConnectToEC2Broker();
+                // var status = result ? ONLINE_STATUS : OFFLINE_STATUS;
+                // SetConnectionStatus(_statusCloudVmIoTLabel, _dashboardController.vMIoTStatusLabel, status);
             }
             catch (Exception ex)
             {
@@ -317,9 +317,9 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _vmIoT.DisconnectFromEC2Broker();
-                var status = result ? OFFLINE_STATUS : CLIENT_NOT_CONNECTED;
-                SetConnectionStatus(_statusCloudVmIoTLabel, _dashboardController.vMIoTStatusLabel, status);
+                // var result = await _vmIoT.DisconnectFromEC2Broker();
+                // var status = result ? OFFLINE_STATUS : CLIENT_NOT_CONNECTED;
+                // SetConnectionStatus(_statusCloudVmIoTLabel, _dashboardController.vMIoTStatusLabel, status);
             }
             catch (Exception ex)
             {
@@ -330,7 +330,7 @@ namespace _Scripts.Controller
 
         private void SendVMTestMessage(ClickEvent evt)
         {
-            _ = _vmIoT.SendTestMessageToEC2();
+            // _ = _vmIoT.SendTestMessageToEC2();
         }
         #endregion
 
@@ -406,50 +406,50 @@ namespace _Scripts.Controller
         {
             _endpointTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.endpoint = _ioTCoreManager.endpoint = evt.newValue;
+                // iotConfigurationData.endpoint = _ioTCoreManager.endpoint = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _cloudThingNameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.thingName = _ioTCoreManager.thingName = evt.newValue;
+                // iotConfigurationData.thingName = _ioTCoreManager.thingName = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _caFileTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.caFilePath = _ioTCoreManager.caFilePath = evt.newValue;
+                // iotConfigurationData.caFilePath = _ioTCoreManager.caFilePath = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _clientCertificateFileTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.clientCertPath = _ioTCoreManager.clientCertPath = evt.newValue;
+                // iotConfigurationData.clientCertPath = _ioTCoreManager.clientCertPath = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _clientKeyFileTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.clientKeyPath = _ioTCoreManager.clientKeyPath = evt.newValue;
+                // iotConfigurationData.clientKeyPath = _ioTCoreManager.clientKeyPath = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _cloudModeConnectionDropdownField.RegisterValueChangedCallback(evt =>
             {
-                _dashboardController.cloudlIoTModeLabel.text = iotConfigurationData.cloudModeConnection = 
-                    _ioTCoreManager.modeConnection = evt.newValue;
+                // _dashboardController.cloudlIoTModeLabel.text = iotConfigurationData.cloudModeConnection = 
+                    // _ioTCoreManager.modeConnection = evt.newValue;
                 _saveDataManager.SaveData();
             });
 
             _cloudPortTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.cloudPort = _ioTCoreManager.port = evt.newValue;
+                // iotConfigurationData.cloudPort = _ioTCoreManager.port = evt.newValue;
                 _saveDataManager.SaveData();
             });
 
             _cloudPfxFilePathTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.pfxFilePath = _ioTCoreManager.pfxFilePath = evt.newValue;
+                // iotConfigurationData.pfxFilePath = _ioTCoreManager.pfxFilePath = evt.newValue;
                 _saveDataManager.SaveData();
             });
         }
@@ -458,7 +458,7 @@ namespace _Scripts.Controller
         {
             _cloudVmIoTipOrHostnameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.cloudVmIoTipOrHostname = _vmIoT.ipOrHostname = evt.newValue;
+                // iotConfigurationData.cloudVmIoTipOrHostname = _vmIoT.ipOrHostname = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
@@ -466,33 +466,33 @@ namespace _Scripts.Controller
             {
                 if (int.TryParse(evt.newValue, out var port))
                 {
-                    iotConfigurationData.cloudVmIoTPort = _vmIoT.port = port;
+                    // iotConfigurationData.cloudVmIoTPort = _vmIoT.port = port;
                     _saveDataManager.SaveData();
                 }
             });
             
             _cloudVmIoTClientIDTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.cloudVmIoTClientID = _vmIoT.clientId = evt.newValue;
+                // iotConfigurationData.cloudVmIoTClientID = _vmIoT.clientId = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _cloudVmIoTModeConnectionDropdownField.RegisterValueChangedCallback(evt =>
             {
-                _dashboardController.vMIoTModeLabel.text = iotConfigurationData.cloudVmIoTModeConnection = 
-                    _vmIoT.modeConnection = evt.newValue;
-                _saveDataManager.SaveData();
+                // _dashboardController.vMIoTModeLabel.text = iotConfigurationData.cloudVmIoTModeConnection = 
+                    // _vmIoT.modeConnection = evt.newValue;
+                // _saveDataManager.SaveData();
             });
             
             _cloudVmIoTUsernameTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.cloudVmIoTUsername = _vmIoT.username = evt.newValue;
+                // iotConfigurationData.cloudVmIoTUsername = _vmIoT.username = evt.newValue;
                 _saveDataManager.SaveData();
             });
             
             _cloudVmIoTPasswordTextField.RegisterValueChangedCallback(evt =>
             {
-                iotConfigurationData.cloudVmIoTPassword = _vmIoT.password = evt.newValue;
+                // iotConfigurationData.cloudVmIoTPassword = _vmIoT.password = evt.newValue;
                 _saveDataManager.SaveData();
             });
         }

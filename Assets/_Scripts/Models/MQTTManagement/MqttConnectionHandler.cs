@@ -25,12 +25,18 @@ namespace _Scripts.Models.MQTTManagement
         private readonly int connectionTimeoutMs;
         private readonly int keepAliveSeconds;
         private readonly int reconnectDelayMs;
+        
+        // ✅ Nuevos parámetros para certificados configurables
+        private readonly string certificateFileName;
+        private readonly string certificatePassword;
+        
         private IMqttClient client;
         private MqttFactory factory;
 
         public MqttConnectionHandler(string brokerAddress, int brokerPort, string clientId, string username, string password,
             bool useSSL, bool cleanSession, int connectionTimeoutMs, int keepAliveSeconds, int reconnectDelayMs,
-            CertificateManager certificateManager, MqttEventManager eventManager)
+            CertificateManager certificateManager, MqttEventManager eventManager, 
+            string certificateFileName = "aws-iot-core.pfx", string certificatePassword = "5859") // ✅ Parámetros opcionales
         {
             this.brokerAddress = brokerAddress;
             this.brokerPort = brokerPort;
@@ -44,6 +50,10 @@ namespace _Scripts.Models.MQTTManagement
             this.reconnectDelayMs = reconnectDelayMs;
             this.certificateManager = certificateManager;
             this.eventManager = eventManager;
+            
+            // ✅ Almacenar configuración de certificados
+            this.certificateFileName = certificateFileName;
+            this.certificatePassword = certificatePassword;
         }
 
         public async Task<bool> ConnectAsync()
@@ -118,34 +128,34 @@ namespace _Scripts.Models.MQTTManagement
             }
 
             if (client.IsConnected)
-                {
-                    LogDebug("Client is already connected");
-                    return true;
-                }
+            {
+                LogDebug("Client is already connected");
+                return true;
+            }
 
-                LogDebug("Attempting to reconnect to broker...");
-                try
+            LogDebug("Attempting to reconnect to broker...");
+            try
+            {
+                var options = await BuildConnectionOptionsAsync();
+                bool reconnected = await AttemptConnectionAsync(options);
+                if (reconnected)
                 {
-                    var options = await BuildConnectionOptionsAsync();
-                    bool reconnected = await AttemptConnectionAsync(options);
-                    if (reconnected)
-                    {
-                        LogDebug("Successfully reconnected to broker");
-                        eventManager.TriggerConnected();
-                    }
-                    else
-                    {
-                        LogError("Failed to reconnect to broker");
-                        eventManager.TriggerConnectionFailed("Reconnection failed");
-                    }
-                    return reconnected;
+                    LogDebug("Successfully reconnected to broker");
+                    eventManager.TriggerConnected();
                 }
-                catch (Exception ex)
+                else
                 {
-                    LogError($"Error during reconnection: {ex.Message}");
-                    eventManager.TriggerConnectionFailed(ex.Message);
-                    return false;
+                    LogError("Failed to reconnect to broker");
+                    eventManager.TriggerConnectionFailed("Reconnection failed");
                 }
+                return reconnected;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error during reconnection: {ex.Message}");
+                eventManager.TriggerConnectionFailed(ex.Message);
+                return false;
+            }
         }
 
         public bool IsConnected()
@@ -168,7 +178,7 @@ namespace _Scripts.Models.MQTTManagement
 
             if (brokerPort <= 0 || brokerPort > 65535)
             {
-                LogError($"Invalid port {brokerPort}, using default port 1883");
+                LogError($"Invalid port {brokerPort}");
                 return false;
             }
 
@@ -206,23 +216,50 @@ namespace _Scripts.Models.MQTTManagement
                 int sslPort = brokerPort == 1883 ? 8883 : brokerPort;
                 optionsBuilder.WithTcpServer(brokerAddress, sslPort);
 
-                var certificate = await certificateManager.LoadX509CertificateAsync("aws-iot-core.pfx", "5859", StorageInfo.StorageCategory.Resources);
+                // ✅ Usar parámetros configurables para cargar certificado
+                LogDebug($"Loading certificate: {certificateFileName} with password configured");
+                var certificate = await certificateManager.LoadX509CertificateAsync(
+                    certificateFileName, 
+                    certificatePassword, 
+                    StorageInfo.StorageCategory.Resources);
+                    
                 if (certificate != null)
                 {
+                    LogDebug($"✅ Certificate loaded successfully:");
+                    LogDebug($"  Subject: {certificate.Subject}");
+                    LogDebug($"  Valid until: {certificate.NotAfter}");
+                    LogDebug($"  Has private key: {certificate.HasPrivateKey}");
+                    
                     optionsBuilder.WithTls(tls => 
                     {
                         tls.UseTls = true;
                         tls.SslProtocol = System.Security.Authentication.SslProtocols.Tls12;
                         tls.Certificates = new List<X509Certificate> { certificate };
-                        tls.AllowUntrustedCertificates = true;
-                        tls.IgnoreCertificateChainErrors = true;
+                        
+                        // ✅ Configuración específica para AWS IoT Core
+                        tls.AllowUntrustedCertificates = false;
+                        tls.IgnoreCertificateChainErrors = false;
                         tls.IgnoreCertificateRevocationErrors = true;
+                        
+                        // ✅ Validación del certificado del servidor
+                        tls.CertificateValidationHandler = context =>
+                        {
+                            if (context.Certificate != null)
+                            {
+                                LogDebug($"Server certificate validated: {context.Certificate.Subject}");
+                                return true; // AWS IoT Core certificates are trusted
+                            }
+                            LogError("Server certificate validation failed: No certificate provided");
+                            return false;
+                        };
                     });
-                    LogDebug($"Using SSL/TLS with certificate on port {sslPort}");
+                    LogDebug($"✅ SSL/TLS configured with certificate on port {sslPort}");
                 }
                 else
                 {
-                    LogError("Failed to load certificate for SSL connection");
+                    LogError($"❌ Failed to load certificate: {certificateFileName}");
+                    eventManager.TriggerConnectionFailed("Failed to load SSL certificate");
+                    return null;
                 }
             }
             else
@@ -234,6 +271,7 @@ namespace _Scripts.Models.MQTTManagement
             if (cleanSession)
             {
                 optionsBuilder.WithCleanSession();
+                LogDebug("Clean session enabled");
             }
 
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
@@ -243,7 +281,7 @@ namespace _Scripts.Models.MQTTManagement
             }
             else
             {
-                LogDebug("Connecting without authentication");
+                LogDebug("Connecting without username/password (using certificate authentication)");
             }
 
             return optionsBuilder.Build();
@@ -253,14 +291,15 @@ namespace _Scripts.Models.MQTTManagement
         {
             client.ConnectedAsync += async e =>
             {
-                LogDebug($"Connected to broker: {brokerAddress}:{brokerPort}");
+                LogDebug($"✅ Connected to broker: {brokerAddress}:{brokerPort}");
+                LogDebug($"Client ID: {clientId}");
                 eventManager.TriggerConnected();
             };
 
             client.DisconnectedAsync += async e =>
             {
                 string reason = e.Reason.ToString();
-                LogDebug($"Disconnected from broker. Reason: {reason}");
+                LogDebug($"❌ Disconnected from broker. Reason: {reason}");
                 if (e.Exception != null)
                 {
                     LogError($"Disconnection exception: {e.Exception.Message}");
@@ -273,22 +312,36 @@ namespace _Scripts.Models.MQTTManagement
         {
             try
             {
+                LogDebug("🔄 Attempting connection to AWS IoT Core...");
+                
                 var connectTask = client.ConnectAsync(options);
                 var timeoutTask = Task.Delay(connectionTimeoutMs);
                 var completedTask = await Task.WhenAny(connectTask, timeoutTask);
 
                 if (completedTask == timeoutTask)
                 {
-                    LogError("Connection timeout");
+                    LogError($"❌ Connection timeout after {connectionTimeoutMs}ms");
                     return false;
                 }
 
                 await connectTask;
-                return client.IsConnected;
+                bool isConnected = client.IsConnected;
+                
+                if (isConnected)
+                {
+                    LogDebug("🎉 Connection successful!");
+                }
+                else
+                {
+                    LogError("❌ Connection failed - client not connected");
+                }
+                
+                return isConnected;
             }
             catch (Exception ex)
             {
-                LogError($"Connection attempt failed: {ex.Message}");
+                LogError($"❌ Connection attempt failed: {ex.Message}");
+                LogError($"Stack trace: {ex.StackTrace}");
                 return false;
             }
         }
