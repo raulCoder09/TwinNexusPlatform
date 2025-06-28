@@ -417,6 +417,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4365078344a46ba8cf459cc0198dcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MQTTprotocol
+  _brokerAddress: localhost
+  _brokerPort: 1883
+  _clientId: 
+  _username: 
+  _password: 
+  _connectionMode: 0
+  _useSSL: 0
+  _cleanSession: 1
+  _connectionTimeoutMs: 30000
+  _keepAliveSeconds: 60
+  _reconnectDelayMs: 5000
+  _testTopic: test/topic
+  _autoSubscribeTopics: []
+  _enableDebugLogs: 1
+  _logReceivedMessages: 1
 --- !u!1 &281711846
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,6 +514,105 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 458428045}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &700931575
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 700931577}
+  - component: {fileID: 700931576}
+  m_Layer: 0
+  m_Name: FileTesting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &700931576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 700931575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 725524b5ff2f648bca4f2faa8a6c0c1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FileTesting
+  enableDebugLogs: 1
+--- !u!4 &700931577
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 700931575}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &721091805
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 721091807}
+  - component: {fileID: 721091806}
+  m_Layer: 0
+  m_Name: FileManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &721091806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721091805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0eae4742d4d43d9845564965b6bc583, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.FileManagement.FileManager
+  enableDebugLogs: 1
+  autoInitializeOnStart: 1
+  autoCleanupOnStart: 0
+  maxTempFilesAgeDays: 7
+  maxCacheSizeMB: 100
+  createSavesFolder: 1
+  createImagesFolder: 1
+  createDownloadsFolder: 1
+  createTempFolder: 1
+  createCertificatesFolder: 1
+--- !u!4 &721091807
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721091805}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -696,6 +810,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1060593107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1060593109}
+  - component: {fileID: 1060593108}
+  m_Layer: 0
+  m_Name: CertificateManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1060593108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060593107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05aed4a2198f94a5283c6ebf5dd406c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.CertificateManagement.CertificateManager
+  defaultPfxFileName: aws-iot.pfx
+  allowUntrustedCertificates: 0
+  ignoreCertificateChainErrors: 0
+  ignoreCertificateRevocationErrors: 1
+  enableDebugLogs: 1
+--- !u!4 &1060593109
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060593107}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1396046470
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,7 +875,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1396046471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,7 +903,6 @@ MonoBehaviour:
   useTimestampInNames: 1
   policyNameToAttach: 
   certificateIdForPolicy: 
-  thingNameForShadow: tnp-ARSCARA-20250627-075348
 --- !u!4 &1396046472
 Transform:
   m_ObjectHideFlags: 0
@@ -772,7 +934,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1514640462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -867,9 +1029,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.SaveSystem
   iotConfigurationData: {fileID: 11400000, guid: c38e6d7763e65458eab8c2f63bb5034e,
     type: 2}
+  additionalDataObjects: []
   enableAutoSave: 1
-  enableBackup: 1
   autoSaveInterval: 30
+  saveOnApplicationPause: 1
+  saveOnApplicationQuit: 1
+  saveOnApplicationFocus: 1
+  enableBackup: 1
+  createBackupBeforeSave: 1
+  maxBackupFiles: 5
+  enableTimestampedBackups: 0
+  saveFileName: iotConfig.json
+  backupFileName: iotConfig_backup.json
+  useCompression: 0
+  useEncryption: 0
+  encryptionKey: 
+  validateJsonOnLoad: 1
+  createDefaultIfInvalid: 1
+  minAutoSaveInterval: 5
+  enableDebugLogs: 1
+  logFileOperations: 1
+  logAutoSave: 0
 --- !u!1 &1793826477
 GameObject:
   m_ObjectHideFlags: 0
@@ -1008,6 +1188,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a69d3ee29e249c998a43021cd757b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1939945462
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1939945464}
+  - component: {fileID: 1939945463}
+  m_Layer: 0
+  m_Name: CertificateTesting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1939945463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939945462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a125db8395b4a98b4b0a61bcbbd0b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.CertificateTesting
+  enableDebugLogs: 1
+  testPfxFileName: aws-iot-core.pfx
+  testPassword: 5859
+--- !u!4 &1939945464
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939945462}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2009097689
 GameObject:
   m_ObjectHideFlags: 0
@@ -1220,3 +1447,7 @@ SceneRoots:
   - {fileID: 2057350311}
   - {fileID: 281711848}
   - {fileID: 458428047}
+  - {fileID: 700931577}
+  - {fileID: 721091807}
+  - {fileID: 1060593109}
+  - {fileID: 1939945464}
