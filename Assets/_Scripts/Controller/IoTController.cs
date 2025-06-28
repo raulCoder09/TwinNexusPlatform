@@ -64,7 +64,7 @@ namespace _Scripts.Controller
         #endregion
 
         #region Dependencies
-        private MQTTManager _mqttManager;
+        // private MqttManager _mqttManager;
         private CloudIoT _ioTCoreManager;
         private VMIoT _vmIoT;
         private SaveDataManager _saveDataManager;
@@ -124,7 +124,7 @@ namespace _Scripts.Controller
 
         private void FindDependencies()
         {
-            _mqttManager = FindComponentByTag<MQTTManager>("LocalIoT");
+            // _mqttManager = FindComponentByTag<MqttManager>("LocalIoT");
             _ioTCoreManager = FindComponentByTag<CloudIoT>("CloudIoT");
             _vmIoT = FindComponentByTag<VMIoT>("VMIoT");
             _saveDataManager = FindComponentByTag<SaveDataManager>("GameManager");
@@ -244,9 +244,9 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _mqttManager.ConnectToBroker();
-                var status = result ? ONLINE_STATUS : OFFLINE_STATUS;
-                SetConnectionStatus(_statusLocalLabel, _dashboardController.localIoTStatusLabel, status);
+                // var result = await _mqttManager.ConnectToBroker();
+                // var status = result ? ONLINE_STATUS : OFFLINE_STATUS;
+                // SetConnectionStatus(_statusLocalLabel, _dashboardController.localIoTStatusLabel, status);
             }
             catch (Exception ex)
             {
@@ -259,9 +259,9 @@ namespace _Scripts.Controller
         {
             try
             {
-                var result = await _mqttManager.DisconnectFromBroker();
-                var status = result ? OFFLINE_STATUS : CLIENT_NOT_CONNECTED;
-                SetConnectionStatus(_statusLocalLabel, _dashboardController.localIoTStatusLabel, status);
+                // var result = await _mqttManager.DisconnectFromBroker();
+                // var status = result ? OFFLINE_STATUS : CLIENT_NOT_CONNECTED;
+                // SetConnectionStatus(_statusLocalLabel, _dashboardController.localIoTStatusLabel, status);
             }
             catch (Exception ex)
             {
@@ -272,7 +272,7 @@ namespace _Scripts.Controller
 
         private void SendLocalTestMessage(ClickEvent evt)
         {
-            _ = _mqttManager.SendTestMessage();
+            // _ = _mqttManager.SendTestMessage();
         }
         #endregion
 
