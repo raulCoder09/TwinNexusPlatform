@@ -20,66 +20,71 @@ namespace _Scripts.Models.CertificateManagement
             this._certificateEventManager = certificateEventManager;
         }
 
-        public async Task<byte[]> LoadCertificateBytesAsync(string pfxPath, StorageInfo.StorageCategory category)
+        // Reemplazar el método LoadCertificateBytesAsync en CertificateLoader.cs:
+
+public async Task<byte[]> LoadCertificateBytesAsync(string pfxPath, StorageInfo.StorageCategory category)
+{
+    try
+    {
+        if (string.IsNullOrEmpty(pfxPath))
         {
-            try
+            LogError("Certificate path is empty");
+            _certificateEventManager.TriggerValidationFailed(pfxPath, "Certificate path is empty");
+            return null;
+        }
+
+        if (category == StorageInfo.StorageCategory.Resources)
+        {
+            // Para archivos binarios en StreamingAssets, copiar a Certificates primero
+            LogDebug($"Copying certificate from StreamingAssets to Certificates folder...");
+            
+            string fileName = Path.GetFileName(pfxPath);
+            bool copySuccess = fileManager.CopyFile(StorageInfo.StorageCategory.Resources, 
+                                                  StorageInfo.StorageCategory.Certificates, 
+                                                  fileName);
+            
+            if (!copySuccess)
             {
-                if (string.IsNullOrEmpty(pfxPath))
-                {
-                    LogError("Certificate path is empty");
-                    _certificateEventManager.TriggerValidationFailed(pfxPath, "Certificate path is empty");
-                    return null;
-                }
-
-                if (category == StorageInfo.StorageCategory.Resources)
-                {
-                    byte[] certBytes = null;
-                    bool readSuccess = false;
-                    fileManager.ReadFileAsync(category, Path.GetFileName(pfxPath), content =>
-                    {
-                        if (content != null)
-                        {
-                            certBytes = System.Text.Encoding.UTF8.GetBytes(content);
-                            readSuccess = true;
-                        }
-                    });
-
-                    while (!readSuccess && certBytes == null)
-                    {
-                        await Task.Delay(50);
-                    }
-
-                    if (certBytes == null)
-                    {
-                        LogError($"Failed to load certificate from {pfxPath} in {category}");
-                        _certificateEventManager.TriggerValidationFailed(pfxPath, "Failed to load certificate");
-                        return null;
-                    }
-
-                    LogDebug($"Certificate loaded successfully. Size: {certBytes.Length} bytes");
-                    return certBytes;
-                }
-                else
-                {
-                    byte[] certBytes = fileManager.ReadFileBytes(category, Path.GetFileName(pfxPath));
-                    if (certBytes == null)
-                    {
-                        LogError($"Failed to load certificate from {pfxPath} in {category}");
-                        _certificateEventManager.TriggerValidationFailed(pfxPath, "Failed to load certificate");
-                        return null;
-                    }
-
-                    LogDebug($"Certificate loaded successfully from {pfxPath}. Size: {certBytes.Length} bytes");
-                    return certBytes;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error loading certificate {pfxPath}: {ex.Message}");
-                _certificateEventManager.TriggerValidationFailed(pfxPath, ex.Message);
+                LogError($"Failed to copy certificate from StreamingAssets to Certificates");
+                _certificateEventManager.TriggerValidationFailed(pfxPath, "Failed to copy certificate");
                 return null;
             }
+            
+            // Leer desde la carpeta Certificates
+            byte[] certBytes = fileManager.ReadFileBytes(StorageInfo.StorageCategory.Certificates, fileName);
+            
+            if (certBytes == null)
+            {
+                LogError($"Failed to read copied certificate from Certificates folder");
+                _certificateEventManager.TriggerValidationFailed(pfxPath, "Failed to read copied certificate");
+                return null;
+            }
+
+            LogDebug($"Certificate copied and loaded successfully. Size: {certBytes.Length} bytes");
+            return certBytes;
         }
+        else
+        {
+            // Para otras categorías, lectura directa
+            byte[] certBytes = fileManager.ReadFileBytes(category, Path.GetFileName(pfxPath));
+            if (certBytes == null)
+            {
+                LogError($"Failed to load certificate from {pfxPath} in {category}");
+                _certificateEventManager.TriggerValidationFailed(pfxPath, "Failed to load certificate");
+                return null;
+            }
+
+            LogDebug($"Certificate loaded successfully from {pfxPath}. Size: {certBytes.Length} bytes");
+            return certBytes;
+        }
+    }
+    catch (Exception ex)
+    {
+        LogError($"Error loading certificate {pfxPath}: {ex.Message}");
+        _certificateEventManager.TriggerValidationFailed(pfxPath, ex.Message);
+        return null;
+    }
+}
 
         public X509Certificate2 CreateX509Certificate(byte[] certBytes, string password = "")
         {

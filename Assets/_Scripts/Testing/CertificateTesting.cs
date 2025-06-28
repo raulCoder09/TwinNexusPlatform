@@ -11,7 +11,7 @@ namespace _Scripts.Testing
     {
         [SerializeField] private bool enableDebugLogs = true;
         [SerializeField] private string testPfxFileName = "aws-iot-core.pfx";
-        [SerializeField] private string testPassword = "5859";
+        [SerializeField] private string testPassword = "";
 
         private InputAction validateAction;
         private InputAction loadAction;
