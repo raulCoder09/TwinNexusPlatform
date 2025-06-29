@@ -1,6 +1,6 @@
 namespace _Scripts.Models.FileManagement
 {
-    public class FileEventManager
+    public interface IFileOperations
     {
         
     }
