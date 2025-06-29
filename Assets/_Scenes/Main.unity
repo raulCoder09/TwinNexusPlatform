@@ -448,7 +448,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 725524b5ff2f648bca4f2faa8a6c0c1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FileTesting
-  enableDebugLogs: 1
 --- !u!4 &700931577
 Transform:
   m_ObjectHideFlags: 0
@@ -480,7 +479,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &721091806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -493,16 +492,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0eae4742d4d43d9845564965b6bc583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.FileManagement.FileManager
-  enableDebugLogs: 1
-  autoInitializeOnStart: 1
-  autoCleanupOnStart: 0
-  maxTempFilesAgeDays: 7
-  maxCacheSizeMB: 100
-  createSavesFolder: 1
-  createImagesFolder: 1
-  createDownloadsFolder: 1
-  createTempFolder: 1
-  createCertificatesFolder: 1
 --- !u!4 &721091807
 Transform:
   m_ObjectHideFlags: 0
@@ -670,31 +659,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1060593109}
-  - component: {fileID: 1060593108}
+  - component: {fileID: 1060593110}
   m_Layer: 0
   m_Name: CertificateManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1060593108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1060593107}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05aed4a2198f94a5283c6ebf5dd406c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.CertificateManagement.CertificateManager
-  defaultPfxFileName: aws-iot.pfx
-  allowUntrustedCertificates: 0
-  ignoreCertificateChainErrors: 0
-  ignoreCertificateRevocationErrors: 1
-  enableDebugLogs: 1
+  m_IsActive: 0
 --- !u!4 &1060593109
 Transform:
   m_ObjectHideFlags: 0
@@ -710,6 +682,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1060593110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060593107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50184f3785e3482599fe2bab1b50cf20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.CertificateManagement.CertificateManager
+  defaultPfxFileName: aws-iot-core.pfx
+  allowUntrustedCertificates: 0
+  ignoreCertificateChainErrors: 0
+  ignoreCertificateRevocationErrors: 1
+  enableDebugLogs: 1
 --- !u!1 &1108934029
 GameObject:
   m_ObjectHideFlags: 0
@@ -726,7 +715,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1108934030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -739,23 +728,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c63ef4822cf46be9fd040cbb107cf18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.MQTTManagement.MqttManager
-  brokerAddress: localhost
-  brokerPort: 1883
-  clientId: 
-  username: 
-  password: 
-  useSSL: 0
-  cleanSession: 1
-  connectionTimeoutMs: 30000
-  keepAliveSeconds: 60
-  reconnectDelayMs: 5000
-  certificateFileName: aws-iot-core.pfx
-  certificatePassword: 5859
-  connectionMode: 0
-  autoSubscribeTopics: []
-  testTopic: test/topic
-  enableDebugLogs: 1
-  logReceivedMessages: 1
 --- !u!4 &1108934031
 Transform:
   m_ObjectHideFlags: 0
@@ -1165,7 +1137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1939945463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1178,9 +1150,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a125db8395b4a98b4b0a61bcbbd0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.CertificateTesting
+  defaultPfxFileName: aws-iot-core.pfx
+  allowUntrustedCertificates: 0
+  ignoreCertificateChainErrors: 0
+  ignoreCertificateRevocationErrors: 1
   enableDebugLogs: 1
-  testPfxFileName: aws-iot-core.pfx
+  testKeyLoadPersistent: c
+  testKeyValidatePersistent: v
+  testKeyGetInfo: b
+  testKeyLoadStreaming: n
+  testKeyValidateStreaming: m
+  testKeyEvents: e
+  testFileName: aws-iot-core.pfx
   testPassword: 5859
+  testPath: resources/certificates
 --- !u!4 &1939945464
 Transform:
   m_ObjectHideFlags: 0
@@ -1356,7 +1339,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2113571588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1369,36 +1352,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a065dc6459b4b369406e2f58d3013ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.devices.TNPSGA52
-  thingName: TNPSGA52
-  thingDescription: Twin Nexus Platform Device using Managers System
-  awsRegion: us-east-1
-  brokerAddress: your-endpoint-ats.iot.us-east-1.amazonaws.com
-  brokerPort: 8883
-  clientId: 
-  useSSL: 1
-  cleanSession: 1
-  connectionTimeoutMs: 30000
-  keepAliveSeconds: 60
-  certificateFileName: aws-iot-core.pfx
-  certificatePassword: 5859
-  certificateCategory: 0
-  telemetryTopic: tnp/TNPSGA52/telemetry
-  commandsTopic: tnp/TNPSGA52/commands
-  statusTopic: tnp/TNPSGA52/status
-  shadowUpdateTopic: $aws/things/TNPSGA52/shadow/update
-  shadowGetTopic: 
-  testTopic: 
-  enableDebugLogs: 1
-  logReceivedMessages: 1
-  showDetailedStatus: 1
-  enableAdvancedTelemetry: 1
-  telemetryInterval: 5
-  simulateSensorData: 1
-  responseTopic: tnp/TNPSGA52/response
-  errorTopic: tnp/TNPSGA52/error
-  temperatureRange: {x: 20, y: 30}
-  humidityRange: {x: 40, y: 60}
-  batteryRange: {x: 75, y: 100}
 --- !u!4 &2113571590
 Transform:
   m_ObjectHideFlags: 0

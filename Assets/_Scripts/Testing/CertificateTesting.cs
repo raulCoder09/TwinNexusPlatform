@@ -1,137 +1,149 @@
-using System;
-using System.Security.Cryptography.X509Certificates;
-using _Scripts.Models.CertificateManagement;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using _Scripts.Models.FileManagement;
-
-namespace _Scripts.Testing
+namespace _Scripts.Models.CertificateManagement
 {
-    public class CertificateTesting : MonoBehaviour
+    using System.IO;
+    using UnityEngine;
+    using UnityEngine.InputSystem;
+    using _Scripts.Models.FileManagement;
+
+    public class CertificateTesting : CertificateManager
     {
-        [SerializeField] private bool enableDebugLogs = true;
-        [SerializeField] private string testPfxFileName = "aws-iot-core.pfx";
-        [SerializeField] private string testPassword = "";
+        [Header("Input Configuration")]
+        [SerializeField] private string testKeyLoadPersistent = "c"; // Tecla para cargar desde persistentDataPath
+        [SerializeField] private string testKeyValidatePersistent = "v"; // Tecla para validar en persistentDataPath
+        [SerializeField] private string testKeyGetInfo = "b"; // Tecla para obtener información
+        [SerializeField] private string testKeyLoadStreaming = "n"; // Tecla para cargar desde StreamingAssets
+        [SerializeField] private string testKeyValidateStreaming = "m"; // Tecla para validar en StreamingAssets
+        [SerializeField] private string testKeyEvents = "e"; // Tecla para probar eventos
 
-        private InputAction validateAction;
-        private InputAction loadAction;
-        private InputAction infoAction;
-        private InputAction optionsAction;
+        [Header("Test Configuration")]
+        [SerializeField] private string testFileName = "aws-iot-core.pfx";
+        [SerializeField] private string testPassword = "5859"; // Contraseña del .pfx
+        [SerializeField] private string testPath = "certificates"; // Subcarpeta en persistentDataPath o StreamingAssets
 
-        private void Awake()
-        {
-            CertificateManager.Instance.Initialize();
-            if (!CertificateManager.Instance.IsInitialized())
-            {
-                LogError("Failed to initialize CertificateManager");
-            }
-        }
+        private InputAction actionLoadPersistent;
+        private InputAction actionValidatePersistent;
+        private InputAction actionGetInfo;
+        private InputAction actionLoadStreaming;
+        private InputAction actionValidateStreaming;
+        private InputAction actionEvents;
 
         private void OnEnable()
         {
-            validateAction = new InputAction("ValidateCertificate", InputActionType.Button, "<Keyboard>/v");
-            loadAction = new InputAction("LoadCertificate", InputActionType.Button, "<Keyboard>/l");
-            infoAction = new InputAction("GetCertificateInfo", InputActionType.Button, "<Keyboard>/i");
-            optionsAction = new InputAction("SetValidationOptions", InputActionType.Button, "<Keyboard>/o");
+            // Configurar acciones de entrada
+            actionLoadPersistent = new InputAction("loadPersistent", InputActionType.Button, $"<Keyboard>/{testKeyLoadPersistent}");
+            actionLoadPersistent.performed += OnLoadPersistentPerformed;
+            actionLoadPersistent.Enable();
 
-            validateAction.performed += _ => TestValidateCertificate();
-            loadAction.performed += _ => TestLoadCertificate();
-            infoAction.performed += _ => TestGetCertificateInfo();
-            optionsAction.performed += _ => TestSetValidationOptions();
+            actionValidatePersistent = new InputAction("validatePersistent", InputActionType.Button, $"<Keyboard>/{testKeyValidatePersistent}");
+            actionValidatePersistent.performed += OnValidatePersistentPerformed;
+            actionValidatePersistent.Enable();
 
-            validateAction.Enable();
-            loadAction.Enable();
-            infoAction.Enable();
-            optionsAction.Enable();
+            actionGetInfo = new InputAction("getInfo", InputActionType.Button, $"<Keyboard>/{testKeyGetInfo}");
+            actionGetInfo.performed += OnGetInfoPerformed;
+            actionGetInfo.Enable();
 
-            CertificateManager.Instance.SubscribeToCertificateLoaded(OnCertificateLoaded);
-            CertificateManager.Instance.SubscribeToCertificateValidated(OnCertificateValidated);
-            CertificateManager.Instance.SubscribeToValidationFailed(OnValidationFailed);
-            CertificateManager.Instance.SubscribeToServerCertificateValidated(OnServerCertificateValidated);
-            CertificateManager.Instance.SubscribeToStorageInitialized(OnStorageInitialized);
+            actionLoadStreaming = new InputAction("loadStreaming", InputActionType.Button, $"<Keyboard>/{testKeyLoadStreaming}");
+            actionLoadStreaming.performed += OnLoadStreamingPerformed;
+            actionLoadStreaming.Enable();
+
+            actionValidateStreaming = new InputAction("validateStreaming", InputActionType.Button, $"<Keyboard>/{testKeyValidateStreaming}");
+            actionValidateStreaming.performed += OnValidateStreamingPerformed;
+            actionValidateStreaming.Enable();
+
+            actionEvents = new InputAction("events", InputActionType.Button, $"<Keyboard>/{testKeyEvents}");
+            actionEvents.performed += OnEventsPerformed;
+            actionEvents.Enable();
         }
 
         private void OnDisable()
         {
-            CertificateManager.Instance.UnsubscribeFromCertificateLoaded(OnCertificateLoaded);
-            CertificateManager.Instance.UnsubscribeFromCertificateValidated(OnCertificateValidated);
-            CertificateManager.Instance.UnsubscribeFromValidationFailed(OnValidationFailed);
-            CertificateManager.Instance.UnsubscribeFromServerCertificateValidated(OnServerCertificateValidated);
-            CertificateManager.Instance.UnsubscribeFromStorageInitialized(OnStorageInitialized);
+            // Desactivar acciones
+            actionLoadPersistent.performed -= OnLoadPersistentPerformed;
+            actionLoadPersistent.Disable();
 
-            validateAction.Disable();
-            loadAction.Disable();
-            infoAction.Disable();
-            optionsAction.Disable();
+            actionValidatePersistent.performed -= OnValidatePersistentPerformed;
+            actionValidatePersistent.Disable();
+
+            actionGetInfo.performed -= OnGetInfoPerformed;
+            actionGetInfo.Disable();
+
+            actionLoadStreaming.performed -= OnLoadStreamingPerformed;
+            actionLoadStreaming.Disable();
+
+            actionValidateStreaming.performed -= OnValidateStreamingPerformed;
+            actionValidateStreaming.Disable();
+
+            actionEvents.performed -= OnEventsPerformed;
+            actionEvents.Disable();
         }
 
-        private async void TestValidateCertificate()
+        private async void OnLoadPersistentPerformed(InputAction.CallbackContext context)
         {
-            bool success = await CertificateManager.Instance.ValidateCertificatesAsync(testPfxFileName, StorageInfo.StorageCategory.Resources);
-            LogDebug($"TestValidateCertificate: {(success ? "Success" : "Failed")}");
+            Debug.Log("[CertificateTesting] Testing load certificate from persistentDataPath...");
+            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), testPath);
+            var certificate = await LoadX509CertificateAsync(persistentPath, testFileName, testPassword);
+            Debug.Log($"[CertificateTesting] Load certificate {testFileName} from {persistentPath}: {(certificate != null ? $"Success: {certificate.Subject}" : "Failed")}");
         }
 
-        private async void TestLoadCertificate()
+        private async void OnValidatePersistentPerformed(InputAction.CallbackContext context)
         {
-            X509Certificate2 certificate = await CertificateManager.Instance.LoadX509CertificateAsync(testPfxFileName, testPassword, StorageInfo.StorageCategory.Resources);
-            LogDebug($"TestLoadCertificate: {(certificate != null ? "Success" : "Failed")}");
+            Debug.Log("[CertificateTesting] Testing validate certificate in persistentDataPath...");
+            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), testPath);
+            var isValid = await ValidateCertificateAsync(persistentPath, testFileName);
+            Debug.Log($"[CertificateTesting] Validate certificate {testFileName} in {persistentPath}: {(isValid ? "Success" : "Failed")}");
         }
 
-        private async void TestGetCertificateInfo()
+        private async void OnGetInfoPerformed(InputAction.CallbackContext context)
         {
-            X509Certificate2 certificate = await CertificateManager.Instance.LoadX509CertificateAsync(testPfxFileName, testPassword, StorageInfo.StorageCategory.Resources);
+            Debug.Log("[CertificateTesting] Testing get certificate info...");
+            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), testPath);
+            var certificate = await LoadX509CertificateAsync(persistentPath, testFileName, testPassword);
             if (certificate != null)
             {
-                string info = CertificateManager.Instance.GetCertificateInfo(certificate);
-                LogDebug($"TestGetCertificateInfo:\n{info}");
+                string certInfo = GetCertificateInfo(certificate);
+                Debug.Log($"[CertificateTesting] Certificate info for {testFileName}: {certInfo}");
             }
             else
             {
-                LogDebug("TestGetCertificateInfo: Failed to load certificate");
+                Debug.Log($"[CertificateTesting] Failed to load certificate {testFileName} for info");
             }
         }
 
-        private void TestSetValidationOptions()
+        private async void OnLoadStreamingPerformed(InputAction.CallbackContext context)
         {
-            CertificateManager.Instance.SetValidationOptions(true, true, true);
-            LogDebug("TestSetValidationOptions: Validation options set to allow all");
+            Debug.Log("[CertificateTesting] Testing load certificate from StreamingAssets...");
+            string streamingPath = Path.Combine(FileManager.Instance.GetBasePath("streaming"), testPath);
+            var certificate = await LoadX509CertificateAsync(streamingPath, testFileName, testPassword);
+            Debug.Log($"[CertificateTesting] Load certificate {testFileName} from {streamingPath}: {(certificate != null ? $"Success: {certificate.Subject}" : "Failed")}");
         }
 
-        private void OnCertificateLoaded(string pfxPath, CertificateInfo certificateInfo)
+        private async void OnValidateStreamingPerformed(InputAction.CallbackContext context)
         {
-            LogDebug($"Event: Certificate loaded: {pfxPath}\n{certificateInfo.GetCertificateInfo()}");
+            Debug.Log("[CertificateTesting] Testing validate certificate in StreamingAssets...");
+            string streamingPath = Path.Combine(FileManager.Instance.GetBasePath("streaming"), testPath);
+            var isValid = await ValidateCertificateAsync(streamingPath, testFileName);
+            Debug.Log($"[CertificateTesting] Validate certificate {testFileName} in {streamingPath}: {(isValid ? "Success" : "Failed")}");
         }
 
-        private void OnCertificateValidated(string pfxPath, bool success)
+        private async void OnEventsPerformed(InputAction.CallbackContext context)
         {
-            LogDebug($"Event: Certificate validated: {pfxPath}, Success: {success}");
-        }
+            Debug.Log("[CertificateTesting] Testing certificate events...");
+            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), testPath);
 
-        private void OnValidationFailed(string pfxPath, string errorMessage)
-        {
-            LogDebug($"Event: Validation failed: {pfxPath}, Error: {errorMessage}");
-        }
+            SubscribeToCertificateLoaded((path, info) =>
+            {
+                Debug.Log($"[CertificateTesting] Event: Certificate loaded from {path}: {info?.GetCertificateInfo() ?? "Null"}");
+            });
+            SubscribeToCertificateValidated((path, success) =>
+            {
+                Debug.Log($"[CertificateTesting] Event: Certificate validation in {path}: {(success ? "Success" : "Failed")}");
+            });
+            SubscribeToValidationFailed((path, error) =>
+            {
+                Debug.Log($"[CertificateTesting] Event: Validation failed in {path}: {error}");
+            });
 
-        private void OnServerCertificateValidated(bool success, string message)
-        {
-            LogDebug($"Event: Server certificate validated: Success: {success}, Message: {message}");
-        }
-
-        private void OnStorageInitialized(bool success, string message)
-        {
-            LogDebug($"Event: Storage initialized: Success: {success}, Message: {message}");
-        }
-
-        private void LogDebug(string message)
-        {
-            if (enableDebugLogs)
-                Debug.Log($"[CertificateTesting] {message}");
-        }
-
-        private void LogError(string message)
-        {
-            if (enableDebugLogs)
-                Debug.LogError($"[CertificateTesting] {message}");
+            await LoadX509CertificateAsync(persistentPath, testFileName, testPassword);
         }
     }
 }

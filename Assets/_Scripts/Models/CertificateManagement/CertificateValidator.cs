@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace _Scripts.Models.CertificateManagement
 {
     using System;
@@ -14,6 +16,7 @@ namespace _Scripts.Models.CertificateManagement
         private readonly bool _ignoreCertificateChainErrors;
         private readonly bool _ignoreCertificateRevocationErrors;
         private readonly bool _enableDebugLogs = true;
+        private readonly string _defaultPassword = "5859"; // Contraseña del .pfx
 
         public CertificateValidator(FileManager fileManager, CertificateEventManager eventManager, bool allowUntrusted = false, bool ignoreChainErrors = false, bool ignoreRevocationErrors = true)
         {
@@ -45,11 +48,24 @@ namespace _Scripts.Models.CertificateManagement
                 }
 
                 byte[] certBytes = null;
-                _fileManager.ReadFileAsync(path, fileName, content =>
+                if (path.StartsWith(_fileManager.GetBasePath("streaming")))
                 {
-                    certBytes = content != null ? System.Text.Encoding.UTF8.GetBytes(content) : null;
-                });
+                    // Copiar desde StreamingAssets a persistentDataPath
+                    string targetPath = Path.Combine(_fileManager.GetBasePath("persistent"), "certificates");
+                    bool copySuccess = false;
+                    _fileManager.CopyFileAsync(path, targetPath, fileName, success => copySuccess = success);
+                    await Task.Delay(100); // Espera asíncrona para la copia
+                    if (!copySuccess)
+                    {
+                        LogError($"Failed to copy {fileName} from {path} to {targetPath}");
+                        _eventManager.TriggerValidationFailed(path, "Failed to copy certificate");
+                        callback?.Invoke(false);
+                        return false;
+                    }
+                    path = targetPath;
+                }
 
+                _fileManager.ReadFileBytesAsync(path, fileName, bytes => certBytes = bytes);
                 await Task.Delay(100); // Simula espera asíncrona para FileManager
 
                 if (certBytes == null || certBytes.Length == 0)
@@ -62,7 +78,7 @@ namespace _Scripts.Models.CertificateManagement
 
                 try
                 {
-                    var certificate = new X509Certificate2(certBytes, "",
+                    var certificate = new X509Certificate2(certBytes, _defaultPassword,
                         X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
 
                     if (!certificate.HasPrivateKey)

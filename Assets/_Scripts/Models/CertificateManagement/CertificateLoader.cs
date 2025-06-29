@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace _Scripts.Models.CertificateManagement
 {
     using System;
@@ -33,11 +35,26 @@ namespace _Scripts.Models.CertificateManagement
                 LogDebug($"Loading certificate: {fileName} from {path}");
 
                 byte[] certBytes = null;
-                _fileManager.ReadFileAsync(path, fileName, content =>
+                if (path.StartsWith(_fileManager.GetBasePath("streaming")))
                 {
-                    certBytes = content != null ? System.Text.Encoding.UTF8.GetBytes(content) : null;
-                });
+                    // Copiar desde StreamingAssets a persistentDataPath
+                    string targetPath = Path.Combine(_fileManager.GetBasePath("persistent"), "certificates");
+                    bool copySuccess = false;
+                    _fileManager.CopyFileAsync(path, targetPath, fileName, success => copySuccess = success);
+                    await Task.Delay(100); // Espera asíncrona para la copia
+                    if (!copySuccess)
+                    {
+                        LogError($"Failed to copy {fileName} from {path} to {targetPath}");
+                        _eventManager.TriggerValidationFailed(path, "Failed to copy certificate");
+                        callback?.Invoke(null);
+                        return null;
+                    }
 
+                    // Leer desde persistentDataPath
+                    path = targetPath;
+                }
+
+                _fileManager.ReadFileBytesAsync(path, fileName, bytes => certBytes = bytes);
                 await Task.Delay(100); // Simula espera asíncrona para FileManager
 
                 if (certBytes == null || certBytes.Length == 0)

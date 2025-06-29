@@ -118,6 +118,12 @@ namespace _Scripts.Models.FileManagement
             GetFileOperations(path).ReadFileAsync(path, fileName, callback);
         }
 
+        public void ReadFileBytesAsync(string path, string fileName, Action<byte[]> callback)
+        {
+            if (!_isInitialized) Initialize();
+            GetFileOperations(path).ReadFileBytesAsync(path, fileName, callback);
+        }
+
         public void WriteFileAsync(string path, string fileName, string content, Action<bool> callback)
         {
             if (!_isInitialized) Initialize();
@@ -166,6 +172,53 @@ namespace _Scripts.Models.FileManagement
         {
             if (!_isInitialized) Initialize();
             GetFileOperations(path).DeleteFolderAsync(path, folderName, callback);
+        }
+
+        public void CopyFileAsync(string sourcePath, string targetPath, string fileName, Action<bool> callback)
+        {
+            if (!_isInitialized) Initialize();
+            try
+            {
+                if (sourcePath.StartsWith(_basePaths["streaming"]))
+                {
+                    // Asegurar que la carpeta destino exista
+                    if (createParentFolders)
+                        EnsureParentFolderExists(targetPath);
+
+                    _streamingOperations.ReadFileBytesAsync(sourcePath, fileName, bytes =>
+                    {
+                        if (bytes == null)
+                        {
+                            LogError($"Failed to read {fileName} from {sourcePath}");
+                            callback?.Invoke(false);
+                            return;
+                        }
+                        _persistentOperations.WriteFileAsync(targetPath, fileName, bytes, success =>
+                        {
+                            if (success)
+                            {
+                                LogDebug($"Copied {fileName} from {sourcePath} to {targetPath}");
+                                _eventManager.TriggerFileCreated(targetPath, fileName);
+                            }
+                            else
+                            {
+                                LogError($"Failed to write {fileName} to {targetPath}");
+                            }
+                            callback?.Invoke(success);
+                        });
+                    });
+                }
+                else
+                {
+                    LogError($"Copy operation only supported from StreamingAssets");
+                    callback?.Invoke(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error copying {fileName} from {sourcePath} to {targetPath}: {ex.Message}");
+                callback?.Invoke(false);
+            }
         }
 
         public void CleanupTempAsync(Action<bool, long> callback)

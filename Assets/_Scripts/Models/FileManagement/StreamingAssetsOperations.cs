@@ -145,6 +145,66 @@ namespace _Scripts.Models.FileManagement
             callback?.Invoke(content);
         }
 
+        public void ReadFileBytesAsync(string path, string fileName, Action<byte[]> callback)
+        {
+            try
+            {
+                if (!_storageProvider.IsPathAccessible(path) || !path.StartsWith(_storageProvider.GetBasePath("streaming")))
+                {
+                    LogError($"Invalid path for StreamingAssets: {path}");
+                    _fileEventManager.TriggerFileRead(path, fileName, false, "Invalid path");
+                    callback?.Invoke(null);
+                    return;
+                }
+
+                _coroutineRunner.StartCoroutine(ReadFileBytesCoroutine(path, fileName, callback));
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error starting ReadFileBytesAsync for {fileName} in {path}: {ex.Message}");
+                _fileEventManager.TriggerFileRead(path, fileName, false, ex.Message);
+                callback?.Invoke(null);
+            }
+        }
+
+        private IEnumerator ReadFileBytesCoroutine(string path, string fileName, Action<byte[]> callback)
+        {
+            string fullPath = Path.Combine(path, fileName);
+            byte[] content = null;
+
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                UnityWebRequest request = UnityWebRequest.Get(fullPath);
+                yield return request.SendWebRequest();
+
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    LogError($"Error reading file bytes {fileName} in {path}: {request.error}");
+                    _fileEventManager.TriggerFileRead(path, fileName, false, request.error);
+                    callback?.Invoke(null);
+                    yield break;
+                }
+
+                content = request.downloadHandler.data;
+            }
+            else
+            {
+                if (!File.Exists(fullPath))
+                {
+                    LogWarning($"File not found: {fullPath}");
+                    _fileEventManager.TriggerFileRead(path, fileName, false, "File not found");
+                    callback?.Invoke(null);
+                    yield break;
+                }
+
+                content = File.ReadAllBytes(fullPath);
+            }
+
+            _fileEventManager.TriggerFileRead(path, fileName, true, "Read successful");
+            LogDebug($"Read file bytes: {fullPath}");
+            callback?.Invoke(content);
+        }
+
         public void WriteFileAsync(string path, string fileName, string content, Action<bool> callback)
         {
             LogError($"Write operation not supported for StreamingAssets: {path}/{fileName}");
