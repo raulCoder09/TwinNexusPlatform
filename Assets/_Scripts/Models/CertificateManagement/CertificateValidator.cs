@@ -17,6 +17,7 @@ namespace _Scripts.Models.CertificateManagement
         private readonly bool _ignoreCertificateRevocationErrors;
         private readonly bool _enableDebugLogs = true;
         private readonly string _defaultPassword = "5859"; // Contraseña del .pfx
+        private readonly string _targetPath = "certificates"; // Carpeta destino en persistentDataPath
 
         public CertificateValidator(FileManager fileManager, CertificateEventManager eventManager, bool allowUntrusted = false, bool ignoreChainErrors = false, bool ignoreRevocationErrors = true)
         {
@@ -51,7 +52,7 @@ namespace _Scripts.Models.CertificateManagement
                 if (path.StartsWith(_fileManager.GetBasePath("streaming")))
                 {
                     // Copiar desde StreamingAssets a persistentDataPath
-                    string targetPath = Path.Combine(_fileManager.GetBasePath("persistent"), "certificates");
+                    string targetPath = Path.Combine(_fileManager.GetBasePath("persistent"), _targetPath);
                     bool copySuccess = false;
                     _fileManager.CopyFileAsync(path, targetPath, fileName, success => copySuccess = success);
                     await Task.Delay(100); // Espera asíncrona para la copia

@@ -19,6 +19,7 @@ namespace _Scripts.Models.CertificateManagement
         [SerializeField] private string testFileName = "aws-iot-core.pfx";
         [SerializeField] private string testPassword = "5859"; // Contraseña del .pfx
         [SerializeField] private string testPath = "certificates"; // Subcarpeta en persistentDataPath o StreamingAssets
+        [SerializeField] private string targetPath = "certificates"; // Carpeta destino en persistentDataPath para copias desde StreamingAssets
 
         private InputAction actionLoadPersistent;
         private InputAction actionValidatePersistent;
@@ -80,7 +81,7 @@ namespace _Scripts.Models.CertificateManagement
         private async void OnLoadPersistentPerformed(InputAction.CallbackContext context)
         {
             Debug.Log("[CertificateTesting] Testing load certificate from persistentDataPath...");
-            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), testPath);
+            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), targetPath);
             var certificate = await LoadX509CertificateAsync(persistentPath, testFileName, testPassword);
             Debug.Log($"[CertificateTesting] Load certificate {testFileName} from {persistentPath}: {(certificate != null ? $"Success: {certificate.Subject}" : "Failed")}");
         }
@@ -88,7 +89,7 @@ namespace _Scripts.Models.CertificateManagement
         private async void OnValidatePersistentPerformed(InputAction.CallbackContext context)
         {
             Debug.Log("[CertificateTesting] Testing validate certificate in persistentDataPath...");
-            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), testPath);
+            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), targetPath);
             var isValid = await ValidateCertificateAsync(persistentPath, testFileName);
             Debug.Log($"[CertificateTesting] Validate certificate {testFileName} in {persistentPath}: {(isValid ? "Success" : "Failed")}");
         }
@@ -96,7 +97,7 @@ namespace _Scripts.Models.CertificateManagement
         private async void OnGetInfoPerformed(InputAction.CallbackContext context)
         {
             Debug.Log("[CertificateTesting] Testing get certificate info...");
-            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), testPath);
+            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), targetPath);
             var certificate = await LoadX509CertificateAsync(persistentPath, testFileName, testPassword);
             if (certificate != null)
             {
@@ -128,7 +129,7 @@ namespace _Scripts.Models.CertificateManagement
         private async void OnEventsPerformed(InputAction.CallbackContext context)
         {
             Debug.Log("[CertificateTesting] Testing certificate events...");
-            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), testPath);
+            string persistentPath = Path.Combine(FileManager.Instance.GetBasePath("persistent"), targetPath);
 
             SubscribeToCertificateLoaded((path, info) =>
             {

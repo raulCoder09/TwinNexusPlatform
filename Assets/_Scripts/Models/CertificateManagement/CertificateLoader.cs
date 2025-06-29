@@ -13,6 +13,7 @@ namespace _Scripts.Models.CertificateManagement
         private readonly FileManager _fileManager;
         private readonly CertificateEventManager _eventManager;
         private readonly bool _enableDebugLogs = true;
+        private readonly string _targetPath = "certificates"; // Carpeta destino en persistentDataPath
 
         public CertificateLoader(FileManager fileManager, CertificateEventManager eventManager)
         {
@@ -38,7 +39,7 @@ namespace _Scripts.Models.CertificateManagement
                 if (path.StartsWith(_fileManager.GetBasePath("streaming")))
                 {
                     // Copiar desde StreamingAssets a persistentDataPath
-                    string targetPath = Path.Combine(_fileManager.GetBasePath("persistent"), "certificates");
+                    string targetPath = Path.Combine(_fileManager.GetBasePath("persistent"), _targetPath);
                     bool copySuccess = false;
                     _fileManager.CopyFileAsync(path, targetPath, fileName, success => copySuccess = success);
                     await Task.Delay(100); // Espera asíncrona para la copia
@@ -49,8 +50,6 @@ namespace _Scripts.Models.CertificateManagement
                         callback?.Invoke(null);
                         return null;
                     }
-
-                    // Leer desde persistentDataPath
                     path = targetPath;
                 }
 

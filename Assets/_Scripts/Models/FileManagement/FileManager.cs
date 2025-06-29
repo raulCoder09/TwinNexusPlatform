@@ -183,7 +183,15 @@ namespace _Scripts.Models.FileManagement
                 {
                     // Asegurar que la carpeta destino exista
                     if (createParentFolders)
-                        EnsureParentFolderExists(targetPath);
+                    {
+                        EnsureParentFolderExists(Path.Combine(targetPath, fileName));
+                        if (!_storageProvider.IsPathAccessible(targetPath))
+                        {
+                            LogError($"Target path {targetPath} could not be created or is not accessible");
+                            callback?.Invoke(false);
+                            return;
+                        }
+                    }
 
                     _streamingOperations.ReadFileBytesAsync(sourcePath, fileName, bytes =>
                     {
