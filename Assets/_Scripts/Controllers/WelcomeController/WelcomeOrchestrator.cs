@@ -585,6 +585,17 @@ namespace _Scripts.Controllers.WelcomeController
 
             _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel
                 .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+            
+            _uiConfig.Panels[IWelcomeOps.PanelType.SettingsCognito] = new WelcomeInfo.UIConfiguration.PanelData
+            {
+                Panel = panelsContainer.Q<VisualElement>("SettingsCognitoParametersPanel"),
+                ShowClass = "SettingsCognitoParametersPanelInMainScreen",
+                HideClass = "SettingsCognitoParametersPanelOutMainScreen"
+            };
+            Debug.Log($"SettingsCognitoParametersPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.SettingsCognito].Panel != null}");
+
+            _uiConfig.Panels[IWelcomeOps.PanelType.SettingsCognito].Panel
+                .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
         }
 
         private void FindDependencies()
@@ -730,7 +741,7 @@ namespace _Scripts.Controllers.WelcomeController
             var validPanels = new[]
             {
                 IWelcomeOps.PanelType.Login, IWelcomeOps.PanelType.Register, IWelcomeOps.PanelType.RecoverPassword,
-                IWelcomeOps.PanelType.EmailVerification
+                IWelcomeOps.PanelType.EmailVerification, IWelcomeOps.PanelType.SettingsCognito
             };
             foreach (var panelType in validPanels)
             {

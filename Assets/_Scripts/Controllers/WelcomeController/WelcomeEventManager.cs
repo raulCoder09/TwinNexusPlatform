@@ -23,9 +23,10 @@ namespace _Scripts.Controllers.WelcomeController
         {
             var root = uiDocument.rootVisualElement;
 
-            // Eventos principales
+// Eventos principales
             root.Q<Button>("LaunchButton")?.RegisterCallback<ClickEvent>(OnLaunchButtonClicked);
             root.Q<Button>("ExitButton")?.RegisterCallback<ClickEvent>(OnExitApplicationClicked);
+            root.Q<Button>("SettingsCognitoParametersButtonButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
 
             // Eventos de autenticación - AHORA CONECTADOS
             root.Q<Button>("LoginButton")?.RegisterCallback<ClickEvent>(OnLoginButtonClicked);
@@ -44,6 +45,7 @@ namespace _Scripts.Controllers.WelcomeController
             root.Q<Button>("BackToLoginPanelFromRecoverPasswordButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromRecoverPasswordClicked);
             root.Q<Button>("CloseEmailVerificationButton")?.RegisterCallback<ClickEvent>(OnCloseEmailVerificationPanelClicked);
             root.Q<Button>("BackToLoginFromVerificationButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromVerificationClicked);
+            root.Q<Button>("CloseSettingsCognitoParametersButton")?.RegisterCallback<ClickEvent>(OnCloseSettingsPanelClicked);
 
             // Registrar eventos de Enter key para campos de texto
             RegisterEnterKeyEvents(root);
@@ -146,6 +148,15 @@ namespace _Scripts.Controllers.WelcomeController
         private void OnBackToLoginFromVerificationClicked(ClickEvent evt)
         {
             _uiManager.SwitchPanel(IWelcomeOps.PanelType.EmailVerification, IWelcomeOps.PanelType.Login);
+        }
+        private void OnSettingsButtonClicked(ClickEvent evt)
+        {
+            _uiManager.NavigateToPanel(IWelcomeOps.PanelType.SettingsCognito);
+        }
+
+        private void OnCloseSettingsPanelClicked(ClickEvent evt)
+        {
+            _uiManager.CloseCurrentPanel();
         }
         #endregion
 

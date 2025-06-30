@@ -13,14 +13,15 @@ namespace _Scripts.Controllers.WelcomeController
         void NavigateToPanel(PanelType panelType);
         event Action OnAuthenticationSuccess;
 
-        // Movemos el enum dentro de la interfaz
+
         public enum PanelType
         {
             None,
             Login,
             Register,
             RecoverPassword,
-            EmailVerification
+            EmailVerification,
+            SettingsCognito  
         }
     }
 }
