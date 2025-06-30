@@ -139,15 +139,11 @@ namespace _Scripts.Controllers.WelcomeController
 
         private void OnPanelTransitionComplete(TransitionEndEvent evt)
         {
-            var panel = evt.target as VisualElement;
-            if (panel != null)
+            // CORRECCIÓN: Solo ocultar el contenedor si NO hay paneles visibles
+            if (!IsAnyPanelVisible())
             {
-                var panelType = GetPanelTypeFromElement(panel);
-                if (panelType != IWelcomeOps.PanelType.None && !panel.ClassListContains(_uiConfig.Panels[panelType].ShowClass))
-                {
-                    _uiConfig.SubpanelsContainer.style.display = DisplayStyle.None;
-                    Debug.Log($"Transition complete for {panelType}, container hidden");
-                }
+                _uiConfig.SubpanelsContainer.style.display = DisplayStyle.None;
+                Debug.Log("All panels closed - hiding container");
             }
         }
 
