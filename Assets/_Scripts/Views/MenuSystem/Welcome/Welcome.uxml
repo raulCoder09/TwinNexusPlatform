@@ -14,13 +14,13 @@
                 <ui:Label text="Auxiliary platform for the manipulation, monitoring, and simulation of industrial automation systems" name="Subtitle" />
             </ui:VisualElement>
             <ui:VisualElement name="ButtonsPanel">
-                <ui:VisualElement name="ExitButtonPanel" style="width: 33%;">
+                <ui:VisualElement name="ExitButtonPanel">
                     <ui:Button text="Exit" name="ExitButton" class="button-cyberpunk" />
                 </ui:VisualElement>
-                <ui:VisualElement name="SettingsCognitoParametersButtonPanel" style="width: 33%; justify-content: center; align-items: center;">
+                <ui:VisualElement name="SettingsCognitoParametersButtonPanel">
                     <ui:Button text="Settings Cognito Parameters" name="SettingsCognitoParametersButtonButton" class="button-cyberpunk" />
                 </ui:VisualElement>
-                <ui:VisualElement name="LaunchButtonPanel" style="height: 100%; width: 33%;">
+                <ui:VisualElement name="LaunchButtonPanel">
                     <ui:Button text="Launch" name="LaunchButton" class="button-cyberpunk" />
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -29,10 +29,10 @@
             <ui:Label name="AdditionalInformation" />
             <ui:Label name="MessageLabel" />
         </ui:VisualElement>
-        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" style="display: flex;">
+        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer">
             <ui:VisualElement name="CodeRain" class="code-rain" />
             <ui:VisualElement name="Scrim" class="Scrim" />
-            <ui:VisualElement name="LoginPanel" class="LoginPanelMoveA" style="height: 100%;">
+            <ui:VisualElement name="LoginPanel" class="LoginPanelMoveA">
                 <ui:VisualElement name="HeaderLogin">
                     <ui:VisualElement name="TitleLoginPanel">
                         <ui:Label text="Login" name="TitleLogin" />
@@ -51,7 +51,7 @@
                     <ui:Button text="Login" name="LoginButton" class="button-cyberpunk small-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="RegisterPanel" class="RegisterPanelOutMainScreen" style="height: 100%;">
+            <ui:VisualElement name="RegisterPanel" class="RegisterPanelOutMainScreen">
                 <ui:VisualElement name="HeaderRegister">
                     <ui:VisualElement name="TitleRegisterPanel">
                         <ui:Label text="Register" name="TitleRegister" />
@@ -72,7 +72,7 @@
                     <ui:Button text="Register and Login" name="RegisterAndLoginButton" class="button-cyberpunk small-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="RecoverPasswordPanel" class="RecoverPasswordPanelOutMainScreen" style="height: 100%;">
+            <ui:VisualElement name="RecoverPasswordPanel" class="RecoverPasswordPanelOutMainScreen">
                 <ui:VisualElement name="HeaderRecoverPassword">
                     <ui:VisualElement name="TitleRecoverPasswordPanel">
                         <ui:Label text="Recover password" name="TitleRecoverPassword" />
@@ -89,7 +89,7 @@
                     <ui:Button text="Recover" name="RecoverPasswordButton" class="button-cyberpunk small-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="EmailVerificationPanel" class="EmailVerificationPanelOutMainScreen" style="height: 100%;">
+            <ui:VisualElement name="EmailVerificationPanel" class="EmailVerificationPanelOutMainScreen">
                 <ui:VisualElement name="HeaderEmailVerification">
                     <ui:VisualElement name="TitleEmailVerificationPanel">
                         <ui:Label text="Email Verification" name="TitleEmailVerification" />
@@ -111,26 +111,26 @@
                     <ui:Button text="Verify Email" name="VerifyEmailButton" class="button-cyberpunk small-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="SettingsCognitoParametersPanel" class="SettingsCognitoParametersPanelOutMainScreen" style="width: 100%;">
-                <ui:VisualElement name="HeaderSettingsCognitoParameters" style="flex-direction: row; width: 100%; height: 10%;">
-                    <ui:VisualElement name="TitleSettingsCognitoParametersPanel" style="align-items: flex-start; width: 90%;">
+            <ui:VisualElement name="SettingsCognitoParametersPanel" class="SettingsCognitoParametersPanelOutMainScreen">
+                <ui:VisualElement name="HeaderSettingsCognitoParameters">
+                    <ui:VisualElement name="TitleSettingsCognitoParametersPanel">
                         <ui:Label text="Settings Cognito Parameters" name="TitleEmailVerification" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="CloseSettingsCognitoParametersPanel" style="width: 10%; align-items: center; justify-content: center; align-self: center; align-content: center;">
-                        <ui:Button text="X" name="CloseSettingsCognitoParametersButton" class="close-button" style="align-items: center; justify-content: center; align-self: center;" />
+                    <ui:VisualElement name="CloseSettingsCognitoParametersPanel">
+                        <ui:Button text="X" name="CloseSettingsCognitoParametersButton" class="close-button" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="InstructionsSettingsCognitoParametersPanel" style="width: 100%; height: 10%; justify-content: center;">
-                    <ui:Label name="SettingsCognitoParametersInstructions" text="Please enter the data required by Cognito" class="label-cyberpunk" style="width: 100%;" />
+                <ui:VisualElement name="InstructionsSettingsCognitoParametersPanel">
+                    <ui:Label name="SettingsCognitoParametersInstructions" text="Please enter the data required by Cognito" class="label-cyberpunk" />
                 </ui:VisualElement>
-                <ui:VisualElement name="InputSettingsCognitoParametersPanel" style="width: 100%; height: 70%; align-items: center; justify-content: space-evenly;">
-                    <ui:TextField name="UserPoolIdField" placeholder-text="Enter User Pool Id" class="textfield-cyberpunk" style="height: 10%;" />
-                    <ui:TextField name="ClientIdField" placeholder-text="Enter Client Id" class="textfield-cyberpunk" style="height: 10%;" />
-                    <ui:TextField name="IdentityPoolIdField" placeholder-text="Enter Identity Pool Id" class="textfield-cyberpunk" style="height: 10%;" />
-                    <ui:DropdownField name="AwsRegionDropdownField" choices="AWS Region" style="width: 50%; height: 10%;" />
+                <ui:VisualElement name="InputSettingsCognitoParametersPanel">
+                    <ui:TextField name="UserPoolIdField" placeholder-text="Enter User Pool Id" class="textfield-cyberpunk" />
+                    <ui:TextField name="ClientIdField" placeholder-text="Enter Client Id" class="textfield-cyberpunk" />
+                    <ui:TextField name="IdentityPoolIdField" placeholder-text="Enter Identity Pool Id" class="textfield-cyberpunk" />
+                    <ui:DropdownField name="AwsRegionDropdownField" choices="AWS Region" />
                 </ui:VisualElement>
-                <ui:VisualElement name="ButtonSettingsCognitoParametersPanel" style="width: 100%; height: 10%; justify-content: center; align-items: center;">
-                    <ui:Button text="Save" name="SaveButton" class="button-cyberpunk small-button" style="height: 50%;" />
+                <ui:VisualElement name="ButtonSettingsCognitoParametersPanel">
+                    <ui:Button text="Save" name="SaveButton" class="button-cyberpunk small-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
