@@ -15,12 +15,12 @@ namespace _Scripts.Models.CognitoManagement
         [SerializeField] private string testKeyForgotPassword = "f"; // Tecla para recuperar contraseña
         [SerializeField] private string testKeySignOut = "o"; // Tecla para cerrar sesión
         [SerializeField] private string testKeyResendCode = "e"; // Tecla para reintentar código
-
+        // SettingsCognitoParametersPanelOutMainScreen
         [Header("Test Configuration")]
         [SerializeField] private string userPoolId; // Sobrescribe el predeterminado
         [SerializeField] private string clientId; // Sobrescribe el predeterminado
         [SerializeField] private string identityPoolId; // Sobrescribe el predeterminado
-        [SerializeField] private RegionEndpoint awsRegion; // Sobrescribe el predeterminado
+        [SerializeField] private RegionEndpoint awsRegion; // Sobrescribe el predeterminadoawsRegion
         [SerializeField] private string testUsername = "testuser"; // Usuario de prueba
         [SerializeField] private string testPassword = "TestPass123!"; // Contraseña de prueba
         [SerializeField] private string testEmail = "test@example.com"; // Email de prueba

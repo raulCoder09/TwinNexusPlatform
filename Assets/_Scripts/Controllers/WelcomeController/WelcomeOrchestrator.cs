@@ -11,7 +11,9 @@ namespace _Scripts.Controllers.WelcomeController
     public class WelcomeOrchestrator : MonoBehaviour, IWelcomeOps
     {
         #region Singleton Pattern
+
         private static WelcomeOrchestrator _instance;
+
         public static WelcomeOrchestrator Instance
         {
             get
@@ -26,6 +28,7 @@ namespace _Scripts.Controllers.WelcomeController
                         DontDestroyOnLoad(go);
                     }
                 }
+
                 return _instance;
             }
         }
@@ -48,12 +51,28 @@ namespace _Scripts.Controllers.WelcomeController
         {
             if (_instance == this)
             {
+                // Desuscribirse de eventos de WelcomeAuthHandler
+                if (_authHandler != null)
+                {
+                    _authHandler.OnAuthenticationSuccess -= OnAuthenticationSuccessHandler;
+                    _authHandler.OnAuthenticationFailure -= OnAuthenticationFailureHandler;
+                    _authHandler.OnRegistrationSuccess -= OnRegistrationSuccessHandler;
+                    _authHandler.OnRegistrationFailure -= OnRegistrationFailureHandler;
+                    _authHandler.OnEmailVerificationSuccess -= OnEmailVerificationSuccessHandler;
+                    _authHandler.OnEmailVerificationFailure -= OnEmailVerificationFailureHandler;
+                    _authHandler.OnPasswordRecoverySuccess -= OnPasswordRecoverySuccessHandler;
+                    _authHandler.OnPasswordRecoveryFailure -= OnPasswordRecoveryFailureHandler;
+                    _authHandler.OnResendVerificationSuccess -= OnResendVerificationSuccessHandler;
+                    _authHandler.OnResendVerificationFailure -= OnResendVerificationFailureHandler;
+                }
+
                 _authHandler = null;
                 _uiManager = null;
                 _eventManager = null;
                 _instance = null;
             }
         }
+
         #endregion
 
         private WelcomeInfo.UIConfiguration _uiConfig = new WelcomeInfo.UIConfiguration();
@@ -63,10 +82,94 @@ namespace _Scripts.Controllers.WelcomeController
         private WelcomeEventManager _eventManager;
         private DashboardController _dashboardController;
         private VisualElement _subpanelsAndSmokeMaskContainer;
+        private UIDocument _uiDocument;
         private bool _isInitialized = false;
 
-        // Eventos
+        // Eventos públicos del Orchestrator
         public event Action OnAuthenticationSuccess;
+
+        #region Manejo de eventos de WelcomeAuthHandler
+
+        private void OnAuthenticationSuccessHandler()
+        {
+            _userData.IsAuthenticated = true;
+            _userData.Username = _authHandler.GetCurrentUsername();
+
+            ShowMessage("Authentication successful!", false);
+            OnAuthenticationSuccess?.Invoke();
+
+            Debug.Log("Authentication successful - services ready");
+            if (_dashboardController != null)
+            {
+                _dashboardController.ShowUi();
+            }
+
+            // Cerrar cualquier panel abierto
+            _uiManager?.CloseCurrentPanel();
+        }
+
+        private void OnAuthenticationFailureHandler(string message)
+        {
+            ShowMessage("Invalid username or password", true);
+            SetLoginButtonEnabled(true);
+        }
+
+        private void OnRegistrationSuccessHandler(string message)
+        {
+            ShowMessage("Account created! Please check your email for verification.", false);
+            NavigateToPanel(IWelcomeOps.PanelType.EmailVerification);
+            SetEmailVerificationInfo(_userData.Email);
+            SetRegisterButtonEnabled(true);
+        }
+
+        private void OnRegistrationFailureHandler(string message)
+        {
+            ShowMessage("Registration failed. Username or email may already exist.", true);
+            SetRegisterButtonEnabled(true);
+        }
+
+        private void OnEmailVerificationSuccessHandler(string message)
+        {
+            ShowMessage("Email verified successfully!", false);
+            _userData.IsAuthenticated = true;
+            _uiManager.CloseCurrentPanel();
+            OnAuthenticationSuccessHandler(); // Reutilizar la lógica de éxito de autenticación
+            SetVerifyEmailButtonEnabled(true);
+        }
+
+        private void OnEmailVerificationFailureHandler(string message)
+        {
+            ShowMessage("Invalid verification code. Please try again.", true);
+            SetVerifyEmailButtonEnabled(true);
+        }
+
+        private void OnPasswordRecoverySuccessHandler(string message)
+        {
+            ShowMessage("Recovery email sent! Please check your inbox.", false);
+            SetRecoverButtonEnabled(true);
+        }
+
+        private void OnPasswordRecoveryFailureHandler(string message)
+        {
+            ShowMessage("Recovery failed. Please check the username and try again.", true);
+            SetRecoverButtonEnabled(true);
+        }
+
+        private void OnResendVerificationSuccessHandler(string message)
+        {
+            ShowMessage("Verification code resent! Please check your email.", false);
+            SetResendCodeButtonEnabled(true);
+        }
+
+        private void OnResendVerificationFailureHandler(string message)
+        {
+            ShowMessage("Failed to resend code. Please try again.", true);
+            SetResendCodeButtonEnabled(true);
+        }
+
+        #endregion
+
+        #region IWelcomeOps Implementation - Delegando a WelcomeAuthHandler
 
         public async Task<bool> AuthenticateUserAsync(string username, string password)
         {
@@ -74,28 +177,95 @@ namespace _Scripts.Controllers.WelcomeController
             if (_authHandler == null)
             {
                 Debug.LogError("Authentication handler not initialized");
+                ShowMessage("Authentication system not ready", true);
                 return false;
             }
 
-            _userData.Username = username;
-            var success = await _authHandler.AuthenticateUserAsync(username, password);
-            return success;
+            // Validaciones
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                ShowMessage("Please fill in all fields", true);
+                return false;
+            }
+
+            try
+            {
+                SetLoginButtonEnabled(false);
+                ShowMessage("Authenticating...", false);
+
+                _userData.Username = username;
+                // Delegar al AuthHandler que maneja todo internamente
+                var success = await _authHandler.AuthenticateUserAsync(username, password);
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Authentication error: {ex.Message}");
+                ShowMessage("Authentication failed. Please try again.", true);
+                SetLoginButtonEnabled(true);
+                return false;
+            }
         }
 
-        public async Task<bool> RegisterUserAsync(string username, string password, string email, string phoneNumber = null)
+        public async Task<bool> RegisterUserAsync(string username, string password, string email,
+            string phoneNumber = null)
         {
             if (!_isInitialized) Initialize();
             if (_authHandler == null)
             {
                 Debug.LogError("Authentication handler not initialized");
+                ShowMessage("Authentication system not ready", true);
                 return false;
             }
 
-            _userData.Username = username;
-            _userData.Email = email;
-            _userData.PhoneNumber = phoneNumber;
-            var success = await _authHandler.RegisterUserAsync(username, password, email, phoneNumber);
-            return success;
+            // Validaciones
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) ||
+                string.IsNullOrWhiteSpace(email))
+            {
+                ShowMessage("Please fill in all required fields", true);
+                return false;
+            }
+
+            if (!ValidationHelper.IsValidEmail(email))
+            {
+                ShowMessage("Please enter a valid email address", true);
+                return false;
+            }
+
+            if (!ValidationHelper.IsValidPassword(password))
+            {
+                ShowMessage("Password must be at least 8 characters with uppercase, lowercase, and number", true);
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(phoneNumber) && !ValidationHelper.IsValidPhoneNumber(phoneNumber))
+            {
+                ShowMessage("Please enter a valid phone number (e.g., +1234567890)", true);
+                return false;
+            }
+
+            try
+            {
+                SetRegisterButtonEnabled(false);
+                ShowMessage("Creating account...", false);
+
+                _userData.Username = username;
+                _userData.Email = email;
+                _userData.PhoneNumber = phoneNumber;
+
+                // Delegar al AuthHandler que maneja todo internamente
+                var success = await _authHandler.RegisterUserAsync(username, password, email, phoneNumber);
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Registration error: {ex.Message}");
+                ShowMessage("Registration failed. Please try again.", true);
+                SetRegisterButtonEnabled(true);
+                return false;
+            }
         }
 
         public async Task<bool> VerifyEmailAsync(string confirmationCode)
@@ -104,12 +274,39 @@ namespace _Scripts.Controllers.WelcomeController
             if (_authHandler == null)
             {
                 Debug.LogError("Authentication handler not initialized");
+                ShowMessage("Authentication system not ready", true);
                 return false;
             }
 
-            var success = await _authHandler.VerifyEmailAsync(confirmationCode);
-            if (success) _userData.IsAuthenticated = true;
-            return success;
+            if (string.IsNullOrWhiteSpace(confirmationCode))
+            {
+                ShowMessage("Please enter the verification code", true);
+                return false;
+            }
+
+            if (!ValidationHelper.IsValidVerificationCode(confirmationCode))
+            {
+                ShowMessage("Please enter a valid 6-digit verification code", true);
+                return false;
+            }
+
+            try
+            {
+                SetVerifyEmailButtonEnabled(false);
+                ShowMessage("Verifying email...", false);
+
+                // Delegar al AuthHandler que maneja todo internamente
+                var success = await _authHandler.VerifyEmailAsync(confirmationCode);
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Email verification error: {ex.Message}");
+                ShowMessage("Verification failed. Please try again.", true);
+                SetVerifyEmailButtonEnabled(true);
+                return false;
+            }
         }
 
         public async Task<bool> RecoverPasswordAsync(string username)
@@ -118,12 +315,34 @@ namespace _Scripts.Controllers.WelcomeController
             if (_authHandler == null)
             {
                 Debug.LogError("Authentication handler not initialized");
+                ShowMessage("Authentication system not ready", true);
                 return false;
             }
 
-            _userData.Username = username;
-            var success = await _authHandler.RecoverPasswordAsync(username);
-            return success;
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                ShowMessage("Please enter your username or email", true);
+                return false;
+            }
+
+            try
+            {
+                SetRecoverButtonEnabled(false);
+                ShowMessage("Sending recovery email...", false);
+
+                _userData.Username = username;
+                // Delegar al AuthHandler que maneja todo internamente
+                var success = await _authHandler.RecoverPasswordAsync(username);
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Password recovery error: {ex.Message}");
+                ShowMessage("Recovery failed. Please try again.", true);
+                SetRecoverButtonEnabled(true);
+                return false;
+            }
         }
 
         public async Task<bool> ResendVerificationCodeAsync()
@@ -132,11 +351,27 @@ namespace _Scripts.Controllers.WelcomeController
             if (_authHandler == null)
             {
                 Debug.LogError("Authentication handler not initialized");
+                ShowMessage("Authentication system not ready", true);
                 return false;
             }
 
-            var success = await _authHandler.ResendVerificationCodeAsync();
-            return success;
+            try
+            {
+                SetResendCodeButtonEnabled(false);
+                ShowMessage("Resending verification code...", false);
+
+                // Delegar al AuthHandler que maneja todo internamente
+                var success = await _authHandler.ResendVerificationCodeAsync();
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Resend verification error: {ex.Message}");
+                ShowMessage("Failed to resend code. Please try again.", true);
+                SetResendCodeButtonEnabled(true);
+                return false;
+            }
         }
 
         public void NavigateToPanel(IWelcomeOps.PanelType panelType)
@@ -151,6 +386,103 @@ namespace _Scripts.Controllers.WelcomeController
             _uiManager.NavigateToPanel(panelType);
         }
 
+        #endregion
+
+        #region Public Methods for Event Handling
+
+        public async void HandleLoginButtonClick()
+        {
+            var root = _uiDocument.rootVisualElement;
+            var usernameField = root.Q<TextField>("UsernameLoginField");
+            var passwordField = root.Q<TextField>("PasswordLoginField");
+
+            if (usernameField != null && passwordField != null)
+            {
+                await AuthenticateUserAsync(usernameField.value, passwordField.value);
+            }
+        }
+
+        public async void HandleRegisterButtonClick()
+        {
+            var root = _uiDocument.rootVisualElement;
+            var usernameField = root.Q<TextField>("UsernameRegisterField");
+            var emailField = root.Q<TextField>("EmailRegisterField");
+            var phoneField = root.Q<TextField>("PhoneRegisterField");
+            var passwordField = root.Q<TextField>("PasswordRegisterField");
+            var repeatPasswordField = root.Q<TextField>("RepeatPasswordRegisterField");
+
+            if (usernameField != null && emailField != null && passwordField != null && repeatPasswordField != null)
+            {
+                // Validar que las contraseñas coincidan
+                if (passwordField.value != repeatPasswordField.value)
+                {
+                    ShowMessage("Passwords do not match", true);
+                    return;
+                }
+
+                await RegisterUserAsync(usernameField.value, passwordField.value, emailField.value, phoneField.value);
+            }
+        }
+
+        public async void HandleVerifyEmailButtonClick()
+        {
+            var root = _uiDocument.rootVisualElement;
+            var codeField = root.Q<TextField>("VerificationCodeField");
+
+            if (codeField != null)
+            {
+                await VerifyEmailAsync(codeField.value);
+            }
+        }
+
+        public async void HandleRecoverPasswordButtonClick()
+        {
+            var root = _uiDocument.rootVisualElement;
+            var emailField = root.Q<TextField>("EmailRecoverField");
+
+            if (emailField != null)
+            {
+                await RecoverPasswordAsync(emailField.value);
+            }
+        }
+
+        public async void HandleResendCodeButtonClick()
+        {
+            await ResendVerificationCodeAsync();
+        }
+
+        #endregion
+
+        #region Public Helper Methods
+
+        /// <summary>
+        /// Obtiene información del usuario autenticado
+        /// </summary>
+        public (string username, string userGroup, bool isAuthenticated) GetUserInfo()
+        {
+            return _authHandler?.GetUserInfo() ?? (string.Empty, string.Empty, false);
+        }
+
+        /// <summary>
+        /// Cierra sesión del usuario actual
+        /// </summary>
+        public void Logout()
+        {
+            _authHandler?.Logout();
+            _userData = new WelcomeInfo.UserData(); // Reset user data
+            // Aquí podrías agregar lógica adicional como limpiar UI, navegar al panel de login, etc.
+        }
+
+        /// <summary>
+        /// Verifica si el usuario pertenece a un grupo específico
+        /// </summary>
+        public bool IsUserInGroup(string groupName)
+        {
+            return _authHandler?.IsUserInSpecificGroup(groupName) ?? false;
+        }
+
+        #endregion
+
         private void Initialize()
         {
             try
@@ -162,14 +494,31 @@ namespace _Scripts.Controllers.WelcomeController
                 }
 
                 Debug.Log("Initializing WelcomeOrchestrator...");
-                _authHandler = new WelcomeAuthHandler();
+
+                // Crear el AuthHandler y suscribirse a sus eventos
+                _authHandler = gameObject.AddComponent<WelcomeAuthHandler>();
                 _authHandler.OnAuthenticationSuccess += OnAuthenticationSuccessHandler;
-                var root = GetComponent<UIDocument>().rootVisualElement;
+                _authHandler.OnAuthenticationFailure += OnAuthenticationFailureHandler;
+                _authHandler.OnRegistrationSuccess += OnRegistrationSuccessHandler;
+                _authHandler.OnRegistrationFailure += OnRegistrationFailureHandler;
+                _authHandler.OnEmailVerificationSuccess += OnEmailVerificationSuccessHandler;
+                _authHandler.OnEmailVerificationFailure += OnEmailVerificationFailureHandler;
+                _authHandler.OnPasswordRecoverySuccess += OnPasswordRecoverySuccessHandler;
+                _authHandler.OnPasswordRecoveryFailure += OnPasswordRecoveryFailureHandler;
+                _authHandler.OnResendVerificationSuccess += OnResendVerificationSuccessHandler;
+                _authHandler.OnResendVerificationFailure += OnResendVerificationFailureHandler;
+
+                // Obtener componentes UI
+                _uiDocument = GetComponent<UIDocument>();
+                var root = _uiDocument.rootVisualElement;
                 _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+
+                // Inicializar managers
                 _uiManager = new WelcomeUIManager(_uiConfig);
-                
-                _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler);
-                _eventManager.RegisterEvents(GetComponent<UIDocument>());
+                _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler,
+                    this);
+                _eventManager.RegisterEvents(_uiDocument);
+
                 GetUiComponents(root);
                 FindDependencies();
                 StartCoroutine(GlitchEffectRoutine());
@@ -198,9 +547,9 @@ namespace _Scripts.Controllers.WelcomeController
                 HideClass = "LoginPanelMoveA"
             };
             Debug.Log($"LoginPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.Login].Panel != null}");
-            
-            // CORRECCIÓN: Usar el método correcto para el callback
-            _uiConfig.Panels[IWelcomeOps.PanelType.Login].Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+
+            _uiConfig.Panels[IWelcomeOps.PanelType.Login].Panel
+                .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
 
             _uiConfig.Panels[IWelcomeOps.PanelType.Register] = new WelcomeInfo.UIConfiguration.PanelData
             {
@@ -209,9 +558,9 @@ namespace _Scripts.Controllers.WelcomeController
                 HideClass = "RegisterPanelOutMainScreen"
             };
             Debug.Log($"RegisterPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.Register].Panel != null}");
-            
-            // CORRECCIÓN: Usar el método correcto para el callback
-            _uiConfig.Panels[IWelcomeOps.PanelType.Register].Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+
+            _uiConfig.Panels[IWelcomeOps.PanelType.Register].Panel
+                .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
 
             _uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword] = new WelcomeInfo.UIConfiguration.PanelData
             {
@@ -219,10 +568,11 @@ namespace _Scripts.Controllers.WelcomeController
                 ShowClass = "RecoverPasswordPanelInMainScreen",
                 HideClass = "RecoverPasswordPanelOutMainScreen"
             };
-            Debug.Log($"RecoverPasswordPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel != null}");
-            
-            // CORRECCIÓN: Usar el método correcto para el callback
-            _uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+            Debug.Log(
+                $"RecoverPasswordPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel != null}");
+
+            _uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel
+                .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
 
             _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification] = new WelcomeInfo.UIConfiguration.PanelData
             {
@@ -230,18 +580,11 @@ namespace _Scripts.Controllers.WelcomeController
                 ShowClass = "EmailVerificationPanelInMainScreen",
                 HideClass = "EmailVerificationPanelOutMainScreen"
             };
-            Debug.Log($"EmailVerificationPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel != null}");
-            
-            // CORRECCIÓN: Usar el método correcto para el callback
-            _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
-        }
+            Debug.Log(
+                $"EmailVerificationPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel != null}");
 
-        private void OnAuthenticationSuccessHandler()
-        {
-            _userData.IsAuthenticated = true;
-            OnAuthenticationSuccess?.Invoke();
-            Debug.Log("Authentication successful - services ready");
-            if (_dashboardController != null) _dashboardController.ShowUi();
+            _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel
+                .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
         }
 
         private void FindDependencies()
@@ -271,15 +614,13 @@ namespace _Scripts.Controllers.WelcomeController
         {
             Debug.Log("Application exit requested");
             Application.Quit();
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
-            #endif
+#endif
         }
 
-        // CORRECCIÓN: Método simplificado que solo maneja el cierre del contenedor cuando NO hay paneles visibles
         private void OnTransitionEndEvent(TransitionEndEvent evt)
         {
-            // Solo verificar si debemos ocultar el contenedor cuando no hay paneles visibles
             if (!IsAnyPanelVisible())
             {
                 _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
@@ -287,7 +628,6 @@ namespace _Scripts.Controllers.WelcomeController
             }
         }
 
-        // CORRECCIÓN: Método separado para verificar si hay paneles visibles
         private bool IsAnyPanelVisible()
         {
             foreach (var kvp in _uiConfig.Panels)
@@ -298,37 +638,100 @@ namespace _Scripts.Controllers.WelcomeController
                     return true;
                 }
             }
+
             return false;
         }
 
-        // Método para el callback del WelcomeEventManager (PanelType)
         private void OnPanelTransitionCompleteHandler(IWelcomeOps.PanelType panelType)
         {
             Debug.Log($"Panel transition complete: {panelType}");
-            // Aquí puedes agregar cualquier lógica adicional que necesites cuando se complete una transición
         }
 
-        private IWelcomeOps.PanelType GetPanelTypeFromElement(VisualElement panel)
+        private void SetEmailVerificationInfo(string email)
         {
-            foreach (var kvp in _uiConfig.Panels)
+            var emailLabel = _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel
+                .Q<Label>("EmailVerificationEmail");
+            if (emailLabel != null)
             {
-                if (kvp.Value.Panel == panel)
-                {
-                    return kvp.Key;
-                }
+                emailLabel.text = email;
             }
-            return IWelcomeOps.PanelType.None;
         }
 
-        private string GetShowClass(IWelcomeOps.PanelType panelType)
+        #region UI Helper Methods
+
+        private void ShowMessage(string message, bool isError = false)
         {
-            return _uiConfig.Panels.ContainsKey(panelType) ? _uiConfig.Panels[panelType].ShowClass : string.Empty;
+            var messageLabel = _uiConfig.Body.Q<Label>("MessageLabel");
+            if (messageLabel != null)
+            {
+                messageLabel.text = message;
+                messageLabel.style.color = isError ? Color.red : Color.green;
+                messageLabel.style.display = DisplayStyle.Flex;
+            }
+
+            Debug.Log($"{(isError ? "Error" : "Info")}: {message}");
         }
+
+        private void SetLoginButtonEnabled(bool enabled)
+        {
+            var button = _uiConfig.Body.Q<Button>("LoginButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Login" : "Logging in...";
+            }
+        }
+
+        private void SetRegisterButtonEnabled(bool enabled)
+        {
+            var button = _uiConfig.Body.Q<Button>("RegisterAndLoginButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Register and Login" : "Creating account...";
+            }
+        }
+
+        private void SetRecoverButtonEnabled(bool enabled)
+        {
+            var button = _uiConfig.Body.Q<Button>("RecoverPasswordButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Recover" : "Sending email...";
+            }
+        }
+
+        private void SetVerifyEmailButtonEnabled(bool enabled)
+        {
+            var button = _uiConfig.Body.Q<Button>("VerifyEmailButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Verify Email" : "Verifying...";
+            }
+        }
+
+        private void SetResendCodeButtonEnabled(bool enabled)
+        {
+            var button = _uiConfig.Body.Q<Button>("ResendVerificationCodeButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Resend Code" : "Resending...";
+            }
+        }
+
+        #endregion
 
         private IEnumerator GlitchEffectRoutine()
         {
             yield return new WaitForSeconds(0.5f);
-            var validPanels = new[] { IWelcomeOps.PanelType.Login, IWelcomeOps.PanelType.Register, IWelcomeOps.PanelType.RecoverPassword, IWelcomeOps.PanelType.EmailVerification };
+            var validPanels = new[]
+            {
+                IWelcomeOps.PanelType.Login, IWelcomeOps.PanelType.Register, IWelcomeOps.PanelType.RecoverPassword,
+                IWelcomeOps.PanelType.EmailVerification
+            };
             foreach (var panelType in validPanels)
             {
                 if (_uiConfig.Panels.ContainsKey(panelType))
@@ -362,6 +765,7 @@ namespace _Scripts.Controllers.WelcomeController
                         }
                     }
                 }
+
                 yield return new WaitForSeconds(3f);
             }
         }

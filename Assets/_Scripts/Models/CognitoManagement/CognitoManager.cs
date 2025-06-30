@@ -49,7 +49,7 @@ namespace _Scripts.Models.CognitoManagement
             }
         }
 
-        private void OnDestroy()
+        protected void OnDestroy()
         {
             if (_instance == this)
             {

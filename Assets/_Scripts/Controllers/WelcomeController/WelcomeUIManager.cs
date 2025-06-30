@@ -129,6 +129,134 @@ namespace _Scripts.Controllers.WelcomeController
             _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel.Q<Label>("TitleEmailVerification")?.AddToClassList("glitch");
         }
 
+        // NUEVOS MÉTODOS PÚBLICOS PARA MENSAJES Y ESTADOS DE BOTONES
+        public void ShowMessage(string message, bool isError = false)
+        {
+            if (_uiConfig?.Body == null)
+            {
+                Debug.LogWarning($"UI Body not initialized, message: {message}");
+                return;
+            }
+
+            var messageLabel = _uiConfig.Body.Q<Label>("MessageLabel");
+            if (messageLabel != null)
+            {
+                messageLabel.text = message;
+                messageLabel.style.color = isError ? Color.red : Color.green;
+                messageLabel.style.display = DisplayStyle.Flex;
+            }
+            Debug.Log($"{(isError ? "Error" : "Info")}: {message}");
+        }
+
+        public void ClearMessage()
+        {
+            if (_uiConfig?.Body == null)
+            {
+                Debug.LogWarning("UI Body not initialized, cannot clear message");
+                return;
+            }
+
+            var messageLabel = _uiConfig.Body.Q<Label>("MessageLabel");
+            if (messageLabel != null)
+            {
+                messageLabel.text = "";
+                messageLabel.style.display = DisplayStyle.None;
+            }
+        }
+
+        public void SetLoginButtonEnabled(bool enabled)
+        {
+            if (_uiConfig?.Body == null) return;
+
+            var button = _uiConfig.Body.Q<Button>("LoginButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Login" : "Logging in...";
+            }
+        }
+
+        public void SetRegisterButtonEnabled(bool enabled)
+        {
+            if (_uiConfig?.Body == null) return;
+
+            var button = _uiConfig.Body.Q<Button>("RegisterAndLoginButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Register and Login" : "Creating account...";
+            }
+        }
+
+        public void SetRecoverButtonEnabled(bool enabled)
+        {
+            if (_uiConfig?.Body == null) return;
+
+            var button = _uiConfig.Body.Q<Button>("RecoverPasswordButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Recover" : "Sending email...";
+            }
+        }
+
+        public void SetVerifyEmailButtonEnabled(bool enabled)
+        {
+            if (_uiConfig?.Body == null) return;
+
+            var button = _uiConfig.Body.Q<Button>("VerifyEmailButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Verify Email" : "Verifying...";
+            }
+        }
+
+        public void SetResendCodeButtonEnabled(bool enabled)
+        {
+            if (_uiConfig?.Body == null) return;
+
+            var button = _uiConfig.Body.Q<Button>("ResendVerificationCodeButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Resend Code" : "Resending...";
+            }
+        }
+
+        public void SetEmailVerificationInfo(string email)
+        {
+            if (_uiConfig.Panels.ContainsKey(IWelcomeOps.PanelType.EmailVerification))
+            {
+                var emailLabel = _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel.Q<Label>("EmailVerificationEmail");
+                if (emailLabel != null) 
+                {
+                    emailLabel.text = email;
+                }
+            }
+        }
+
+        public void ClearInputFields()
+        {
+            // Verificar que Body esté inicializado antes de usarlo
+            if (_uiConfig?.Body == null)
+            {
+                Debug.LogWarning("UI Body not initialized, cannot clear input fields");
+                return;
+            }
+
+            var root = _uiConfig.Body;
+            root.Q<TextField>("UsernameLoginField")?.SetValueWithoutNotify("");
+            root.Q<TextField>("PasswordLoginField")?.SetValueWithoutNotify("");
+            root.Q<TextField>("UsernameRegisterField")?.SetValueWithoutNotify("");
+            root.Q<TextField>("EmailRegisterField")?.SetValueWithoutNotify("");
+            root.Q<TextField>("PhoneRegisterField")?.SetValueWithoutNotify("");
+            root.Q<TextField>("PasswordRegisterField")?.SetValueWithoutNotify("");
+            root.Q<TextField>("RepeatPasswordRegisterField")?.SetValueWithoutNotify("");
+            root.Q<TextField>("EmailRecoverField")?.SetValueWithoutNotify("");
+            root.Q<TextField>("VerificationCodeField")?.SetValueWithoutNotify("");
+        }
+
         private void RegisterTransitionCallbacks()
         {
             foreach (var panelData in _uiConfig.Panels.Values)
@@ -157,92 +285,6 @@ namespace _Scripts.Controllers.WelcomeController
                 }
             }
             return IWelcomeOps.PanelType.None;
-        }
-
-        private void ShowMessage(string message, bool isError = false)
-        {
-            var messageLabel = _uiConfig.Body.Q<Label>("MessageLabel");
-            if (messageLabel != null)
-            {
-                messageLabel.text = message;
-                messageLabel.style.color = isError ? Color.red : Color.green;
-                messageLabel.style.display = DisplayStyle.Flex;
-            }
-            Debug.Log($"{(isError ? "Error" : "Info")}: {message}");
-        }
-
-        private void ClearMessage()
-        {
-            var messageLabel = _uiConfig.Body.Q<Label>("MessageLabel");
-            if (messageLabel != null)
-            {
-                messageLabel.text = "";
-                messageLabel.style.display = DisplayStyle.None;
-            }
-        }
-
-        private void ClearInputFields()
-        {
-            var root = _uiConfig.Body;
-            root.Q<TextField>("UsernameLoginField")?.SetValueWithoutNotify("");
-            root.Q<TextField>("PasswordLoginField")?.SetValueWithoutNotify("");
-            root.Q<TextField>("UsernameRegisterField")?.SetValueWithoutNotify("");
-            root.Q<TextField>("EmailRegisterField")?.SetValueWithoutNotify("");
-            root.Q<TextField>("PhoneRegisterField")?.SetValueWithoutNotify("");
-            root.Q<TextField>("PasswordRegisterField")?.SetValueWithoutNotify("");
-            root.Q<TextField>("RepeatPasswordRegisterField")?.SetValueWithoutNotify("");
-            root.Q<TextField>("EmailRecoverField")?.SetValueWithoutNotify("");
-            root.Q<TextField>("VerificationCodeField")?.SetValueWithoutNotify("");
-        }
-
-        private void SetLoginButtonEnabled(bool enabled)
-        {
-            var button = _uiConfig.Body.Q<Button>("LoginButton");
-            if (button != null)
-            {
-                button.SetEnabled(enabled);
-                button.text = enabled ? "Login" : "Logging in...";
-            }
-        }
-
-        private void SetRegisterButtonEnabled(bool enabled)
-        {
-            var button = _uiConfig.Body.Q<Button>("RegisterAndLoginButton");
-            if (button != null)
-            {
-                button.SetEnabled(enabled);
-                button.text = enabled ? "Register and Login" : "Creating account...";
-            }
-        }
-
-        private void SetRecoverButtonEnabled(bool enabled)
-        {
-            var button = _uiConfig.Body.Q<Button>("RecoverPasswordButton");
-            if (button != null)
-            {
-                button.SetEnabled(enabled);
-                button.text = enabled ? "Recover" : "Sending email...";
-            }
-        }
-
-        private void SetVerifyEmailButtonEnabled(bool enabled)
-        {
-            var button = _uiConfig.Body.Q<Button>("VerifyEmailButton");
-            if (button != null)
-            {
-                button.SetEnabled(enabled);
-                button.text = enabled ? "Verify Email" : "Verifying...";
-            }
-        }
-
-        private void SetResendCodeButtonEnabled(bool enabled)
-        {
-            var button = _uiConfig.Body.Q<Button>("ResendVerificationCodeButton");
-            if (button != null)
-            {
-                button.SetEnabled(enabled);
-                button.text = enabled ? "Resend Code" : "Resending...";
-            }
         }
     }
 }
