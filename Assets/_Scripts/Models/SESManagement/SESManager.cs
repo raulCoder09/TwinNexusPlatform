@@ -2,477 +2,565 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon;
-using Amazon.SimpleEmail;
-using Amazon.SimpleEmail.Model;
+using Amazon.Runtime;
 using UnityEngine;
+using _Scripts.Models.CognitoManagement;
 
 namespace _Scripts.Models.SESManagement
 {
-    public class SESManager : MonoBehaviour
+    /// <summary>
+    /// Orquestador principal del sistema SES para producción
+    /// Implementa patrón Facade + Singleton para centralizar operaciones de email
+    /// Responsabilidad: Coordinar todos los servicios de email y exponer API unificada
+    /// </summary>
+    public class SESManager : MonoBehaviour, ISESAdvancedOps
     {
+        #region Singleton Pattern
+        
+        private static SESManager _instance;
+        private static readonly object _lock = new object();
+
+        public static SESManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lock)
+                    {
+                        if (_instance == null)
+                        {
+                            var go = new GameObject("SESManager");
+                            _instance = go.AddComponent<SESManager>();
+                            DontDestroyOnLoad(go);
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        #endregion
+
+        #region Configuration Fields
+
         [Header("SES Configuration")]
-        [SerializeField] private string senderEmail = "noreply@tudominio.com";
-        [SerializeField] private string senderName = "Twin Nexus Platform";
+        [SerializeField] private string _senderEmail = "noreply@twinnexus.com";
+        [SerializeField] private string _senderName = "Twin Nexus Platform";
+        [SerializeField] private RegionEndpoint _region = RegionEndpoint.USEast1;
         
-        [Header("Test Configuration")]
-        [SerializeField] private string testRecipientEmail = "";
-        [SerializeField] private string testSubject = "Test Email from Unity";
-        [SerializeField] private string testMessage = "¡Hola! Este es un email de prueba desde Unity usando AWS SES.";
-        
-        // SES client
-        private AmazonSimpleEmailServiceClient sesClient;
-        
-        // Events for SES operations
-        public event Action<bool, string, string> OnEmailSent; // success, message, messageId
-        public event Action<bool, string, List<string>> OnVerificationStatusChecked; // success, message, verifiedEmails
-        public event Action<bool, string> OnEmailVerificationSent; // success, message
-        
-        // Singleton instance
-        public static SESManager Instance { get; private set; }
+        [Header("Production Settings")]
+        [SerializeField] private bool _enableLogging = true;
+        [SerializeField] private bool _autoInitializeTemplates = true;
+        [SerializeField] private int _maxRetryAttempts = 3;
+        [SerializeField] private float _retryDelaySeconds = 2.0f;
+
+        #endregion
+
+        #region Private Fields
+
+        private SESEmailHandler _emailHandler;
+        private SESInfo.EmailConfiguration _configuration;
+        private ILogger _logger;
+        private bool _isInitialized = false;
+        private bool _isInitializing = false;
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Eventos para notificar resultados de operaciones
+        /// Patrón Observer para comunicación desacoplada
+        /// </summary>
+        public event Action<SESOperationResult> OnEmailOperationCompleted;
+        public event Action<bool, string> OnInitializationCompleted;
+        public event Action<SESQuotaInfo> OnQuotaUpdated;
+        public event Action<string, string> OnEmailVerificationRequested;
+
+        #endregion
+
+        #region Unity Lifecycle
 
         private void Awake()
         {
-            // Singleton pattern
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
+            // Singleton enforcement
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
+                return;
             }
+
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+            
+            _logger = new UnityLogger("SESManager");
+            _logger.LogDebug("SES Manager awakened");
         }
 
-        /// <summary>
-        /// Initializes SES client with current AWS credentials
-        /// </summary>
-        private void InitializeSESClient()
+        private async void Start()
         {
-            try
-            {
-                if (OldCognitoManager.Instance == null || OldCognitoManager.Instance.CurrentAWSCredentials == null)
-                {
-                    Debug.LogError("No AWS credentials available. Please authenticate first.");
-                    return;
-                }
-
-                var regionEndpoint = RegionEndpoint.USEast1; // Same region as other services
-                sesClient = new AmazonSimpleEmailServiceClient(OldCognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
-                
-                Debug.Log("SES client initialized successfully");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Failed to initialize SES client: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Sends a simple text email
-        /// </summary>
-        public async Task<bool> SendSimpleEmailAsync(string toEmail, string subject, string textBody, string htmlBody = null)
-        {
-            try
-            {
-                // Check if user is authenticated
-                if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
-                {
-                    Debug.LogError("User must be authenticated to send emails");
-                    OnEmailSent?.Invoke(false, "User not authenticated", null);
-                    return false;
-                }
-
-                // Initialize SES client if needed
-                if (sesClient == null)
-                {
-                    InitializeSESClient();
-                    if (sesClient == null)
-                    {
-                        OnEmailSent?.Invoke(false, "Failed to initialize SES client", null);
-                        return false;
-                    }
-                }
-
-                Debug.Log($"📧 Sending email...");
-                Debug.Log($"From: {senderName} <{senderEmail}>");
-                Debug.Log($"To: {toEmail}");
-                Debug.Log($"Subject: {subject}");
-
-                // Create email body
-                var body = new Body();
-                
-                if (!string.IsNullOrEmpty(textBody))
-                {
-                    body.Text = new Content
-                    {
-                        Charset = "UTF-8",
-                        Data = textBody
-                    };
-                }
-
-                if (!string.IsNullOrEmpty(htmlBody))
-                {
-                    body.Html = new Content
-                    {
-                        Charset = "UTF-8",
-                        Data = htmlBody
-                    };
-                }
-
-                // Create the email request
-                var sendRequest = new SendEmailRequest
-                {
-                    Source = $"{senderName} <{senderEmail}>",
-                    Destination = new Destination
-                    {
-                        ToAddresses = new List<string> { toEmail }
-                    },
-                    Message = new Message
-                    {
-                        Subject = new Content
-                        {
-                            Charset = "UTF-8",
-                            Data = subject
-                        },
-                        Body = body
-                    }
-                };
-
-                // Send the email
-                var response = await sesClient.SendEmailAsync(sendRequest);
-
-                if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    Debug.Log($"✅ Email sent successfully!");
-                    Debug.Log($"📧 Message ID: {response.MessageId}");
-                    OnEmailSent?.Invoke(true, "Email sent successfully", response.MessageId);
-                    return true;
-                }
-                else
-                {
-                    Debug.LogError($"❌ Email sending failed with status: {response.HttpStatusCode}");
-                    OnEmailSent?.Invoke(false, $"Email sending failed: {response.HttpStatusCode}", null);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"SES email sending error: {ex.Message}");
-                OnEmailSent?.Invoke(false, ex.Message, null);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Sends an email with user context (includes user info)
-        /// </summary>
-        public async Task<bool> SendEmailWithUserContextAsync(string toEmail, string subject, string message)
-        {
-            try
-            {
-                var userInfo = OldCognitoManager.Instance;
-                var contextualMessage = $@"{message}
-
----
-📊 User Context:
-👤 Username: {userInfo?.CurrentUsername ?? "Unknown"}
-🛡️ Role: {userInfo?.GetUserRole() ?? "Unknown"}
-⏰ Timestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC
-🌐 Platform: Unity Game Engine
-🏢 System: Twin Nexus Platform";
-
-                return await SendSimpleEmailAsync(toEmail, subject, contextualMessage);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error sending email with user context: {ex.Message}");
-                OnEmailSent?.Invoke(false, ex.Message, null);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Sends a system notification email to administrators
-        /// </summary>
-        public async Task<bool> SendSystemNotificationAsync(string subject, string message, NotificationType type = NotificationType.Info)
-        {
-            try
-            {
-                string emoji = type switch
-                {
-                    NotificationType.Success => "✅",
-                    NotificationType.Warning => "⚠️",
-                    NotificationType.Error => "❌",
-                    NotificationType.Info => "ℹ️",
-                    _ => "📢"
-                };
-
-                var formattedSubject = $"{emoji} {subject}";
-                var systemMessage = $@"🤖 System Notification - Twin Nexus Platform
-
-{message}
-
----
-📊 System Information:
-⏰ Timestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC
-🎮 Platform: Unity
-☁️ Cloud: AWS
-👤 Triggered by: {OldCognitoManager.Instance?.CurrentUsername ?? "System"}
-🛡️ User Role: {OldCognitoManager.Instance?.GetUserRole() ?? "Unknown"}
-📧 Notification Type: {type}";
-
-                // In a real implementation, you'd have a list of admin emails
-                // For now, using the configured test email
-                return await SendSimpleEmailAsync(testRecipientEmail, formattedSubject, systemMessage);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error sending system notification: {ex.Message}");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Sends test email using configured parameters
-        /// </summary>
-        public async Task<bool> SendTestEmailAsync()
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(testRecipientEmail))
-                {
-                    Debug.LogWarning("No test recipient email configured in inspector");
-                    OnEmailSent?.Invoke(false, "No test recipient email configured", null);
-                    return false;
-                }
-
-                Debug.Log("📧 Sending test email...");
-
-                var testMessageWithDetails = $@"{testMessage}
-
----
-🧪 Test Details:
-⏰ Sent at: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC
-👤 User: {OldCognitoManager.Instance?.CurrentUsername ?? "Unknown"}
-🛡️ Role: {OldCognitoManager.Instance?.GetUserRole() ?? "Unknown"}
-🆔 Test ID: {Guid.NewGuid()}";
-
-                return await SendSimpleEmailAsync(testRecipientEmail, testSubject, testMessageWithDetails);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Test email failed: {ex.Message}");
-                OnEmailSent?.Invoke(false, ex.Message, null);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Checks verification status of email addresses
-        /// </summary>
-        public async Task<List<string>> GetVerifiedEmailsAsync()
-        {
-            try
-            {
-                // Initialize SES client if needed
-                if (sesClient == null)
-                {
-                    InitializeSESClient();
-                    if (sesClient == null)
-                    {
-                        OnVerificationStatusChecked?.Invoke(false, "Failed to initialize SES client", new List<string>());
-                        return new List<string>();
-                    }
-                }
-
-                Debug.Log("🔍 Checking verified email addresses...");
-
-                var request = new ListIdentitiesRequest();
-                var response = await sesClient.ListIdentitiesAsync(request);
-
-                var verifiedEmails = new List<string>();
-                foreach (var identity in response.Identities)
-                {
-                    // Check if it's an email (not a domain)
-                    if (identity.Contains("@"))
-                    {
-                        verifiedEmails.Add(identity);
-                    }
-                }
-
-                Debug.Log($"📧 Found {verifiedEmails.Count} verified email addresses:");
-                foreach (var email in verifiedEmails)
-                {
-                    Debug.Log($"   ✅ {email}");
-                }
-
-                OnVerificationStatusChecked?.Invoke(true, $"Found {verifiedEmails.Count} verified emails", verifiedEmails);
-                return verifiedEmails;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error checking verified emails: {ex.Message}");
-                OnVerificationStatusChecked?.Invoke(false, ex.Message, new List<string>());
-                return new List<string>();
-            }
-        }
-
-        /// <summary>
-        /// Requests email verification for a new email address
-        /// </summary>
-        public async Task<bool> RequestEmailVerificationAsync(string emailToVerify)
-        {
-            try
-            {
-                // Initialize SES client if needed
-                if (sesClient == null)
-                {
-                    InitializeSESClient();
-                    if (sesClient == null)
-                    {
-                        OnEmailVerificationSent?.Invoke(false, "Failed to initialize SES client");
-                        return false;
-                    }
-                }
-
-                Debug.Log($"📧 Requesting verification for email: {emailToVerify}");
-
-                var request = new VerifyEmailIdentityRequest
-                {
-                    EmailAddress = emailToVerify
-                };
-
-                var response = await sesClient.VerifyEmailIdentityAsync(request);
-
-                if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    Debug.Log($"✅ Verification email sent to: {emailToVerify}");
-                    Debug.Log("📬 Please check the email inbox and click the verification link");
-                    OnEmailVerificationSent?.Invoke(true, "Verification email sent successfully");
-                    return true;
-                }
-                else
-                {
-                    Debug.LogError($"❌ Failed to send verification email: {response.HttpStatusCode}");
-                    OnEmailVerificationSent?.Invoke(false, $"Failed to send verification: {response.HttpStatusCode}");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error requesting email verification: {ex.Message}");
-                OnEmailVerificationSent?.Invoke(false, ex.Message);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets user's role-based permissions for email operations
-        /// </summary>
-        public bool CanUserSendEmails()
-        {
-            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
-                return false;
-
-            var userRole = OldCognitoManager.Instance.GetUserRole();
-
-            // Define email permissions based on user roles
-            return userRole switch
-            {
-                "super-admin" => true, // Super admin can send all types of emails
-                "operators" => true,   // Operators can send operational emails
-                "students" => true,    // Students can send basic emails
-                "usuarios-basicos" => false, // Basic users cannot send emails (receive only)
-                _ => false
-            };
-        }
-
-        /// <summary>
-        /// Gets maximum emails per day based on user role
-        /// </summary>
-        public int GetDailyEmailLimit()
-        {
-            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
-                return 0;
-
-            var userRole = OldCognitoManager.Instance.GetUserRole();
-
-            return userRole switch
-            {
-                "super-admin" => 1000,  // High limit for admin operations
-                "operators" => 200,     // Moderate limit for operational needs
-                "students" => 50,       // Lower limit for student activities
-                "usuarios-basicos" => 0, // No sending capability
-                _ => 0
-            };
-        }
-
-        /// <summary>
-        /// Validates email format
-        /// </summary>
-        public bool IsValidEmail(string email)
-        {
-            if (string.IsNullOrEmpty(email))
-                return false;
-
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Test method to verify SES connectivity and permissions
-        /// </summary>
-        public async Task<bool> TestSESConnectivityAsync()
-        {
-            try
-            {
-                Debug.Log("🧪 Testing SES connectivity...");
-                
-                if (!CanUserSendEmails())
-                {
-                    Debug.LogWarning("⚠️ Current user role cannot send emails");
-                    OnEmailSent?.Invoke(false, "User role cannot send emails", null);
-                    return false;
-                }
-
-                // Get verified emails to ensure we can send
-                var verifiedEmails = await GetVerifiedEmailsAsync();
-                
-                if (verifiedEmails.Count == 0)
-                {
-                    Debug.LogWarning("⚠️ No verified email addresses found. Please verify an email first.");
-                    return false;
-                }
-
-                Debug.Log("✅ SES connectivity test completed successfully");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"SES connectivity test failed: {ex.Message}");
-                return false;
-            }
-        }
-
-        public enum NotificationType
-        {
-            Info,
-            Success,
-            Warning,
-            Error
+            await InitializeAsync();
         }
 
         private void OnDestroy()
         {
-            sesClient?.Dispose();
+            if (_instance == this)
+            {
+                _emailHandler?.Dispose();
+                _logger?.LogDebug("SES Manager destroyed and resources cleaned up");
+                _instance = null;
+            }
+        }
+
+        #endregion
+
+        #region Initialization
+
+        /// <summary>
+        /// Inicialización asíncrona del sistema SES
+        /// Patrón Async Initialization para Unity
+        /// </summary>
+        public async Task<bool> InitializeAsync()
+        {
+            if (_isInitialized || _isInitializing)
+            {
+                return _isInitialized;
+            }
+
+            _isInitializing = true;
+
+            try
+            {
+                _logger.LogDebug("Initializing SES Manager...");
+
+                // Validar configuración
+                if (!ValidateConfiguration())
+                {
+                    throw new InvalidOperationException("Invalid SES configuration");
+                }
+
+                // Esperar a que Cognito esté listo
+                await WaitForCognitoInitialization();
+
+                // Crear configuración
+                _configuration = CreateConfiguration();
+
+                // Obtener credenciales
+                var credentials = GetAWSCredentials();
+                if (credentials == null)
+                {
+                    throw new InvalidOperationException("AWS credentials not available");
+                }
+
+                // Inicializar handler principal
+                _emailHandler = new SESEmailHandler(_configuration, credentials, _region);
+
+                // Inicializar templates si está habilitado
+                if (_autoInitializeTemplates)
+                {
+                    var templatesInitialized = await _emailHandler.InitializeTemplatesAsync();
+                    _logger.LogDebug($"Templates initialization: {(templatesInitialized ? "Success" : "Failed")}");
+                }
+
+                _isInitialized = true;
+                _logger.LogDebug("SES Manager initialized successfully");
+                
+                OnInitializationCompleted?.Invoke(true, "SES Manager initialized successfully");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to initialize SES Manager: {ex.Message}");
+                OnInitializationCompleted?.Invoke(false, $"Initialization failed: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                _isInitializing = false;
+            }
+        }
+
+        /// <summary>
+        /// Reinicializa el manager con nueva configuración
+        /// </summary>
+        public async Task<bool> ReinitializeAsync(string newSenderEmail, string newSenderName)
+        {
+            _logger.LogDebug("Reinitializing SES Manager with new configuration...");
+            
+            _senderEmail = newSenderEmail;
+            _senderName = newSenderName;
+            
+            _isInitialized = false;
+            _emailHandler?.Dispose();
+            _emailHandler = null;
+            
+            return await InitializeAsync();
+        }
+
+        #endregion
+
+        #region ISESOps Implementation
+
+        public async Task<bool> SendEmailAsync(string toEmail, string subject, string textBody, string htmlBody = null)
+        {
+            var result = await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.SendEmailAsync(toEmail, subject, textBody, htmlBody);
+            });
+
+            OnEmailOperationCompleted?.Invoke(new SESOperationResult
+            {
+                Success = result,
+                Message = result ? "Email sent successfully" : "Email sending failed",
+                TotalProcessed = 1,
+                SuccessCount = result ? 1 : 0,
+                FailureCount = result ? 0 : 1
+            });
+
+            return result;
+        }
+
+        public async Task<bool> SendEmailWithUserContextAsync(string toEmail, string subject, string message)
+        {
+            var result = await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.SendEmailWithUserContextAsync(toEmail, subject, message);
+            });
+
+            OnEmailOperationCompleted?.Invoke(CreateResultFromBool(result, "Email with context"));
+            return result;
+        }
+
+        public async Task<bool> SendSystemNotificationAsync(string subject, string message, NotificationType type = NotificationType.Info)
+        {
+            var result = await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.SendSystemNotificationAsync(subject, message, type);
+            });
+
+            OnEmailOperationCompleted?.Invoke(CreateResultFromBool(result, "System notification"));
+            return result;
+        }
+
+        public async Task<bool> SendTestEmailAsync()
+        {
+            var result = await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.SendTestEmailAsync();
+            });
+
+            OnEmailOperationCompleted?.Invoke(CreateResultFromBool(result, "Test email"));
+            return result;
+        }
+
+        public async Task<List<string>> GetVerifiedEmailsAsync()
+        {
+            return await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.GetVerifiedEmailsAsync();
+            });
+        }
+
+        public async Task<bool> RequestEmailVerificationAsync(string emailToVerify)
+        {
+            var result = await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.RequestEmailVerificationAsync(emailToVerify);
+            });
+
+            OnEmailVerificationRequested?.Invoke(emailToVerify, result ? "Success" : "Failed");
+            return result;
+        }
+
+        public bool CanUserSendEmails()
+        {
+            if (!_isInitialized) return false;
+            return _emailHandler.CanUserSendEmails();
+        }
+
+        public int GetDailyEmailLimit()
+        {
+            if (!_isInitialized) return 0;
+            return _emailHandler.GetDailyEmailLimit();
+        }
+
+        #endregion
+
+        #region ISESAdvancedOps Implementation
+
+        public async Task<bool> SendTemplatedEmailAsync(string toEmail, string templateName, Dictionary<string, string> templateData)
+        {
+            var result = await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.SendTemplatedEmailAsync(toEmail, templateName, templateData);
+            });
+
+            OnEmailOperationCompleted?.Invoke(CreateResultFromBool(result, $"Templated email ({templateName})"));
+            return result;
+        }
+
+        public async Task<bool> InitializeTemplatesAsync()
+        {
+            EnsureInitialized();
+            return await _emailHandler.InitializeTemplatesAsync();
+        }
+
+        public async Task<SESOperationResult> SendBulkEmailAsync(List<string> recipients, string subject, string textBody, string htmlBody = null)
+        {
+            var result = await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.SendBulkEmailAsync(recipients, subject, textBody, htmlBody);
+            });
+
+            OnEmailOperationCompleted?.Invoke(result);
+            return result;
+        }
+
+        public void TrackEmailSent(string messageId, string recipient, string subject)
+        {
+            if (_isInitialized)
+            {
+                _emailHandler.TrackEmailSent(messageId, recipient, subject);
+            }
+        }
+
+        public async Task<SESQuotaInfo> GetSendQuotaAsync()
+        {
+            var quota = await ExecuteWithRetry(async () =>
+            {
+                EnsureInitialized();
+                return await _emailHandler.GetSendQuotaAsync();
+            });
+
+            OnQuotaUpdated?.Invoke(quota);
+            return quota;
+        }
+
+        #endregion
+
+        #region Production Helper Methods
+
+        /// <summary>
+        /// Envía email de bienvenida para nuevos usuarios
+        /// API de alto nivel para casos de uso comunes
+        /// </summary>
+        public async Task<bool> SendWelcomeEmailAsync(string userEmail, string username)
+        {
+            try
+            {
+                var templateData = new Dictionary<string, string>
+                {
+                    ["username"] = username,
+                    ["userRole"] = CognitoManager.Instance?.GetUserRole() ?? "Unknown",
+                    ["platformName"] = "Twin Nexus Platform",
+                    ["registrationDate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC")
+                };
+
+                return await SendTemplatedEmailAsync(userEmail, "welcome-template", templateData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error sending welcome email: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Envía notificación crítica del sistema
+        /// Método de conveniencia para alertas importantes
+        /// </summary>
+        public async Task<bool> SendCriticalAlertAsync(string subject, string message)
+        {
+            return await SendSystemNotificationAsync($"CRITICAL: {subject}", message, NotificationType.Error);
+        }
+
+        /// <summary>
+        /// Verifica el estado de salud del sistema SES
+        /// Útil para monitoring y health checks
+        /// </summary>
+        public async Task<SESHealthStatus> GetHealthStatusAsync()
+        {
+            try
+            {
+                EnsureInitialized();
+                
+                var quota = await GetSendQuotaAsync();
+                var verifiedEmails = await GetVerifiedEmailsAsync();
+                
+                return new SESHealthStatus
+                {
+                    IsHealthy = true,
+                    QuotaUsagePercentage = quota.UsagePercentage,
+                    VerifiedEmailCount = verifiedEmails.Count,
+                    CanSendEmails = CanUserSendEmails(),
+                    DailyLimit = GetDailyEmailLimit(),
+                    LastChecked = DateTime.UtcNow
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Health check failed: {ex.Message}");
+                return new SESHealthStatus
+                {
+                    IsHealthy = false,
+                    ErrorMessage = ex.Message,
+                    LastChecked = DateTime.UtcNow
+                };
+            }
+        }
+
+        #endregion
+
+        #region Private Helper Methods
+
+        private bool ValidateConfiguration()
+        {
+            if (!SESInfo.Validation.IsValidEmail(_senderEmail))
+            {
+                _logger.LogError("Invalid sender email configuration");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(_senderName))
+            {
+                _logger.LogError("Sender name cannot be empty");
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task WaitForCognitoInitialization()
+        {
+            const int maxWaitSeconds = 30;
+            const float checkInterval = 0.5f;
+            float elapsed = 0;
+
+            while (elapsed < maxWaitSeconds)
+            {
+                if (CognitoManager.Instance != null && CognitoManager.Instance.IsUserAuthenticated)
+                {
+                    return;
+                }
+
+                await Task.Delay((int)(checkInterval * 1000));
+                elapsed += checkInterval;
+            }
+
+            throw new TimeoutException("Cognito initialization timeout");
+        }
+
+        private SESInfo.EmailConfiguration CreateConfiguration()
+        {
+            return SESInfo.EmailConfiguration.Create()
+                .WithSenderEmail(_senderEmail)
+                .WithSenderName(_senderName)
+                .WithRegion(_region)
+                .Build();
+        }
+
+        private AWSCredentials GetAWSCredentials()
+        {
+            var cognitoManager = CognitoManager.Instance;
+            if (cognitoManager == null || !cognitoManager.IsUserAuthenticated)
+            {
+                _logger.LogError("User not authenticated - cannot get AWS credentials");
+                return null;
+            }
+
+            // Dependiendo de tu implementación de CognitoManager
+            // return cognitoManager.CurrentAWSCredentials;
+            return null; // Placeholder - reemplaza con tu lógica
+        }
+
+        private void EnsureInitialized()
+        {
+            if (!_isInitialized)
+            {
+                throw new InvalidOperationException("SES Manager not initialized. Call InitializeAsync() first.");
+            }
+        }
+
+        private async Task<T> ExecuteWithRetry<T>(Func<Task<T>> operation)
+        {
+            for (int attempt = 1; attempt <= _maxRetryAttempts; attempt++)
+            {
+                try
+                {
+                    return await operation();
+                }
+                catch (Exception ex)
+                {
+                    if (attempt == _maxRetryAttempts)
+                    {
+                        _logger.LogError($"Operation failed after {_maxRetryAttempts} attempts: {ex.Message}");
+                        throw;
+                    }
+
+                    _logger.LogWarning($"Operation attempt {attempt} failed, retrying: {ex.Message}");
+                    await Task.Delay((int)(_retryDelaySeconds * 1000 * attempt)); // Exponential backoff
+                }
+            }
+
+            return default(T);
+        }
+
+        private SESOperationResult CreateResultFromBool(bool success, string operation)
+        {
+            return new SESOperationResult
+            {
+                Success = success,
+                Message = $"{operation}: {(success ? "Success" : "Failed")}",
+                TotalProcessed = 1,
+                SuccessCount = success ? 1 : 0,
+                FailureCount = success ? 0 : 1
+            };
+        }
+
+        #endregion
+    }
+
+    #region Supporting Classes
+
+    /// <summary>
+    /// Estado de salud del sistema SES
+    /// </summary>
+    public class SESHealthStatus
+    {
+        public bool IsHealthy { get; set; }
+        public double QuotaUsagePercentage { get; set; }
+        public int VerifiedEmailCount { get; set; }
+        public bool CanSendEmails { get; set; }
+        public int DailyLimit { get; set; }
+        public DateTime LastChecked { get; set; }
+        public string ErrorMessage { get; set; }
+
+        public string GetStatusSummary()
+        {
+            if (!IsHealthy)
+                return $"UNHEALTHY: {ErrorMessage}";
+
+            var status = QuotaUsagePercentage > 90 ? "WARNING" : "HEALTHY";
+            return $"{status}: {VerifiedEmailCount} verified emails, {QuotaUsagePercentage:F1}% quota used";
         }
     }
+
+    /// <summary>
+    /// Extensiones para SESOperationResult
+    /// </summary>
+    public static class SESOperationResultExtensions
+    {
+        // Removido - ahora es método privado en SESManager
+    }
+
+    #endregion
 }
