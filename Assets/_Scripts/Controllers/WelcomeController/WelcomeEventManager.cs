@@ -46,7 +46,7 @@ namespace _Scripts.Controllers.WelcomeController
             root.Q<Button>("CloseEmailVerificationButton")?.RegisterCallback<ClickEvent>(OnCloseEmailVerificationPanelClicked);
             root.Q<Button>("BackToLoginFromVerificationButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromVerificationClicked);
             root.Q<Button>("CloseSettingsCognitoParametersButton")?.RegisterCallback<ClickEvent>(OnCloseSettingsPanelClicked);
-
+            root.Q<Button>("SaveButton")?.RegisterCallback<ClickEvent>(OnSaveSettingsButtonClicked);
             // Registrar eventos de Enter key para campos de texto
             RegisterEnterKeyEvents(root);
         }
@@ -157,6 +157,11 @@ namespace _Scripts.Controllers.WelcomeController
         private void OnCloseSettingsPanelClicked(ClickEvent evt)
         {
             _uiManager.CloseCurrentPanel();
+        }
+        private void OnSaveSettingsButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Save Settings button clicked");
+            _orchestrator.HandleSaveSettingsButtonClick();
         }
         #endregion
 

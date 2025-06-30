@@ -226,12 +226,26 @@ namespace _Scripts.Models.CognitoManagement
         public async Task<bool> RefreshTokenAsync()
         {
             if (!_isInitialized) Initialize();
+    
+            if (string.IsNullOrEmpty(RefreshToken))
+            {
+                LogError("No refresh token available for refresh");
+                return false;
+            }
+    
             LogDebug("Attempting token refresh");
-            var success = await _authHandler.RefreshTokenAsync();
+            var success = await _authHandler.RefreshTokenAsync(RefreshToken);
+    
             if (success)
             {
-                // Lógica de actualización de tokens (pendiente de implementación completa)
+                LogDebug("Token refresh completed successfully");
+                // Los nuevos tokens se actualizan automáticamente via OnTokensReceived
             }
+            else
+            {
+                LogError("Token refresh failed");
+            }
+    
             return success;
         }
 
@@ -292,22 +306,75 @@ namespace _Scripts.Models.CognitoManagement
         public async Task<List<string>> GetUserGroupsAsync()
         {
             if (!_isInitialized) Initialize();
-            var groups = await _authHandler.GetUserGroupsAsync();
-            _userGroups = groups;
-            _userInfo.CurrentUserGroup = groups.FirstOrDefault();
-            return groups;
+    
+            if (string.IsNullOrEmpty(IdToken))
+            {
+                LogError("No ID token available for getting user groups");
+                return new List<string> { "usuarios-basicos" };
+            }
+    
+            try
+            {
+                LogDebug("Getting user groups from ID token...");
+                var groups = await _authHandler.GetUserGroupsFromTokenAsync(IdToken);
+                _userGroups = groups;
+                _userInfo.CurrentUserGroup = groups.FirstOrDefault() ?? "usuarios-basicos";
+        
+                LogDebug($"User groups retrieved: {string.Join(", ", groups)}");
+                LogDebug($"Primary group set to: {_userInfo.CurrentUserGroup}");
+        
+                return groups;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error getting user groups: {ex.Message}");
+                var defaultGroups = new List<string> { "usuarios-basicos" };
+                _userGroups = defaultGroups;
+                _userInfo.CurrentUserGroup = "usuarios-basicos";
+                return defaultGroups;
+            }
         }
 
         public bool IsUserInGroup(string groupName)
         {
             if (!_isInitialized) Initialize();
-            return _authHandler.IsUserInGroup(groupName);
+    
+            if (string.IsNullOrEmpty(groupName))
+            {
+                print("Group name is null or empty");
+                return false;
+            }
+    
+            bool isInGroup = _userGroups.Contains(groupName);
+            LogDebug($"User is{(isInGroup ? "" : " not")} in group: {groupName}");
+            return isInGroup;
         }
 
         public string GetUserRole()
         {
             if (!_isInitialized) Initialize();
-            return _authHandler.GetUserRole();
+    
+            // Define role hierarchy (you can customize this based on your groups)
+            var roleHierarchy = new string[]
+            {
+                "super-admin",      // Highest priority
+                "students",
+                "operators",
+                "basic-users"      // Default/lowest priority
+            };
+    
+            // Return the highest priority role the user belongs to
+            foreach (var role in roleHierarchy)
+            {
+                if (IsUserInGroup(role))
+                {
+                    LogDebug($"User role determined: {role}");
+                    return role;
+                }
+            }
+    
+            LogDebug("User role defaulted to: usuarios-basicos");
+            return "usuarios-basicos";
         }
 
         public async Task<bool> ResendConfirmationCodeAsync()

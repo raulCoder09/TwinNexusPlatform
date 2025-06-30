@@ -11,7 +11,7 @@ namespace _Scripts.Models.CognitoManagement
         Task<bool> ForgotPasswordAsync(string username);
         Task<bool> ConfirmForgotPasswordAsync(string username, string confirmationCode, string newPassword);
         void SignOut();
-        Task<bool> RefreshTokenAsync();
+        Task<bool> RefreshTokenAsync(string refreshToken);
         Task<bool> GetAWSCredentialsAsync();
         Task<List<string>> GetUserGroupsAsync();
         bool IsUserInGroup(string groupName);

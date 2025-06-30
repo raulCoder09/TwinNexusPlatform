@@ -165,14 +165,24 @@ namespace _Scripts.Models.CognitoManagement
             LogDebug("User signed out successfully");
         }
 
-        public async Task<bool> RefreshTokenAsync()
+        public async Task<bool> RefreshTokenAsync(string refreshToken)
         {
             try
             {
+                if (string.IsNullOrEmpty(refreshToken))
+                {
+                    LogError("No refresh token available");
+                    return false;
+                }
+
                 var refreshRequest = new InitiateAuthRequest
                 {
                     ClientId = _clientId,
-                    AuthFlow = AuthFlowType.REFRESH_TOKEN_AUTH
+                    AuthFlow = AuthFlowType.REFRESH_TOKEN_AUTH,
+                    AuthParameters = new Dictionary<string, string>
+                    {
+                        { "REFRESH_TOKEN", refreshToken }
+                    }
                 };
 
                 var response = await _cognitoClient.InitiateAuthAsync(refreshRequest);
@@ -180,7 +190,11 @@ namespace _Scripts.Models.CognitoManagement
                 if (response.AuthenticationResult != null)
                 {
                     LogDebug("Token refreshed successfully");
-                    OnTokensReceived?.Invoke(response.AuthenticationResult.IdToken, response.AuthenticationResult.AccessToken, response.AuthenticationResult.RefreshToken);
+                    OnTokensReceived?.Invoke(
+                        response.AuthenticationResult.IdToken, 
+                        response.AuthenticationResult.AccessToken, 
+                        response.AuthenticationResult.RefreshToken ?? refreshToken // Keep old refresh token if not provided
+                    );
                     return true;
                 }
                 LogWarning("Token refresh failed: No authentication result");
@@ -211,7 +225,10 @@ namespace _Scripts.Models.CognitoManagement
         {
             try
             {
-                LogDebug("Getting user groups...");
+                LogDebug("Getting user groups from ID token...");
+        
+                // This method will be called from CognitoManager which has access to the current ID token
+                // For now, return empty list as CognitoManager will handle the token parsing
                 return new List<string>();
             }
             catch (Exception ex)
@@ -220,15 +237,36 @@ namespace _Scripts.Models.CognitoManagement
                 return new List<string>();
             }
         }
+        
+        /// <summary>
+        /// Gets user groups from provided ID token
+        /// </summary>
+        public async Task<List<string>> GetUserGroupsFromTokenAsync(string idToken)
+        {
+            try
+            {
+                LogDebug("Parsing user groups from ID token...");
+                return await ParseUserGroupsFromToken(idToken);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error getting user groups from token: {ex.Message}");
+                return new List<string> { "usuarios-basicos" };
+            }
+        }
 
         public bool IsUserInGroup(string groupName)
         {
-            return false; // Placeholder
+            // This will be handled by CognitoManager which maintains the user groups list
+            LogDebug($"Checking if user is in group: {groupName}");
+            return false; // CognitoManager will override this behavior
         }
 
         public string GetUserRole()
         {
-            return "default"; // Placeholder
+            // This will be handled by CognitoManager which determines role based on groups
+            LogDebug("Getting user role...");
+            return "usuarios-basicos"; // Default role
         }
 
         public async Task<bool> ResendConfirmationCodeAsync(string username)
@@ -287,5 +325,77 @@ namespace _Scripts.Models.CognitoManagement
             if (_enableDebugLogs)
                 Debug.LogError($"[CognitoAuthHandler] {message}");
         }
+        
+        /// <summary>
+/// Parses user groups from ID token
+/// </summary>
+private async Task<List<string>> ParseUserGroupsFromToken(string idToken)
+{
+    try
+    {
+        if (string.IsNullOrEmpty(idToken))
+        {
+            LogDebug("No ID token available for parsing groups");
+            return new List<string> { "usuarios-basicos" }; // Default group
+        }
+
+        var parts = idToken.Split('.');
+        if (parts.Length != 3)
+        {
+            LogWarning("Invalid ID token format");
+            return new List<string> { "usuarios-basicos" };
+        }
+
+        var payload = parts[1];
+        // Add padding if needed for Base64 decoding
+        while (payload.Length % 4 != 0)
+            payload += "=";
+
+        var jsonBytes = System.Convert.FromBase64String(payload);
+        var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+        
+        LogDebug($"JWT Payload parsed successfully");
+        
+        // Parse JSON to extract groups (simplified version)
+        // You can use Newtonsoft.Json if available, or simple string parsing
+        if (json.Contains("\"cognito:groups\""))
+        {
+            // Extract groups array from JSON (basic string parsing)
+            var groupsStart = json.IndexOf("\"cognito:groups\"");
+            var groupsSection = json.Substring(groupsStart);
+            var arrayStart = groupsSection.IndexOf('[');
+            var arrayEnd = groupsSection.IndexOf(']');
+            
+            if (arrayStart != -1 && arrayEnd != -1)
+            {
+                var groupsArray = groupsSection.Substring(arrayStart + 1, arrayEnd - arrayStart - 1);
+                var groups = new List<string>();
+                
+                // Parse individual groups (remove quotes and split by comma)
+                var groupItems = groupsArray.Split(',');
+                foreach (var item in groupItems)
+                {
+                    var cleanGroup = item.Trim().Trim('"').Trim();
+                    if (!string.IsNullOrEmpty(cleanGroup))
+                    {
+                        groups.Add(cleanGroup);
+                    }
+                }
+                
+                LogDebug($"Found groups: {string.Join(", ", groups)}");
+                return groups.Count > 0 ? groups : new List<string> { "usuarios-basicos" };
+            }
+        }
+        
+        // If no groups found, return default
+        LogDebug("No groups found in token, using default");
+        return new List<string> { "usuarios-basicos" };
+    }
+    catch (Exception ex)
+    {
+        LogError($"Error parsing groups from token: {ex.Message}");
+        return new List<string> { "usuarios-basicos" };
+    }
+}
     }
 }

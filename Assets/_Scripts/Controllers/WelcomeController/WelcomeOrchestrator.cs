@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using _Scripts.Controller;
+using _Scripts.Models.CognitoManagement;
+using Amazon;
 
 namespace _Scripts.Controllers.WelcomeController
 {
@@ -84,6 +87,11 @@ namespace _Scripts.Controllers.WelcomeController
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private UIDocument _uiDocument;
         private bool _isInitialized = false;
+        
+        [Header("Cognito Settings Configuration")]
+        [SerializeField] private SettingsCognitoParametersData _cognitoSettings;
+        
+        private const string DEFAULT_COGNITO_SETTINGS_PATH = "CognitoSettings/DefaultCognitoSettings";
 
         // Eventos públicos del Orchestrator
         public event Action OnAuthenticationSuccess;
@@ -384,6 +392,12 @@ namespace _Scripts.Controllers.WelcomeController
             }
 
             _uiManager.NavigateToPanel(panelType);
+    
+            // Load saved configuration when opening Settings panel
+            if (panelType == IWelcomeOps.PanelType.SettingsCognito)
+            {
+                LoadSavedConfiguration();
+            }
         }
 
         #endregion
@@ -450,6 +464,172 @@ namespace _Scripts.Controllers.WelcomeController
         {
             await ResendVerificationCodeAsync();
         }
+        
+        #region Settings Panel Methods
+
+public async void HandleSaveSettingsButtonClick()
+{
+    var root = _uiDocument.rootVisualElement;
+    var userPoolIdField = root.Q<TextField>("UserPoolIdField");
+    var clientIdField = root.Q<TextField>("ClientIdField");
+    var identityPoolIdField = root.Q<TextField>("IdentityPoolIdField");
+    var regionDropdown = root.Q<DropdownField>("AwsRegionDropdownField");
+
+    if (userPoolIdField != null && clientIdField != null && identityPoolIdField != null && regionDropdown != null)
+    {
+        string userPoolId = userPoolIdField.value?.Trim();
+        string clientId = clientIdField.value?.Trim();
+        string identityPoolId = identityPoolIdField.value?.Trim();
+        string selectedRegion = regionDropdown.value;
+
+        // Validate inputs
+        if (string.IsNullOrEmpty(userPoolId) || string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(identityPoolId))
+        {
+            ShowMessage("Please fill in all required fields", true);
+            return;
+        }
+
+        // Convert region display name to region code
+        var regionCode = ConvertDisplayToRegionCode(selectedRegion);
+        if (string.IsNullOrEmpty(regionCode))
+        {
+            ShowMessage("Invalid AWS region selected", true);
+            return;
+        }
+
+        try
+        {
+            ShowMessage("Saving configuration...", false);
+            SetSaveButtonEnabled(false);
+
+            // Update ScriptableObject
+            if (_cognitoSettings != null)
+            {
+                _cognitoSettings.SetConfiguration(userPoolId, clientId, identityPoolId, regionCode);
+                
+                // Save to JSON file
+                bool saveSuccess = CognitoSettingsManager.SaveConfiguration(_cognitoSettings);
+                
+                if (saveSuccess)
+                {
+                    // Apply configuration to AuthHandler
+                    ApplyCognitoConfiguration();
+                    
+                    ShowMessage("Configuration saved successfully!", false);
+                    print($"Cognito configuration saved to: {CognitoSettingsManager.GetConfigurationPath()}");
+                    
+                    // Close settings panel after successful save
+                    await System.Threading.Tasks.Task.Delay(1500); // Show success message briefly
+                    _uiManager.CloseCurrentPanel();
+                }
+                else
+                {
+                    ShowMessage("Failed to save configuration to file", true);
+                }
+            }
+            else
+            {
+                ShowMessage("Configuration system not initialized", true);
+                print("Cognito settings ScriptableObject is null");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            print($"Error saving configuration: {ex.Message}");
+            ShowMessage("Failed to save configuration", true);
+        }
+        finally
+        {
+            SetSaveButtonEnabled(true);
+        }
+    }
+}
+
+private RegionEndpoint ConvertToRegionEndpoint(string displayName)
+{
+    if (string.IsNullOrEmpty(displayName)) return null;
+
+    // Extract region code from display name (e.g., "us-east-1 (N. Virginia)" -> "us-east-1")
+    var regionCode = displayName.Split(' ')[0];
+    
+    return regionCode switch
+    {
+        "us-east-1" => RegionEndpoint.USEast1,
+        "us-east-2" => RegionEndpoint.USEast2,
+        "us-west-1" => RegionEndpoint.USWest1,
+        "us-west-2" => RegionEndpoint.USWest2,
+        "eu-west-1" => RegionEndpoint.EUWest1,
+        "eu-central-1" => RegionEndpoint.EUCentral1,
+        "ap-southeast-1" => RegionEndpoint.APSoutheast1,
+        "ap-northeast-1" => RegionEndpoint.APNortheast1,
+        _ => RegionEndpoint.USEast1 // Default fallback
+    };
+}
+
+private string ConvertDisplayToRegionCode(string displayName)
+{
+    if (string.IsNullOrEmpty(displayName)) return "us-east-1";
+
+    // Extract region code from display name (e.g., "us-east-1 (N. Virginia)" -> "us-east-1")
+    return displayName.Split(' ')[0];
+}
+
+private void LoadSavedConfiguration()
+{
+    var root = _uiDocument.rootVisualElement;
+    var userPoolIdField = root.Q<TextField>("UserPoolIdField");
+    var clientIdField = root.Q<TextField>("ClientIdField");
+    var identityPoolIdField = root.Q<TextField>("IdentityPoolIdField");
+    var regionDropdown = root.Q<DropdownField>("AwsRegionDropdownField");
+
+    if (userPoolIdField != null && clientIdField != null && identityPoolIdField != null && regionDropdown != null)
+    {
+        if (_cognitoSettings != null)
+        {
+            // Load from ScriptableObject (which has been loaded from JSON in Initialize)
+            userPoolIdField.value = _cognitoSettings.UserPoolId;
+            clientIdField.value = _cognitoSettings.ClientId;
+            identityPoolIdField.value = _cognitoSettings.IdentityPoolId;
+
+            // Set dropdown value
+            var regionDisplay = ConvertRegionCodeToDisplay(_cognitoSettings.AwsRegionCode);
+            if (regionDropdown.choices.Contains(regionDisplay))
+            {
+                regionDropdown.value = regionDisplay;
+            }
+
+            print("Configuration loaded into Settings panel from ScriptableObject");
+        }
+        else
+        {
+            print("Cognito settings ScriptableObject is null");
+            
+            // Clear all fields as fallback
+            userPoolIdField.value = "";
+            clientIdField.value = "";
+            identityPoolIdField.value = "";
+            regionDropdown.value = "us-east-1 (N. Virginia)";
+        }
+    }
+}
+
+private string ConvertRegionCodeToDisplay(string regionCode)
+{
+    return regionCode switch
+    {
+        "us-east-1" => "us-east-1 (N. Virginia)",
+        "us-east-2" => "us-east-2 (Ohio)",
+        "us-west-1" => "us-west-1 (N. California)",
+        "us-west-2" => "us-west-2 (Oregon)",
+        "eu-west-1" => "eu-west-1 (Ireland)",
+        "eu-central-1" => "eu-central-1 (Frankfurt)",
+        "ap-southeast-1" => "ap-southeast-1 (Singapore)",
+        "ap-northeast-1" => "ap-northeast-1 (Tokyo)",
+        _ => "us-east-1 (N. Virginia)" // Default
+    };
+}
+
+#endregion
 
         #endregion
 
@@ -483,61 +663,138 @@ namespace _Scripts.Controllers.WelcomeController
 
         #endregion
 
-        private void Initialize()
+        protected void Initialize()
+{
+    try
+    {
+        if (_isInitialized)
+        {
+            Debug.Log("WelcomeOrchestrator already initialized");
+            return;
+        }
+
+        Debug.Log("Initializing WelcomeOrchestrator...");
+
+        // Initialize Cognito Settings
+        InitializeCognitoSettings();
+
+        // Crear el AuthHandler y suscribirse a sus eventos
+        _authHandler = gameObject.AddComponent<WelcomeAuthHandler>();
+        
+        // Apply loaded configuration to AuthHandler
+        ApplyCognitoConfiguration();
+        
+        _authHandler.OnAuthenticationSuccess += OnAuthenticationSuccessHandler;
+        _authHandler.OnAuthenticationFailure += OnAuthenticationFailureHandler;
+        _authHandler.OnRegistrationSuccess += OnRegistrationSuccessHandler;
+        _authHandler.OnRegistrationFailure += OnRegistrationFailureHandler;
+        _authHandler.OnEmailVerificationSuccess += OnEmailVerificationSuccessHandler;
+        _authHandler.OnEmailVerificationFailure += OnEmailVerificationFailureHandler;
+        _authHandler.OnPasswordRecoverySuccess += OnPasswordRecoverySuccessHandler;
+        _authHandler.OnPasswordRecoveryFailure += OnPasswordRecoveryFailureHandler;
+        _authHandler.OnResendVerificationSuccess += OnResendVerificationSuccessHandler;
+        _authHandler.OnResendVerificationFailure += OnResendVerificationFailureHandler;
+
+        // Obtener componentes UI
+        _uiDocument = GetComponent<UIDocument>();
+        var root = _uiDocument.rootVisualElement;
+        _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+
+        // Inicializar managers
+        _uiManager = new WelcomeUIManager(_uiConfig);
+        _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler,
+            this);
+        _eventManager.RegisterEvents(_uiDocument);
+
+        GetUiComponents(root);
+        FindDependencies();
+        StartCoroutine(GlitchEffectRoutine());
+        _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+
+        _isInitialized = true;
+        Debug.Log("WelcomeOrchestrator initialized successfully");
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Initialization error: {ex.Message}");
+    }
+}
+        private void InitializeCognitoSettings()
         {
             try
             {
-                if (_isInitialized)
+                // Try to load from Inspector first
+                if (_cognitoSettings == null)
                 {
-                    Debug.Log("WelcomeOrchestrator already initialized");
-                    return;
+                    // Try to load default ScriptableObject from Resources
+                    _cognitoSettings = Resources.Load<SettingsCognitoParametersData>(DEFAULT_COGNITO_SETTINGS_PATH);
+            
+                    if (_cognitoSettings == null)
+                    {
+                        // Create a runtime instance if none found
+                        _cognitoSettings = ScriptableObject.CreateInstance<SettingsCognitoParametersData>();
+                        print("Created runtime Cognito settings instance");
+                    }
+                    else
+                    {
+                        print("Loaded default Cognito settings from Resources");
+                    }
                 }
-
-                Debug.Log("Initializing WelcomeOrchestrator...");
-
-                // Crear el AuthHandler y suscribirse a sus eventos
-                _authHandler = gameObject.AddComponent<WelcomeAuthHandler>();
-                _authHandler.OnAuthenticationSuccess += OnAuthenticationSuccessHandler;
-                _authHandler.OnAuthenticationFailure += OnAuthenticationFailureHandler;
-                _authHandler.OnRegistrationSuccess += OnRegistrationSuccessHandler;
-                _authHandler.OnRegistrationFailure += OnRegistrationFailureHandler;
-                _authHandler.OnEmailVerificationSuccess += OnEmailVerificationSuccessHandler;
-                _authHandler.OnEmailVerificationFailure += OnEmailVerificationFailureHandler;
-                _authHandler.OnPasswordRecoverySuccess += OnPasswordRecoverySuccessHandler;
-                _authHandler.OnPasswordRecoveryFailure += OnPasswordRecoveryFailureHandler;
-                _authHandler.OnResendVerificationSuccess += OnResendVerificationSuccessHandler;
-                _authHandler.OnResendVerificationFailure += OnResendVerificationFailureHandler;
-
-                // Obtener componentes UI
-                _uiDocument = GetComponent<UIDocument>();
-                var root = _uiDocument.rootVisualElement;
-                _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
-
-                // Inicializar managers
-                _uiManager = new WelcomeUIManager(_uiConfig);
-                _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler,
-                    this);
-                _eventManager.RegisterEvents(_uiDocument);
-
-                GetUiComponents(root);
-                FindDependencies();
-                StartCoroutine(GlitchEffectRoutine());
-                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-
-                _isInitialized = true;
-                Debug.Log("WelcomeOrchestrator initialized successfully");
+        
+                // Try to load saved configuration from JSON
+                bool configLoaded = CognitoSettingsManager.LoadConfiguration(_cognitoSettings);
+        
+                if (configLoaded)
+                {
+                    print("Cognito configuration loaded from JSON file");
+                }
+                else
+                {
+                    print("Using default Cognito configuration");
+                }
+        
+                // Validate the configuration
+                _cognitoSettings.ValidateConfiguration();
+                print($"Cognito configuration valid: {_cognitoSettings.IsConfigurationValid}");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Initialization error: {ex.Message}");
+                print($"Error initializing Cognito settings: {ex.Message}");
+        
+                // Fallback: create empty runtime instance
+                _cognitoSettings = ScriptableObject.CreateInstance<SettingsCognitoParametersData>();
             }
         }
+
+private void ApplyCognitoConfiguration()
+{
+    if (_authHandler != null && _cognitoSettings != null)
+    {
+        try
+        {
+            var regionEndpoint = _cognitoSettings.GetRegionEndpoint();
+            _authHandler.UpdateCognitoConfiguration(
+                _cognitoSettings.UserPoolId,
+                _cognitoSettings.ClientId,
+                _cognitoSettings.IdentityPoolId,
+                regionEndpoint
+            );
+            
+            print("Cognito configuration applied to AuthHandler");
+        }
+        catch (Exception ex)
+        {
+            print($"Error applying Cognito configuration: {ex.Message}");
+        }
+    }
+}
 
         private void GetUiComponents(VisualElement root)
         {
             _uiConfig.Body = root.Q<VisualElement>("Body");
             _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
             _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer.Q<VisualElement>("Scrim");
+            InitializeAwsRegionDropdown(root);
 
             var panelsContainer = _subpanelsAndSmokeMaskContainer;
             _uiConfig.Panels[IWelcomeOps.PanelType.Login] = new WelcomeInfo.UIConfiguration.PanelData
@@ -596,6 +853,33 @@ namespace _Scripts.Controllers.WelcomeController
 
             _uiConfig.Panels[IWelcomeOps.PanelType.SettingsCognito].Panel
                 .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+        }
+        private void InitializeAwsRegionDropdown(VisualElement root)
+        {
+            var regionDropdown = root.Q<DropdownField>("AwsRegionDropdownField");
+            if (regionDropdown != null)
+            {
+                var availableRegions = new List<string>
+                {
+                    "us-east-1 (N. Virginia)",
+                    "us-east-2 (Ohio)",
+                    "us-west-1 (N. California)",
+                    "us-west-2 (Oregon)",
+                    "eu-west-1 (Ireland)",
+                    "eu-central-1 (Frankfurt)",
+                    "ap-southeast-1 (Singapore)",
+                    "ap-northeast-1 (Tokyo)"
+                };
+        
+                regionDropdown.choices = availableRegions;
+                regionDropdown.value = "us-east-1 (N. Virginia)"; // Default selection
+        
+                print("AWS Region dropdown initialized with available regions");
+            }
+            else
+            {
+                print("AWS Region dropdown not found in UI");
+            }
         }
 
         private void FindDependencies()
@@ -730,6 +1014,16 @@ namespace _Scripts.Controllers.WelcomeController
             {
                 button.SetEnabled(enabled);
                 button.text = enabled ? "Resend Code" : "Resending...";
+            }
+        }
+        
+        private void SetSaveButtonEnabled(bool enabled)
+        {
+            var button = _uiConfig.Body.Q<Button>("SaveButton");
+            if (button != null)
+            {
+                button.SetEnabled(enabled);
+                button.text = enabled ? "Save" : "Saving...";
             }
         }
 
