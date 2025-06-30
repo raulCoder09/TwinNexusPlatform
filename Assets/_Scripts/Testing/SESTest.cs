@@ -337,8 +337,8 @@ Si no puedes ver el contenido HTML, aquí está la versión en texto plano:
         <div class='highlight'>
             <h3>📊 Detalles de la prueba:</h3>
             <ul>
-                <li><strong>Usuario:</strong> {CognitoManager.Instance?.CurrentUsername ?? "Unknown"}</li>
-                <li><strong>Rol:</strong> {CognitoManager.Instance?.GetUserRole() ?? "Unknown"}</li>
+                <li><strong>Usuario:</strong> {OldCognitoManager.Instance?.CurrentUsername ?? "Unknown"}</li>
+                <li><strong>Rol:</strong> {OldCognitoManager.Instance?.GetUserRole() ?? "Unknown"}</li>
                 <li><strong>Timestamp:</strong> {System.DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC</li>
                 <li><strong>Test ID:</strong> {System.Guid.NewGuid()}</li>
             </ul>

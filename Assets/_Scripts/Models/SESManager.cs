@@ -51,14 +51,14 @@ namespace _Scripts.Models
         {
             try
             {
-                if (CognitoManager.Instance == null || CognitoManager.Instance.CurrentAWSCredentials == null)
+                if (OldCognitoManager.Instance == null || OldCognitoManager.Instance.CurrentAWSCredentials == null)
                 {
                     Debug.LogError("No AWS credentials available. Please authenticate first.");
                     return;
                 }
 
                 var regionEndpoint = RegionEndpoint.USEast1; // Same region as other services
-                sesClient = new AmazonSimpleEmailServiceClient(CognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
+                sesClient = new AmazonSimpleEmailServiceClient(OldCognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
                 
                 Debug.Log("SES client initialized successfully");
             }
@@ -76,7 +76,7 @@ namespace _Scripts.Models
             try
             {
                 // Check if user is authenticated
-                if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+                if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 {
                     Debug.LogError("User must be authenticated to send emails");
                     OnEmailSent?.Invoke(false, "User not authenticated", null);
@@ -171,7 +171,7 @@ namespace _Scripts.Models
         {
             try
             {
-                var userInfo = CognitoManager.Instance;
+                var userInfo = OldCognitoManager.Instance;
                 var contextualMessage = $@"{message}
 
 ---
@@ -218,8 +218,8 @@ namespace _Scripts.Models
 ⏰ Timestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC
 🎮 Platform: Unity
 ☁️ Cloud: AWS
-👤 Triggered by: {CognitoManager.Instance?.CurrentUsername ?? "System"}
-🛡️ User Role: {CognitoManager.Instance?.GetUserRole() ?? "Unknown"}
+👤 Triggered by: {OldCognitoManager.Instance?.CurrentUsername ?? "System"}
+🛡️ User Role: {OldCognitoManager.Instance?.GetUserRole() ?? "Unknown"}
 📧 Notification Type: {type}";
 
                 // In a real implementation, you'd have a list of admin emails
@@ -254,8 +254,8 @@ namespace _Scripts.Models
 ---
 🧪 Test Details:
 ⏰ Sent at: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC
-👤 User: {CognitoManager.Instance?.CurrentUsername ?? "Unknown"}
-🛡️ Role: {CognitoManager.Instance?.GetUserRole() ?? "Unknown"}
+👤 User: {OldCognitoManager.Instance?.CurrentUsername ?? "Unknown"}
+🛡️ Role: {OldCognitoManager.Instance?.GetUserRole() ?? "Unknown"}
 🆔 Test ID: {Guid.NewGuid()}";
 
                 return await SendSimpleEmailAsync(testRecipientEmail, testSubject, testMessageWithDetails);
@@ -372,10 +372,10 @@ namespace _Scripts.Models
         /// </summary>
         public bool CanUserSendEmails()
         {
-            if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 return false;
 
-            var userRole = CognitoManager.Instance.GetUserRole();
+            var userRole = OldCognitoManager.Instance.GetUserRole();
 
             // Define email permissions based on user roles
             return userRole switch
@@ -393,10 +393,10 @@ namespace _Scripts.Models
         /// </summary>
         public int GetDailyEmailLimit()
         {
-            if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 return 0;
 
-            var userRole = CognitoManager.Instance.GetUserRole();
+            var userRole = OldCognitoManager.Instance.GetUserRole();
 
             return userRole switch
             {

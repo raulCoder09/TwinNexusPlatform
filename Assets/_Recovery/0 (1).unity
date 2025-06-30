@@ -404,14 +404,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.MQTTManagement.MqttTesting
   testKeyConnect: c
   testKeyPublish: p
+  testKeySubscribe: s
+  testKeyDisconnect: d
   awsBrokerAddress: aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com
   awsBrokerPort: 8883
   awsClientId: TNPSGA52
   certificatePath: resources/certificates
   certificateFileName: aws-iot-core.pfx
   certificatePassword: 5859
-  testTopic: tnp/TNPSGA52/test
-  testMessage: Hello from Unity MQTT! antonelito
+  topic: tnp/TNPSGA52/test
+  message: Hello from Unity MQTT!
 --- !u!4 &270192446
 Transform:
   m_ObjectHideFlags: 0

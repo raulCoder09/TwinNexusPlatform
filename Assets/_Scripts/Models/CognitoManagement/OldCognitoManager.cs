@@ -14,7 +14,7 @@ using System.Text;
 
 namespace _Scripts.Models
 {
-    public class CognitoManager : MonoBehaviour
+    public class OldCognitoManager : MonoBehaviour
     {
         [Header("AWS Cognito Configuration")]
         [SerializeField] private string userPoolId;
@@ -77,7 +77,7 @@ namespace _Scripts.Models
         public event Action<bool, string> OnResendVerificationComplete;
 
         // Singleton instance
-        public static CognitoManager Instance { get; private set; }
+        public static OldCognitoManager Instance { get; private set; }
         
         // Pending verification data
         public string PendingUsername { get; private set; }

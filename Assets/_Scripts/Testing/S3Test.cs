@@ -195,8 +195,8 @@ namespace _Scripts.Testing
             Debug.Log("📝 Iniciando upload de archivo de texto...");
             
             string testContent = $@"¡Hola desde Unity!
-Usuario: {CognitoManager.Instance?.CurrentUsername ?? "unknown"}
-Rol: {CognitoManager.Instance?.GetUserRole() ?? "unknown"}
+Usuario: {OldCognitoManager.Instance?.CurrentUsername ?? "unknown"}
+Rol: {OldCognitoManager.Instance?.GetUserRole() ?? "unknown"}
 Timestamp: {System.DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC
 Test ID: {System.Guid.NewGuid()}
 

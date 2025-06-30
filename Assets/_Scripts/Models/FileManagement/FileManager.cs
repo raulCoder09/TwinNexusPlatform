@@ -75,6 +75,11 @@ namespace _Scripts.Models.FileManagement
 
                 LogDebug("Initializing FileManager...");
                 _storageProvider = new PlatformAdapter();
+                if (_storageProvider == null)
+                {
+                    LogError("Failed to create PlatformAdapter instance");
+                    return false;
+                }
                 _eventManager = new FileEventManager();
                 _basePaths = new Dictionary<string, string>
                 {
@@ -181,7 +186,6 @@ namespace _Scripts.Models.FileManagement
             {
                 if (sourcePath.StartsWith(_basePaths["streaming"]))
                 {
-                    // Asegurar que la carpeta destino exista
                     if (createParentFolders)
                     {
                         EnsureParentFolderExists(Path.Combine(targetPath, fileName));
@@ -328,7 +332,13 @@ namespace _Scripts.Models.FileManagement
 
         public string GetBasePath(string context)
         {
-            return _storageProvider.GetBasePath(context);
+            if (!_isInitialized) Initialize();
+            if (_storageProvider == null)
+            {
+                LogError("Storage provider is not initialized");
+                return null;
+            }
+            return _basePaths.ContainsKey(context) ? _basePaths[context] : null;
         }
 
         private IFileOperations GetFileOperations(string path)

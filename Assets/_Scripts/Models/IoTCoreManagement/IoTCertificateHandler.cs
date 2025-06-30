@@ -192,7 +192,7 @@ namespace _Scripts.Models.IoTCoreManagement
 
         private bool CheckAuthentication()
         {
-            if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
             {
                 LogError("User must be authenticated to perform IoT operations");
                 return false;

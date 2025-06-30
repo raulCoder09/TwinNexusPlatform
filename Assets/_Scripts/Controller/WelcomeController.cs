@@ -69,7 +69,7 @@ namespace _Scripts.Controller
 
         #region Dependencies
         private DashboardController _dashboardController;
-        private CognitoManager _cognitoManager;
+        private OldCognitoManager _oldCognitoManager;
         #endregion
 
         #region Panel Management
@@ -214,9 +214,9 @@ namespace _Scripts.Controller
         private void FindDependencies()
         {
             _dashboardController = FindComponentByTag<DashboardController>("Dashboard");
-            _cognitoManager = FindComponentByTag<CognitoManager>("CognitoManager");
+            _oldCognitoManager = FindComponentByTag<OldCognitoManager>("CognitoManager");
             
-            if (_cognitoManager == null)
+            if (_oldCognitoManager == null)
             {
                 Debug.LogError("CognitoManager not found in scene. Make sure CognitoManager is attached to a GameObject with tag 'CognitoManager'.");
             }
@@ -242,27 +242,27 @@ namespace _Scripts.Controller
 
         private void SubscribeToCognitoEvents()
         {
-            if (_cognitoManager != null)
+            if (_oldCognitoManager != null)
             {
-                _cognitoManager.OnAuthenticationComplete += OnCognitoAuthenticationComplete;
-                _cognitoManager.OnRegistrationComplete += OnCognitoRegistrationComplete;
-                _cognitoManager.OnPasswordRecoveryComplete += OnCognitoPasswordRecoveryComplete;
+                _oldCognitoManager.OnAuthenticationComplete += OnOldCognitoAuthenticationComplete;
+                _oldCognitoManager.OnRegistrationComplete += OnOldCognitoRegistrationComplete;
+                _oldCognitoManager.OnPasswordRecoveryComplete += OnOldCognitoPasswordRecoveryComplete;
                 // NEW: Subscribe to email verification events
-                _cognitoManager.OnEmailVerificationComplete += OnCognitoEmailVerificationComplete;
-                _cognitoManager.OnResendVerificationComplete += OnCognitoResendVerificationComplete;
+                _oldCognitoManager.OnEmailVerificationComplete += OnOldCognitoEmailVerificationComplete;
+                _oldCognitoManager.OnResendVerificationComplete += OnOldCognitoResendVerificationComplete;
             }
         }
 
         private void UnsubscribeFromCognitoEvents()
         {
-            if (_cognitoManager != null)
+            if (_oldCognitoManager != null)
             {
-                _cognitoManager.OnAuthenticationComplete -= OnCognitoAuthenticationComplete;
-                _cognitoManager.OnRegistrationComplete -= OnCognitoRegistrationComplete;
-                _cognitoManager.OnPasswordRecoveryComplete -= OnCognitoPasswordRecoveryComplete;
+                _oldCognitoManager.OnAuthenticationComplete -= OnOldCognitoAuthenticationComplete;
+                _oldCognitoManager.OnRegistrationComplete -= OnOldCognitoRegistrationComplete;
+                _oldCognitoManager.OnPasswordRecoveryComplete -= OnOldCognitoPasswordRecoveryComplete;
                 // NEW: Unsubscribe from email verification events
-                _cognitoManager.OnEmailVerificationComplete -= OnCognitoEmailVerificationComplete;
-                _cognitoManager.OnResendVerificationComplete -= OnCognitoResendVerificationComplete;
+                _oldCognitoManager.OnEmailVerificationComplete -= OnOldCognitoEmailVerificationComplete;
+                _oldCognitoManager.OnResendVerificationComplete -= OnOldCognitoResendVerificationComplete;
             }
         }
         #endregion
@@ -284,9 +284,9 @@ namespace _Scripts.Controller
             ClearMessage();
             
             // NEW: Update email verification panel with pending email
-            if (panelType == PanelType.EmailVerification && _cognitoManager != null)
+            if (panelType == PanelType.EmailVerification && _oldCognitoManager != null)
             {
-                _emailVerificationEmail.text = _cognitoManager.PendingEmail ?? "Unknown email";
+                _emailVerificationEmail.text = _oldCognitoManager.PendingEmail ?? "Unknown email";
             }
             
             Debug.Log($"Panel {panelType} opened");
@@ -338,7 +338,7 @@ namespace _Scripts.Controller
         #region Authentication Methods
         private async void HandleAuthentication()
         {
-            if (_cognitoManager == null)
+            if (_oldCognitoManager == null)
             {
                 ShowMessage("Authentication service not available", true);
                 return;
@@ -358,7 +358,7 @@ namespace _Scripts.Controller
                 ShowMessage("Authenticating...", false);
                 SetLoginButtonEnabled(false);
                 
-                bool success = await _cognitoManager.SignInAsync(username, password);
+                bool success = await _oldCognitoManager.SignInAsync(username, password);
                 
                 if (!success)
                 {
@@ -378,7 +378,7 @@ namespace _Scripts.Controller
 
         private async void HandleRegisterAndLogin()
         {
-            if (_cognitoManager == null)
+            if (_oldCognitoManager == null)
             {
                 ShowMessage("Registration service not available", true);
                 return;
@@ -397,13 +397,13 @@ namespace _Scripts.Controller
                 return;
             }
 
-            if (!_cognitoManager.IsValidEmail(email))
+            if (!_oldCognitoManager.IsValidEmail(email))
             {
                 ShowMessage("Please enter a valid email address", true);
                 return;
             }
 
-            if (!string.IsNullOrEmpty(phone) && !_cognitoManager.IsValidPhoneNumber(phone))
+            if (!string.IsNullOrEmpty(phone) && !_oldCognitoManager.IsValidPhoneNumber(phone))
             {
                 ShowMessage("Please enter a valid phone number (include country code, e.g., +52 for Mexico)", true);
                 return;
@@ -415,7 +415,7 @@ namespace _Scripts.Controller
                 return;
             }
 
-            if (!_cognitoManager.IsValidPassword(password))
+            if (!_oldCognitoManager.IsValidPassword(password))
             {
                 ShowMessage("Password must be at least 8 characters with uppercase, lowercase, and number", true);
                 return;
@@ -429,11 +429,11 @@ namespace _Scripts.Controller
                 bool success;
                 if (!string.IsNullOrEmpty(phone))
                 {
-                    success = await _cognitoManager.SignUpAsync(username, password, email, phone);
+                    success = await _oldCognitoManager.SignUpAsync(username, password, email, phone);
                 }
                 else
                 {
-                    success = await _cognitoManager.SignUpAsync(username, password, email);
+                    success = await _oldCognitoManager.SignUpAsync(username, password, email);
                 }
                 
                 if (!success)
@@ -454,7 +454,7 @@ namespace _Scripts.Controller
 
         private async void HandlePasswordRecovery()
         {
-            if (_cognitoManager == null)
+            if (_oldCognitoManager == null)
             {
                 ShowMessage("Password recovery service not available", true);
                 return;
@@ -468,7 +468,7 @@ namespace _Scripts.Controller
                 return;
             }
 
-            if (!_cognitoManager.IsValidEmail(email))
+            if (!_oldCognitoManager.IsValidEmail(email))
             {
                 ShowMessage("Please enter a valid email address", true);
                 return;
@@ -479,7 +479,7 @@ namespace _Scripts.Controller
                 ShowMessage("Sending recovery email...", false);
                 SetRecoverButtonEnabled(false);
                 
-                bool success = await _cognitoManager.ForgotPasswordAsync(email);
+                bool success = await _oldCognitoManager.ForgotPasswordAsync(email);
                 
                 if (!success)
                 {
@@ -500,7 +500,7 @@ namespace _Scripts.Controller
         // NEW: Handle email verification code submission
         private async void HandleEmailVerification()
         {
-            if (_cognitoManager == null)
+            if (_oldCognitoManager == null)
             {
                 ShowMessage("Verification service not available", true);
                 return;
@@ -514,7 +514,7 @@ namespace _Scripts.Controller
                 return;
             }
 
-            if (!_cognitoManager.IsValidVerificationCode(verificationCode))
+            if (!_oldCognitoManager.IsValidVerificationCode(verificationCode))
             {
                 ShowMessage("Please enter a valid 6-digit verification code", true);
                 return;
@@ -525,7 +525,7 @@ namespace _Scripts.Controller
                 ShowMessage("Verifying email...", false);
                 SetVerifyEmailButtonEnabled(false);
                 
-                bool success = await _cognitoManager.ConfirmSignUpAsync(_cognitoManager.CleanVerificationCode(verificationCode));
+                bool success = await _oldCognitoManager.ConfirmSignUpAsync(_oldCognitoManager.CleanVerificationCode(verificationCode));
                 
                 if (!success)
                 {
@@ -546,7 +546,7 @@ namespace _Scripts.Controller
         // NEW: Handle resending verification code
         private async void HandleResendVerificationCode()
         {
-            if (_cognitoManager == null)
+            if (_oldCognitoManager == null)
             {
                 ShowMessage("Verification service not available", true);
                 return;
@@ -557,7 +557,7 @@ namespace _Scripts.Controller
                 ShowMessage("Resending verification code...", false);
                 SetResendCodeButtonEnabled(false);
                 
-                bool success = await _cognitoManager.ResendConfirmationCodeAsync();
+                bool success = await _oldCognitoManager.ResendConfirmationCodeAsync();
                 
                 if (!success)
                 {
@@ -577,7 +577,7 @@ namespace _Scripts.Controller
         #endregion
 
         #region Cognito Event Handlers
-        private void OnCognitoAuthenticationComplete(bool success, string message)
+        private void OnOldCognitoAuthenticationComplete(bool success, string message)
         {
             if (success)
             {
@@ -589,7 +589,7 @@ namespace _Scripts.Controller
             }
         }
 
-        private void OnCognitoRegistrationComplete(bool success, string message)
+        private void OnOldCognitoRegistrationComplete(bool success, string message)
         {
             if (success)
             {
@@ -601,7 +601,7 @@ namespace _Scripts.Controller
             }
         }
 
-        private void OnCognitoPasswordRecoveryComplete(bool success, string message)
+        private void OnOldCognitoPasswordRecoveryComplete(bool success, string message)
         {
             if (success)
             {
@@ -614,7 +614,7 @@ namespace _Scripts.Controller
         }
 
         // NEW: Handle email verification completion
-        private void OnCognitoEmailVerificationComplete(bool success, string message)
+        private void OnOldCognitoEmailVerificationComplete(bool success, string message)
         {
             if (success)
             {
@@ -627,7 +627,7 @@ namespace _Scripts.Controller
         }
 
         // NEW: Handle resend verification code completion
-        private void OnCognitoResendVerificationComplete(bool success, string message)
+        private void OnOldCognitoResendVerificationComplete(bool success, string message)
         {
             if (success)
             {
@@ -666,7 +666,7 @@ namespace _Scripts.Controller
             ShowMessage("Registration successful! Please verify your email.", false);
             
             // NEW: Switch to email verification panel if verification is pending
-            if (_cognitoManager.HasPendingVerification())
+            if (_oldCognitoManager.HasPendingVerification())
             {
                 Invoke(nameof(SwitchToEmailVerification), 2f);
             }

@@ -118,14 +118,14 @@ namespace _Scripts.Models
         {
             try
             {
-                if (CognitoManager.Instance == null || CognitoManager.Instance.CurrentAWSCredentials == null)
+                if (OldCognitoManager.Instance == null || OldCognitoManager.Instance.CurrentAWSCredentials == null)
                 {
                     Debug.LogError("No AWS credentials available. Please authenticate first.");
                     return;
                 }
 
                 var regionEndpoint = RegionEndpoint.USEast1; // Same region as other services
-                s3Client = new AmazonS3Client(CognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
+                s3Client = new AmazonS3Client(OldCognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
                 
                 Debug.Log("S3 client initialized successfully");
             }
@@ -140,11 +140,11 @@ namespace _Scripts.Models
         /// </summary>
         private string GetUserFolderPath(ContentCategory category = ContentCategory.General)
         {
-            if (CognitoManager.Instance == null)
+            if (OldCognitoManager.Instance == null)
                 return "basic-users/unknown/general/";
 
-            var userRole = CognitoManager.Instance.GetUserRole();
-            var username = CognitoManager.Instance.CurrentUsername ?? "unknown";
+            var userRole = OldCognitoManager.Instance.GetUserRole();
+            var username = OldCognitoManager.Instance.CurrentUsername ?? "unknown";
     
             string baseFolder = userRole switch
             {
@@ -174,7 +174,7 @@ namespace _Scripts.Models
             try
             {
                 // Check if user is authenticated
-                if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+                if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 {
                     Debug.LogError("User must be authenticated to upload files");
                     OnUploadComplete?.Invoke(false, "User not authenticated", null);
@@ -337,7 +337,7 @@ namespace _Scripts.Models
             try
             {
                 // Check if user is authenticated
-                if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+                if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 {
                     Debug.LogError("User must be authenticated to download files");
                     OnDownloadComplete?.Invoke(false, "User not authenticated", null);
@@ -528,7 +528,7 @@ namespace _Scripts.Models
             try
             {
                 // Check if user is authenticated
-                if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+                if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 {
                     Debug.LogError("User must be authenticated to delete files");
                     OnFileDeleteComplete?.Invoke(false, "User not authenticated", null);
@@ -548,7 +548,7 @@ namespace _Scripts.Models
 
                 // Security check: only allow deletion of files in user's folder
                 string userFolder = GetUserFolderPath();
-                if (!fileKey.StartsWith(userFolder) && CognitoManager.Instance.GetUserRole() != "super-admin")
+                if (!fileKey.StartsWith(userFolder) && OldCognitoManager.Instance.GetUserRole() != "super-admin")
                 {
                     Debug.LogError($"Access denied: Cannot delete files outside your folder ({userFolder})");
                     OnFileDeleteComplete?.Invoke(false, "Access denied - can only delete files in your folder", null);
@@ -670,7 +670,7 @@ namespace _Scripts.Models
     try
     {
         // Check if user is authenticated
-        if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+        if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
         {
             Debug.LogError("User must be authenticated to list files");
             OnFileListComplete?.Invoke(false, "User not authenticated", new List<S3FileInfo>());
@@ -750,11 +750,11 @@ namespace _Scripts.Models
 
         private string GetBaseUserFolder()
         {
-            if (CognitoManager.Instance == null)
+            if (OldCognitoManager.Instance == null)
                 return "basic-users/unknown/";
 
-            var userRole = CognitoManager.Instance.GetUserRole();
-            var username = CognitoManager.Instance.CurrentUsername ?? "unknown";
+            var userRole = OldCognitoManager.Instance.GetUserRole();
+            var username = OldCognitoManager.Instance.CurrentUsername ?? "unknown";
     
             return userRole switch
             {

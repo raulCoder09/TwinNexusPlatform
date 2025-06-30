@@ -39,19 +39,19 @@ namespace _Scripts.Models.CloudWatchManagement
         {
             try
             {
-                if (CognitoManager.Instance == null || CognitoManager.Instance.CurrentAWSCredentials == null)
+                if (OldCognitoManager.Instance == null || OldCognitoManager.Instance.CurrentAWSCredentials == null)
                 {
                     Debug.LogError("No AWS credentials available. Please authenticate first.");
                     return;
                 }
 
                 var regionEndpoint = Amazon.RegionEndpoint.USEast1;
-                cloudWatchClient = new AmazonCloudWatchClient(CognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
-                cloudWatchLogsClient = new AmazonCloudWatchLogsClient(CognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
+                cloudWatchClient = new AmazonCloudWatchClient(OldCognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
+                cloudWatchLogsClient = new AmazonCloudWatchLogsClient(OldCognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
 
                 Metrics = new CloudWatchMetrics(cloudWatchClient, defaultNamespace);
                 Alarms = new CloudWatchAlarms(cloudWatchClient, defaultNamespace);
-                Logs = new CloudWatchLogs(cloudWatchLogsClient, defaultLogGroup, CognitoManager.Instance?.CurrentUsername);
+                Logs = new CloudWatchLogs(cloudWatchLogsClient, defaultLogGroup, OldCognitoManager.Instance?.CurrentUsername);
 
                 Debug.Log("CloudWatchManager initialized successfully");
             }

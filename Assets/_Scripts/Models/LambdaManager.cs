@@ -44,14 +44,14 @@ namespace _Scripts.Models
         {
             try
             {
-                if (CognitoManager.Instance == null || CognitoManager.Instance.CurrentAWSCredentials == null)
+                if (OldCognitoManager.Instance == null || OldCognitoManager.Instance.CurrentAWSCredentials == null)
                 {
                     Debug.LogError("No AWS credentials available. Please authenticate first.");
                     return;
                 }
 
                 var regionEndpoint = RegionEndpoint.USEast1; // Use same region as Cognito
-                lambdaClient = new AmazonLambdaClient(CognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
+                lambdaClient = new AmazonLambdaClient(OldCognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
                 
                 Debug.Log("Lambda client initialized successfully");
             }
@@ -119,7 +119,7 @@ namespace _Scripts.Models
         {
             try
             {
-                if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+                if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 {
                     Debug.LogError("User must be authenticated to execute Lambda functions");
                     OnLambdaExecutionComplete?.Invoke(false, "User not authenticated", null);
@@ -153,7 +153,7 @@ namespace _Scripts.Models
 
                 Debug.Log($"Executing Lambda function: {functionName}");
                 Debug.Log($"Payload: {jsonPayload}");
-                Debug.Log($"User group: {CognitoManager.Instance.CurrentUserGroup}");
+                Debug.Log($"User group: {OldCognitoManager.Instance.CurrentUserGroup}");
 
                 // Create invoke request
                 var invokeRequest = new InvokeRequest
@@ -203,9 +203,9 @@ namespace _Scripts.Models
             {
                 var userContext = new
                 {
-                    username = CognitoManager.Instance.CurrentUsername,
-                    userGroup = CognitoManager.Instance.CurrentUserGroup,
-                    userGroups = CognitoManager.Instance.UserGroups,
+                    username = OldCognitoManager.Instance.CurrentUsername,
+                    userGroup = OldCognitoManager.Instance.CurrentUserGroup,
+                    userGroups = OldCognitoManager.Instance.UserGroups,
                     timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                     additionalData = additionalPayload
                 };
@@ -225,10 +225,10 @@ namespace _Scripts.Models
         /// </summary>
         public bool CanUserExecuteFunction(string functionName)
         {
-            if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 return false;
 
-            var userRole = CognitoManager.Instance.GetUserRole();
+            var userRole = OldCognitoManager.Instance.GetUserRole();
 
             // Define function permissions based on user roles
             switch (userRole)
@@ -260,10 +260,10 @@ namespace _Scripts.Models
         /// </summary>
         public List<string> GetAvailableFunctions()
         {
-            if (CognitoManager.Instance == null || !CognitoManager.Instance.IsUserAuthenticated)
+            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
                 return new List<string>();
 
-            var userRole = CognitoManager.Instance.GetUserRole();
+            var userRole = OldCognitoManager.Instance.GetUserRole();
             var availableFunctions = new List<string>();
 
             switch (userRole)
@@ -327,7 +327,7 @@ namespace _Scripts.Models
                 {
                     test = true,
                     message = "Connectivity test from Unity",
-                    userRole = CognitoManager.Instance?.GetUserRole() ?? "unknown",
+                    userRole = OldCognitoManager.Instance?.GetUserRole() ?? "unknown",
                     timestamp = DateTime.UtcNow
                 };
 

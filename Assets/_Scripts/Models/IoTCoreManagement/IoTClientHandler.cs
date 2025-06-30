@@ -20,13 +20,13 @@ namespace _Scripts.Models.IoTCoreManagement
         {
             try
             {
-                if (CognitoManager.Instance == null || CognitoManager.Instance.CurrentAWSCredentials == null)
+                if (OldCognitoManager.Instance == null || OldCognitoManager.Instance.CurrentAWSCredentials == null)
                 {
                     LogError("No AWS credentials available. Please authenticate first.");
                     return false;
                 }
 
-                iotClient = new AmazonIoTClient(CognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
+                iotClient = new AmazonIoTClient(OldCognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
                 LogDebug("IoT Core client initialized successfully");
                 return true;
             }

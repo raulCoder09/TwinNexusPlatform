@@ -44,7 +44,7 @@ namespace _Scripts.Models.CloudWatchManagement
 
                 await EnsureLogGroupAndStreamExist();
 
-                var username = CognitoManager.Instance?.CurrentUsername ?? "unknown";
+                var username = OldCognitoManager.Instance?.CurrentUsername ?? "unknown";
                 var formattedMessage = $"[{logLevel}] [{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] [{username}] {message}";
 
                 var logEvent = new InputLogEvent
@@ -86,7 +86,7 @@ namespace _Scripts.Models.CloudWatchManagement
             try
             {
                 logLevel = logLevel ?? defaultLogLevel;
-                userId = userId ?? CognitoManager.Instance?.CurrentUsername ?? "unknown";
+                userId = userId ?? OldCognitoManager.Instance?.CurrentUsername ?? "unknown";
                 Debug.Log($"Sending app monitoring log: Event Type: {eventType}, User ID: {userId}, Level: {logLevel}");
 
                 await EnsureLogGroupAndStreamExist();

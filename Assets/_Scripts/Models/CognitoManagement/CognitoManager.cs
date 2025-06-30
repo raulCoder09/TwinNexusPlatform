@@ -1,0 +1,324 @@
+using System.Linq;
+using Amazon;
+using Amazon.CognitoIdentity.Model;
+
+namespace _Scripts.Models.CognitoManagement
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Amazon.CognitoIdentityProvider;
+    using Amazon.CognitoIdentity;
+    using Amazon.Runtime;
+    using UnityEngine;
+    using _Scripts.Models.CognitoManagement;
+
+    public class CognitoManager : MonoBehaviour
+    {
+        #region Singleton Pattern
+        private static CognitoManager _instance;
+        public static CognitoManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<CognitoManager>();
+                    if (_instance == null)
+                    {
+                        GameObject go = new GameObject("CognitoManager");
+                        _instance = go.AddComponent<CognitoManager>();
+                        DontDestroyOnLoad(go);
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        private void Awake()
+        {
+            if (_instance == null)
+            {
+                _instance = this;
+                DontDestroyOnLoad(gameObject);
+                Initialize();
+            }
+            else if (_instance != this)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _authHandler = null; // No dispose aquí, se maneja en el handler
+                _cognitoIdentity?.Dispose();
+                _instance = null;
+            }
+        }
+        #endregion
+
+        // Propiedades configurables (sobrescritas por CognitoTesting)
+        protected string _userPoolId = "us-east-1_abc123xyz"; // Predeterminado, sobrescrito por Inspector
+        protected string _clientId = "yourclientid123"; // Predeterminado, sobrescrito por Inspector
+        protected string _identityPoolId = "us-east-1:abc123-xyz"; // Predeterminado, sobrescrito por Inspector
+        protected RegionEndpoint _regionEndpoint = RegionEndpoint.USEast1; // Predeterminado, sobrescrito por Inspector
+        protected bool _enableDebugLogs = true;
+
+        private CognitoAuthHandler _authHandler;
+        private AmazonCognitoIdentityClient _cognitoIdentity;
+        private CognitoInfo.TokenData _tokenData = new CognitoInfo.TokenData();
+        private CognitoInfo.Credentials _credentials;
+        private CognitoInfo.UserInfo _userInfo = new CognitoInfo.UserInfo();
+        private List<string> _userGroups = new List<string>();
+        protected bool _isInitialized = false; // Cambiado a protected
+
+        // Eventos
+        public event Action<bool, string> OnAuthenticationComplete;
+        public event Action<bool, string> OnRegistrationComplete;
+        public event Action<bool, string> OnPasswordRecoveryComplete;
+        public event Action<bool, string> OnEmailVerificationComplete;
+        public event Action<bool, string> OnResendVerificationComplete;
+        public event Action<bool, string> OnAWSCredentialsObtained;
+
+        public string AccessToken => _tokenData.AccessToken;
+        public string IdToken => _tokenData.IdToken;
+        public string RefreshToken => _tokenData.RefreshToken;
+        public bool IsUserAuthenticated => _userInfo.IsAuthenticated;
+        public string CurrentUsername => _userInfo.Username;
+        public string PendingUsername => _userInfo.PendingUsername;
+        public string PendingEmail => _userInfo.PendingEmail;
+        public Amazon.Runtime.AWSCredentials CurrentAWSCredentials => _credentials != null 
+            ? new SessionAWSCredentials(_credentials.AccessKeyId, _credentials.SecretKey, _credentials.SessionToken) 
+            : null;
+        public string CurrentUserGroup => _userInfo.CurrentUserGroup;
+        public List<string> UserGroups => _userGroups;
+
+        protected void Initialize() // Cambiado a protected
+        {
+            try
+            {
+                if (_isInitialized)
+                {
+                    LogDebug("CognitoManager already initialized");
+                    return;
+                }
+
+                LogDebug("Initializing CognitoManager...");
+                _authHandler = new CognitoAuthHandler(_userPoolId, _clientId, _regionEndpoint);
+                _cognitoIdentity = new AmazonCognitoIdentityClient(new AnonymousAWSCredentials(), _regionEndpoint);
+                _isInitialized = true;
+                LogDebug("CognitoManager initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Initialization error: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> SignInAsync(string username, string password)
+        {
+            if (!_isInitialized) Initialize();
+            var success = await _authHandler.SignInAsync(username, password);
+            if (success)
+            {
+                _userInfo.Username = username;
+                _userInfo.IsAuthenticated = true;
+                await GetAWSCredentialsAsync();
+                await GetUserGroupsAsync();
+                OnAuthenticationComplete?.Invoke(true, "Authentication successful");
+            }
+            else
+            {
+                OnAuthenticationComplete?.Invoke(false, "Authentication failed");
+            }
+            return success;
+        }
+
+        public async Task<bool> SignUpAsync(string username, string password, string email, string phoneNumber = null)
+        {
+            if (!_isInitialized) Initialize();
+            var success = await _authHandler.SignUpAsync(username, password, email, phoneNumber);
+            if (success)
+            {
+                _userInfo.PendingUsername = username;
+                _userInfo.PendingEmail = email;
+                OnRegistrationComplete?.Invoke(true, "Registration successful. Please check your email for verification.");
+            }
+            else
+            {
+                OnRegistrationComplete?.Invoke(false, "Registration failed");
+            }
+            return success;
+        }
+
+        public async Task<bool> ConfirmSignUpAsync(string username, string confirmationCode)
+        {
+            if (!_isInitialized) Initialize();
+            var success = await _authHandler.ConfirmSignUpAsync(username, confirmationCode);
+            if (success)
+            {
+                _userInfo.PendingUsername = null;
+                _userInfo.PendingEmail = null;
+                OnEmailVerificationComplete?.Invoke(true, "Email verification successful!");
+            }
+            else
+            {
+                OnEmailVerificationComplete?.Invoke(false, "Email verification failed");
+            }
+            return success;
+        }
+
+        public async Task<bool> ForgotPasswordAsync(string username)
+        {
+            if (!_isInitialized) Initialize();
+            var success = await _authHandler.ForgotPasswordAsync(username);
+            if (success)
+            {
+                OnPasswordRecoveryComplete?.Invoke(true, "Password recovery email sent successfully");
+            }
+            else
+            {
+                OnPasswordRecoveryComplete?.Invoke(false, "Password recovery failed");
+            }
+            return success;
+        }
+
+        public async Task<bool> ConfirmForgotPasswordAsync(string username, string confirmationCode, string newPassword)
+        {
+            if (!_isInitialized) Initialize();
+            var success = await _authHandler.ConfirmForgotPasswordAsync(username, confirmationCode, newPassword);
+            return success; // No evento específico por ahora
+        }
+
+        public void SignOut()
+        {
+            if (!_isInitialized) Initialize();
+            _authHandler.SignOut();
+            _tokenData = new CognitoInfo.TokenData();
+            _credentials = null;
+            _userInfo = new CognitoInfo.UserInfo();
+            _userGroups.Clear();
+            _userInfo.IsAuthenticated = false;
+        }
+
+        public async Task<bool> RefreshTokenAsync()
+        {
+            if (!_isInitialized) Initialize();
+            var success = await _authHandler.RefreshTokenAsync();
+            if (success)
+            {
+                // Lógica de actualización de tokens (pendiente de implementación completa)
+            }
+            return success;
+        }
+
+        public async Task<bool> GetAWSCredentialsAsync()
+        {
+            if (!_isInitialized) Initialize();
+            if (string.IsNullOrEmpty(IdToken))
+            {
+                LogError("No ID token available for getting AWS credentials");
+                OnAWSCredentialsObtained?.Invoke(false, "No ID token available");
+                return false;
+            }
+
+            try
+            {
+                var getIdRequest = new GetIdRequest
+                {
+                    IdentityPoolId = _identityPoolId,
+                    Logins = new Dictionary<string, string>
+                    {
+                        { $"cognito-idp.{_regionEndpoint.SystemName}.amazonaws.com/{_userPoolId}", IdToken }
+                    }
+                };
+
+                var getIdResponse = await _cognitoIdentity.GetIdAsync(getIdRequest);
+
+                var getCredentialsRequest = new GetCredentialsForIdentityRequest
+                {
+                    IdentityId = getIdResponse.IdentityId,
+                    Logins = new Dictionary<string, string>
+                    {
+                        { $"cognito-idp.{_regionEndpoint.SystemName}.amazonaws.com/{_userPoolId}", IdToken }
+                    }
+                };
+
+                var getCredentialsResponse = await _cognitoIdentity.GetCredentialsForIdentityAsync(getCredentialsRequest);
+
+                _credentials = new CognitoInfo.Credentials
+                {
+                    AccessKeyId = getCredentialsResponse.Credentials.AccessKeyId,
+                    SecretKey = getCredentialsResponse.Credentials.SecretKey,
+                    SessionToken = getCredentialsResponse.Credentials.SessionToken
+                };
+
+                LogDebug("AWS credentials obtained successfully");
+                OnAWSCredentialsObtained?.Invoke(true, "AWS credentials obtained successfully");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error getting AWS credentials: {ex.Message}");
+                OnAWSCredentialsObtained?.Invoke(false, ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<List<string>> GetUserGroupsAsync()
+        {
+            if (!_isInitialized) Initialize();
+            var groups = await _authHandler.GetUserGroupsAsync();
+            _userGroups = groups;
+            _userInfo.CurrentUserGroup = groups.FirstOrDefault();
+            return groups;
+        }
+
+        public bool IsUserInGroup(string groupName)
+        {
+            if (!_isInitialized) Initialize();
+            return _authHandler.IsUserInGroup(groupName);
+        }
+
+        public string GetUserRole()
+        {
+            if (!_isInitialized) Initialize();
+            return _authHandler.GetUserRole();
+        }
+
+        public async Task<bool> ResendConfirmationCodeAsync()
+        {
+            if (!_isInitialized) Initialize();
+            if (string.IsNullOrEmpty(PendingUsername))
+            {
+                LogError("No pending username for resending code");
+                return false;
+            }
+            var success = await _authHandler.ResendConfirmationCodeAsync(PendingUsername);
+            if (success)
+            {
+                OnResendVerificationComplete?.Invoke(true, "Verification code resent successfully");
+            }
+            else
+            {
+                OnResendVerificationComplete?.Invoke(false, "Failed to resend verification code");
+            }
+            return success;
+        }
+
+        private void LogDebug(string message)
+        {
+            if (_enableDebugLogs)
+                Debug.Log($"[CognitoManager] {message}");
+        }
+
+        private void LogError(string message)
+        {
+            if (_enableDebugLogs)
+                Debug.LogError($"[CognitoManager] {message}");
+        }
+    }
+}
