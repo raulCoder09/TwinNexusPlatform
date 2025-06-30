@@ -1,8 +1,12 @@
+using Amazon;
+
 namespace _Scripts.Controllers.WelcomeController
 {
     using System;
+    using System.Threading.Tasks;
     using UnityEngine;
     using _Scripts.Models.CognitoManagement;
+    using _Scripts.Models.SESManagement;
 
     public class ServiceController : MonoBehaviour
     {
@@ -50,8 +54,9 @@ namespace _Scripts.Controllers.WelcomeController
         #endregion
 
         private bool _isInitialized = false;
+        private SESManager _sesManager;
 
-        private void Start() 
+        private void Start()
         {
             Initialize();
         }
@@ -67,7 +72,18 @@ namespace _Scripts.Controllers.WelcomeController
                 }
 
                 Debug.Log("Initializing ServiceController...");
-                // Verificar que WelcomeOrchestrator esté inicializado antes de suscribirse
+                _sesManager = transform.Find("SESManager")?.GetComponent<SESManager>();
+                if (_sesManager == null)
+                {
+                    Debug.LogWarning("SESManager not found as a child. Creating it...");
+                    GameObject sesGo = new GameObject("SESManager");
+                    sesGo.transform.parent = gameObject.transform;
+                    _sesManager = sesGo.AddComponent<SESManager>();
+                    _sesManager._senderEmail = "noreply@twinnexus.com";
+                    _sesManager._senderName = "Twin Nexus Platform";
+                    _sesManager._region = RegionEndpoint.USEast1;
+                }
+
                 if (WelcomeOrchestrator.Instance != null && WelcomeOrchestrator.Instance.isActiveAndEnabled)
                 {
                     WelcomeOrchestrator.Instance.OnAuthenticationSuccess += OnAuthenticationSuccess;
@@ -86,24 +102,45 @@ namespace _Scripts.Controllers.WelcomeController
             }
         }
 
-        private void OnAuthenticationSuccess()
+        private async void OnAuthenticationSuccess()
         {
-            Debug.Log("Authentication successful - Activating services...");
-            ActivateServices();
+            Debug.Log("Authentication successful - Activating SESManager...");
+            await ActivateSESManager();
         }
 
-        private void ActivateServices()
+        private async Task ActivateSESManager()
         {
-            var credentials = CognitoManager.Instance.CurrentAWSCredentials;
-            if (credentials != null)
+            if (_sesManager != null)
             {
-                Debug.Log("AWS Credentials obtained, activating services...");
-                // Aquí puedes agregar la lógica para instanciar y activar managers como SESManager
-                // Ejemplo: SESManager.Instance.Initialize(credentials);
+                var cognitoManager = CognitoManager.Instance;
+                if (cognitoManager != null)
+                {
+                    Debug.Log("Waiting for AWS credentials...");
+                    while (cognitoManager.CurrentAWSCredentials == null)
+                    {
+                        await Task.Delay(100); // Esperar 100ms y reintentar
+                        Debug.Log("Retrying to get credentials...");
+                    }
+                    Debug.Log("AWS Credentials obtained, initializing SESManager...");
+                    bool success = await _sesManager.InitializeAsync();
+                    if (success)
+                    {
+                        Debug.Log("SESManager initialized successfully");
+                        await _sesManager.SendTestEmailAsync(); // Probar con un email
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to initialize SESManager");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("CognitoManager instance is null");
+                }
             }
             else
             {
-                Debug.LogWarning("No AWS credentials available. Services not activated.");
+                Debug.LogError("SESManager reference is null");
             }
         }
     }

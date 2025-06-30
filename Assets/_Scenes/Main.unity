@@ -515,6 +515,69 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SESTest
   testToEmail: mechar09@gmail.com
   verifyEmail: mechar09@gmail.com
+  sendTestEmailAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 2fd0ed67-14c6-4f6c-b959-72d02b9ccb1d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  sendContextEmailAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: e1c05336-507a-4d77-a020-bfecc455df0b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  sendNotificationAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 0bf04f87-6e47-41e7-b231-f30ba0c43c58
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  listVerifiedEmailsAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 6b61d876-988d-42d7-910c-d689639fdd8d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  verifyEmailAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 64f62d72-83cb-4462-a558-5e87b6a4c8cd
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  testConnectivityAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: b928dc2e-a0b7-40ab-91d5-2ddfbdd095c8
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  sendHtmlEmailAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: afa4aa03-7f00-4819-8894-d5b2abdab5f3
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
 --- !u!4 &281711848
 Transform:
   m_ObjectHideFlags: 0
@@ -559,8 +622,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ddcffd60f8ea424d9753bb598c695ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.SESManagement.SESManager
-  senderEmail: mechar09@gmail.com
-  senderName: Twin Nexus Platform
+  _senderEmail: mechar09@outlook.com
+  _senderName: TBP-Ing. Adan Raul Morales Hernandez
+  _enableLogging: 1
+  _autoInitializeTemplates: 1
+  _maxRetryAttempts: 3
+  _retryDelaySeconds: 2
 --- !u!4 &584298260
 Transform:
   m_ObjectHideFlags: 0
@@ -1566,8 +1633,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ddcffd60f8ea424d9753bb598c695ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SESManager
-  senderEmail: mechar09@gmail.com
-  senderName: Twin Nexus Platform
+  _senderEmail: 
+  _senderName: 
+  _enableLogging: 1
+  _autoInitializeTemplates: 1
+  _maxRetryAttempts: 3
+  _retryDelaySeconds: 2
 --- !u!4 &2057350311
 Transform:
   m_ObjectHideFlags: 0

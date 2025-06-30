@@ -45,9 +45,10 @@ namespace _Scripts.Models.SESManagement
         #region Configuration Fields
 
         [Header("SES Configuration")]
-        [SerializeField] private string _senderEmail = "noreply@twinnexus.com";
-        [SerializeField] private string _senderName = "Twin Nexus Platform";
-        [SerializeField] private RegionEndpoint _region = RegionEndpoint.USEast1;
+        [SerializeField]
+        internal string _senderEmail = "noreply@twinnexus.com";
+        [SerializeField] internal string _senderName = "Twin Nexus Platform";
+        [SerializeField] internal RegionEndpoint _region = RegionEndpoint.USEast1;
         
         [Header("Production Settings")]
         [SerializeField] private bool _enableLogging = true;
