@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
+using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
-using Amazon;
+using UnityEngine;
 
-namespace _Scripts.Models
+namespace _Scripts.Models.SESManagement
 {
     public class SESManager : MonoBehaviour
     {

@@ -53,7 +53,11 @@ namespace _Scripts.Models.CognitoManagement
         {
             if (_instance == this)
             {
-                _authHandler = null; // No dispose aquí, se maneja en el handler
+                if (_authHandler != null)
+                {
+                    _authHandler.OnTokensReceived -= OnTokensReceived;
+                }
+                _authHandler = null;
                 _cognitoIdentity?.Dispose();
                 _instance = null;
             }
@@ -61,10 +65,10 @@ namespace _Scripts.Models.CognitoManagement
         #endregion
 
         // Propiedades configurables (sobrescritas por CognitoTesting)
-        protected string _userPoolId = "us-east-1_abc123xyz"; // Predeterminado, sobrescrito por Inspector
-        protected string _clientId = "yourclientid123"; // Predeterminado, sobrescrito por Inspector
-        protected string _identityPoolId = "us-east-1:abc123-xyz"; // Predeterminado, sobrescrito por Inspector
-        protected RegionEndpoint _regionEndpoint = RegionEndpoint.USEast1; // Predeterminado, sobrescrito por Inspector
+        protected string _userPoolId = "us-east-1_abc123xyz";
+        protected string _clientId = "yourclientid123";
+        protected string _identityPoolId = "us-east-1:abc123-xyz";
+        protected RegionEndpoint _regionEndpoint = RegionEndpoint.USEast1;
         protected bool _enableDebugLogs = true;
 
         private CognitoAuthHandler _authHandler;
@@ -73,7 +77,7 @@ namespace _Scripts.Models.CognitoManagement
         private CognitoInfo.Credentials _credentials;
         private CognitoInfo.UserInfo _userInfo = new CognitoInfo.UserInfo();
         private List<string> _userGroups = new List<string>();
-        protected bool _isInitialized = false; // Cambiado a protected
+        protected bool _isInitialized = false;
 
         // Eventos
         public event Action<bool, string> OnAuthenticationComplete;
@@ -96,7 +100,7 @@ namespace _Scripts.Models.CognitoManagement
         public string CurrentUserGroup => _userInfo.CurrentUserGroup;
         public List<string> UserGroups => _userGroups;
 
-        protected void Initialize() // Cambiado a protected
+        protected void Initialize()
         {
             try
             {
@@ -106,8 +110,9 @@ namespace _Scripts.Models.CognitoManagement
                     return;
                 }
 
-                LogDebug("Initializing CognitoManager...");
+                LogDebug($"Initializing CognitoManager with UserPoolId: {_userPoolId}, ClientId: {_clientId}, Region: {_regionEndpoint.SystemName}");
                 _authHandler = new CognitoAuthHandler(_userPoolId, _clientId, _regionEndpoint);
+                _authHandler.OnTokensReceived += OnTokensReceived;
                 _cognitoIdentity = new AmazonCognitoIdentityClient(new AnonymousAWSCredentials(), _regionEndpoint);
                 _isInitialized = true;
                 LogDebug("CognitoManager initialized successfully");
@@ -118,9 +123,18 @@ namespace _Scripts.Models.CognitoManagement
             }
         }
 
+        private void OnTokensReceived(string idToken, string accessToken, string refreshToken)
+        {
+            _tokenData.IdToken = idToken;
+            _tokenData.AccessToken = accessToken;
+            _tokenData.RefreshToken = refreshToken;
+            LogDebug($"Tokens received - IdToken: {idToken?.Substring(0, 10)}..., AccessToken: {accessToken?.Substring(0, 10)}..., RefreshToken: {refreshToken?.Substring(0, 10)}...");
+        }
+
         public async Task<bool> SignInAsync(string username, string password)
         {
             if (!_isInitialized) Initialize();
+            LogDebug($"Attempting sign-in for {username}");
             var success = await _authHandler.SignInAsync(username, password);
             if (success)
             {
@@ -140,6 +154,7 @@ namespace _Scripts.Models.CognitoManagement
         public async Task<bool> SignUpAsync(string username, string password, string email, string phoneNumber = null)
         {
             if (!_isInitialized) Initialize();
+            LogDebug($"Attempting sign-up for {username}");
             var success = await _authHandler.SignUpAsync(username, password, email, phoneNumber);
             if (success)
             {
@@ -157,6 +172,7 @@ namespace _Scripts.Models.CognitoManagement
         public async Task<bool> ConfirmSignUpAsync(string username, string confirmationCode)
         {
             if (!_isInitialized) Initialize();
+            LogDebug($"Attempting email verification for {username}");
             var success = await _authHandler.ConfirmSignUpAsync(username, confirmationCode);
             if (success)
             {
@@ -174,6 +190,7 @@ namespace _Scripts.Models.CognitoManagement
         public async Task<bool> ForgotPasswordAsync(string username)
         {
             if (!_isInitialized) Initialize();
+            LogDebug($"Attempting forgot password for {username}");
             var success = await _authHandler.ForgotPasswordAsync(username);
             if (success)
             {
@@ -189,13 +206,15 @@ namespace _Scripts.Models.CognitoManagement
         public async Task<bool> ConfirmForgotPasswordAsync(string username, string confirmationCode, string newPassword)
         {
             if (!_isInitialized) Initialize();
+            LogDebug($"Attempting password reset for {username}");
             var success = await _authHandler.ConfirmForgotPasswordAsync(username, confirmationCode, newPassword);
-            return success; // No evento específico por ahora
+            return success;
         }
 
         public void SignOut()
         {
             if (!_isInitialized) Initialize();
+            LogDebug("Attempting sign-out");
             _authHandler.SignOut();
             _tokenData = new CognitoInfo.TokenData();
             _credentials = null;
@@ -207,6 +226,7 @@ namespace _Scripts.Models.CognitoManagement
         public async Task<bool> RefreshTokenAsync()
         {
             if (!_isInitialized) Initialize();
+            LogDebug("Attempting token refresh");
             var success = await _authHandler.RefreshTokenAsync();
             if (success)
             {
@@ -227,6 +247,7 @@ namespace _Scripts.Models.CognitoManagement
 
             try
             {
+                LogDebug("Getting AWS credentials");
                 var getIdRequest = new GetIdRequest
                 {
                     IdentityPoolId = _identityPoolId,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using _Scripts.Models;
+using _Scripts.Models.SESManagement;
 
 namespace _Scripts.Testing
 {

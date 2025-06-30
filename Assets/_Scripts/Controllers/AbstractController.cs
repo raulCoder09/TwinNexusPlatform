@@ -15,7 +15,7 @@ namespace _Scripts.Controller
         private VisualElement _scrim;
         private Button _menuButton;
         private Button _hideMenuButton;
-        private WelcomeController _welcomeController;
+        // private OldWelcomeController _oldWelcomeController;
         private DeviceSelectionController _deviceSelectionController;
         private Button _operationsButton;
         private Button _logoutButton;
@@ -123,7 +123,7 @@ namespace _Scripts.Controller
         {
             HideMenu(evt);
             HideUi();
-            _welcomeController.ShowUi();
+            // _oldWelcomeController.ShowUi();
         }
 
         #endregion

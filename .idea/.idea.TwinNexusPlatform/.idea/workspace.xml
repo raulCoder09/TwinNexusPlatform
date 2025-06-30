@@ -9,31 +9,46 @@
       <change beforePath="$PROJECT_DIR$/.plastic/plastic.changes" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.changes" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.plastic/plastic.wktree" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.wktree" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/WelcomeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controller/WelcomeController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchLogs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchLogs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CloudWatchManagement/CloudWatchManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManagement/OldCognitoManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManager.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManagement/OldCognitoManager.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/FileManagement/FileManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/FileManagement/FileManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManagement/IoTCertificateHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManagement/IoTCertificateHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManagement/IoTClientHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManagement/IoTClientHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManagement/IoTPolicyHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManagement/IoTPolicyHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManagement/IoTThingHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/IoTCoreManagement/IoTThingHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttConnectionHandler.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttConnectionHandler.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttEventManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttEventManager.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttInfo.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttInfo.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttManager.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttMessageHandler.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttMessageHandler.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/S3Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/S3Manager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/SESManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/SESManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/S3Test.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/S3Test.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/AbstractController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/AbstractController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/AbstractController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/AbstractController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/AugmentedRealityEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/AugmentedRealityEnvironmentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/AugmentedRealityEnvironmentController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/AugmentedRealityEnvironmentController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/ConcreteController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ConcreteController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/ConcreteController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ConcreteController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/ControlPanelController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ControlPanelController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/ControlPanelController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ControlPanelController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DashboardController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DashboardController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DeviceSelectionController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DeviceSelectionController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/DeviceSelectionController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DeviceSelectionController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/GraphicController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/GraphicController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/GraphicController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/GraphicController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/HybridEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/HybridEnvironmentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/HybridEnvironmentController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/HybridEnvironmentController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/ImageTrackingManagerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ImageTrackingManagerController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/ImageTrackingManagerController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ImageTrackingManagerController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/IoTController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/IoTController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/IoTController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/IoTController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/JogAndTeachController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/JogAndTeachController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/JogAndTeachController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/JogAndTeachController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/LinkController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/LinkController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/LinkController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/LinkController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/RealDeviceEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/RealDeviceEnvironmentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/RealDeviceEnvironmentController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/RealDeviceEnvironmentController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/SettingsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SettingsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/SettingsController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SettingsController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/VirtualEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/VirtualEnvironmentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/VirtualEnvironmentController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/VirtualEnvironmentController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/WelcomeController.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controller/WelcomeController.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManagement/CognitoAuthHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManagement/CognitoAuthHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManagement/CognitoManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/CognitoManagement/CognitoManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/SESManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/SESManagement/SESManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/SESManager.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/SESManagement/SESManager.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/CognitoTesting.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/CognitoTesting.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/SESTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/SESTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MenuSystemPanelSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MenuSystemPanelSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -205,7 +220,8 @@
       <workItem from="1751150456509" duration="6212000" />
       <workItem from="1751187264937" duration="10700000" />
       <workItem from="1751199300207" duration="134000" />
-      <workItem from="1751199468184" duration="22686000" />
+      <workItem from="1751199468184" duration="29618000" />
+      <workItem from="1751274694091" duration="5805000" />
     </task>
     <servers />
   </component>

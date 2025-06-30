@@ -38,10 +38,10 @@ namespace _Scripts.Models.CognitoManagement
         private void Awake()
         {
             // Sobrescribir valores predeterminados con los del Inspector
-            _userPoolId = userPoolId;
-            _clientId = clientId;
-            _identityPoolId = identityPoolId;
-            _regionEndpoint = awsRegion;
+            _userPoolId = !string.IsNullOrEmpty(userPoolId) ? userPoolId : _userPoolId;
+            _clientId = !string.IsNullOrEmpty(clientId) ? clientId : _clientId;
+            _identityPoolId = !string.IsNullOrEmpty(identityPoolId) ? identityPoolId : _identityPoolId;
+            _regionEndpoint = awsRegion != null ? awsRegion : _regionEndpoint;
         }
 
         private void OnEnable()

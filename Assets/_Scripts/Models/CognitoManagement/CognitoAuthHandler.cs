@@ -17,6 +17,9 @@ namespace _Scripts.Models.CognitoManagement
         private readonly string _clientId;
         private readonly bool _enableDebugLogs = true;
 
+        // Evento para notificar tokens
+        public event Action<string, string, string> OnTokensReceived;
+
         public CognitoAuthHandler(string userPoolId, string clientId, RegionEndpoint regionEndpoint)
         {
             _userPoolId = userPoolId ?? throw new ArgumentNullException(nameof(userPoolId));
@@ -44,6 +47,7 @@ namespace _Scripts.Models.CognitoManagement
                 if (response.AuthenticationResult != null)
                 {
                     LogDebug("Authentication successful");
+                    OnTokensReceived?.Invoke(response.AuthenticationResult.IdToken, response.AuthenticationResult.AccessToken, response.AuthenticationResult.RefreshToken);
                     return true;
                 }
                 LogWarning("Authentication failed: No authentication result");
@@ -176,6 +180,7 @@ namespace _Scripts.Models.CognitoManagement
                 if (response.AuthenticationResult != null)
                 {
                     LogDebug("Token refreshed successfully");
+                    OnTokensReceived?.Invoke(response.AuthenticationResult.IdToken, response.AuthenticationResult.AccessToken, response.AuthenticationResult.RefreshToken);
                     return true;
                 }
                 LogWarning("Token refresh failed: No authentication result");

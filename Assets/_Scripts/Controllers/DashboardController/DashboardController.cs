@@ -19,7 +19,7 @@ namespace _Scripts.Controller
         private Button _trainingButton;
         private Button _settingsButton;
         
-        private WelcomeController _welcomeController;
+        // private OldWelcomeController _oldWelcomeController;
         private DeviceSelectionController _deviceSelectionController;
         private SettingsController _settingsController;
         private GameManager _gameManager;
@@ -121,7 +121,7 @@ namespace _Scripts.Controller
         {
             HideMenu(evt);
             HideUi();
-            _welcomeController.ShowUi();
+            // _oldWelcomeController.ShowUi();
         }
 
         private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
@@ -179,7 +179,7 @@ namespace _Scripts.Controller
 
         private void FindObjects()
         {
-            _welcomeController=GameObject.FindGameObjectWithTag("Welcome").GetComponent<WelcomeController>();
+            // _oldWelcomeController=GameObject.FindGameObjectWithTag("Welcome").GetComponent<OldWelcomeController>();
             _deviceSelectionController=GameObject.FindGameObjectWithTag("DeviceSelection").GetComponent<DeviceSelectionController>();
             _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
             _settingsController=GameObject.FindGameObjectWithTag("Settings").GetComponent<SettingsController>();
