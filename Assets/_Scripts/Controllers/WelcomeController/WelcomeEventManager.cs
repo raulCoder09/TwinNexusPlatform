@@ -37,11 +37,6 @@ namespace _Scripts.Controllers.WelcomeController
             root.Q<Button>("ResendVerificationCodeButton")?.RegisterCallback<ClickEvent>(OnResendVerificationCodeClicked);
             root.Q<Button>("CloseEmailVerificationButton")?.RegisterCallback<ClickEvent>(OnCloseEmailVerificationPanelClicked);
             root.Q<Button>("BackToLoginFromVerificationButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromVerificationClicked);
-
-            foreach (var panelData in _uiManager.GetPanelData())
-            {
-                panelData.Panel?.RegisterCallback<TransitionEndEvent>(evt => OnPanelTransitionComplete(_uiManager.CurrentActivePanel));
-            }
         }
 
         private void OnLaunchButtonClicked(ClickEvent evt)
@@ -131,10 +126,6 @@ namespace _Scripts.Controllers.WelcomeController
 
         private void OnPanelTransitionComplete(IWelcomeOps.PanelType panelType)
         {
-            if (!_uiManager.IsAnyPanelVisible())
-            {
-                _uiManager.HideUi();
-            }
             _onPanelTransitionComplete?.Invoke(panelType);
         }
     }

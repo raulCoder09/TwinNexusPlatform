@@ -167,7 +167,9 @@ namespace _Scripts.Controllers.WelcomeController
                 var root = GetComponent<UIDocument>().rootVisualElement;
                 _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
                 _uiManager = new WelcomeUIManager(_uiConfig);
-                _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionComplete);
+                
+                // Corregir: Cambiar OnPanelTransitionComplete por OnPanelTransitionCompleteHandler
+                _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler);
                 _eventManager.RegisterEvents(GetComponent<UIDocument>());
                 GetUiComponents(root); // Asegurar que se llame después de asignar _subpanelsAndSmokeMaskContainer
                 FindDependencies();
@@ -197,6 +199,11 @@ namespace _Scripts.Controllers.WelcomeController
                 HideClass = "LoginPanelMoveA"
             };
             Debug.Log($"LoginPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.Login].Panel != null}");
+            _uiConfig.Panels[IWelcomeOps.PanelType.Login].Panel.RegisterCallback<TransitionEndEvent>(evt =>
+            {
+                OnPanelTransitionComplete(evt);
+                Debug.Log($"Transition complete for panel: {GetPanelTypeFromElement(evt.target as VisualElement)}");
+            });
 
             _uiConfig.Panels[IWelcomeOps.PanelType.Register] = new WelcomeInfo.UIConfiguration.PanelData
             {
@@ -205,6 +212,11 @@ namespace _Scripts.Controllers.WelcomeController
                 HideClass = "RegisterPanelOutMainScreen"
             };
             Debug.Log($"RegisterPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.Register].Panel != null}");
+            _uiConfig.Panels[IWelcomeOps.PanelType.Register].Panel.RegisterCallback<TransitionEndEvent>(evt =>
+            {
+                OnPanelTransitionComplete(evt);
+                Debug.Log($"Transition complete for panel: {GetPanelTypeFromElement(evt.target as VisualElement)}");
+            });
 
             _uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword] = new WelcomeInfo.UIConfiguration.PanelData
             {
@@ -213,6 +225,11 @@ namespace _Scripts.Controllers.WelcomeController
                 HideClass = "RecoverPasswordPanelOutMainScreen"
             };
             Debug.Log($"RecoverPasswordPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel != null}");
+            _uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel.RegisterCallback<TransitionEndEvent>(evt =>
+            {
+                OnPanelTransitionComplete(evt);
+                Debug.Log($"Transition complete for panel: {GetPanelTypeFromElement(evt.target as VisualElement)}");
+            });
 
             _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification] = new WelcomeInfo.UIConfiguration.PanelData
             {
@@ -221,6 +238,11 @@ namespace _Scripts.Controllers.WelcomeController
                 HideClass = "EmailVerificationPanelOutMainScreen"
             };
             Debug.Log($"EmailVerificationPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel != null}");
+            _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel.RegisterCallback<TransitionEndEvent>(evt =>
+            {
+                OnPanelTransitionComplete(evt);
+                Debug.Log($"Transition complete for panel: {GetPanelTypeFromElement(evt.target as VisualElement)}");
+            });
         }
 
         private void OnAuthenticationSuccessHandler()
@@ -263,12 +285,43 @@ namespace _Scripts.Controllers.WelcomeController
             #endif
         }
 
-        private void OnPanelTransitionComplete(IWelcomeOps.PanelType panelType)
+        // Método para el callback del evento de transición (TransitionEndEvent)
+        private void OnPanelTransitionComplete(TransitionEndEvent evt)
         {
-            if (!_uiManager.IsAnyPanelVisible())
+            var panel = evt.target as VisualElement;
+            if (panel != null)
             {
-                _uiManager.HideUi();
+                var panelType = GetPanelTypeFromElement(panel);
+                if (panelType != IWelcomeOps.PanelType.None && !panel.ClassListContains(GetShowClass(panelType)))
+                {
+                    _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+                    Debug.Log($"Hiding SubpanelsAndSmokeMaskContainer for panel {panelType}");
+                }
             }
+        }
+
+        // Nuevo método para el callback del WelcomeEventManager (PanelType)
+        private void OnPanelTransitionCompleteHandler(IWelcomeOps.PanelType panelType)
+        {
+            Debug.Log($"Panel transition complete: {panelType}");
+            // Aquí puedes agregar cualquier lógica adicional que necesites cuando se complete una transición
+        }
+
+        private IWelcomeOps.PanelType GetPanelTypeFromElement(VisualElement panel)
+        {
+            foreach (var kvp in _uiConfig.Panels)
+            {
+                if (kvp.Value.Panel == panel)
+                {
+                    return kvp.Key;
+                }
+            }
+            return IWelcomeOps.PanelType.None;
+        }
+
+        private string GetShowClass(IWelcomeOps.PanelType panelType)
+        {
+            return _uiConfig.Panels.ContainsKey(panelType) ? _uiConfig.Panels[panelType].ShowClass : string.Empty;
         }
 
         private IEnumerator GlitchEffectRoutine()

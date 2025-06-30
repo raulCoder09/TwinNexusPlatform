@@ -21,6 +21,7 @@ namespace _Scripts.Controllers.WelcomeController
             _uiConfig.SubpanelsContainer.style.display = DisplayStyle.None;
             ShowUi();
             ClearMessage();
+            RegisterTransitionCallbacks();
         }
 
         public void ShowUi()
@@ -126,6 +127,40 @@ namespace _Scripts.Controllers.WelcomeController
             _uiConfig.Panels[IWelcomeOps.PanelType.Register].Panel.Q<Label>("TitleRegister")?.AddToClassList("glitch");
             _uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel.Q<Label>("TitleRecoverPassword")?.AddToClassList("glitch");
             _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel.Q<Label>("TitleEmailVerification")?.AddToClassList("glitch");
+        }
+
+        private void RegisterTransitionCallbacks()
+        {
+            foreach (var panelData in _uiConfig.Panels.Values)
+            {
+                panelData.Panel.RegisterCallback<TransitionEndEvent>(OnPanelTransitionComplete);
+            }
+        }
+
+        private void OnPanelTransitionComplete(TransitionEndEvent evt)
+        {
+            var panel = evt.target as VisualElement;
+            if (panel != null)
+            {
+                var panelType = GetPanelTypeFromElement(panel);
+                if (panelType != IWelcomeOps.PanelType.None && !panel.ClassListContains(_uiConfig.Panels[panelType].ShowClass))
+                {
+                    _uiConfig.SubpanelsContainer.style.display = DisplayStyle.None;
+                    Debug.Log($"Transition complete for {panelType}, container hidden");
+                }
+            }
+        }
+
+        private IWelcomeOps.PanelType GetPanelTypeFromElement(VisualElement panel)
+        {
+            foreach (var kvp in _uiConfig.Panels)
+            {
+                if (kvp.Value.Panel == panel)
+                {
+                    return kvp.Key;
+                }
+            }
+            return IWelcomeOps.PanelType.None;
         }
 
         private void ShowMessage(string message, bool isError = false)
