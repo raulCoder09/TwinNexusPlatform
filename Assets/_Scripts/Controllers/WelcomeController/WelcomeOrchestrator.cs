@@ -54,22 +54,9 @@ namespace _Scripts.Controllers.WelcomeController
         {
             if (_instance == this)
             {
-                // Desuscribirse de eventos de WelcomeAuthHandler
-                if (_authHandler != null)
-                {
-                    _authHandler.OnAuthenticationSuccess -= OnAuthenticationSuccessHandler;
-                    _authHandler.OnAuthenticationFailure -= OnAuthenticationFailureHandler;
-                    _authHandler.OnRegistrationSuccess -= OnRegistrationSuccessHandler;
-                    _authHandler.OnRegistrationFailure -= OnRegistrationFailureHandler;
-                    _authHandler.OnEmailVerificationSuccess -= OnEmailVerificationSuccessHandler;
-                    _authHandler.OnEmailVerificationFailure -= OnEmailVerificationFailureHandler;
-                    _authHandler.OnPasswordRecoverySuccess -= OnPasswordRecoverySuccessHandler;
-                    _authHandler.OnPasswordRecoveryFailure -= OnPasswordRecoveryFailureHandler;
-                    _authHandler.OnResendVerificationSuccess -= OnResendVerificationSuccessHandler;
-                    _authHandler.OnResendVerificationFailure -= OnResendVerificationFailureHandler;
-                }
+                // Desuscribirse de eventos de ServiceController/CognitoManager
+                UnsubscribeFromCognitoEvents();
 
-                _authHandler = null;
                 _uiManager = null;
                 _eventManager = null;
                 _instance = null;
@@ -80,7 +67,10 @@ namespace _Scripts.Controllers.WelcomeController
 
         private WelcomeInfo.UIConfiguration _uiConfig = new WelcomeInfo.UIConfiguration();
         private WelcomeInfo.UserData _userData = new WelcomeInfo.UserData();
-        private WelcomeAuthHandler _authHandler;
+        
+        // CAMBIO: Ya no creamos WelcomeAuthHandler, usamos ServiceController
+        // private WelcomeAuthHandler _authHandler; // ELIMINADO
+        
         private WelcomeUIManager _uiManager;
         private WelcomeEventManager _eventManager;
         private DashboardController _dashboardController;
@@ -96,12 +86,12 @@ namespace _Scripts.Controllers.WelcomeController
         // Eventos públicos del Orchestrator
         public event Action OnAuthenticationSuccess;
 
-        #region Manejo de eventos de WelcomeAuthHandler
+        #region Manejo de eventos de CognitoManager via ServiceController
 
         private void OnAuthenticationSuccessHandler()
         {
             _userData.IsAuthenticated = true;
-            _userData.Username = _authHandler.GetCurrentUsername();
+            _userData.Username = ServiceController.Instance.GetUserInfo().username;
 
             ShowMessage("Authentication successful!", false);
             OnAuthenticationSuccess?.Invoke();
@@ -177,14 +167,131 @@ namespace _Scripts.Controllers.WelcomeController
 
         #endregion
 
-        #region IWelcomeOps Implementation - Delegando a WelcomeAuthHandler
+        #region CognitoManager Access via ServiceController
+
+        /// <summary>
+        /// Obtiene CognitoManager desde ServiceController
+        /// </summary>
+        private CognitoManager GetCognitoManager()
+        {
+            return ServiceController.Instance?.CognitoManager;
+        }
+
+        /// <summary>
+        /// Suscribirse a eventos de CognitoManager via ServiceController
+        /// </summary>
+        private void SubscribeToCognitoEvents()
+        {
+            var cognitoManager = GetCognitoManager();
+            if (cognitoManager != null)
+            {
+                Debug.Log("[WelcomeOrchestrator] Subscribing to CognitoManager events via ServiceController");
+                
+                cognitoManager.OnAuthenticationComplete += OnCognitoAuthenticationComplete;
+                cognitoManager.OnRegistrationComplete += OnCognitoRegistrationComplete;
+                cognitoManager.OnEmailVerificationComplete += OnCognitoEmailVerificationComplete;
+                cognitoManager.OnPasswordRecoveryComplete += OnCognitoPasswordRecoveryComplete;
+                cognitoManager.OnResendVerificationComplete += OnCognitoResendVerificationComplete;
+            }
+            else
+            {
+                Debug.LogWarning("[WelcomeOrchestrator] CognitoManager not available from ServiceController");
+            }
+        }
+
+        /// <summary>
+        /// Desuscribirse de eventos de CognitoManager
+        /// </summary>
+        private void UnsubscribeFromCognitoEvents()
+        {
+            var cognitoManager = GetCognitoManager();
+            if (cognitoManager != null)
+            {
+                Debug.Log("[WelcomeOrchestrator] Unsubscribing from CognitoManager events");
+                
+                cognitoManager.OnAuthenticationComplete -= OnCognitoAuthenticationComplete;
+                cognitoManager.OnRegistrationComplete -= OnCognitoRegistrationComplete;
+                cognitoManager.OnEmailVerificationComplete -= OnCognitoEmailVerificationComplete;
+                cognitoManager.OnPasswordRecoveryComplete -= OnCognitoPasswordRecoveryComplete;
+                cognitoManager.OnResendVerificationComplete -= OnCognitoResendVerificationComplete;
+            }
+        }
+
+        /// <summary>
+        /// Maneja eventos de autenticación desde CognitoManager
+        /// </summary>
+        private void OnCognitoAuthenticationComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnAuthenticationSuccessHandler();
+            }
+            else
+            {
+                OnAuthenticationFailureHandler(message);
+            }
+        }
+
+        private void OnCognitoRegistrationComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnRegistrationSuccessHandler(message);
+            }
+            else
+            {
+                OnRegistrationFailureHandler(message);
+            }
+        }
+
+        private void OnCognitoEmailVerificationComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnEmailVerificationSuccessHandler(message);
+            }
+            else
+            {
+                OnEmailVerificationFailureHandler(message);
+            }
+        }
+
+        private void OnCognitoPasswordRecoveryComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnPasswordRecoverySuccessHandler(message);
+            }
+            else
+            {
+                OnPasswordRecoveryFailureHandler(message);
+            }
+        }
+
+        private void OnCognitoResendVerificationComplete(bool success, string message)
+        {
+            if (success)
+            {
+                OnResendVerificationSuccessHandler(message);
+            }
+            else
+            {
+                OnResendVerificationFailureHandler(message);
+            }
+        }
+
+        #endregion
+
+        #region IWelcomeOps Implementation - Delegando a ServiceController.CognitoManager
 
         public async Task<bool> AuthenticateUserAsync(string username, string password)
         {
             if (!_isInitialized) Initialize();
-            if (_authHandler == null)
+            
+            var cognitoManager = GetCognitoManager();
+            if (cognitoManager == null)
             {
-                Debug.LogError("Authentication handler not initialized");
+                Debug.LogError("CognitoManager not available from ServiceController");
                 ShowMessage("Authentication system not ready", true);
                 return false;
             }
@@ -202,8 +309,8 @@ namespace _Scripts.Controllers.WelcomeController
                 ShowMessage("Authenticating...", false);
 
                 _userData.Username = username;
-                // Delegar al AuthHandler que maneja todo internamente
-                var success = await _authHandler.AuthenticateUserAsync(username, password);
+                // CAMBIO: Usar CognitoManager desde ServiceController directamente
+                var success = await cognitoManager.SignInAsync(username, password);
 
                 return success;
             }
@@ -220,9 +327,11 @@ namespace _Scripts.Controllers.WelcomeController
             string phoneNumber = null)
         {
             if (!_isInitialized) Initialize();
-            if (_authHandler == null)
+            
+            var cognitoManager = GetCognitoManager();
+            if (cognitoManager == null)
             {
-                Debug.LogError("Authentication handler not initialized");
+                Debug.LogError("CognitoManager not available from ServiceController");
                 ShowMessage("Authentication system not ready", true);
                 return false;
             }
@@ -262,8 +371,8 @@ namespace _Scripts.Controllers.WelcomeController
                 _userData.Email = email;
                 _userData.PhoneNumber = phoneNumber;
 
-                // Delegar al AuthHandler que maneja todo internamente
-                var success = await _authHandler.RegisterUserAsync(username, password, email, phoneNumber);
+                // CAMBIO: Usar CognitoManager desde ServiceController directamente
+                var success = await cognitoManager.SignUpAsync(username, password, email, phoneNumber);
 
                 return success;
             }
@@ -279,9 +388,11 @@ namespace _Scripts.Controllers.WelcomeController
         public async Task<bool> VerifyEmailAsync(string confirmationCode)
         {
             if (!_isInitialized) Initialize();
-            if (_authHandler == null)
+            
+            var cognitoManager = GetCognitoManager();
+            if (cognitoManager == null)
             {
-                Debug.LogError("Authentication handler not initialized");
+                Debug.LogError("CognitoManager not available from ServiceController");
                 ShowMessage("Authentication system not ready", true);
                 return false;
             }
@@ -303,8 +414,8 @@ namespace _Scripts.Controllers.WelcomeController
                 SetVerifyEmailButtonEnabled(false);
                 ShowMessage("Verifying email...", false);
 
-                // Delegar al AuthHandler que maneja todo internamente
-                var success = await _authHandler.VerifyEmailAsync(confirmationCode);
+                // CAMBIO: Usar CognitoManager desde ServiceController directamente
+                var success = await cognitoManager.ConfirmSignUpAsync(cognitoManager.PendingUsername, confirmationCode);
 
                 return success;
             }
@@ -320,9 +431,11 @@ namespace _Scripts.Controllers.WelcomeController
         public async Task<bool> RecoverPasswordAsync(string username)
         {
             if (!_isInitialized) Initialize();
-            if (_authHandler == null)
+            
+            var cognitoManager = GetCognitoManager();
+            if (cognitoManager == null)
             {
-                Debug.LogError("Authentication handler not initialized");
+                Debug.LogError("CognitoManager not available from ServiceController");
                 ShowMessage("Authentication system not ready", true);
                 return false;
             }
@@ -339,8 +452,8 @@ namespace _Scripts.Controllers.WelcomeController
                 ShowMessage("Sending recovery email...", false);
 
                 _userData.Username = username;
-                // Delegar al AuthHandler que maneja todo internamente
-                var success = await _authHandler.RecoverPasswordAsync(username);
+                // CAMBIO: Usar CognitoManager desde ServiceController directamente
+                var success = await cognitoManager.ForgotPasswordAsync(username);
 
                 return success;
             }
@@ -356,9 +469,11 @@ namespace _Scripts.Controllers.WelcomeController
         public async Task<bool> ResendVerificationCodeAsync()
         {
             if (!_isInitialized) Initialize();
-            if (_authHandler == null)
+            
+            var cognitoManager = GetCognitoManager();
+            if (cognitoManager == null)
             {
-                Debug.LogError("Authentication handler not initialized");
+                Debug.LogError("CognitoManager not available from ServiceController");
                 ShowMessage("Authentication system not ready", true);
                 return false;
             }
@@ -368,8 +483,8 @@ namespace _Scripts.Controllers.WelcomeController
                 SetResendCodeButtonEnabled(false);
                 ShowMessage("Resending verification code...", false);
 
-                // Delegar al AuthHandler que maneja todo internamente
-                var success = await _authHandler.ResendVerificationCodeAsync();
+                // CAMBIO: Usar CognitoManager desde ServiceController directamente
+                var success = await cognitoManager.ResendConfirmationCodeAsync();
 
                 return success;
             }
@@ -467,271 +582,232 @@ namespace _Scripts.Controllers.WelcomeController
         
         #region Settings Panel Methods
 
-public async void HandleSaveSettingsButtonClick()
-{
-    var root = _uiDocument.rootVisualElement;
-    var userPoolIdField = root.Q<TextField>("UserPoolIdField");
-    var clientIdField = root.Q<TextField>("ClientIdField");
-    var identityPoolIdField = root.Q<TextField>("IdentityPoolIdField");
-    var regionDropdown = root.Q<DropdownField>("AwsRegionDropdownField");
-
-    if (userPoolIdField != null && clientIdField != null && identityPoolIdField != null && regionDropdown != null)
-    {
-        string userPoolId = userPoolIdField.value?.Trim();
-        string clientId = clientIdField.value?.Trim();
-        string identityPoolId = identityPoolIdField.value?.Trim();
-        string selectedRegion = regionDropdown.value;
-
-        // Validate inputs
-        if (string.IsNullOrEmpty(userPoolId) || string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(identityPoolId))
+        public async void HandleSaveSettingsButtonClick()
         {
-            ShowMessage("Please fill in all required fields", true);
-            return;
-        }
+            var root = _uiDocument.rootVisualElement;
+            var userPoolIdField = root.Q<TextField>("UserPoolIdField");
+            var clientIdField = root.Q<TextField>("ClientIdField");
+            var identityPoolIdField = root.Q<TextField>("IdentityPoolIdField");
+            var regionDropdown = root.Q<DropdownField>("AwsRegionDropdownField");
 
-        // Convert region display name to region code
-        var regionCode = ConvertDisplayToRegionCode(selectedRegion);
-        if (string.IsNullOrEmpty(regionCode))
-        {
-            ShowMessage("Invalid AWS region selected", true);
-            return;
-        }
-
-        try
-        {
-            ShowMessage("Saving configuration...", false);
-            SetSaveButtonEnabled(false);
-
-            // Update ScriptableObject
-            if (_cognitoSettings != null)
+            if (userPoolIdField != null && clientIdField != null && identityPoolIdField != null && regionDropdown != null)
             {
-                _cognitoSettings.SetConfiguration(userPoolId, clientId, identityPoolId, regionCode);
-                
-                // Save to JSON file
-                bool saveSuccess = CognitoSettingsManager.SaveConfiguration(_cognitoSettings);
-                
-                if (saveSuccess)
+                string userPoolId = userPoolIdField.value?.Trim();
+                string clientId = clientIdField.value?.Trim();
+                string identityPoolId = identityPoolIdField.value?.Trim();
+                string selectedRegion = regionDropdown.value;
+
+                // Validate inputs
+                if (string.IsNullOrEmpty(userPoolId) || string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(identityPoolId))
                 {
-                    // Apply configuration to AuthHandler
-                    ApplyCognitoConfiguration();
-                    
-                    ShowMessage("Configuration saved successfully!", false);
-                    print($"Cognito configuration saved to: {CognitoSettingsManager.GetConfigurationPath()}");
-                    
-                    // Close settings panel after successful save
-                    await System.Threading.Tasks.Task.Delay(1500); // Show success message briefly
-                    _uiManager.CloseCurrentPanel();
+                    ShowMessage("Please fill in all required fields", true);
+                    return;
+                }
+
+                // Convert region display name to region code
+                var regionCode = ConvertDisplayToRegionCode(selectedRegion);
+                if (string.IsNullOrEmpty(regionCode))
+                {
+                    ShowMessage("Invalid AWS region selected", true);
+                    return;
+                }
+
+                try
+                {
+                    ShowMessage("Saving configuration...", false);
+                    SetSaveButtonEnabled(false);
+
+                    // Update ScriptableObject
+                    if (_cognitoSettings != null)
+                    {
+                        _cognitoSettings.SetConfiguration(userPoolId, clientId, identityPoolId, regionCode);
+                        
+                        // Save to JSON file
+                        bool saveSuccess = CognitoSettingsManager.SaveConfiguration(_cognitoSettings);
+                        
+                        if (saveSuccess)
+                        {
+                            // CAMBIO: Aplicar configuración via ServiceController
+                            ApplyCognitoConfiguration();
+                            
+                            ShowMessage("Configuration saved successfully!", false);
+                            print($"Cognito configuration saved to: {CognitoSettingsManager.GetConfigurationPath()}");
+                            
+                            // Close settings panel after successful save
+                            await System.Threading.Tasks.Task.Delay(1500); // Show success message briefly
+                            _uiManager.CloseCurrentPanel();
+                        }
+                        else
+                        {
+                            ShowMessage("Failed to save configuration to file", true);
+                        }
+                    }
+                    else
+                    {
+                        ShowMessage("Configuration system not initialized", true);
+                        print("Cognito settings ScriptableObject is null");
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    print($"Error saving configuration: {ex.Message}");
+                    ShowMessage("Failed to save configuration", true);
+                }
+                finally
+                {
+                    SetSaveButtonEnabled(true);
+                }
+            }
+        }
+
+        private string ConvertDisplayToRegionCode(string displayName)
+        {
+            if (string.IsNullOrEmpty(displayName)) return "us-east-1";
+            return displayName.Split(' ')[0];
+        }
+
+        private void LoadSavedConfiguration()
+        {
+            var root = _uiDocument.rootVisualElement;
+            var userPoolIdField = root.Q<TextField>("UserPoolIdField");
+            var clientIdField = root.Q<TextField>("ClientIdField");
+            var identityPoolIdField = root.Q<TextField>("IdentityPoolIdField");
+            var regionDropdown = root.Q<DropdownField>("AwsRegionDropdownField");
+
+            if (userPoolIdField != null && clientIdField != null && identityPoolIdField != null && regionDropdown != null)
+            {
+                if (_cognitoSettings != null)
+                {
+                    userPoolIdField.value = _cognitoSettings.UserPoolId;
+                    clientIdField.value = _cognitoSettings.ClientId;
+                    identityPoolIdField.value = _cognitoSettings.IdentityPoolId;
+
+                    var regionDisplay = ConvertRegionCodeToDisplay(_cognitoSettings.AwsRegionCode);
+                    if (regionDropdown.choices.Contains(regionDisplay))
+                    {
+                        regionDropdown.value = regionDisplay;
+                    }
+
+                    print("Configuration loaded into Settings panel from ScriptableObject");
                 }
                 else
                 {
-                    ShowMessage("Failed to save configuration to file", true);
+                    print("Cognito settings ScriptableObject is null");
+                    
+                    userPoolIdField.value = "";
+                    clientIdField.value = "";
+                    identityPoolIdField.value = "";
+                    regionDropdown.value = "us-east-1 (N. Virginia)";
                 }
             }
-            else
+        }
+
+        private string ConvertRegionCodeToDisplay(string regionCode)
+        {
+            return regionCode switch
             {
-                ShowMessage("Configuration system not initialized", true);
-                print("Cognito settings ScriptableObject is null");
-            }
+                "us-east-1" => "us-east-1 (N. Virginia)",
+                "us-east-2" => "us-east-2 (Ohio)",
+                "us-west-1" => "us-west-1 (N. California)",
+                "us-west-2" => "us-west-2 (Oregon)",
+                "eu-west-1" => "eu-west-1 (Ireland)",
+                "eu-central-1" => "eu-central-1 (Frankfurt)",
+                "ap-southeast-1" => "ap-southeast-1 (Singapore)",
+                "ap-northeast-1" => "ap-northeast-1 (Tokyo)",
+                _ => "us-east-1 (N. Virginia)"
+            };
         }
-        catch (System.Exception ex)
-        {
-            print($"Error saving configuration: {ex.Message}");
-            ShowMessage("Failed to save configuration", true);
-        }
-        finally
-        {
-            SetSaveButtonEnabled(true);
-        }
-    }
-}
 
-private RegionEndpoint ConvertToRegionEndpoint(string displayName)
-{
-    if (string.IsNullOrEmpty(displayName)) return null;
-
-    // Extract region code from display name (e.g., "us-east-1 (N. Virginia)" -> "us-east-1")
-    var regionCode = displayName.Split(' ')[0];
-    
-    return regionCode switch
-    {
-        "us-east-1" => RegionEndpoint.USEast1,
-        "us-east-2" => RegionEndpoint.USEast2,
-        "us-west-1" => RegionEndpoint.USWest1,
-        "us-west-2" => RegionEndpoint.USWest2,
-        "eu-west-1" => RegionEndpoint.EUWest1,
-        "eu-central-1" => RegionEndpoint.EUCentral1,
-        "ap-southeast-1" => RegionEndpoint.APSoutheast1,
-        "ap-northeast-1" => RegionEndpoint.APNortheast1,
-        _ => RegionEndpoint.USEast1 // Default fallback
-    };
-}
-
-private string ConvertDisplayToRegionCode(string displayName)
-{
-    if (string.IsNullOrEmpty(displayName)) return "us-east-1";
-
-    // Extract region code from display name (e.g., "us-east-1 (N. Virginia)" -> "us-east-1")
-    return displayName.Split(' ')[0];
-}
-
-private void LoadSavedConfiguration()
-{
-    var root = _uiDocument.rootVisualElement;
-    var userPoolIdField = root.Q<TextField>("UserPoolIdField");
-    var clientIdField = root.Q<TextField>("ClientIdField");
-    var identityPoolIdField = root.Q<TextField>("IdentityPoolIdField");
-    var regionDropdown = root.Q<DropdownField>("AwsRegionDropdownField");
-
-    if (userPoolIdField != null && clientIdField != null && identityPoolIdField != null && regionDropdown != null)
-    {
-        if (_cognitoSettings != null)
-        {
-            // Load from ScriptableObject (which has been loaded from JSON in Initialize)
-            userPoolIdField.value = _cognitoSettings.UserPoolId;
-            clientIdField.value = _cognitoSettings.ClientId;
-            identityPoolIdField.value = _cognitoSettings.IdentityPoolId;
-
-            // Set dropdown value
-            var regionDisplay = ConvertRegionCodeToDisplay(_cognitoSettings.AwsRegionCode);
-            if (regionDropdown.choices.Contains(regionDisplay))
-            {
-                regionDropdown.value = regionDisplay;
-            }
-
-            print("Configuration loaded into Settings panel from ScriptableObject");
-        }
-        else
-        {
-            print("Cognito settings ScriptableObject is null");
-            
-            // Clear all fields as fallback
-            userPoolIdField.value = "";
-            clientIdField.value = "";
-            identityPoolIdField.value = "";
-            regionDropdown.value = "us-east-1 (N. Virginia)";
-        }
-    }
-}
-
-private string ConvertRegionCodeToDisplay(string regionCode)
-{
-    return regionCode switch
-    {
-        "us-east-1" => "us-east-1 (N. Virginia)",
-        "us-east-2" => "us-east-2 (Ohio)",
-        "us-west-1" => "us-west-1 (N. California)",
-        "us-west-2" => "us-west-2 (Oregon)",
-        "eu-west-1" => "eu-west-1 (Ireland)",
-        "eu-central-1" => "eu-central-1 (Frankfurt)",
-        "ap-southeast-1" => "ap-southeast-1 (Singapore)",
-        "ap-northeast-1" => "ap-northeast-1 (Tokyo)",
-        _ => "us-east-1 (N. Virginia)" // Default
-    };
-}
-
-#endregion
+        #endregion
 
         #endregion
 
         #region Public Helper Methods
 
         /// <summary>
-        /// Obtiene información del usuario autenticado
+        /// Obtiene información del usuario autenticado via ServiceController
         /// </summary>
         public (string username, string userGroup, bool isAuthenticated) GetUserInfo()
         {
-            return _authHandler?.GetUserInfo() ?? (string.Empty, string.Empty, false);
+            return ServiceController.Instance?.GetUserInfo() ?? (string.Empty, string.Empty, false);
         }
 
         /// <summary>
-        /// Cierra sesión del usuario actual
+        /// Cierra sesión del usuario actual via ServiceController
         /// </summary>
         public void Logout()
         {
-            _authHandler?.Logout();
+            var cognitoManager = GetCognitoManager();
+            cognitoManager?.SignOut();
             _userData = new WelcomeInfo.UserData(); // Reset user data
-            // Aquí podrías agregar lógica adicional como limpiar UI, navegar al panel de login, etc.
         }
 
         /// <summary>
-        /// Verifica si el usuario pertenece a un grupo específico
+        /// Verifica si el usuario pertenece a un grupo específico via ServiceController
         /// </summary>
         public bool IsUserInGroup(string groupName)
         {
-            return _authHandler?.IsUserInSpecificGroup(groupName) ?? false;
+            return ServiceController.Instance?.IsUserInGroup(groupName) ?? false;
         }
 
         #endregion
 
         protected void Initialize()
-{
-    try
-    {
-        if (_isInitialized)
         {
-            Debug.Log("WelcomeOrchestrator already initialized");
-            return;
+            try
+            {
+                if (_isInitialized)
+                {
+                    Debug.Log("WelcomeOrchestrator already initialized");
+                    return;
+                }
+
+                Debug.Log("Initializing WelcomeOrchestrator...");
+
+                // Initialize Cognito Settings
+                InitializeCognitoSettings();
+
+                // CAMBIO: En lugar de crear WelcomeAuthHandler, suscribirse a ServiceController
+                SubscribeToCognitoEvents();
+                
+                // Apply loaded configuration to CognitoManager via ServiceController
+                ApplyCognitoConfiguration();
+
+                // Obtener componentes UI
+                _uiDocument = GetComponent<UIDocument>();
+                var root = _uiDocument.rootVisualElement;
+                _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+
+                // Inicializar managers
+                _uiManager = new WelcomeUIManager(_uiConfig);
+                _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler,
+                    this);
+                _eventManager.RegisterEvents(_uiDocument);
+
+                GetUiComponents(root);
+                FindDependencies();
+                StartCoroutine(GlitchEffectRoutine());
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+
+                _isInitialized = true;
+                Debug.Log("WelcomeOrchestrator initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Initialization error: {ex.Message}");
+            }
         }
 
-        Debug.Log("Initializing WelcomeOrchestrator...");
-
-        // Initialize Cognito Settings
-        InitializeCognitoSettings();
-
-        // Crear el AuthHandler y suscribirse a sus eventos
-        _authHandler = gameObject.AddComponent<WelcomeAuthHandler>();
-        
-        // Apply loaded configuration to AuthHandler
-        ApplyCognitoConfiguration();
-        
-        _authHandler.OnAuthenticationSuccess += OnAuthenticationSuccessHandler;
-        _authHandler.OnAuthenticationFailure += OnAuthenticationFailureHandler;
-        _authHandler.OnRegistrationSuccess += OnRegistrationSuccessHandler;
-        _authHandler.OnRegistrationFailure += OnRegistrationFailureHandler;
-        _authHandler.OnEmailVerificationSuccess += OnEmailVerificationSuccessHandler;
-        _authHandler.OnEmailVerificationFailure += OnEmailVerificationFailureHandler;
-        _authHandler.OnPasswordRecoverySuccess += OnPasswordRecoverySuccessHandler;
-        _authHandler.OnPasswordRecoveryFailure += OnPasswordRecoveryFailureHandler;
-        _authHandler.OnResendVerificationSuccess += OnResendVerificationSuccessHandler;
-        _authHandler.OnResendVerificationFailure += OnResendVerificationFailureHandler;
-
-        // Obtener componentes UI
-        _uiDocument = GetComponent<UIDocument>();
-        var root = _uiDocument.rootVisualElement;
-        _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
-
-        // Inicializar managers
-        _uiManager = new WelcomeUIManager(_uiConfig);
-        _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler,
-            this);
-        _eventManager.RegisterEvents(_uiDocument);
-
-        GetUiComponents(root);
-        FindDependencies();
-        StartCoroutine(GlitchEffectRoutine());
-        _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-
-        _isInitialized = true;
-        Debug.Log("WelcomeOrchestrator initialized successfully");
-    }
-    catch (Exception ex)
-    {
-        Debug.LogError($"Initialization error: {ex.Message}");
-    }
-}
         private void InitializeCognitoSettings()
         {
             try
             {
-                // Try to load from Inspector first
                 if (_cognitoSettings == null)
                 {
-                    // Try to load default ScriptableObject from Resources
                     _cognitoSettings = Resources.Load<SettingsCognitoParametersData>(DEFAULT_COGNITO_SETTINGS_PATH);
             
                     if (_cognitoSettings == null)
                     {
-                        // Create a runtime instance if none found
                         _cognitoSettings = ScriptableObject.CreateInstance<SettingsCognitoParametersData>();
                         print("Created runtime Cognito settings instance");
                     }
@@ -741,7 +817,6 @@ private string ConvertRegionCodeToDisplay(string regionCode)
                     }
                 }
         
-                // Try to load saved configuration from JSON
                 bool configLoaded = CognitoSettingsManager.LoadConfiguration(_cognitoSettings);
         
                 if (configLoaded)
@@ -753,41 +828,55 @@ private string ConvertRegionCodeToDisplay(string regionCode)
                     print("Using default Cognito configuration");
                 }
         
-                // Validate the configuration
                 _cognitoSettings.ValidateConfiguration();
                 print($"Cognito configuration valid: {_cognitoSettings.IsConfigurationValid}");
             }
             catch (Exception ex)
             {
                 print($"Error initializing Cognito settings: {ex.Message}");
-        
-                // Fallback: create empty runtime instance
                 _cognitoSettings = ScriptableObject.CreateInstance<SettingsCognitoParametersData>();
             }
         }
 
-private void ApplyCognitoConfiguration()
-{
-    if (_authHandler != null && _cognitoSettings != null)
-    {
-        try
+        private void ApplyCognitoConfiguration()
         {
-            var regionEndpoint = _cognitoSettings.GetRegionEndpoint();
-            _authHandler.UpdateCognitoConfiguration(
-                _cognitoSettings.UserPoolId,
-                _cognitoSettings.ClientId,
-                _cognitoSettings.IdentityPoolId,
-                regionEndpoint
-            );
-            
-            print("Cognito configuration applied to AuthHandler");
+            if (_cognitoSettings != null)
+            {
+                try
+                {
+                    var regionEndpoint = _cognitoSettings.GetRegionEndpoint();
+                    
+                    // CAMBIO: Usar ServiceController para actualizar configuración de CognitoManager
+                    bool success = ServiceController.Instance?.UpdateCognitoConfiguration(
+                        _cognitoSettings.UserPoolId,
+                        _cognitoSettings.ClientId,
+                        _cognitoSettings.IdentityPoolId,
+                        regionEndpoint
+                    ) ?? false;
+                    
+                    if (success)
+                    {
+                        print("Cognito configuration applied successfully via ServiceController");
+                        
+                        // Re-suscribirse a eventos del nuevo CognitoManager
+                        UnsubscribeFromCognitoEvents();
+                        SubscribeToCognitoEvents();
+                    }
+                    else
+                    {
+                        print("Failed to apply Cognito configuration");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    print($"Error applying Cognito configuration: {ex.Message}");
+                }
+            }
+            else
+            {
+                print("Cognito settings is null - cannot apply configuration");
+            }
         }
-        catch (Exception ex)
-        {
-            print($"Error applying Cognito configuration: {ex.Message}");
-        }
-    }
-}
 
         private void GetUiComponents(VisualElement root)
         {
@@ -854,6 +943,7 @@ private void ApplyCognitoConfiguration()
             _uiConfig.Panels[IWelcomeOps.PanelType.SettingsCognito].Panel
                 .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
         }
+        
         private void InitializeAwsRegionDropdown(VisualElement root)
         {
             var regionDropdown = root.Q<DropdownField>("AwsRegionDropdownField");

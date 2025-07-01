@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using _Scripts.Models.CognitoManagement;
 using _Scripts.Models.SESManagement;
+using _Scripts.Models.CloudWatchManagement;
+using Amazon;
 
 namespace _Scripts.Controller
 {
@@ -64,6 +67,7 @@ namespace _Scripts.Controller
         // Referencias a servicios - ServiceController ahora los gestiona
         private CognitoManager _cognitoManager;
         private SESManager _sesManager;
+        private CloudWatchManager _cloudWatchManager;
         
         // Control de creación de servicios
         private bool _cognitoManagerCreatedByUs = false;
@@ -72,7 +76,7 @@ namespace _Scripts.Controller
         private readonly List<string> _pendingAWSServices = new List<string>
         {
             "SESManager",
-            "CloudWatchManager", 
+            "CloudWatchManager",
             "S3Manager",
             "IoTCoreManager",
             "EC2Manager",
@@ -200,6 +204,9 @@ namespace _Scripts.Controller
             // Buscar SESManager existente
             ObserveSESManager();
             
+            // Buscar CloudWatchManager existente
+            ObserveCloudWatchManager();
+            
             LogDebug("Service observation started");
         }
 
@@ -300,6 +307,41 @@ namespace _Scripts.Controller
                     LogDebug("CognitoManager already has AWS credentials");
                     HandleAWSCredentialsReady();
                 }
+                else
+                {
+                    // NUEVO: Forzar obtención de credenciales si no las tiene
+                    LogDebug("CognitoManager authenticated but no AWS credentials - requesting them");
+                    StartCoroutine(RequestAWSCredentialsCoroutine());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Corrutina para solicitar credenciales AWS
+        /// </summary>
+        private System.Collections.IEnumerator RequestAWSCredentialsCoroutine()
+        {
+            yield return new WaitForSeconds(0.5f); // Pequeño delay
+            
+            if (_cognitoManager != null && _cognitoManager.IsUserAuthenticated)
+            {
+                LogDebug("Requesting AWS credentials...");
+                var task = _cognitoManager.GetAWSCredentialsAsync();
+                
+                // Esperar a que termine la tarea
+                while (!task.IsCompleted)
+                {
+                    yield return null;
+                }
+                
+                if (task.Result)
+                {
+                    LogDebug("AWS credentials obtained successfully via coroutine");
+                }
+                else
+                {
+                    LogError("Failed to obtain AWS credentials via coroutine");
+                }
             }
         }
 
@@ -354,7 +396,27 @@ namespace _Scripts.Controller
                 LogDebug("SESManager not found - will activate later");
             }
         }
-        
+
+        /// <summary>
+        /// Observa el CloudWatchManager existente
+        /// </summary>
+        private void ObserveCloudWatchManager()
+        {
+            // Buscar instancia existente
+            _cloudWatchManager = CloudWatchManager.Instance;
+            
+            if (_cloudWatchManager != null)
+            {
+                LogDebug("Found existing CloudWatchManager - observing");
+                
+                // Suscribirse a eventos existentes (si los definimos)
+                // _cloudWatchManager.OnInitializationCompleted += OnCloudWatchInitializationCompleted; // Añadir si definimos evento
+            }
+            else
+            {
+                LogDebug("CloudWatchManager not found - will activate later");
+            }
+        }
 
         #region Event Handlers
 
@@ -369,10 +431,47 @@ namespace _Scripts.Controller
             {
                 LogDebug("Cognito authentication successful - preparing AWS services");
                 HandleCognitoReady();
+                
+                // NUEVO: Solicitar credenciales AWS inmediatamente después de autenticación
+                StartCoroutine(RequestAWSCredentialsAfterAuthCoroutine());
             }
             else
             {
                 LogDebug($"Cognito authentication failed: {message}");
+            }
+        }
+
+        /// <summary>
+        /// Corrutina para solicitar credenciales AWS después de autenticación
+        /// </summary>
+        private System.Collections.IEnumerator RequestAWSCredentialsAfterAuthCoroutine()
+        {
+            // Dar un pequeño tiempo para que se complete la autenticación
+            yield return new WaitForSeconds(1.0f);
+            
+            if (_cognitoManager != null && _cognitoManager.IsUserAuthenticated)
+            {
+                LogDebug("Requesting AWS credentials after authentication...");
+                
+                // Verificar si ya tiene credenciales
+                if (_cognitoManager.CurrentAWSCredentials != null)
+                {
+                    LogDebug("AWS credentials already available");
+                    HandleAWSCredentialsReady();
+                }
+                else
+                {
+                    LogDebug("No AWS credentials found - requesting them");
+                    var task = _cognitoManager.GetAWSCredentialsAsync();
+                    
+                    // Esperar a que termine la tarea
+                    while (!task.IsCompleted)
+                    {
+                        yield return null;
+                    }
+                    
+                    LogDebug($"AWS credentials request completed - Success: {task.Result}");
+                }
             }
         }
 
@@ -395,6 +494,8 @@ namespace _Scripts.Controller
             {
                 // Después de verificar email exitosamente, el usuario queda autenticado
                 HandleCognitoReady();
+                // También solicitar credenciales AWS
+                StartCoroutine(RequestAWSCredentialsAfterAuthCoroutine());
             }
         }
 
@@ -419,6 +520,8 @@ namespace _Scripts.Controller
         /// </summary>
         private void OnCognitoAWSCredentialsObtained(bool success, string message)
         {
+            LogDebug($"AWS credentials obtained event - Success: {success}, Message: {message}");
+            
             if (success)
             {
                 LogDebug("AWS credentials obtained - ready to initialize AWS services");
@@ -426,7 +529,8 @@ namespace _Scripts.Controller
             }
             else
             {
-                LogDebug($"Failed to obtain AWS credentials: {message}");
+                LogError($"Failed to obtain AWS credentials: {message}");
+                OnServiceError?.Invoke("AWSCredentials", message);
             }
         }
 
@@ -444,6 +548,23 @@ namespace _Scripts.Controller
             {
                 LogDebug($"SES initialization failed: {message}");
                 OnServiceError?.Invoke("SESManager", message);
+            }
+        }
+
+        /// <summary>
+        /// Maneja la inicialización de CloudWatch (a definir si se añade evento)
+        /// </summary>
+        private void OnCloudWatchInitializationCompleted(bool success, string message)
+        {
+            if (success)
+            {
+                LogDebug("CloudWatch initialization completed successfully");
+                OnServiceActivated?.Invoke("CloudWatchManager");
+            }
+            else
+            {
+                LogDebug($"CloudWatch initialization failed: {message}");
+                OnServiceError?.Invoke("CloudWatchManager", message);
             }
         }
 
@@ -471,23 +592,245 @@ namespace _Scripts.Controller
         {
             if (_cognitoReady && !_awsServicesInitialized)
             {
-                LogDebug("AWS credentials ready - can initialize AWS services");
+                LogDebug("AWS credentials ready - initializing AWS services");
                 // Por ahora solo notificamos, en el siguiente paso activaremos servicios
                 PrepareAWSServicesActivation();
             }
         }
 
         /// <summary>
-        /// Prepara la activación de servicios AWS (sin activar todavía)
+        /// Prepara la activación de servicios AWS (activar tras autenticación)
         /// </summary>
         private void PrepareAWSServicesActivation()
         {
-            LogDebug("Preparing AWS services for activation...");
+            LogDebug("AWS credentials ready - initializing AWS services...");
+            
+            // CAMBIO: Ahora SÍ inicializamos servicios AWS
+            InitializeAWSServices();
             
             _awsServicesInitialized = true;
             OnAWSServicesInitialized?.Invoke();
             
-            LogDebug("AWS services preparation complete");
+            LogDebug("AWS services initialization complete");
+        }
+
+        /// <summary>
+        /// Inicializa servicios AWS con las credenciales obtenidas
+        /// </summary>
+        private async void InitializeAWSServices()
+        {
+            try
+            {
+                LogDebug("Starting AWS services initialization...");
+                
+                // Verificar que tenemos credenciales AWS
+                if (_cognitoManager == null || _cognitoManager.CurrentAWSCredentials == null)
+                {
+                    LogError("Cannot initialize AWS services - no AWS credentials available");
+                    return;
+                }
+
+                LogDebug($"AWS Credentials available - AccessKey: {_cognitoManager.CurrentAWSCredentials.GetCredentials().AccessKey.Substring(0, 8)}...");
+
+                // Inicializar SESManager si no existe
+                await InitializeSESManager();
+                
+                // Inicializar CloudWatchManager
+                await InitializeCloudWatchManager();
+                
+                // Aquí puedes agregar otros servicios AWS en el futuro
+                // await InitializeS3Manager();
+                // await InitializeCloudWatchManager();
+                
+                LogDebug("AWS services initialization completed");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error initializing AWS services: {ex.Message}");
+                OnServiceError?.Invoke("AWSServices", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inicializa SESManager con las credenciales de Cognito
+        /// </summary>
+        private async Task InitializeSESManager()
+        {
+            try
+            {
+                LogDebug("Initializing SESManager...");
+                
+                // Buscar SESManager existente o crear uno nuevo
+                _sesManager = SESManager.Instance;
+                
+                if (_sesManager != null)
+                {
+                    LogDebug("Found existing SESManager - will reinitialize with credentials");
+                    
+                    // Suscribirse a eventos
+                    _sesManager.OnInitializationCompleted += OnSESInitializationCompleted;
+                    
+                    // Forzar inicialización con credenciales correctas
+                    var initSuccess = await _sesManager.InitializeAsync();
+                    
+                    if (initSuccess)
+                    {
+                        LogDebug("SESManager initialized successfully");
+                        OnServiceActivated?.Invoke("SESManager");
+                    }
+                    else
+                    {
+                        LogError("SESManager initialization failed");
+                        OnServiceError?.Invoke("SESManager", "Initialization failed");
+                    }
+                }
+                else
+                {
+                    LogDebug("SESManager not found - it will initialize itself when needed");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error initializing SESManager: {ex.Message}");
+                OnServiceError?.Invoke("SESManager", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inicializa CloudWatchManager con las credenciales de Cognito
+        /// </summary>
+        private async Task InitializeCloudWatchManager()
+        {
+            try
+            {
+                LogDebug("Initializing CloudWatchManager...");
+                
+                // Buscar CloudWatchManager existente o crear uno nuevo
+                _cloudWatchManager = CloudWatchManager.Instance;
+                
+                if (_cloudWatchManager != null)
+                {
+                    LogDebug("Found existing CloudWatchManager - will initialize with credentials");
+                    
+                    // Forzar inicialización con credenciales correctas
+                    var initSuccess = await _cloudWatchManager.InitializeAsync(_cognitoManager.CurrentAWSCredentials, _cognitoManager.GetRegionEndpoint());
+                    
+                    if (initSuccess)
+                    {
+                        LogDebug("CloudWatchManager initialized successfully");
+                        OnServiceActivated?.Invoke("CloudWatchManager");
+                    }
+                    else
+                    {
+                        LogError("CloudWatchManager initialization failed");
+                        OnServiceError?.Invoke("CloudWatchManager", "Initialization failed");
+                    }
+                }
+                else
+                {
+                    LogDebug("CloudWatchManager not found - it will initialize itself when needed");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error initializing CloudWatchManager: {ex.Message}");
+                OnServiceError?.Invoke("CloudWatchManager", ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Public API - Cognito Configuration
+
+        /// <summary>
+        /// Actualiza la configuración de Cognito y reinicializa CognitoManager
+        /// </summary>
+        public bool UpdateCognitoConfiguration(string userPoolId, string clientId, string identityPoolId, RegionEndpoint region)
+        {
+            try
+            {
+                LogDebug($"Updating Cognito configuration - UserPool: {userPoolId}, Client: {clientId}, Region: {region.SystemName}");
+                
+                // Desuscribirse de eventos del CognitoManager actual
+                if (_cognitoManager != null)
+                {
+                    UnsubscribeFromCognitoEvents();
+                }
+                
+                // Destruir CognitoManager actual si lo creamos nosotros
+                if (_cognitoManagerCreatedByUs && _cognitoManager != null)
+                {
+                    LogDebug("Destroying old CognitoManager to create new one with updated configuration");
+                    DestroyImmediate(_cognitoManager.gameObject);
+                    _cognitoManager = null;
+                }
+                
+                // Crear nuevo CognitoManager con configuración actualizada
+                CreateCognitoManagerWithConfiguration(userPoolId, clientId, identityPoolId, region);
+                
+                // Suscribirse a eventos del nuevo CognitoManager
+                SubscribeToCognitoEvents();
+                
+                // Reset estados
+                _cognitoReady = false;
+                _awsServicesInitialized = false;
+                
+                LogDebug("Cognito configuration updated successfully");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error updating Cognito configuration: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Crea CognitoManager con configuración específica
+        /// </summary>
+        private void CreateCognitoManagerWithConfiguration(string userPoolId, string clientId, string identityPoolId, RegionEndpoint region)
+        {
+            var cognitoGO = new GameObject("CognitoManager");
+            cognitoGO.transform.SetParent(this.transform);
+            cognitoGO.transform.localPosition = Vector3.zero;
+            
+            _cognitoManager = cognitoGO.AddComponent<CognitoManager>();
+            
+            // Configurar las propiedades del CognitoManager usando reflection
+            var cognitoType = _cognitoManager.GetType();
+            
+            // Acceder a los campos protegidos usando reflection
+            var userPoolIdField = cognitoType.GetField("_userPoolId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var clientIdField = cognitoType.GetField("_clientId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var identityPoolIdField = cognitoType.GetField("_identityPoolId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var regionField = cognitoType.GetField("_regionEndpoint", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            
+            // Establecer los valores
+            userPoolIdField?.SetValue(_cognitoManager, userPoolId);
+            clientIdField?.SetValue(_cognitoManager, clientId);
+            identityPoolIdField?.SetValue(_cognitoManager, identityPoolId);
+            regionField?.SetValue(_cognitoManager, region);
+            
+            _cognitoManagerCreatedByUs = true;
+            
+            LogDebug($"Created new CognitoManager with configuration - UserPool: {userPoolId}, Client: {clientId}");
+        }
+
+        /// <summary>
+        /// Desuscribirse de eventos de CognitoManager
+        /// </summary>
+        private void UnsubscribeFromCognitoEvents()
+        {
+            if (_cognitoManager == null) return;
+            
+            LogDebug("Unsubscribing from CognitoManager events");
+            
+            _cognitoManager.OnAuthenticationComplete -= OnCognitoAuthenticationComplete;
+            _cognitoManager.OnAWSCredentialsObtained -= OnCognitoAWSCredentialsObtained;
+            _cognitoManager.OnRegistrationComplete -= OnCognitoRegistrationComplete;
+            _cognitoManager.OnEmailVerificationComplete -= OnCognitoEmailVerificationComplete;
+            _cognitoManager.OnPasswordRecoveryComplete -= OnCognitoPasswordRecoveryComplete;
+            _cognitoManager.OnResendVerificationComplete -= OnCognitoResendVerificationComplete;
         }
 
         #endregion
@@ -534,6 +877,20 @@ namespace _Scripts.Controller
 
         #endregion
 
+        #region Public API - AWS Services Access
+
+        /// <summary>
+        /// Obtiene la instancia de SESManager gestionada por ServiceController
+        /// </summary>
+        public SESManager SESManager => _sesManager;
+
+        /// <summary>
+        /// Obtiene la instancia de CloudWatchManager gestionada por ServiceController
+        /// </summary>
+        public CloudWatchManager CloudWatchManager => _cloudWatchManager;
+
+        #endregion
+
         #region Public API (for future use)
 
         /// <summary>
@@ -550,6 +907,10 @@ namespace _Scripts.Controller
                 case "ses":
                 case "sesmanager":
                     return _awsServicesInitialized && _sesManager != null;
+                    
+                case "cloudwatch":
+                case "cloudwatchmanager":
+                    return _awsServicesInitialized && _cloudWatchManager != null;
                     
                 default:
                     return false;
@@ -579,6 +940,7 @@ namespace _Scripts.Controller
             
             if (_cognitoReady) services.Add("CognitoManager");
             if (_awsServicesInitialized && _sesManager != null) services.Add("SESManager");
+            if (_awsServicesInitialized && _cloudWatchManager != null) services.Add("CloudWatchManager");
             
             return services;
         }
@@ -615,6 +977,12 @@ namespace _Scripts.Controller
             {
                 _sesManager.OnInitializationCompleted -= OnSESInitializationCompleted;
             }
+            
+            // Desuscribirse de eventos de CloudWatchManager (si se añaden)
+            // if (_cloudWatchManager != null)
+            // {
+            //     _cloudWatchManager.OnInitializationCompleted -= OnCloudWatchInitializationCompleted;
+            // }
             
             LogDebug("ServiceController cleanup completed");
         }

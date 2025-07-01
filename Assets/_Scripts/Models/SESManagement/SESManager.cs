@@ -99,9 +99,10 @@ namespace _Scripts.Models.SESManagement
             _logger.LogDebug("SES Manager awakened");
         }
 
-        private async void Start()
+        private void Start()
         {
-            await InitializeAsync();
+            // NO auto-inicializar - esperar a que ServiceController nos active tras autenticación
+            print("SES Manager started - waiting for ServiceController activation");
         }
 
         private void OnDestroy()
@@ -117,6 +118,16 @@ namespace _Scripts.Models.SESManagement
         #endregion
 
         #region Initialization
+        /// <summary>
+        /// Verifica si SESManager puede inicializarse (tiene credenciales AWS)
+        /// </summary>
+        public bool CanInitialize()
+        {
+            var cognitoManager = CognitoManager.Instance;
+            return cognitoManager != null && 
+                   cognitoManager.IsUserAuthenticated && 
+                   cognitoManager.CurrentAWSCredentials != null;
+        }
 
         /// <summary>
         /// Inicialización asíncrona del sistema SES
@@ -478,9 +489,16 @@ namespace _Scripts.Models.SESManagement
                 return null;
             }
 
-            // Dependiendo de tu implementación de CognitoManager
-            // return cognitoManager.CurrentAWSCredentials;
-            return null; // Placeholder - reemplaza con tu lógica
+            // CAMBIO: Usar credenciales reales de CognitoManager
+            var credentials = cognitoManager.CurrentAWSCredentials;
+            if (credentials != null)
+            {
+                _logger.LogDebug("AWS credentials obtained from CognitoManager");
+                return credentials;
+            }
+    
+            _logger.LogError("CognitoManager has no AWS credentials available");
+            return null;
         }
 
         private void EnsureInitialized()

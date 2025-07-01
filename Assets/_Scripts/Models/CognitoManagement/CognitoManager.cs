@@ -65,9 +65,9 @@ namespace _Scripts.Models.CognitoManagement
         #endregion
 
         // Propiedades configurables (sobrescritas por CognitoTesting)
-        protected string _userPoolId = "us-east-1_abc123xyz";
-        protected string _clientId = "yourclientid123";
-        protected string _identityPoolId = "us-east-1:abc123-xyz";
+        protected string _userPoolId = "us-east-1_mU7U4n0kL";
+        protected string _clientId = "2oii4cgkdlb9i07j69p20eq6";
+        protected string _identityPoolId = "us-east-1:bf682dd9-4084-437d-8d10-adfd3e2261bd";
         protected RegionEndpoint _regionEndpoint = RegionEndpoint.USEast1;
         protected bool _enableDebugLogs = true;
 
@@ -341,7 +341,7 @@ namespace _Scripts.Models.CognitoManagement
     
             if (string.IsNullOrEmpty(groupName))
             {
-                print("Group name is null or empty");
+                LogDebug("Group name is null or empty");
                 return false;
             }
     
@@ -395,6 +395,14 @@ namespace _Scripts.Models.CognitoManagement
                 OnResendVerificationComplete?.Invoke(false, "Failed to resend verification code");
             }
             return success;
+        }
+
+        /// <summary>
+        /// Obtiene la región configurada
+        /// </summary>
+        public RegionEndpoint GetRegionEndpoint()
+        {
+            return _regionEndpoint;
         }
 
         private void LogDebug(string message)
