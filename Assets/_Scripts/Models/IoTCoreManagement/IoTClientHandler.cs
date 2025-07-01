@@ -1,6 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Amazon;
 using Amazon.IoT;
+using Amazon.Runtime;
 using UnityEngine;
 
 namespace _Scripts.Models.IoTCoreManagement
@@ -16,17 +18,19 @@ namespace _Scripts.Models.IoTCoreManagement
             regionEndpoint = RegionEndpoint.USEast1;
         }
 
-        public bool InitializeIoTClient()
+        public async Task<bool> InitializeIoTClientAsync(AWSCredentials credentials, RegionEndpoint regionEndpoint)
         {
             try
             {
-                if (OldCognitoManager.Instance == null || OldCognitoManager.Instance.CurrentAWSCredentials == null)
+                if (credentials == null)
                 {
                     LogError("No AWS credentials available. Please authenticate first.");
                     return false;
                 }
 
-                iotClient = new AmazonIoTClient(OldCognitoManager.Instance.CurrentAWSCredentials, regionEndpoint);
+                // Usar la región proporcionada o la predeterminada si no se especifica
+                var finalRegion = regionEndpoint ?? this.regionEndpoint;
+                iotClient = new AmazonIoTClient(credentials, finalRegion);
                 LogDebug("IoT Core client initialized successfully");
                 return true;
             }
@@ -41,8 +45,8 @@ namespace _Scripts.Models.IoTCoreManagement
         {
             if (iotClient == null)
             {
-                LogWarning("IoT client is not initialized. Attempting to initialize...");
-                InitializeIoTClient();
+                LogWarning("IoT client is not initialized. Initialization required before use.");
+                // No intentará inicializarse automáticamente; depende de InitializeIoTClientAsync
             }
             return iotClient;
         }

@@ -8,7 +8,7 @@ namespace _Scripts.Models.IoTCoreManagement
     {
         private readonly bool enableDebugLogs = true;
 
-        // Events
+        // Eventos existentes
         public event Action<bool, string, List<IoTInfo.ThingInfo>> OnThingsListed;
         public event Action<bool, string, string> OnThingCreated;
         public event Action<bool, string, IoTInfo.ThingInfo> OnThingRetrieved;
@@ -17,6 +17,9 @@ namespace _Scripts.Models.IoTCoreManagement
         public event Action<bool, string, string, List<string>> OnThingCertificatesListed;
         public event Action<bool, string, string> OnPolicyCreated;
         public event Action<bool, string, string, string> OnPolicyAttached;
+
+        // Nuevo evento para el estado general del servicio
+        public event Action<bool, string> OnServiceStateChanged;
 
         public void SubscribeToThingsListed(Action<bool, string, List<IoTInfo.ThingInfo>> callback)
         {
@@ -120,10 +123,12 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 OnThingsListed?.Invoke(success, message, things);
                 LogDebug($"Triggered OnThingsListed: Success={success}, Message={message}");
+                OnServiceStateChanged?.Invoke(success, message);
             }
             catch (Exception ex)
             {
                 LogError($"Error triggering OnThingsListed: {ex.Message}");
+                OnServiceStateChanged?.Invoke(false, ex.Message);
             }
         }
 
@@ -133,10 +138,12 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 OnThingCreated?.Invoke(success, message, thingName);
                 LogDebug($"Triggered OnThingCreated: Success={success}, Thing={thingName}");
+                OnServiceStateChanged?.Invoke(success, message);
             }
             catch (Exception ex)
             {
                 LogError($"Error triggering OnThingCreated: {ex.Message}");
+                OnServiceStateChanged?.Invoke(false, ex.Message);
             }
         }
 
@@ -146,10 +153,12 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 OnThingRetrieved?.Invoke(success, message, thingInfo);
                 LogDebug($"Triggered OnThingRetrieved: Success={success}, Thing={thingInfo?.ThingName}");
+                OnServiceStateChanged?.Invoke(success, message);
             }
             catch (Exception ex)
             {
                 LogError($"Error triggering OnThingRetrieved: {ex.Message}");
+                OnServiceStateChanged?.Invoke(false, ex.Message);
             }
         }
 
@@ -159,10 +168,12 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 OnCertificateCreated?.Invoke(success, message, certificateData);
                 LogDebug($"Triggered OnCertificateCreated: Success={success}, Certificate={certificateData?.CertificateId?.Substring(0, Math.Min(8, certificateData?.CertificateId?.Length ?? 0))}...");
+                OnServiceStateChanged?.Invoke(success, message);
             }
             catch (Exception ex)
             {
                 LogError($"Error triggering OnCertificateCreated: {ex.Message}");
+                OnServiceStateChanged?.Invoke(false, ex.Message);
             }
         }
 
@@ -172,10 +183,12 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 OnCertificateAttached?.Invoke(success, message, thingName, certificateId);
                 LogDebug($"Triggered OnCertificateAttached: Success={success}, Thing={thingName}, Certificate={certificateId?.Substring(0, Math.Min(8, certificateId?.Length ?? 0))}...");
+                OnServiceStateChanged?.Invoke(success, message);
             }
             catch (Exception ex)
             {
                 LogError($"Error triggering OnCertificateAttached: {ex.Message}");
+                OnServiceStateChanged?.Invoke(false, ex.Message);
             }
         }
 
@@ -185,10 +198,12 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 OnThingCertificatesListed?.Invoke(success, message, thingName, certificateArns);
                 LogDebug($"Triggered OnThingCertificatesListed: Success={success}, Thing={thingName}, Certificates={certificateArns?.Count}");
+                OnServiceStateChanged?.Invoke(success, message);
             }
             catch (Exception ex)
             {
                 LogError($"Error triggering OnThingCertificatesListed: {ex.Message}");
+                OnServiceStateChanged?.Invoke(false, ex.Message);
             }
         }
 
@@ -198,10 +213,12 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 OnPolicyCreated?.Invoke(success, message, policyName);
                 LogDebug($"Triggered OnPolicyCreated: Success={success}, Policy={policyName}");
+                OnServiceStateChanged?.Invoke(success, message);
             }
             catch (Exception ex)
             {
                 LogError($"Error triggering OnPolicyCreated: {ex.Message}");
+                OnServiceStateChanged?.Invoke(false, ex.Message);
             }
         }
 
@@ -211,10 +228,12 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 OnPolicyAttached?.Invoke(success, message, policyName, certificateId);
                 LogDebug($"Triggered OnPolicyAttached: Success={success}, Policy={policyName}, Certificate={certificateId?.Substring(0, Math.Min(8, certificateId?.Length ?? 0))}...");
+                OnServiceStateChanged?.Invoke(success, message);
             }
             catch (Exception ex)
             {
                 LogError($"Error triggering OnPolicyAttached: {ex.Message}");
+                OnServiceStateChanged?.Invoke(false, ex.Message);
             }
         }
 

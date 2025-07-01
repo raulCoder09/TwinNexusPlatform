@@ -19,16 +19,20 @@ namespace _Scripts.Models.IoTCoreManagement
 
         public IoTPolicyHandler(IoTClientHandler clientHandler, IoTEventManager eventManager, IoTInfo ioTInfo)
         {
-            this.clientHandler = clientHandler;
-            this.eventManager = eventManager;
-            this.ioTInfo = ioTInfo;
+            this.clientHandler = clientHandler ?? throw new ArgumentNullException(nameof(clientHandler));
+            this.eventManager = eventManager ?? throw new ArgumentNullException(nameof(eventManager));
+            this.ioTInfo = ioTInfo ?? throw new ArgumentNullException(nameof(ioTInfo));
         }
 
         public async Task<bool> CreatePolicyAsync(string policyName = null, string customPolicyDocument = null)
         {
             try
             {
-                if (!CheckAuthentication()) return false;
+                if (!IsClientInitialized())
+                {
+                    eventManager.TriggerPolicyCreated(false, "IoT client not initialized", policyName ?? newPolicyName);
+                    return false;
+                }
 
                 AmazonIoTClient client = clientHandler.GetClient();
                 if (client == null)
@@ -38,7 +42,7 @@ namespace _Scripts.Models.IoTCoreManagement
                 }
 
                 string finalPolicyName = policyName ?? IoTInfo.GeneratePolicyName(newPolicyName, ioTInfo.UseTimestampInNames);
-                string policyDoc = customPolicyDocument ?? policyDocument ?? ioTInfo.GetDefaultPolicyDocument();
+                string policyDoc = customPolicyDocument ?? policyDocument ?? ioTInfo.GetDefaultPolicyDocument("156041417101", client.Config.RegionEndpoint);
 
                 LogDebug($"Creating IoT Policy: {finalPolicyName}");
                 var createPolicyRequest = new CreatePolicyRequest
@@ -82,7 +86,11 @@ namespace _Scripts.Models.IoTCoreManagement
                     return false;
                 }
 
-                if (!CheckAuthentication()) return false;
+                if (!IsClientInitialized())
+                {
+                    eventManager.TriggerPolicyAttached(false, "IoT client not initialized", finalPolicyName, finalCertificateId);
+                    return false;
+                }
 
                 AmazonIoTClient client = clientHandler.GetClient();
                 if (client == null)
@@ -119,14 +127,9 @@ namespace _Scripts.Models.IoTCoreManagement
             }
         }
 
-        private bool CheckAuthentication()
+        private bool IsClientInitialized()
         {
-            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
-            {
-                LogError("User must be authenticated to perform IoT operations");
-                return false;
-            }
-            return true;
+            return clientHandler.IsClientInitialized();
         }
 
         private void LogDebug(string message)

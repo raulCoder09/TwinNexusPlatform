@@ -18,15 +18,19 @@ namespace _Scripts.Models.IoTCoreManagement
 
         public IoTCertificateHandler(IoTClientHandler clientHandler, IoTEventManager eventManager)
         {
-            this.clientHandler = clientHandler;
-            this.eventManager = eventManager;
+            this.clientHandler = clientHandler ?? throw new ArgumentNullException(nameof(clientHandler));
+            this.eventManager = eventManager ?? throw new ArgumentNullException(nameof(eventManager));
         }
 
         public async Task<IoTInfo.CertificateData> CreateThingCertificateAsync()
         {
             try
             {
-                if (!CheckAuthentication()) return null;
+                if (!IsClientInitialized())
+                {
+                    eventManager.TriggerCertificateCreated(false, "IoT client not initialized", null);
+                    return null;
+                }
 
                 AmazonIoTClient client = clientHandler.GetClient();
                 if (client == null)
@@ -90,7 +94,11 @@ namespace _Scripts.Models.IoTCoreManagement
                     return false;
                 }
 
-                if (!CheckAuthentication()) return false;
+                if (!IsClientInitialized())
+                {
+                    eventManager.TriggerCertificateAttached(false, "IoT client not initialized", finalThingName, finalCertificateId);
+                    return false;
+                }
 
                 AmazonIoTClient client = clientHandler.GetClient();
                 if (client == null)
@@ -142,7 +150,11 @@ namespace _Scripts.Models.IoTCoreManagement
                     return new List<string>();
                 }
 
-                if (!CheckAuthentication()) return new List<string>();
+                if (!IsClientInitialized())
+                {
+                    eventManager.TriggerThingCertificatesListed(false, "IoT client not initialized", finalThingName, new List<string>());
+                    return new List<string>();
+                }
 
                 AmazonIoTClient client = clientHandler.GetClient();
                 if (client == null)
@@ -190,14 +202,9 @@ namespace _Scripts.Models.IoTCoreManagement
             }
         }
 
-        private bool CheckAuthentication()
+        private bool IsClientInitialized()
         {
-            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
-            {
-                LogError("User must be authenticated to perform IoT operations");
-                return false;
-            }
-            return true;
+            return clientHandler.IsClientInitialized();
         }
 
         private void LogDebug(string message)

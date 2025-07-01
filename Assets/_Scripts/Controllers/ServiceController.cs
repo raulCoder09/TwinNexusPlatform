@@ -5,6 +5,7 @@ using UnityEngine;
 using _Scripts.Models.CognitoManagement;
 using _Scripts.Models.SESManagement;
 using _Scripts.Models.CloudWatchManagement;
+using _Scripts.Models.IoTCoreManagement;
 using Amazon;
 
 namespace _Scripts.Controller
@@ -68,6 +69,7 @@ namespace _Scripts.Controller
         private CognitoManager _cognitoManager;
         private SESManager _sesManager;
         private CloudWatchManager _cloudWatchManager;
+        private IoTCoreManager _iotCoreManager;
         
         // Control de creación de servicios
         private bool _cognitoManagerCreatedByUs = false;
@@ -77,6 +79,7 @@ namespace _Scripts.Controller
         {
             "SESManager",
             "CloudWatchManager",
+            "IoTCoreManager",
             "S3Manager",
             "IoTCoreManager",
             "EC2Manager",
@@ -206,6 +209,9 @@ namespace _Scripts.Controller
             
             // Buscar CloudWatchManager existente
             ObserveCloudWatchManager();
+            
+            // Buscar IoTCoreManager existente
+            ObserveIoTCoreManager();
             
             LogDebug("Service observation started");
         }
@@ -418,6 +424,27 @@ namespace _Scripts.Controller
             }
         }
 
+        /// <summary>
+        /// Observa el IoTCoreManager existente
+        /// </summary>
+        private void ObserveIoTCoreManager()
+        {
+            // Buscar instancia existente
+            _iotCoreManager = IoTCoreManager.Instance;
+            
+            if (_iotCoreManager != null)
+            {
+                LogDebug("Found existing IoTCoreManager - observing");
+                
+                // Suscribirse a evento de inicialización
+                _iotCoreManager.OnInitializationCompleted += OnIoTCoreInitializationCompleted;
+            }
+            else
+            {
+                LogDebug("IoTCoreManager not found - will activate later");
+            }
+        }
+
         #region Event Handlers
 
         /// <summary>
@@ -568,6 +595,23 @@ namespace _Scripts.Controller
             }
         }
 
+        /// <summary>
+        /// Maneja la inicialización de IoTCore
+        /// </summary>
+        private void OnIoTCoreInitializationCompleted(bool success, string message)
+        {
+            if (success)
+            {
+                LogDebug("IoTCore initialization completed successfully");
+                OnServiceActivated?.Invoke("IoTCoreManager");
+            }
+            else
+            {
+                LogDebug($"IoTCore initialization failed: {message}");
+                OnServiceError?.Invoke("IoTCoreManager", message);
+            }
+        }
+
         #endregion
 
         #region Service State Handlers
@@ -637,6 +681,9 @@ namespace _Scripts.Controller
                 
                 // Inicializar CloudWatchManager
                 await InitializeCloudWatchManager();
+                
+                // Inicializar IoTCoreManager
+                await InitializeIoTCoreManager();
                 
                 // Aquí puedes agregar otros servicios AWS en el futuro
                 // await InitializeS3Manager();
@@ -735,6 +782,52 @@ namespace _Scripts.Controller
             {
                 LogError($"Error initializing CloudWatchManager: {ex.Message}");
                 OnServiceError?.Invoke("CloudWatchManager", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inicializa IoTCoreManager con las credenciales de Cognito
+        /// </summary>
+        private async Task InitializeIoTCoreManager()
+        {
+            try
+            {
+                LogDebug("Initializing IoTCoreManager...");
+                
+                // Buscar IoTCoreManager existente o crear uno nuevo
+                _iotCoreManager = IoTCoreManager.Instance;
+                
+                if (_iotCoreManager != null)
+                {
+                    LogDebug("Found existing IoTCoreManager - will initialize with credentials");
+                    
+                    // Suscribirse a evento de inicialización
+                    _iotCoreManager.OnInitializationCompleted += OnIoTCoreInitializationCompleted;
+                    
+                    // Forzar inicialización con credenciales correctas y accountId
+                    string accountId = "156041417101"; // Hardcodeado temporalmente; idealmente obtenerlo de CognitoManager
+                    var initSuccess = await _iotCoreManager.InitializeAsync(_cognitoManager.CurrentAWSCredentials, _cognitoManager.GetRegionEndpoint(), accountId);
+                    
+                    if (initSuccess)
+                    {
+                        LogDebug("IoTCoreManager initialized successfully");
+                        OnServiceActivated?.Invoke("IoTCoreManager");
+                    }
+                    else
+                    {
+                        LogError("IoTCoreManager initialization failed");
+                        OnServiceError?.Invoke("IoTCoreManager", "Initialization failed");
+                    }
+                }
+                else
+                {
+                    LogDebug("IoTCoreManager not found - it will initialize itself when needed");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error initializing IoTCoreManager: {ex.Message}");
+                OnServiceError?.Invoke("IoTCoreManager", ex.Message);
             }
         }
 
@@ -889,6 +982,11 @@ namespace _Scripts.Controller
         /// </summary>
         public CloudWatchManager CloudWatchManager => _cloudWatchManager;
 
+        /// <summary>
+        /// Obtiene la instancia de IoTCoreManager gestionada por ServiceController
+        /// </summary>
+        public IoTCoreManager IoTCoreManager => _iotCoreManager;
+
         #endregion
 
         #region Public API (for future use)
@@ -911,6 +1009,10 @@ namespace _Scripts.Controller
                 case "cloudwatch":
                 case "cloudwatchmanager":
                     return _awsServicesInitialized && _cloudWatchManager != null;
+                    
+                case "iot":
+                case "iotcoremanager":
+                    return _awsServicesInitialized && _iotCoreManager != null;
                     
                 default:
                     return false;
@@ -941,6 +1043,7 @@ namespace _Scripts.Controller
             if (_cognitoReady) services.Add("CognitoManager");
             if (_awsServicesInitialized && _sesManager != null) services.Add("SESManager");
             if (_awsServicesInitialized && _cloudWatchManager != null) services.Add("CloudWatchManager");
+            if (_awsServicesInitialized && _iotCoreManager != null) services.Add("IoTCoreManager");
             
             return services;
         }
@@ -983,6 +1086,12 @@ namespace _Scripts.Controller
             // {
             //     _cloudWatchManager.OnInitializationCompleted -= OnCloudWatchInitializationCompleted;
             // }
+            
+            // Desuscribirse de eventos de IoTCoreManager
+            if (_iotCoreManager != null)
+            {
+                _iotCoreManager.OnInitializationCompleted -= OnIoTCoreInitializationCompleted;
+            }
             
             LogDebug("ServiceController cleanup completed");
         }

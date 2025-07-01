@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Amazon;
 using UnityEngine;
 
 namespace _Scripts.Models.IoTCoreManagement
@@ -49,28 +50,29 @@ namespace _Scripts.Models.IoTCoreManagement
             }
         }
 
-        public string GetDefaultPolicyDocument()
+        public string GetDefaultPolicyDocument(string accountId, RegionEndpoint region)
         {
             try
             {
                 string prefix = string.IsNullOrEmpty(platformPrefix) ? "tnp" : platformPrefix;
+                string regionName = region?.SystemName ?? "us-east-1";
                 return $@"{{
   ""Version"": ""2012-10-17"",
   ""Statement"": [
     {{
       ""Effect"": ""Allow"",
       ""Action"": [""iot:Connect""],
-      ""Resource"": ""arn:aws:iot:us-east-1:156041417101:client/{prefix}-*""
+      ""Resource"": ""arn:aws:iot:{regionName}:{accountId}:client/{prefix}-*""
     }},
     {{
       ""Effect"": ""Allow"",
       ""Action"": [""iot:Publish"", ""iot:Receive""],
-      ""Resource"": ""arn:aws:iot:us-east-1:156041417101:topic/{prefix}/*""
+      ""Resource"": ""arn:aws:iot:{regionName}:{accountId}:topic/{prefix}/*""
     }},
     {{
       ""Effect"": ""Allow"",
       ""Action"": [""iot:Subscribe""],
-      ""Resource"": ""arn:aws:iot:us-east-1:156041417101:topicfilter/{prefix}/*""
+      ""Resource"": ""arn:aws:iot:{regionName}:{accountId}:topicfilter/{prefix}/*""
     }},
     {{
       ""Effect"": ""Allow"",
@@ -79,7 +81,7 @@ namespace _Scripts.Models.IoTCoreManagement
         ""iot:UpdateThingShadow"",
         ""iot:DeleteThingShadow""
       ],
-      ""Resource"": ""arn:aws:iot:us-east-1:156041417101:thing/{prefix}-*""
+      ""Resource"": ""arn:aws:iot:{regionName}:{accountId}:thing/{prefix}-*""
     }}
   ]
 }}";

@@ -20,16 +20,20 @@ namespace _Scripts.Models.IoTCoreManagement
 
         public IoTThingHandler(IoTClientHandler clientHandler, IoTEventManager eventManager, IoTInfo ioTInfo)
         {
-            this.clientHandler = clientHandler;
-            this.eventManager = eventManager;
-            this.ioTInfo = ioTInfo;
+            this.clientHandler = clientHandler ?? throw new ArgumentNullException(nameof(clientHandler));
+            this.eventManager = eventManager ?? throw new ArgumentNullException(nameof(eventManager));
+            this.ioTInfo = ioTInfo ?? throw new ArgumentNullException(nameof(ioTInfo));
         }
 
         public async Task<List<IoTInfo.ThingInfo>> ListThingsAsync()
         {
             try
             {
-                if (!CheckAuthentication()) return new List<IoTInfo.ThingInfo>();
+                if (!IsClientInitialized())
+                {
+                    eventManager.TriggerThingsListed(false, "IoT client not initialized", new List<IoTInfo.ThingInfo>());
+                    return new List<IoTInfo.ThingInfo>();
+                }
 
                 AmazonIoTClient client = clientHandler.GetClient();
                 if (client == null)
@@ -92,7 +96,11 @@ namespace _Scripts.Models.IoTCoreManagement
         {
             try
             {
-                if (!CheckAuthentication()) return false;
+                if (!IsClientInitialized())
+                {
+                    eventManager.TriggerThingCreated(false, "IoT client not initialized", thingName ?? newThingName);
+                    return false;
+                }
 
                 AmazonIoTClient client = clientHandler.GetClient();
                 if (client == null)
@@ -145,7 +153,11 @@ namespace _Scripts.Models.IoTCoreManagement
                     return null;
                 }
 
-                if (!CheckAuthentication()) return null;
+                if (!IsClientInitialized())
+                {
+                    eventManager.TriggerThingRetrieved(false, "IoT client not initialized", null);
+                    return null;
+                }
 
                 AmazonIoTClient client = clientHandler.GetClient();
                 if (client == null)
@@ -193,14 +205,9 @@ namespace _Scripts.Models.IoTCoreManagement
             }
         }
 
-        private bool CheckAuthentication()
+        private bool IsClientInitialized()
         {
-            if (OldCognitoManager.Instance == null || !OldCognitoManager.Instance.IsUserAuthenticated)
-            {
-                LogError("User must be authenticated to perform IoT operations");
-                return false;
-            }
-            return true;
+            return clientHandler.IsClientInitialized();
         }
 
         private void LogDebug(string message)

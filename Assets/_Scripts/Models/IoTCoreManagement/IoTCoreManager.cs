@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Amazon;
+using Amazon.Runtime;
 
 namespace _Scripts.Models.IoTCoreManagement
 {
@@ -37,7 +39,6 @@ namespace _Scripts.Models.IoTCoreManagement
             {
                 _instance = this;
                 DontDestroyOnLoad(gameObject);
-                Initialize();
             }
             else if (_instance != this)
             {
@@ -77,40 +78,53 @@ namespace _Scripts.Models.IoTCoreManagement
         private IoTThingHandler thingHandler;
         private IoTCertificateHandler certificateHandler;
         private IoTPolicyHandler policyHandler;
-        private bool isInitialized = false;
+        private bool _isInitialized = false;
+
+        // Evento para notificar la inicialización
+        public event Action<bool, string> OnInitializationCompleted;
 
         public string DomainName => domainName;
         public string DomainArn => domainArn;
 
-        public void Initialize()
+        public async Task<bool> InitializeAsync(AWSCredentials credentials, RegionEndpoint regionEndpoint, string accountId)
         {
-            if (isInitialized)
-            {
-                LogDebug("IoTCoreManager already initialized");
-                return;
-            }
+            if (_isInitialized) return true;
 
             try
             {
                 LogDebug("Initializing IoTCoreManager...");
+                
                 ioTInfo = new IoTInfo();
                 eventManager = new IoTEventManager();
                 clientHandler = new IoTClientHandler();
                 thingHandler = new IoTThingHandler(clientHandler, eventManager, ioTInfo);
                 certificateHandler = new IoTCertificateHandler(clientHandler, eventManager);
                 policyHandler = new IoTPolicyHandler(clientHandler, eventManager, ioTInfo);
-                isInitialized = true;
+
+                // Inicializar el cliente IoT con las credenciales proporcionadas
+                if (!await clientHandler.InitializeIoTClientAsync(credentials, regionEndpoint))
+                {
+                    LogError("Failed to initialize IoT client");
+                    OnInitializationCompleted?.Invoke(false, "Failed to initialize IoT client");
+                    return false;
+                }
+
+                _isInitialized = true;
                 LogDebug("IoTCoreManager initialized successfully");
+                OnInitializationCompleted?.Invoke(true, "IoTCoreManager initialized successfully");
+                return true;
             }
             catch (Exception ex)
             {
                 LogError($"Initialization error: {ex.Message}");
+                OnInitializationCompleted?.Invoke(false, ex.Message);
+                return false;
             }
         }
 
         public async Task<bool> TestIoTConnectivityAsync()
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             try
             {
                 LogDebug("Testing IoT Core connectivity...");
@@ -127,49 +141,49 @@ namespace _Scripts.Models.IoTCoreManagement
 
         public async Task<List<IoTInfo.ThingInfo>> ListThingsAsync()
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             return await thingHandler.ListThingsAsync();
         }
 
         public async Task<bool> CreateThingAsync(string thingName = null, string thingType = null)
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             return await thingHandler.CreateThingAsync(thingName ?? newThingName, thingType ?? newThingType);
         }
 
         public async Task<IoTInfo.ThingInfo> GetThingAsync(string thingName = null)
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             return await thingHandler.GetThingAsync(thingName ?? thingNameToGet);
         }
 
         public async Task<IoTInfo.CertificateData> CreateThingCertificateAsync()
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             return await certificateHandler.CreateThingCertificateAsync();
         }
 
         public async Task<bool> AttachCertificateToThingAsync(string certificateId = null, string thingName = null)
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             return await certificateHandler.AttachCertificateToThingAsync(certificateId ?? certificateIdToAttach, thingName ?? thingNameForCertificate);
         }
 
         public async Task<List<string>> ListThingCertificatesAsync(string thingName = null)
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             return await certificateHandler.ListThingCertificatesAsync(thingName ?? thingNameForCertificate);
         }
 
         public async Task<bool> CreatePolicyAsync(string policyName = null, string customPolicyDocument = null)
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             return await policyHandler.CreatePolicyAsync(policyName ?? newPolicyName, customPolicyDocument ?? policyDocument);
         }
 
         public async Task<bool> AttachPolicyAsync(string policyName = null, string certificateId = null)
         {
-            if (!isInitialized) Initialize();
+            if (!_isInitialized) await InitializeAsync(null, null, null); // Usar valores por defecto si no inicializado
             return await policyHandler.AttachPolicyAsync(policyName ?? policyNameToAttach, certificateId ?? certificateIdForPolicy);
         }
 
