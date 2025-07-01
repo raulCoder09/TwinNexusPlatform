@@ -1,4 +1,3 @@
-/* General Styles */
 #Body {
     flex-grow: 1;
     width: 100%;
@@ -7,7 +6,7 @@
     align-self: stretch;
     align-content: stretch;
     background-color: rgb(0, 0, 0);
-    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg");
+    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg?fileID=2800000&guid=db31ce936e2104caba450d7ddc5ce66f&type=3#scanlines2");
     background-size: 100% 4px;
     background-repeat: repeat-y;
     border-left-color: rgb(0, 0, 0);
@@ -20,7 +19,6 @@
     border-left-width: 0;
 }
 
-/* Header Styles */
 #Header {
     flex-grow: 1;
     width: 100%;
@@ -43,7 +41,6 @@
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
-/* Main Styles */
 #Main {
     flex-grow: 1;
     width: 100%;
@@ -70,7 +67,7 @@
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-font-style: normal;
     text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
-    transition-property: opacity, translate, text-shadow; /* NEW: Transitions for glitch */
+    transition-property: opacity, translate, text-shadow;
     transition-duration: 0.2s;
     transition-timing-function: linear;
 }
@@ -78,7 +75,7 @@
 #Title.glitch {
     opacity: 0.8;
     translate: 2px 0;
-    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5); /* NEW: Lower opacity for subtlety */
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5);
 }
 
 #SubtitlePanel {
@@ -111,9 +108,9 @@
     align-items: stretch;
 }
 
-#ExitButtonPanel, #LaunchButtonPanel {
+#ExitButtonPanel {
     flex-grow: 1;
-    width: 100%;
+    width: 33%;
     height: 100%;
     justify-content: center;
     align-items: center;
@@ -121,7 +118,26 @@
     align-content: center;
 }
 
-/* Footer Styles */
+#SettingsCognitoParametersButtonPanel {
+    flex-grow: 1;
+    width: 33%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+#LaunchButtonPanel {
+    flex-grow: 1;
+    width: 33%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
 #Footer {
     flex-grow: 1;
     width: 100%;
@@ -149,9 +165,6 @@
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
-
-
-/* Panel Container */
 #SubpanelsAndSmokeMaskContainer {
     flex-grow: 1;
     width: 100%;
@@ -160,6 +173,7 @@
     top: auto;
     opacity: 1;
     visibility: visible;
+    display: flex;
 }
 
 .Scrim {
@@ -179,7 +193,7 @@
     flex-grow: 1;
     position: absolute;
     width: 100%;
-    height: 50%;
+    height: 100%;
     bottom: 0;
     background-color: rgb(0, 0, 0);
     border-top-width: 5px;
@@ -195,20 +209,19 @@
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
     translate: 0 100%;
-    scale: 0.9; /* NEW: Reduced scale on exit */
-    opacity: 0; /* NEW: Fade out */
-    skew: 2deg; /* NEW: Slight skew on exit */
+    scale: 0.9;
+    opacity: 0;
+    skew: 2deg;
     transition-duration: 0.5s;
-    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
-    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
+    transition-timing-function: ease-in-out;
+    transition-property: translate, scale, opacity, skew;
 }
-
 
 .LoginPanelMoveB {
     translate: 0 0%;
-    scale: 1; /* NEW: Full scale on entry */
-    opacity: 1; /* NEW: Fully visible */
-    skew: 0deg; /* NEW: No skew on entry */
+    scale: 1;
+    opacity: 1;
+    skew: 0;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
@@ -216,7 +229,7 @@
     flex-grow: 1;
     position: absolute;
     width: 100%;
-    height: 50%;
+    height: 100%;
     bottom: 0;
     background-color: rgb(0, 0, 0);
     border-top-width: 5px;
@@ -228,19 +241,19 @@
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
     translate: 100% 0;
-    scale: 0.9; /* NEW: Reduced scale on exit */
-    opacity: 0; /* NEW: Fade out */
-    skew: -2deg; /* NEW: Slight skew on exit */
+    scale: 0.9;
+    opacity: 0;
+    skew: -2deg;
     transition-duration: 0.5s;
-    transition-timing-function: ease-in-out; /* NEW: Smoother transition */
-    transition-property: translate, scale, opacity, skew; /* NEW: Transition all properties */
+    transition-timing-function: ease-in-out;
+    transition-property: translate, scale, opacity, skew;
 }
 
 .RegisterPanelInMainScreen {
     translate: 0% 0;
-    scale: 1; /* NEW: Full scale on entry */
-    opacity: 1; /* NEW: Fully visible */
-    skew: 0deg; /* NEW: No skew on entry */
+    scale: 1;
+    opacity: 1;
+    skew: 0;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
@@ -248,7 +261,7 @@
     flex-grow: 1;
     position: absolute;
     width: 100%;
-    height: 50%;
+    height: 100%;
     bottom: 0;
     background-color: rgb(0, 0, 0);
     border-top-width: 5px;
@@ -262,17 +275,17 @@
     translate: -100% 0;
     scale: 0.9;
     opacity: 0;
-    skew: 2deg; 
+    skew: 2deg;
     transition-duration: 0.5s;
-    transition-timing-function: ease-in-out; 
-    transition-property: translate, scale, opacity, skew; 
+    transition-timing-function: ease-in-out;
+    transition-property: translate, scale, opacity, skew;
 }
 
 .RecoverPasswordPanelInMainScreen {
     translate: 0% 0;
-    scale: 1; 
-    opacity: 1; 
-    skew: 0deg; 
+    scale: 1;
+    opacity: 1;
+    skew: 0;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
@@ -280,7 +293,7 @@
     flex-grow: 1;
     position: absolute;
     width: 100%;
-    height: 50%;
+    height: 100%;
     bottom: 0;
     background-color: rgb(0, 0, 0);
     border-top-width: 5px;
@@ -293,22 +306,21 @@
     border-bottom-color: rgb(0, 255, 0);
     translate: 100% 0;
     scale: 0.9;
-    opacity: 0; 
-    skew: -2deg; 
+    opacity: 0;
+    skew: -2deg;
     transition-duration: 0.5s;
-    transition-timing-function: ease-in-out; 
-    transition-property: translate, scale, opacity, skew; 
+    transition-timing-function: ease-in-out;
+    transition-property: translate, scale, opacity, skew;
 }
 
 .EmailVerificationPanelInMainScreen {
     translate: 0% 0;
     scale: 1;
-    opacity: 1; 
-    skew: 0deg;
+    opacity: 1;
+    skew: 0;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
-/* Generic Cyberpunk Styles */
 .button-cyberpunk {
     color: rgb(0, 255, 0);
     background-color: rgb(0, 0, 0);
@@ -392,8 +404,7 @@
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
-/* Panel-Specific Styles */
-#LoginPanel, #RegisterPanel, #RecoverPasswordPanel, #EmailVerificationPanel {
+#LoginPanel {
     background-color: rgb(0, 0, 0);
     border-top-left-radius: 0;
     border-top-right-radius: 0;
@@ -401,21 +412,59 @@
     border-bottom-left-radius: 0;
 }
 
-#HeaderLogin, #HeaderRecoverPassword {
+#RegisterPanel {
+    background-color: rgb(0, 0, 0);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#RecoverPasswordPanel {
+    background-color: rgb(0, 0, 0);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#EmailVerificationPanel {
+    background-color: rgb(0, 0, 0);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#HeaderLogin {
     flex-grow: 1;
     flex-direction: row;
     width: 100%;
     height: 33%;
 }
 
-#HeaderRegister, #HeaderEmailVerification {
+#HeaderRecoverPassword {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 33%;
+}
+
+#HeaderRegister {
     flex-grow: 1;
     flex-direction: row;
     width: 100%;
     height: 25%;
 }
 
-#TitleLoginPanel, #TitleRecoverPasswordPanel {
+#HeaderEmailVerification {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 25%;
+}
+
+#TitleLoginPanel {
     flex-grow: 1;
     width: 50%;
     height: 100%;
@@ -425,7 +474,16 @@
     align-content: center;
 }
 
-#TitleRegisterPanel, #TitleEmailVerificationPanel {
+#TitleRecoverPasswordPanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+#TitleRegisterPanel {
     flex-grow: 1;
     width: 50%;
     height: 100%;
@@ -435,21 +493,65 @@
     align-content: center;
 }
 
-#TitleLogin, #TitleRegister, #TitleRecoverPassword {
+#TitleEmailVerificationPanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+#TitleLogin {
     color: rgb(0, 255, 0);
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 100px;
     -unity-font-style: normal;
     text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
-    transition-property: opacity, translate, text-shadow; 
+    transition-property: opacity, translate, text-shadow;
     transition-duration: 0.2s;
     transition-timing-function: linear;
 }
 
-#TitleLogin.glitch, #TitleRegister.glitch, #TitleRecoverPassword.glitch {
+#TitleRegister {
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 100px;
+    -unity-font-style: normal;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    transition-property: opacity, translate, text-shadow;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+#TitleRecoverPassword {
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 100px;
+    -unity-font-style: normal;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    transition-property: opacity, translate, text-shadow;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+#TitleLogin.glitch {
     opacity: 0.8;
     translate: 2px 0;
-    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5); 
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5);
+}
+
+#TitleRegister.glitch {
+    opacity: 0.8;
+    translate: 2px 0;
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5);
+}
+
+#TitleRecoverPassword.glitch {
+    opacity: 0.8;
+    translate: 2px 0;
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5);
 }
 
 #TitleEmailVerification {
@@ -458,7 +560,7 @@
     font-size: 80px;
     -unity-font-style: normal;
     text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
-    transition-property: opacity, translate, text-shadow; /* NEW: Transitions for glitch */
+    transition-property: opacity, translate, text-shadow;
     transition-duration: 0.2s;
     transition-timing-function: linear;
 }
@@ -466,10 +568,10 @@
 #TitleEmailVerification.glitch {
     opacity: 0.8;
     translate: 2px 0;
-    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5); /* NEW: Lower opacity for subtlety */
+    text-shadow: 0 0 10px rgba(0, 200, 0, 0.5);
 }
 
-#CloseLoginPanel, #CloseRegisterPanel, #CloseRecoverPasswordPanel, #CloseEmailVerificationPanel {
+#CloseLoginPanel {
     flex-grow: 1;
     width: 50%;
     height: 100%;
@@ -478,7 +580,54 @@
     right: auto;
 }
 
-#InputLoginPanel, #InputRecoverPasswordPanel, #InputEmailVerificationPanel {
+#CloseRegisterPanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    align-items: flex-end;
+    align-self: flex-end;
+    right: auto;
+}
+
+#CloseRecoverPasswordPanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    align-items: flex-end;
+    align-self: flex-end;
+    right: auto;
+}
+
+#CloseEmailVerificationPanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    align-items: flex-end;
+    align-self: flex-end;
+    right: auto;
+}
+
+#InputLoginPanel {
+    flex-grow: 1;
+    width: 100%;
+    height: 33%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-self: stretch;
+    align-content: center;
+}
+
+#InputRecoverPasswordPanel {
+    flex-grow: 1;
+    width: 100%;
+    height: 33%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-self: stretch;
+    align-content: center;
+}
+
+#InputEmailVerificationPanel {
     flex-grow: 1;
     width: 100%;
     height: 33%;
@@ -498,7 +647,7 @@
     align-content: center;
 }
 
-#ButtonLoginPanel, #ButtonRecoverPasswordPanel {
+#ButtonLoginPanel {
     flex-grow: 1;
     flex-direction: row;
     width: 100%;
@@ -509,7 +658,29 @@
     align-content: stretch;
 }
 
-#ButtonRegisterPanel, #ButtonEmailVerificationPanel {
+#ButtonRecoverPasswordPanel {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 33%;
+    justify-content: space-evenly;
+    align-self: center;
+    align-items: center;
+    align-content: stretch;
+}
+
+#ButtonRegisterPanel {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 25%;
+    justify-content: space-evenly;
+    align-self: center;
+    align-items: center;
+    align-content: stretch;
+}
+
+#ButtonEmailVerificationPanel {
     flex-grow: 1;
     flex-direction: row;
     width: 100%;
@@ -545,14 +716,133 @@
     letter-spacing: 5px;
 }
 
-/* Code Rain Styles */
 .code-rain {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-image: url("project://database/Assets/_Images/Backgrounds/code-rain1.jpg");
+    background-image: url("project://database/Assets/_Images/Backgrounds/code-rain1.jpg?fileID=2800000&guid=343f2d4acf563452f84583d6147e6ff6&type=3#code-rain1");
     background-size: 100% 100%;
     background-repeat: repeat;
     opacity: 0.15;
     z-index: -1;
+}
+
+#SettingsCognitoParametersPanel {
+    background-color: rgb(0, 0, 0);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#HeaderSettingsCognitoParameters {
+    flex-direction: row;
+    width: 100%;
+    height: 10%;
+}
+
+#TitleSettingsCognitoParametersPanel {
+    align-items: flex-start;
+    width: 90%;
+}
+
+#CloseSettingsCognitoParametersPanel {
+    width: 10%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+#CloseSettingsCognitoParametersButton {
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+}
+
+#InstructionsSettingsCognitoParametersPanel {
+    width: 100%;
+    height: 10%;
+    justify-content: center;
+}
+
+#SettingsCognitoParametersInstructions {
+    width: 100%;
+}
+
+#InputSettingsCognitoParametersPanel {
+    width: 100%;
+    height: 70%;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#UserPoolIdField {
+    height: 10%;
+}
+
+#ClientIdField {
+    height: 10%;
+}
+
+#IdentityPoolIdField {
+    height: 10%;
+}
+
+#AwsRegionDropdownField {
+    width: 50%;
+    height: 10%;
+}
+
+#ButtonSettingsCognitoParametersPanel {
+    width: 100%;
+    height: 10%;
+    justify-content: center;
+    align-items: center;
+}
+
+#SaveButton {
+    height: 50%;
+}
+
+.EmailVerificationPanelInMainScreen {
+    translate: 0% 0;
+    scale: 1;
+    opacity: 1;
+    skew: 0;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+}
+
+/* ==================== SETTINGS COGNITO PARAMETERS PANEL ==================== */
+
+.SettingsCognitoParametersPanelOutMainScreen {
+    flex-grow: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    background-color: rgb(0, 0, 0);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    translate: 0% -100%;
+    scale: 0.9;
+    opacity: 0;
+    skew: 1deg;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+    transition-property: translate, scale, opacity, skew;
+}
+
+.SettingsCognitoParametersPanelInMainScreen {
+    translate: 0% 0%;
+    scale: 1;
+    opacity: 1;
+    skew: 0;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }

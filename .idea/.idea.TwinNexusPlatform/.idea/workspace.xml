@@ -6,8 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.plastic/plastic.changes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.plastic/plastic.changes" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.changes" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.plastic/plastic.wktree" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.wktree" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ServiceController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ServiceController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/EC2Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/EC2Management/EC2Manager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/EC2Manager.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/EC2Management/EC2Manager.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/LambdaManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManager.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/LambdaManager.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/S3Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/S3Management/S3Manager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/S3Manager.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/LambdaTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/LambdaTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Testing/S3Test.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Testing/S3Test.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +32,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Testing/S3Tester.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Testing/AwsMqttTesting.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ai.toolkit@97783faabe3b/Modules/Accounts/Services/Core/AccountApi.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
@@ -33,6 +44,9 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2vWjHSmbaUydnvD7jTM1huo69El" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -44,7 +58,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.39784947&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/iotcore&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/storageManager&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -171,6 +185,19 @@
       <workItem from="1750832083557" duration="87035000" />
       <workItem from="1751021029184" duration="2459000" />
       <workItem from="1751068018308" duration="394000" />
+      <workItem from="1751068675095" duration="19666000" />
+      <workItem from="1751094031601" duration="23881000" />
+      <workItem from="1751150456509" duration="6212000" />
+      <workItem from="1751187264937" duration="10700000" />
+      <workItem from="1751199300207" duration="134000" />
+      <workItem from="1751199468184" duration="29618000" />
+      <workItem from="1751274694091" duration="8162000" />
+      <workItem from="1751286533751" duration="1555000" />
+      <workItem from="1751288587977" duration="23954000" />
+      <workItem from="1751315867884" duration="5031000" />
+      <workItem from="1751362739065" duration="8306000" />
+      <workItem from="1751371109853" duration="3541000" />
+      <workItem from="1751400047446" duration="6630000" />
     </task>
     <servers />
   </component>
