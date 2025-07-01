@@ -180,9 +180,9 @@ namespace _Scripts.Controller
         private void FindObjects()
         {
             // _oldWelcomeController=GameObject.FindGameObjectWithTag("Welcome").GetComponent<OldWelcomeController>();
-            _deviceSelectionController=GameObject.FindGameObjectWithTag("DeviceSelection").GetComponent<DeviceSelectionController>();
-            _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
-            _settingsController=GameObject.FindGameObjectWithTag("Settings").GetComponent<SettingsController>();
+            // _deviceSelectionController=GameObject.FindGameObjectWithTag("DeviceSelection").GetComponent<DeviceSelectionController>();
+            // _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+            // _settingsController=GameObject.FindGameObjectWithTag("Settings").GetComponent<SettingsController>();
         }
 
 

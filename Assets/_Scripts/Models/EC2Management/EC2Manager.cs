@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Scripts.Models
+namespace _Scripts.Models.EC2Management
 {
     public class EC2Manager : MonoBehaviour
     {

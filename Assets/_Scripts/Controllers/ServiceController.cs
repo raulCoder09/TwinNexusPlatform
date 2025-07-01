@@ -6,6 +6,8 @@ using _Scripts.Models.CognitoManagement;
 using _Scripts.Models.SESManagement;
 using _Scripts.Models.CloudWatchManagement;
 using _Scripts.Models.IoTCoreManagement;
+using _Scripts.Models.S3Management;
+using _Scripts.Models.LambdaManagement;
 using Amazon;
 
 namespace _Scripts.Controller
@@ -70,6 +72,8 @@ namespace _Scripts.Controller
         private SESManager _sesManager;
         private CloudWatchManager _cloudWatchManager;
         private IoTCoreManager _iotCoreManager;
+        private S3Manager _s3Manager;
+        private LambdaManager _lambdaManager;
         
         // Control de creación de servicios
         private bool _cognitoManagerCreatedByUs = false;
@@ -81,9 +85,8 @@ namespace _Scripts.Controller
             "CloudWatchManager",
             "IoTCoreManager",
             "S3Manager",
-            "IoTCoreManager",
-            "EC2Manager",
-            "LambdaManager"
+            "LambdaManager",
+            "EC2Manager"
         };
 
         #endregion
@@ -212,6 +215,12 @@ namespace _Scripts.Controller
             
             // Buscar IoTCoreManager existente
             ObserveIoTCoreManager();
+            
+            // Buscar S3Manager existente
+            ObserveS3Manager();
+            
+            // Buscar LambdaManager existente
+            ObserveLambdaManager();
             
             LogDebug("Service observation started");
         }
@@ -445,6 +454,48 @@ namespace _Scripts.Controller
             }
         }
 
+        /// <summary>
+        /// Observa el S3Manager existente
+        /// </summary>
+        private void ObserveS3Manager()
+        {
+            // Buscar instancia existente
+            _s3Manager = S3Manager.Instance;
+            
+            if (_s3Manager != null)
+            {
+                LogDebug("Found existing S3Manager - observing");
+                
+                // Suscribirse a evento de inicialización
+                _s3Manager.OnInitializationCompleted += OnS3InitializationCompleted;
+            }
+            else
+            {
+                LogDebug("S3Manager not found - will activate later");
+            }
+        }
+
+        /// <summary>
+        /// Observa el LambdaManager existente
+        /// </summary>
+        private void ObserveLambdaManager()
+        {
+            // Buscar instancia existente
+            _lambdaManager = LambdaManager.Instance;
+            
+            if (_lambdaManager != null)
+            {
+                LogDebug("Found existing LambdaManager - observing");
+                
+                // Suscribirse a evento de ejecución (por ahora usamos OnExecutionComplete como proxy)
+                _lambdaManager.OnExecutionComplete += OnLambdaExecutionComplete;
+            }
+            else
+            {
+                LogDebug("LambdaManager not found - will activate later");
+            }
+        }
+
         #region Event Handlers
 
         /// <summary>
@@ -612,6 +663,40 @@ namespace _Scripts.Controller
             }
         }
 
+        /// <summary>
+        /// Maneja la inicialización de S3
+        /// </summary>
+        private void OnS3InitializationCompleted(bool success, string message)
+        {
+            if (success)
+            {
+                LogDebug("S3 initialization completed successfully");
+                OnServiceActivated?.Invoke("S3Manager");
+            }
+            else
+            {
+                LogDebug($"S3 initialization failed: {message}");
+                OnServiceError?.Invoke("S3Manager", message);
+            }
+        }
+
+        /// <summary>
+        /// Maneja la ejecución de Lambda
+        /// </summary>
+        private void OnLambdaExecutionComplete(bool success, string message, object data)
+        {
+            if (success)
+            {
+                LogDebug("Lambda execution completed successfully");
+                OnServiceActivated?.Invoke("LambdaManager"); // Usamos esto como proxy para inicialización
+            }
+            else
+            {
+                LogDebug($"Lambda execution failed: {message}");
+                OnServiceError?.Invoke("LambdaManager", message);
+            }
+        }
+
         #endregion
 
         #region Service State Handlers
@@ -684,6 +769,12 @@ namespace _Scripts.Controller
                 
                 // Inicializar IoTCoreManager
                 await InitializeIoTCoreManager();
+                
+                // Inicializar S3Manager
+                await InitializeS3Manager();
+                
+                // Inicializar LambdaManager
+                await InitializeLambdaManager();
                 
                 // Aquí puedes agregar otros servicios AWS en el futuro
                 // await InitializeS3Manager();
@@ -828,6 +919,96 @@ namespace _Scripts.Controller
             {
                 LogError($"Error initializing IoTCoreManager: {ex.Message}");
                 OnServiceError?.Invoke("IoTCoreManager", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inicializa S3Manager con las credenciales de Cognito
+        /// </summary>
+        private async Task InitializeS3Manager()
+        {
+            try
+            {
+                LogDebug("Initializing S3Manager...");
+                
+                // Buscar S3Manager existente o crear uno nuevo
+                _s3Manager = S3Manager.Instance;
+                
+                if (_s3Manager != null)
+                {
+                    LogDebug("Found existing S3Manager - will initialize with credentials");
+                    
+                    // Suscribirse a evento de inicialización
+                    _s3Manager.OnInitializationCompleted += OnS3InitializationCompleted;
+                    
+                    // Forzar inicialización con credenciales correctas
+                    var initSuccess = await _s3Manager.InitializeAsync(_cognitoManager.CurrentAWSCredentials, _cognitoManager.GetRegionEndpoint());
+                    
+                    if (initSuccess)
+                    {
+                        LogDebug("S3Manager initialized successfully");
+                        OnServiceActivated?.Invoke("S3Manager");
+                    }
+                    else
+                    {
+                        LogError("S3Manager initialization failed");
+                        OnServiceError?.Invoke("S3Manager", "Initialization failed");
+                    }
+                }
+                else
+                {
+                    LogDebug("S3Manager not found - it will initialize itself when needed");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error initializing S3Manager: {ex.Message}");
+                OnServiceError?.Invoke("S3Manager", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inicializa LambdaManager con las credenciales de Cognito
+        /// </summary>
+        private async Task InitializeLambdaManager()
+        {
+            try
+            {
+                LogDebug("Initializing LambdaManager...");
+                
+                // Buscar LambdaManager existente o crear uno nuevo
+                _lambdaManager = LambdaManager.Instance;
+                
+                if (_lambdaManager != null)
+                {
+                    LogDebug("Found existing LambdaManager - will initialize with credentials");
+                    
+                    // Suscribirse a evento de ejecución como proxy para inicialización
+                    _lambdaManager.OnExecutionComplete += OnLambdaExecutionComplete;
+                    
+                    // Forzar inicialización con credenciales correctas
+                    var initSuccess = await _lambdaManager.InitializeAsync(_cognitoManager.CurrentAWSCredentials, _cognitoManager.GetRegionEndpoint());
+                    
+                    if (initSuccess)
+                    {
+                        LogDebug("LambdaManager initialized successfully");
+                        OnServiceActivated?.Invoke("LambdaManager");
+                    }
+                    else
+                    {
+                        LogError("LambdaManager initialization failed");
+                        OnServiceError?.Invoke("LambdaManager", "Initialization failed");
+                    }
+                }
+                else
+                {
+                    LogDebug("LambdaManager not found - it will initialize itself when needed");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error initializing LambdaManager: {ex.Message}");
+                OnServiceError?.Invoke("LambdaManager", ex.Message);
             }
         }
 
@@ -987,6 +1168,16 @@ namespace _Scripts.Controller
         /// </summary>
         public IoTCoreManager IoTCoreManager => _iotCoreManager;
 
+        /// <summary>
+        /// Obtiene la instancia de S3Manager gestionada por ServiceController
+        /// </summary>
+        public S3Manager S3Manager => _s3Manager;
+
+        /// <summary>
+        /// Obtiene la instancia de LambdaManager gestionada por ServiceController
+        /// </summary>
+        public LambdaManager LambdaManager => _lambdaManager;
+
         #endregion
 
         #region Public API (for future use)
@@ -1013,6 +1204,14 @@ namespace _Scripts.Controller
                 case "iot":
                 case "iotcoremanager":
                     return _awsServicesInitialized && _iotCoreManager != null;
+                    
+                case "s3":
+                case "s3manager":
+                    return _awsServicesInitialized && _s3Manager != null;
+                    
+                case "lambda":
+                case "lambdamanager":
+                    return _awsServicesInitialized && _lambdaManager != null;
                     
                 default:
                     return false;
@@ -1044,6 +1243,8 @@ namespace _Scripts.Controller
             if (_awsServicesInitialized && _sesManager != null) services.Add("SESManager");
             if (_awsServicesInitialized && _cloudWatchManager != null) services.Add("CloudWatchManager");
             if (_awsServicesInitialized && _iotCoreManager != null) services.Add("IoTCoreManager");
+            if (_awsServicesInitialized && _s3Manager != null) services.Add("S3Manager");
+            if (_awsServicesInitialized && _lambdaManager != null) services.Add("LambdaManager");
             
             return services;
         }
@@ -1091,6 +1292,18 @@ namespace _Scripts.Controller
             if (_iotCoreManager != null)
             {
                 _iotCoreManager.OnInitializationCompleted -= OnIoTCoreInitializationCompleted;
+            }
+            
+            // Desuscribirse de eventos de S3Manager
+            if (_s3Manager != null)
+            {
+                _s3Manager.OnInitializationCompleted -= OnS3InitializationCompleted;
+            }
+            
+            // Desuscribirse de eventos de LambdaManager
+            if (_lambdaManager != null)
+            {
+                _lambdaManager.OnExecutionComplete -= OnLambdaExecutionComplete;
             }
             
             LogDebug("ServiceController cleanup completed");
