@@ -1,4 +1,5 @@
 using System;
+using _Scripts.Controllers.UiManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -185,8 +186,7 @@ namespace _Scripts.Controllers.DashboardController
         }
 
         #endregion
-
-        #region Navigation Event Handlers
+        
 
         /// <summary>
         /// Maneja el click del botón para ocultar menú
@@ -209,24 +209,76 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// Maneja el click en botones de navegación
         /// </summary>
-        private void OnNavigationButtonClicked(ClickEvent evt, DashboardSection section)
-        {
-            Debug.Log($"[DashboardEventManager] Navigation button clicked: {section}");
-            
-            // Actualizar UI para mostrar sección activa
-            _uiManager.UpdateActiveNavigationSection(section);
-            
-            // Cerrar menú después de navegar
-            _uiManager.ToggleNavigationMenu(false);
-            
-            // Notificar al orchestrator sobre la navegación
-            _orchestrator?.HandleNavigationRequest(section);
-            
-            // Notificar a sistemas externos
-            _onNavigationRequested?.Invoke(section);
-        }
+        /// <summary>
+/// Maneja el click en botones de navegación
+/// </summary>
+private void OnNavigationButtonClicked(ClickEvent evt, DashboardSection section)
+{
+    Debug.Log($"[DashboardEventManager] Navigation button clicked: {section}");
+    
+    // Actualizar UI para mostrar sección activa
+    _uiManager.UpdateActiveNavigationSection(section);
+    
+    // Cerrar menú después de navegar
+    _uiManager.ToggleNavigationMenu(false);
+    
 
-        #endregion
+    var uiController = UIController.Instance;
+    var navManager = NavigationContextManager.Instance;
+    
+    if (uiController != null && navManager != null)
+    {
+        switch (section)
+        {
+            case DashboardSection.Training:
+                // Configurar contexto de Training y navegar a Device Selection
+                navManager.SetContext(NavigationContext.Training);
+                uiController.ShowUI("DeviceSelection");
+                break;
+                
+            case DashboardSection.Operations:
+                // Configurar contexto de Operations y navegar a Device Selection
+                navManager.SetContext(NavigationContext.Operations);
+                uiController.ShowUI("DeviceSelection");
+                break;
+                
+            case DashboardSection.Reports:
+                // Para Reports, configurar contexto pero permanecer en Dashboard por ahora
+                // (hasta que se implemente Reports UI)
+                navManager.SetContext(NavigationContext.Reports);
+                Debug.Log("[DashboardEventManager] Reports section - staying in Dashboard for now");
+                break;
+                
+            case DashboardSection.Settings:
+                // Para Settings, configurar contexto pero permanecer en Dashboard por ahora
+                navManager.SetContext(NavigationContext.Settings);
+                Debug.Log("[DashboardEventManager] Settings section - staying in Dashboard for now");
+                break;
+                
+            case DashboardSection.Support:
+                Debug.Log("[DashboardEventManager] Support section - no action defined");
+                break;
+                
+            case DashboardSection.Main:
+            default:
+                // Permanecer en Dashboard
+                navManager.SetContext(NavigationContext.Dashboard);
+                break;
+        }
+    }
+    else
+    {
+        Debug.LogWarning("[DashboardEventManager] UIController or NavigationContextManager not available");
+        
+        // Fallback: notificar al orchestrator (método anterior)
+        _orchestrator?.HandleNavigationRequest(section);
+    }
+    
+    // Notificar a sistemas externos
+    _onNavigationRequested?.Invoke(section);
+}
+
+
 
         #region Device Control Event Handlers
 

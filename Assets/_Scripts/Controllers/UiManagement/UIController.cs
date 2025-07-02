@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using _Scripts.Controller;
 using _Scripts.Controllers.DashboardController;
+using _Scripts.Controllers.DeviceSelectionController;
 using _Scripts.Controllers.WelcomeController;
 using UnityEngine;
 
@@ -59,6 +60,7 @@ namespace _Scripts.Controllers.UiManagement
         [Header("UI Scenes Configuration")]
         [SerializeField] private string _welcomeSceneTag = "Welcome";
         [SerializeField] private string _dashboardSceneTag = "Dashboard";
+        [SerializeField] private string _deviceSelectionSceneTag = "DeviceSelection";
 
         #endregion
 
@@ -77,6 +79,7 @@ namespace _Scripts.Controllers.UiManagement
         // Referencias específicas
         private WelcomeOrchestrator _welcomeController;
         private DashboardOrchestrator _dashboardController;
+        private DeviceSelectionOrchestrator _deviceSelectionController;
 
         // Lista de controladores que requieren autenticación
         private readonly HashSet<string> _authenticatedControllers = new HashSet<string>();
@@ -229,6 +232,12 @@ namespace _Scripts.Controllers.UiManagement
                 RegisterUIController("Dashboard", _dashboardController, requiresAuth: true);
                 LogDebug("DashboardController discovered and registered");
             }
+            _deviceSelectionController = FindUIController<DeviceSelectionOrchestrator>(_deviceSelectionSceneTag);
+            if (_deviceSelectionController != null)
+            {
+                RegisterUIController("DeviceSelection", _deviceSelectionController, requiresAuth: true);
+                LogDebug("DeviceSelectionController discovered and registered");
+            }
 
             // Aquí se pueden agregar más controladores en el futuro:
             // - TrainingController
@@ -318,7 +327,38 @@ namespace _Scripts.Controllers.UiManagement
                 _welcomeController.OnAuthenticationSuccess += OnWelcomeAuthenticationSuccess;
                 LogDebug("Subscribed to WelcomeController authentication events");
             }
+            if (_deviceSelectionController != null)
+            {
+                _deviceSelectionController.OnDeviceLaunched += OnDeviceSelectionDeviceLaunched;
+                _deviceSelectionController.OnContextChanged += OnDeviceSelectionContextChanged;
+                LogDebug("Subscribed to DeviceSelectionController events");
+            }
         }
+        /// <summary>
+        /// Maneja cuando se lanza un dispositivo desde Device Selection
+        /// </summary>
+        private void OnDeviceSelectionDeviceLaunched(string deviceId, string sceneName)
+        {
+            LogDebug($"Device launched from Device Selection: {deviceId} → {sceneName}");
+    
+            // Aquí se puede agregar lógica adicional si es necesario
+            // Por ejemplo, tracking, analytics, cleanup de UI, etc.
+        }
+        
+        /// <summary>
+        /// Maneja cambios de contexto desde Device Selection
+        /// </summary>
+        private void OnDeviceSelectionContextChanged(NavigationContext fromContext, NavigationContext toContext)
+        {
+            LogDebug($"Device Selection context changed: {fromContext} → {toContext}");
+    
+            // Si el contexto cambió a Dashboard, navegar automáticamente
+            if (toContext == NavigationContext.Dashboard)
+            {
+                ShowUI("Dashboard");
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Se suscribe a eventos de un controlador específico
@@ -438,15 +478,14 @@ namespace _Scripts.Controllers.UiManagement
                 ShowUI("Welcome");
             }
         }
-
-        #endregion
+        
 
         #region UI Management
 
         /// <summary>
         /// Muestra una UI específica
         /// </summary>
-        public bool ShowUI(string uiName)
+        public bool ShowUI(string uiName, Dictionary<string, object> parameters = null)
         {
             try
             {
@@ -474,6 +513,10 @@ namespace _Scripts.Controllers.UiManagement
                     }
                     return false;
                 }
+                if (uiName == "DeviceSelection" && parameters != null)
+                {
+                    HandleDeviceSelectionParameters(parameters);
+                }
 
                 // Verificar si el controlador está inicializado
                 if (!_controllerInitializationStatus.GetValueOrDefault(uiName, false))
@@ -494,11 +537,46 @@ namespace _Scripts.Controllers.UiManagement
                 return false;
             }
         }
+        
+        /// <summary>
+        /// Maneja parámetros específicos para Device Selection
+        /// </summary>
+        private void HandleDeviceSelectionParameters(Dictionary<string, object> parameters)
+        {
+            try
+            {
+                LogDebug("Handling Device Selection parameters");
+        
+                // Los parámetros se pueden pasar al NavigationContextManager
+                var navManager = NavigationContextManager.Instance;
+                if (navManager != null)
+                {
+                    // Si no hay contexto específico en parámetros, usar el actual del NavigationContextManager
+                    if (!parameters.ContainsKey("context"))
+                    {
+                        parameters["context"] = navManager.CurrentContext;
+                    }
+            
+                    // Agregar datos adicionales al contexto
+                    foreach (var kvp in parameters)
+                    {
+                        navManager.AddContextData(kvp.Key, kvp.Value);
+                    }
+                }
+        
+                LogDebug($"Device Selection parameters processed: {parameters.Count} items");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error handling Device Selection parameters: {ex.Message}");
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Inicializa y muestra una UI en secuencia
         /// </summary>
-        private IEnumerator InitializeAndShowUICoroutine(string uiName, IUIController controller)
+        private IEnumerator InitializeAndShowUICoroutine(string uiName, IUIController controller, Dictionary<string, object> parameters = null)
         {
             // Inicializar primero
             yield return StartCoroutine(InitializeControllerCoroutine(uiName, controller));
@@ -518,7 +596,7 @@ namespace _Scripts.Controllers.UiManagement
         /// <summary>
         /// Ejecuta transición entre UIs
         /// </summary>
-        private IEnumerator TransitionToUICoroutine(string uiName, IUIController targetController)
+        private IEnumerator TransitionToUICoroutine(string uiName, IUIController targetController, Dictionary<string, object> parameters = null)
         {
             _isTransitioning = true;
             _previousController = _currentActiveController;
@@ -537,6 +615,11 @@ namespace _Scripts.Controllers.UiManagement
                 // Delay para permitir animaciones de salida
                 yield return new WaitForSeconds(_transitionDelay);
             }
+            
+            if (uiName == "DeviceSelection" && _deviceSelectionController != null)
+            {
+                ConfigureDeviceSelectionController(parameters);
+            }
 
             // Mostrar nueva UI
             LogDebug($"Showing new UI: {uiName}");
@@ -551,7 +634,27 @@ namespace _Scripts.Controllers.UiManagement
             LogDebug($"UI transition completed: {uiName}");
             _isTransitioning = false;
         }
-
+        
+        /// <summary>
+        /// Configura el Device Selection Controller antes de mostrarlo
+        /// </summary>
+        private void ConfigureDeviceSelectionController(Dictionary<string, object> parameters)
+        {
+            try
+            {
+                LogDebug("Configuring Device Selection Controller");
+        
+                // El DeviceSelectionOrchestrator se configurará automáticamente 
+                // desde el NavigationContextManager en su método Show()
+                // No necesitamos configuración adicional aquí
+        
+                LogDebug("Device Selection Controller configured");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error configuring Device Selection Controller: {ex.Message}");
+            }
+        }
         /// <summary>
         /// Oculta una UI específica
         /// </summary>
@@ -603,8 +706,7 @@ namespace _Scripts.Controllers.UiManagement
 
             _currentActiveController = null;
         }
-
-        #endregion
+        
 
         #region Authentication Management
 
@@ -859,6 +961,13 @@ namespace _Scripts.Controllers.UiManagement
                 {
                     _welcomeController.OnAuthenticationSuccess -= OnWelcomeAuthenticationSuccess;
                 }
+                
+                if (_deviceSelectionController != null)
+                {
+                    _deviceSelectionController.OnDeviceLaunched -= OnDeviceSelectionDeviceLaunched;
+                    _deviceSelectionController.OnContextChanged -= OnDeviceSelectionContextChanged;
+                }
+
 
                 // Limpiar controladores
                 foreach (var kvp in _uiControllers)
@@ -894,6 +1003,37 @@ namespace _Scripts.Controllers.UiManagement
                 LogError($"Error during UIController cleanup: {ex.Message}");
             }
         }
+        
+        /// <summary>
+        /// Método helper para navegar a Device Selection con contexto específico
+        /// </summary>
+        public bool ShowDeviceSelection(NavigationContext context, Dictionary<string, object> additionalData = null)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                ["context"] = context
+            };
+    
+            if (additionalData != null)
+            {
+                foreach (var kvp in additionalData)
+                {
+                    parameters[kvp.Key] = kvp.Value;
+                }
+            }
+    
+            return ShowUI("DeviceSelection", parameters);
+        }
+
+        /// <summary>
+        /// Verifica si Device Selection está disponible
+        /// </summary>
+        public bool IsDeviceSelectionAvailable()
+        {
+            return _deviceSelectionController != null && 
+                   _controllerInitializationStatus.GetValueOrDefault("DeviceSelection", false);
+        }
+        #endregion
 
         /// <summary>
         /// Desuscribirse de eventos de un controlador
@@ -905,8 +1045,7 @@ namespace _Scripts.Controllers.UiManagement
             controller.OnControllerHidden -= OnControllerHidden;
             controller.OnControllerError -= OnControllerError;
         }
-
-        #endregion
+        
 
         #region Logging
 
