@@ -1,3 +1,4 @@
+/* Existing classes */
 .ScrimTransparent {
     flex-grow: 1;
     position: relative;
@@ -26,4 +27,698 @@
 
 .NavigationMenuPanelinMainScreen {
     translate: 0% 0;
+}
+
+
+#Body {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-self: stretch;
+    align-content: stretch;
+    background-color: rgb(0, 0, 0);
+    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg?fileID=2800000&guid=db31ce936e2104caba450d7ddc5ce66f&type=3#scanlines2");
+    background-size: 100% 4px;
+    background-repeat: repeat-y;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+.sergey-kotenev {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url("project://database/Assets/_Images/Backgrounds/sergey-kotenev--gWSFS8rrVg-unsplash.jpg");
+    background-size: 100% 100%;
+    background-repeat: repeat;
+    opacity: 0.30;
+    z-index: -1;
+}
+.code-rain {
+    position: absolute;
+    width: 100%;
+    height: 100%; 
+    background-image: url("project://database/Assets/_Images/Backgrounds/ekaterina-novitskaya-gLroHoWh_as-unsplash.jpg");
+    background-size: 100% 100%;
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: -1;
+}
+
+/* Header */
+.header {
+    flex-grow: 1;
+    width: 100%;
+    height: 10%;
+    flex-direction: row;
+}
+
+.menu-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    align-items: center;
+}
+
+.menu-button {
+    height: 100%;
+    width: 50%;
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    translate: 0 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-left-color: rgb(3, 255, 0);
+    border-right-color: rgb(3, 255, 0);
+    border-top-color: rgb(3, 255, 0);
+    border-bottom-color: rgb(3, 255, 0);
+    color: rgb(4, 201, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+}
+
+.spare-header-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    justify-content: center;
+}
+
+.spare-header-label {
+    color: rgb(255, 255, 255);
+    font-size: 20px;
+    -unity-text-align: upper-center;
+}
+
+.username-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    -unity-text-align: upper-left;
+    justify-content: center;
+}
+
+.username-label {
+    -unity-font-style: bold;
+    -unity-text-outline-color: rgba(0, 0, 0, 0);
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+}
+
+.logout-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    justify-content: center;
+}
+
+.logout-label {
+    color: rgb(255, 255, 255);
+    -unity-text-align: upper-center;
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* Main content */
+.main {
+    flex-grow: 1;
+    width: 100%;
+    height: 80%;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.main-left {
+    flex-grow: 1;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: 60%;
+    height: 100%;
+}
+
+.main-top-row {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 50%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-content: stretch;
+    margin-bottom: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.main-bottom-row {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 50%;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+/* Widget panels */
+.widget-panel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.widget-panel.recent-activity-panel,
+.widget-panel.system-status-panel {
+    width: 100%;
+}
+
+.widget-header {
+    flex-grow: 1;
+    width: 100%;
+    height: 20%;
+    justify-content: flex-end;
+}
+
+.widget-content {
+    flex-grow: 1;
+    width: 100%;
+    height: 80%;
+    justify-content: center;
+}
+
+.widget-title {
+    color: rgb(255, 255, 255);
+    font-size: 40px;
+    -unity-text-align: upper-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* Welcome panel */
+.welcome-title {
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    font-size: 40px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.welcome-description {
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* IoT status panel */
+.iot-status-header {
+    flex-grow: 1;
+    width: 100%;
+    height: 20%;
+    justify-content: space-evenly;
+    align-self: auto;
+    align-items: center;
+    flex-direction: row;
+}
+
+.iot-status-row {
+    flex-grow: 1;
+    width: 100%;
+    height: 20%;
+    justify-content: space-evenly;
+    align-self: auto;
+    align-items: center;
+    flex-direction: row;
+}
+
+.iot-status-column-header {
+    color: rgb(255, 255, 255);
+    height: 100%;
+    width: 33%;
+    -unity-text-align: middle-center;
+    font-size: 22px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.iot-status-column {
+    color: rgb(255, 255, 255);
+    height: 100%;
+    width: 33%;
+    -unity-text-align: middle-center;
+    font-size: 20px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* System status panel */
+.system-status-content {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 80%;
+}
+
+.system-status-devices {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+    -unity-text-align: upper-right;
+}
+
+.system-status-states {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    justify-content: space-evenly;
+    align-self: auto;
+    align-items: center;
+}
+
+.system-device-name {
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    -unity-text-align: upper-right;
+    -unity-font-style: normal;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.system-status-online {
+    color: rgb(0, 255, 0);
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.system-status-offline {
+    color: rgb(238, 0, 0);
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.system-status-offline-red {
+    color: rgb(255, 0, 0);
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* Recent activity panel */
+.recent-activity-title {
+    color: rgb(255, 255, 255);
+    -unity-text-align: upper-center;
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.recent-activity-content {
+    flex-grow: 1;
+    width: 100%;
+    height: 80%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.recent-activity-item {
+    color: rgb(255, 255, 255);
+    -unity-font-style: normal;
+    font-size: 30px;
+    white-space: normal;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.recent-activity-link {
+    color: rgb(255, 255, 255);
+    font-size: 35px;
+    white-space: normal;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* Main right panel - Device control */
+.device-control-panel {
+    flex-grow: 1;
+    width: 40%;
+    background-image: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+}
+
+.device-control-header {
+    flex-grow: 1;
+    width: 100%;
+    height: 20%;
+    flex-direction: row;
+}
+
+.device-nav-left {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.device-nav-right {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.device-nav-button {
+    width: 50%;
+    font-size: 30px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: bold;
+    background-color: rgb(0, 0, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    color: rgb(0, 255, 0);
+}
+
+.device-title-container {
+    flex-grow: 1;
+    width: 60%;
+    height: 100%;
+    justify-content: center;
+}
+
+.device-title {
+    font-size: 50px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: upper-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.device-status-row {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 10%;
+}
+
+.device-status-container {
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.device-status-online {
+    font-size: 40px;
+    -unity-font-style: bold;
+    color: rgb(0, 255, 0);
+    -unity-text-align: upper-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.device-status-busy {
+    -unity-font-style: bold;
+    color: rgb(253, 255, 0);
+    font-size: 40px;
+    -unity-text-align: upper-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.device-status-alarmed {
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-text-align: upper-center;
+    color: rgb(255, 0, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.device-visualization-container {
+    flex-grow: 1;
+    width: 100%;
+    height: 50%;
+    align-items: center;
+    justify-content: center;
+}
+
+.device-visualization-box {
+    flex-grow: 1;
+    width: 80%;
+    height: auto;
+    justify-content: center;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    background-color: rgb(0, 0, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+}
+
+.device-controls-bottom {
+    flex-grow: 1;
+    height: 20%;
+    width: 100%;
+}
+
+.device-mode-container {
+    flex-grow: 1;
+}
+
+.device-mode-label {
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    font-size: 30px;
+    -unity-text-align: upper-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.device-coordinates-container {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    justify-content: flex-start;
+}
+
+.coordinate-container {
+    flex-grow: 1;
+    width: 33%;
+    height: 100%;
+    justify-content: center;
+}
+
+.coordinate-label {
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    font-size: 30px;
+    -unity-text-align: upper-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* Footer */
+.footer {
+    flex-grow: 1;
+    width: 100%;
+    height: 10%;
+    flex-direction: row;
+}
+
+.footer-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    justify-content: center;
+}
+
+.footer-label {
+    color: rgb(255, 255, 255);
+    font-size: 20px;
+    -unity-text-align: upper-center;
+}
+
+/* Overlay and navigation menu */
+.overlay-container {
+    flex-grow: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    opacity: 1;
+}
+
+.navigation-menu {
+    flex-grow: 1;
+    position: relative;
+    width: 25%;
+    height: 100%;
+    translate: 0 0;
+    background-color: rgb(0, 0, 0);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.nav-menu-header {
+    flex-grow: 1;
+    width: 100%;
+    height: 30%;
+}
+
+.nav-username-container {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 25%;
+    margin-top: 0;
+    margin-left: 0;
+}
+
+.nav-username {
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: bold;
+    font-size: 50px;
+    color: rgb(0, 255, 0);
+}
+
+.nav-menu-content {
+    flex-grow: 1;
+    width: 100%;
+    height: 70%;
+}
+
+.nav-menu-row {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.nav-button-container {
+    flex-grow: 1;
+    width: 80%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-button {
+    font-size: 40px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    color: rgb(0, 255, 0);
+    -unity-font-style: bold;
+    background-color: rgba(188, 188, 188, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.nav-button-active {
+    color: rgb(255, 172, 51);
+}
+
+.nav-spacer-left {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+}
+
+.nav-spacer-right {
+    flex-grow: 1;
+    width: 80%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-spacer-label {
+    -unity-font-style: bold;
+    font-size: 30px;
+}
+
+.hide-menu-button {
+    width: 75%;
+    height: 100%;
+    background-color: rgba(188, 188, 188, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
 }

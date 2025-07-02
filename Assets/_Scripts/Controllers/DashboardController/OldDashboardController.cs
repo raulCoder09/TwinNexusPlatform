@@ -20,7 +20,7 @@ namespace _Scripts.Controller
         private Button _settingsButton;
         
         // private OldWelcomeController _oldWelcomeController;
-        private DeviceSelectionController _deviceSelectionController;
+        // private OldDeviceSelectionController _oldDeviceSelectionController;
         private SettingsController _settingsController;
         private GameManager _gameManager;
 
@@ -101,7 +101,7 @@ namespace _Scripts.Controller
             _gameManager.selectedModeUiName = "Devices available for operate";
             HideUi();
             HideMenu(evt);
-            _deviceSelectionController.ShowUi(); 
+            // _oldDeviceSelectionController.ShowUi(); 
             if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
             
         }
@@ -112,7 +112,7 @@ namespace _Scripts.Controller
             HideUi();
             HideMenu(evt);
             //todo necesito trabajar la maquina de estados para poder seleccionar de forma correcta la seleccion del dispisitivo
-            _deviceSelectionController.ShowUi(); 
+            // _oldDeviceSelectionController.ShowUi(); 
             if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
             
         }

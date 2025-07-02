@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace _Scripts.Controller
 {
-    public class DeviceSelectionController : MonoBehaviour
+    public class OldDeviceSelectionController : MonoBehaviour
     {
         private VisualElement _body;
         private VisualElement _subpanelsAndSmokeMaskContainer;
@@ -19,7 +19,7 @@ namespace _Scripts.Controller
         private Button _robotKit1Button;
         private Button _robotKit2Button;
         private GameManager _gameManager;
-        private DashboardController _dashboardController;
+        // private OldDashboardController _oldDashboardController;
         private Label _selectedModeUiName;
 
         
@@ -105,7 +105,7 @@ namespace _Scripts.Controller
         {
             HideMenu(evt);
             _body.style.display = DisplayStyle.None;
-            _dashboardController.ShowUi();
+            // _oldDashboardController.ShowUi();
         }
         private void StartOperations(ClickEvent evt)
         {
@@ -157,7 +157,7 @@ namespace _Scripts.Controller
         private void FindObjects()
         {
             _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
-            _dashboardController=GameObject.FindGameObjectWithTag("Dashboard").GetComponent<DashboardController>();
+            // _oldDashboardController=GameObject.FindGameObjectWithTag("Dashboard").GetComponent<OldDashboardController>();
             
         }
     }

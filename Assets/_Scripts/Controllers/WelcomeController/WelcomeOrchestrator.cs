@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using _Scripts.Controller;
 using _Scripts.Models.CognitoManagement;
+using _Scripts.Controllers.UiManagement; 
 using Amazon;
 
 namespace _Scripts.Controllers.WelcomeController
@@ -11,7 +12,7 @@ namespace _Scripts.Controllers.WelcomeController
     using UnityEngine;
     using UnityEngine.UIElements;
 
-    public class WelcomeOrchestrator : MonoBehaviour, IWelcomeOps
+    public class WelcomeOrchestrator : MonoBehaviour, IWelcomeOps, IUIController // ✅ AGREGADO: Implementar IUIController
     {
         #region Singleton Pattern
 
@@ -54,26 +55,38 @@ namespace _Scripts.Controllers.WelcomeController
         {
             if (_instance == this)
             {
-                // Desuscribirse de eventos de ServiceController/CognitoManager
-                UnsubscribeFromCognitoEvents();
-
-                _uiManager = null;
-                _eventManager = null;
+                // Cleanup usando método de IUIController
+                Cleanup();
                 _instance = null;
             }
         }
 
         #endregion
 
+        #region IUIController Implementation
+
+        public bool RequiresAuthentication => false; // ✅ Welcome no requiere autenticación
+        public bool IsInitialized => _isInitialized;
+        public bool IsActive => _uiConfig?.Body?.style.display == DisplayStyle.Flex;
+        public string ControllerName => "WelcomeController";
+
+        // Events from IUIController
+        public event Action<IUIController> OnControllerInitialized;
+        public event Action<IUIController> OnControllerShown;
+        public event Action<IUIController> OnControllerHidden;
+        public event Action<IUIController, string> OnControllerError;
+
+        #endregion
+
         private WelcomeInfo.UIConfiguration _uiConfig = new WelcomeInfo.UIConfiguration();
         private WelcomeInfo.UserData _userData = new WelcomeInfo.UserData();
         
-        // CAMBIO: Ya no creamos WelcomeAuthHandler, usamos ServiceController
-        // private WelcomeAuthHandler _authHandler; // ELIMINADO
-        
         private WelcomeUIManager _uiManager;
         private WelcomeEventManager _eventManager;
-        private DashboardController _dashboardController;
+        
+        // ✅ CAMBIADO: Ya no DashboardController, ahora UIController
+        private UIController _uiController;
+        
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private UIDocument _uiDocument;
         private bool _isInitialized = false;
@@ -97,9 +110,24 @@ namespace _Scripts.Controllers.WelcomeController
             OnAuthenticationSuccess?.Invoke();
 
             Debug.Log("Authentication successful - services ready");
-            if (_dashboardController != null)
+            
+            // ✅ CAMBIADO: Usar UIController para navegar a Dashboard
+            if (_uiController != null)
             {
-                _dashboardController.ShowUi();
+                _uiController.ShowUI("Dashboard");
+            }
+            else
+            {
+                // Fallback: buscar UIController si no se tiene referencia
+                var uiController = UIController.Instance;
+                if (uiController != null)
+                {
+                    uiController.ShowUI("Dashboard");
+                }
+                else
+                {
+                    Debug.LogWarning("UIController not found - cannot navigate to Dashboard");
+                }
             }
 
             // Cerrar cualquier panel abierto
@@ -282,6 +310,108 @@ namespace _Scripts.Controllers.WelcomeController
 
         #endregion
 
+        #region IUIController Lifecycle Methods
+
+        public bool Initialize()
+        {
+            try
+            {
+                if (_isInitialized)
+                {
+                    Debug.Log("WelcomeOrchestrator already initialized");
+                    return true;
+                }
+
+                Debug.Log("Initializing WelcomeOrchestrator...");
+
+                // Initialize Cognito Settings
+                InitializeCognitoSettings();
+
+                // Suscribirse a ServiceController
+                SubscribeToCognitoEvents();
+                
+                // Apply loaded configuration to CognitoManager via ServiceController
+                ApplyCognitoConfiguration();
+
+                // Obtener componentes UI
+                _uiDocument = GetComponent<UIDocument>();
+                var root = _uiDocument.rootVisualElement;
+                _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+
+                // Inicializar managers
+                _uiManager = new WelcomeUIManager(_uiConfig);
+                _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler, this);
+                _eventManager.RegisterEvents(_uiDocument);
+
+                GetUiComponents(root);
+                FindDependencies();
+                StartCoroutine(GlitchEffectRoutine());
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+
+                _isInitialized = true;
+                Debug.Log("WelcomeOrchestrator initialized successfully");
+                
+                OnControllerInitialized?.Invoke(this);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Initialization error: {ex.Message}");
+                OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        public void Show()
+        {
+            if (_uiConfig?.Body != null)
+            {
+                _uiConfig.Body.style.display = DisplayStyle.Flex;
+                OnControllerShown?.Invoke(this);
+                Debug.Log("[WelcomeOrchestrator] Welcome UI shown");
+            }
+        }
+
+        public void Hide()
+        {
+            if (_uiConfig?.Body != null)
+            {
+                _uiConfig.Body.style.display = DisplayStyle.None;
+                OnControllerHidden?.Invoke(this);
+                Debug.Log("[WelcomeOrchestrator] Welcome UI hidden");
+            }
+        }
+
+        public void Cleanup()
+        {
+            try
+            {
+                // Desuscribirse de eventos de ServiceController/CognitoManager
+                UnsubscribeFromCognitoEvents();
+
+                // Limpiar managers
+                _eventManager?.Cleanup(); // ✅ CORREGIDO: Ahora Cleanup() existe
+                _uiManager = null;
+                _eventManager = null;
+
+                // Limpiar referencias
+                _uiController = null;
+                _uiConfig = null;
+                _userData = null;
+                _uiDocument = null;
+                _subpanelsAndSmokeMaskContainer = null;
+
+                _isInitialized = false;
+                Debug.Log("[WelcomeOrchestrator] Cleanup completed");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[WelcomeOrchestrator] Cleanup error: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         #region IWelcomeOps Implementation - Delegando a ServiceController.CognitoManager
 
         public async Task<bool> AuthenticateUserAsync(string username, string password)
@@ -309,7 +439,6 @@ namespace _Scripts.Controllers.WelcomeController
                 ShowMessage("Authenticating...", false);
 
                 _userData.Username = username;
-                // CAMBIO: Usar CognitoManager desde ServiceController directamente
                 var success = await cognitoManager.SignInAsync(username, password);
 
                 return success;
@@ -323,8 +452,7 @@ namespace _Scripts.Controllers.WelcomeController
             }
         }
 
-        public async Task<bool> RegisterUserAsync(string username, string password, string email,
-            string phoneNumber = null)
+        public async Task<bool> RegisterUserAsync(string username, string password, string email, string phoneNumber = null)
         {
             if (!_isInitialized) Initialize();
             
@@ -337,8 +465,7 @@ namespace _Scripts.Controllers.WelcomeController
             }
 
             // Validaciones
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) ||
-                string.IsNullOrWhiteSpace(email))
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(email))
             {
                 ShowMessage("Please fill in all required fields", true);
                 return false;
@@ -371,9 +498,7 @@ namespace _Scripts.Controllers.WelcomeController
                 _userData.Email = email;
                 _userData.PhoneNumber = phoneNumber;
 
-                // CAMBIO: Usar CognitoManager desde ServiceController directamente
                 var success = await cognitoManager.SignUpAsync(username, password, email, phoneNumber);
-
                 return success;
             }
             catch (Exception ex)
@@ -414,9 +539,7 @@ namespace _Scripts.Controllers.WelcomeController
                 SetVerifyEmailButtonEnabled(false);
                 ShowMessage("Verifying email...", false);
 
-                // CAMBIO: Usar CognitoManager desde ServiceController directamente
                 var success = await cognitoManager.ConfirmSignUpAsync(cognitoManager.PendingUsername, confirmationCode);
-
                 return success;
             }
             catch (Exception ex)
@@ -452,9 +575,7 @@ namespace _Scripts.Controllers.WelcomeController
                 ShowMessage("Sending recovery email...", false);
 
                 _userData.Username = username;
-                // CAMBIO: Usar CognitoManager desde ServiceController directamente
                 var success = await cognitoManager.ForgotPasswordAsync(username);
-
                 return success;
             }
             catch (Exception ex)
@@ -483,9 +604,7 @@ namespace _Scripts.Controllers.WelcomeController
                 SetResendCodeButtonEnabled(false);
                 ShowMessage("Resending verification code...", false);
 
-                // CAMBIO: Usar CognitoManager desde ServiceController directamente
                 var success = await cognitoManager.ResendConfirmationCodeAsync();
-
                 return success;
             }
             catch (Exception ex)
@@ -627,14 +746,13 @@ namespace _Scripts.Controllers.WelcomeController
                         
                         if (saveSuccess)
                         {
-                            // CAMBIO: Aplicar configuración via ServiceController
                             ApplyCognitoConfiguration();
                             
                             ShowMessage("Configuration saved successfully!", false);
-                            print($"Cognito configuration saved to: {CognitoSettingsManager.GetConfigurationPath()}");
+                            Debug.Log($"Cognito configuration saved to: {CognitoSettingsManager.GetConfigurationPath()}");
                             
                             // Close settings panel after successful save
-                            await System.Threading.Tasks.Task.Delay(1500); // Show success message briefly
+                            await System.Threading.Tasks.Task.Delay(1500);
                             _uiManager.CloseCurrentPanel();
                         }
                         else
@@ -645,12 +763,12 @@ namespace _Scripts.Controllers.WelcomeController
                     else
                     {
                         ShowMessage("Configuration system not initialized", true);
-                        print("Cognito settings ScriptableObject is null");
+                        Debug.Log("Cognito settings ScriptableObject is null");
                     }
                 }
                 catch (System.Exception ex)
                 {
-                    print($"Error saving configuration: {ex.Message}");
+                    Debug.Log($"Error saving configuration: {ex.Message}");
                     ShowMessage("Failed to save configuration", true);
                 }
                 finally
@@ -688,11 +806,11 @@ namespace _Scripts.Controllers.WelcomeController
                         regionDropdown.value = regionDisplay;
                     }
 
-                    print("Configuration loaded into Settings panel from ScriptableObject");
+                    Debug.Log("Configuration loaded into Settings panel from ScriptableObject");
                 }
                 else
                 {
-                    print("Cognito settings ScriptableObject is null");
+                    Debug.Log("Cognito settings ScriptableObject is null");
                     
                     userPoolIdField.value = "";
                     clientIdField.value = "";
@@ -739,7 +857,7 @@ namespace _Scripts.Controllers.WelcomeController
         {
             var cognitoManager = GetCognitoManager();
             cognitoManager?.SignOut();
-            _userData = new WelcomeInfo.UserData(); // Reset user data
+            _userData = new WelcomeInfo.UserData();
         }
 
         /// <summary>
@@ -752,51 +870,7 @@ namespace _Scripts.Controllers.WelcomeController
 
         #endregion
 
-        protected void Initialize()
-        {
-            try
-            {
-                if (_isInitialized)
-                {
-                    Debug.Log("WelcomeOrchestrator already initialized");
-                    return;
-                }
-
-                Debug.Log("Initializing WelcomeOrchestrator...");
-
-                // Initialize Cognito Settings
-                InitializeCognitoSettings();
-
-                // CAMBIO: En lugar de crear WelcomeAuthHandler, suscribirse a ServiceController
-                SubscribeToCognitoEvents();
-                
-                // Apply loaded configuration to CognitoManager via ServiceController
-                ApplyCognitoConfiguration();
-
-                // Obtener componentes UI
-                _uiDocument = GetComponent<UIDocument>();
-                var root = _uiDocument.rootVisualElement;
-                _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
-
-                // Inicializar managers
-                _uiManager = new WelcomeUIManager(_uiConfig);
-                _eventManager = new WelcomeEventManager(_uiManager, OnExitApplication, OnPanelTransitionCompleteHandler,
-                    this);
-                _eventManager.RegisterEvents(_uiDocument);
-
-                GetUiComponents(root);
-                FindDependencies();
-                StartCoroutine(GlitchEffectRoutine());
-                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-
-                _isInitialized = true;
-                Debug.Log("WelcomeOrchestrator initialized successfully");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Initialization error: {ex.Message}");
-            }
-        }
+        #region Private Implementation Methods
 
         private void InitializeCognitoSettings()
         {
@@ -809,11 +883,11 @@ namespace _Scripts.Controllers.WelcomeController
                     if (_cognitoSettings == null)
                     {
                         _cognitoSettings = ScriptableObject.CreateInstance<SettingsCognitoParametersData>();
-                        print("Created runtime Cognito settings instance");
+                        Debug.Log("Created runtime Cognito settings instance");
                     }
                     else
                     {
-                        print("Loaded default Cognito settings from Resources");
+                        Debug.Log("Loaded default Cognito settings from Resources");
                     }
                 }
         
@@ -821,19 +895,19 @@ namespace _Scripts.Controllers.WelcomeController
         
                 if (configLoaded)
                 {
-                    print("Cognito configuration loaded from JSON file");
+                    Debug.Log("Cognito configuration loaded from JSON file");
                 }
                 else
                 {
-                    print("Using default Cognito configuration");
+                    Debug.Log("Using default Cognito configuration");
                 }
         
                 _cognitoSettings.ValidateConfiguration();
-                print($"Cognito configuration valid: {_cognitoSettings.IsConfigurationValid}");
+                Debug.Log($"Cognito configuration valid: {_cognitoSettings.IsConfigurationValid}");
             }
             catch (Exception ex)
             {
-                print($"Error initializing Cognito settings: {ex.Message}");
+                Debug.Log($"Error initializing Cognito settings: {ex.Message}");
                 _cognitoSettings = ScriptableObject.CreateInstance<SettingsCognitoParametersData>();
             }
         }
@@ -846,7 +920,7 @@ namespace _Scripts.Controllers.WelcomeController
                 {
                     var regionEndpoint = _cognitoSettings.GetRegionEndpoint();
                     
-                    // CAMBIO: Usar ServiceController para actualizar configuración de CognitoManager
+                    // Usar ServiceController para actualizar configuración de CognitoManager
                     bool success = ServiceController.Instance?.UpdateCognitoConfiguration(
                         _cognitoSettings.UserPoolId,
                         _cognitoSettings.ClientId,
@@ -856,7 +930,7 @@ namespace _Scripts.Controllers.WelcomeController
                     
                     if (success)
                     {
-                        print("Cognito configuration applied successfully via ServiceController");
+                        Debug.Log("Cognito configuration applied successfully via ServiceController");
                         
                         // Re-suscribirse a eventos del nuevo CognitoManager
                         UnsubscribeFromCognitoEvents();
@@ -864,17 +938,17 @@ namespace _Scripts.Controllers.WelcomeController
                     }
                     else
                     {
-                        print("Failed to apply Cognito configuration");
+                        Debug.Log("Failed to apply Cognito configuration");
                     }
                 }
                 catch (Exception ex)
                 {
-                    print($"Error applying Cognito configuration: {ex.Message}");
+                    Debug.Log($"Error applying Cognito configuration: {ex.Message}");
                 }
             }
             else
             {
-                print("Cognito settings is null - cannot apply configuration");
+                Debug.Log("Cognito settings is null - cannot apply configuration");
             }
         }
 
@@ -914,8 +988,7 @@ namespace _Scripts.Controllers.WelcomeController
                 ShowClass = "RecoverPasswordPanelInMainScreen",
                 HideClass = "RecoverPasswordPanelOutMainScreen"
             };
-            Debug.Log(
-                $"RecoverPasswordPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel != null}");
+            Debug.Log($"RecoverPasswordPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel != null}");
 
             _uiConfig.Panels[IWelcomeOps.PanelType.RecoverPassword].Panel
                 .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
@@ -926,8 +999,7 @@ namespace _Scripts.Controllers.WelcomeController
                 ShowClass = "EmailVerificationPanelInMainScreen",
                 HideClass = "EmailVerificationPanelOutMainScreen"
             };
-            Debug.Log(
-                $"EmailVerificationPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel != null}");
+            Debug.Log($"EmailVerificationPanel found: {_uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel != null}");
 
             _uiConfig.Panels[IWelcomeOps.PanelType.EmailVerification].Panel
                 .RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
@@ -962,37 +1034,28 @@ namespace _Scripts.Controllers.WelcomeController
                 };
         
                 regionDropdown.choices = availableRegions;
-                regionDropdown.value = "us-east-1 (N. Virginia)"; // Default selection
+                regionDropdown.value = "us-east-1 (N. Virginia)";
         
-                print("AWS Region dropdown initialized with available regions");
+                Debug.Log("AWS Region dropdown initialized with available regions");
             }
             else
             {
-                print("AWS Region dropdown not found in UI");
+                Debug.Log("AWS Region dropdown not found in UI");
             }
         }
 
         private void FindDependencies()
         {
-            _dashboardController = FindComponentByTag<DashboardController>("Dashboard");
-        }
-
-        private T FindComponentByTag<T>(string tag) where T : Component
-        {
-            var gameObject = GameObject.FindGameObjectWithTag(tag);
-            if (gameObject == null)
+            // ✅ CAMBIADO: Buscar UIController en lugar de DashboardController
+            _uiController = UIController.Instance;
+            if (_uiController == null)
             {
-                Debug.LogError($"GameObject with tag '{tag}' not found");
-                return null;
+                Debug.LogWarning("UIController not found - will try to find it later");
             }
-
-            var component = gameObject.GetComponent<T>();
-            if (component == null)
+            else
             {
-                Debug.LogError($"Component '{typeof(T).Name}' not found on GameObject with tag '{tag}'");
+                Debug.Log("UIController found and referenced");
             }
-
-            return component;
         }
 
         private void OnExitApplication()
@@ -1171,5 +1234,7 @@ namespace _Scripts.Controllers.WelcomeController
             yield return new WaitForSeconds(0.2f);
             title.RemoveFromClassList("glitch");
         }
+
+        #endregion
     }
 }

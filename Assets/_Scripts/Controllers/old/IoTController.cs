@@ -68,7 +68,7 @@ namespace _Scripts.Controller
         // private CloudIoT _ioTCoreManager;
         // private VMIoT _vmIoT;
         private SaveDataManager _saveDataManager;
-        private DashboardController _dashboardController;
+        // private OldDashboardController _oldDashboardController;
         #endregion
 
         #region Constants
@@ -128,7 +128,7 @@ namespace _Scripts.Controller
             // _ioTCoreManager = FindComponentByTag<CloudIoT>("CloudIoT");
             // _vmIoT = FindComponentByTag<VMIoT>("VMIoT");
             _saveDataManager = FindComponentByTag<SaveDataManager>("GameManager");
-            _dashboardController = FindComponentByTag<DashboardController>("Dashboard");
+            // _oldDashboardController = FindComponentByTag<OldDashboardController>("Dashboard");
         }
 
         private T FindComponentByTag<T>(string tag) where T : Component
@@ -166,7 +166,7 @@ namespace _Scripts.Controller
             _usernameTextField.value = iotConfigurationData.Username;
             _passwordTextField.value = iotConfigurationData.Password;
             _modeConnectionDropdownField.value = iotConfigurationData.ModeConnection;
-            _dashboardController.localIoTModeLabel.text = iotConfigurationData.ModeConnection;
+            // _oldDashboardController.localIoTModeLabel.text = iotConfigurationData.ModeConnection;
         }
 
         private void LoadCloudIoTConfiguration()
@@ -179,7 +179,7 @@ namespace _Scripts.Controller
             _cloudPortTextField.value = iotConfigurationData.cloudPort;
             _cloudPfxFilePathTextField.value = iotConfigurationData.pfxFilePath;
             _cloudModeConnectionDropdownField.value = iotConfigurationData.cloudModeConnection;
-            _dashboardController.cloudlIoTModeLabel.text = iotConfigurationData.cloudModeConnection;
+            // _oldDashboardController.cloudlIoTModeLabel.text = iotConfigurationData.cloudModeConnection;
         }
 
         private void LoadVMIoTConfiguration()
@@ -190,7 +190,7 @@ namespace _Scripts.Controller
             _cloudVmIoTModeConnectionDropdownField.value = iotConfigurationData.cloudVmIoTModeConnection;
             _cloudVmIoTUsernameTextField.value = iotConfigurationData.cloudVmIoTUsername;
             _cloudVmIoTPasswordTextField.value = iotConfigurationData.cloudVmIoTPassword;
-            _dashboardController.vMIoTModeLabel.text = iotConfigurationData.cloudVmIoTModeConnection;
+            // _oldDashboardController.vMIoTModeLabel.text = iotConfigurationData.cloudVmIoTModeConnection;
         }
 
         private void AttemptAutoConnections()
@@ -213,9 +213,9 @@ namespace _Scripts.Controller
 
         private void UpdateStatusColors()
         {
-            UpdateStatusColor(_dashboardController.localIoTStatusLabel);
-            UpdateStatusColor(_dashboardController.cloudIoTStatusLabel);
-            UpdateStatusColor(_dashboardController.vMIoTStatusLabel);
+            // UpdateStatusColor(_oldDashboardController.localIoTStatusLabel);
+            // UpdateStatusColor(_oldDashboardController.cloudIoTStatusLabel);
+            // UpdateStatusColor(_oldDashboardController.vMIoTStatusLabel);
         }
 
         private void UpdateStatusColor(Label statusLabel)
@@ -251,7 +251,7 @@ namespace _Scripts.Controller
             catch (Exception ex)
             {
                 var errorMessage = ERROR_CONNECTION_PREFIX + ex.Message;
-                SetConnectionStatus(_statusLocalLabel, _dashboardController.localIoTStatusLabel, errorMessage);
+                // SetConnectionStatus(_statusLocalLabel, _oldDashboardController.localIoTStatusLabel, errorMessage);
             }
         }
 
@@ -266,7 +266,7 @@ namespace _Scripts.Controller
             catch (Exception ex)
             {
                 var errorMessage = ERROR_DISCONNECT_PREFIX + ex.Message;
-                SetConnectionStatus(_statusLocalLabel, _dashboardController.localIoTStatusLabel, errorMessage);
+                // SetConnectionStatus(_statusLocalLabel, _oldDashboardController.localIoTStatusLabel, errorMessage);
             }
         }
 
@@ -309,7 +309,7 @@ namespace _Scripts.Controller
             catch (Exception ex)
             {
                 var errorMessage = ERROR_CONNECTION_PREFIX + ex.Message;
-                SetConnectionStatus(_statusCloudVmIoTLabel, _dashboardController.vMIoTStatusLabel, errorMessage);
+                // SetConnectionStatus(_statusCloudVmIoTLabel, _oldDashboardController.vMIoTStatusLabel, errorMessage);
             }
         }
 
@@ -324,7 +324,7 @@ namespace _Scripts.Controller
             catch (Exception ex)
             {
                 var errorMessage = ERROR_DISCONNECT_PREFIX + ex.Message;
-                SetConnectionStatus(_statusCloudVmIoTLabel, _dashboardController.vMIoTStatusLabel, errorMessage);
+                // SetConnectionStatus(_statusCloudVmIoTLabel, _oldDashboardController.vMIoTStatusLabel, errorMessage);
             }
         }
 
@@ -550,7 +550,7 @@ namespace _Scripts.Controller
         {
             HideMenu(evt);
             _body.style.display = DisplayStyle.None;
-            _dashboardController.ShowUi();
+            // _oldDashboardController.ShowUi();
         }
         #endregion
 
