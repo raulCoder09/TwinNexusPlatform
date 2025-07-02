@@ -212,17 +212,16 @@ namespace _Scripts.Controllers.DashboardController
         private void InitializeNavigationMenu()
         {
             // ✅ CORREGIDO: No interferir con las clases USS base, 
-            // solo asegurar que no tenga la clase de mostrar
+            // solo asegurar que no tenga las clases de mostrar
             if (_uiConfig.NavigationMenuContainer != null)
             {
                 _uiConfig.NavigationMenuContainer.RemoveFromClassList("NavigationMenuPanelinMainScreen");
-                // No agregar NavigationMenuPanelOutMainScreen - que se mantenga como está en USS
             }
 
             if (_uiConfig.Scrim != null)
             {
-                _uiConfig.Scrim.RemoveFromClassList(_uiConfig.ScrimVisibleClass);
-                _uiConfig.Scrim.AddToClassList(_uiConfig.ScrimHiddenClass);
+                // ✅ CORREGIDO: Solo quitar ScrimOpaque, dejar ScrimTransparent intacto
+                _uiConfig.Scrim.RemoveFromClassList("ScrimOpaque");
             }
 
             _navigationState.IsMenuVisible = false;
@@ -379,16 +378,20 @@ namespace _Scripts.Controllers.DashboardController
             {
                 // ✅ CORREGIDO: Solo agregar la clase para mostrar, sin remover la base
                 _uiConfig.NavigationMenuContainer.AddToClassList("NavigationMenuPanelinMainScreen");
-                _uiConfig.Scrim.RemoveFromClassList(_uiConfig.ScrimHiddenClass);
-                _uiConfig.Scrim.AddToClassList(_uiConfig.ScrimVisibleClass);
+                
+                // ✅ CORREGIDO: Solo agregar ScrimOpaque, sin remover ScrimTransparent
+                _uiConfig.Scrim.AddToClassList("ScrimOpaque");
+                
                 Debug.Log("[DashboardUIManager] Navigation menu shown");
             }
             else
             {
-                // ✅ CORREGIDO: Solo remover la clase de mostrar
+                // ✅ CORREGIDO: Solo remover las clases de mostrar
                 _uiConfig.NavigationMenuContainer.RemoveFromClassList("NavigationMenuPanelinMainScreen");
-                _uiConfig.Scrim.RemoveFromClassList(_uiConfig.ScrimVisibleClass);
-                _uiConfig.Scrim.AddToClassList(_uiConfig.ScrimHiddenClass);
+                
+                // ✅ CORREGIDO: Solo remover ScrimOpaque
+                _uiConfig.Scrim.RemoveFromClassList("ScrimOpaque");
+                
                 Debug.Log("[DashboardUIManager] Navigation menu hidden");
             }
 

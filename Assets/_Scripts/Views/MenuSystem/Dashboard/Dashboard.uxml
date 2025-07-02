@@ -23,7 +23,7 @@
                             <ui:Label text="Welcome back, Username" class="welcome-title" />
                         </ui:VisualElement>
                         <ui:VisualElement class="widget-content">
-                            <ui:Label text="Here you can access the platform's main features, such as simulation, monitoring and reporting" class="welcome-description" />
+                            <ui:Label text="Here you can access the platform&apos;s main features, such as simulation, monitoring and reporting" class="welcome-description" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement name="WidgetPanel1" class="widget-panel iot-status-panel">
@@ -144,12 +144,13 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" class="overlay-container">
+            <ui:VisualElement name="CodeRain" class="code-rain" />
             <ui:VisualElement name="Scrim" class="ScrimTransparent" />
             <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
                 <ui:VisualElement name="NavigationMenu" class="navigation-menu">
                     <ui:VisualElement class="nav-menu-header">
                         <ui:VisualElement class="nav-username-container">
-                            <ui:Label text="Username" class="nav-username" />
+                            <ui:Label text="Main Menu" class="nav-username" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement class="nav-menu-content">

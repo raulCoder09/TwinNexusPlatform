@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace _Scripts.Controller
 {
-    public class DeviceSelectionController : MonoBehaviour
+    public class OldDeviceSelectionController : MonoBehaviour
     {
         private VisualElement _body;
         private VisualElement _subpanelsAndSmokeMaskContainer;

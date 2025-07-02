@@ -30,9 +30,9 @@
             <ui:Label name="MessageLabel" />
         </ui:VisualElement>
         <ui:VisualElement name="SubpanelsAndSmokeMaskContainer">
-            <ui:VisualElement name="CodeRain" class="code-rain" />
             <ui:VisualElement name="Scrim" class="Scrim" />
             <ui:VisualElement name="LoginPanel" class="LoginPanelMoveA">
+                <ui:VisualElement name="SergeyKotenev" class="sergey-kotenev" />
                 <ui:VisualElement name="HeaderLogin">
                     <ui:VisualElement name="TitleLoginPanel">
                         <ui:Label text="Login" name="TitleLogin" />
@@ -52,6 +52,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="RegisterPanel" class="RegisterPanelOutMainScreen">
+                <ui:VisualElement name="SergeyKotenev" class="sergey-kotenev" />
                 <ui:VisualElement name="HeaderRegister">
                     <ui:VisualElement name="TitleRegisterPanel">
                         <ui:Label text="Register" name="TitleRegister" />
@@ -73,6 +74,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="RecoverPasswordPanel" class="RecoverPasswordPanelOutMainScreen">
+                <ui:VisualElement name="SergeyKotenev" class="sergey-kotenev" />
                 <ui:VisualElement name="HeaderRecoverPassword">
                     <ui:VisualElement name="TitleRecoverPasswordPanel">
                         <ui:Label text="Recover password" name="TitleRecoverPassword" />
@@ -90,6 +92,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="EmailVerificationPanel" class="EmailVerificationPanelOutMainScreen">
+                <ui:VisualElement name="SergeyKotenev" class="sergey-kotenev" />
                 <ui:VisualElement name="HeaderEmailVerification">
                     <ui:VisualElement name="TitleEmailVerificationPanel">
                         <ui:Label text="Email Verification" name="TitleEmailVerification" />
@@ -112,6 +115,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="SettingsCognitoParametersPanel" class="SettingsCognitoParametersPanelOutMainScreen">
+                <ui:VisualElement name="SergeyKotenev" class="sergey-kotenev" />
                 <ui:VisualElement name="HeaderSettingsCognitoParameters">
                     <ui:VisualElement name="TitleSettingsCognitoParametersPanel">
                         <ui:Label text="Settings Cognito Parameters" name="TitleEmailVerification" />

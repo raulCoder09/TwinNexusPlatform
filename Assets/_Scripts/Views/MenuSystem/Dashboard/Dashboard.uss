@@ -29,19 +29,46 @@
     translate: 0% 0;
 }
 
-/* Main layout */
-.body {
+
+#Body {
     flex-grow: 1;
-    background-image: none;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-self: stretch;
+    align-content: stretch;
     background-color: rgb(0, 0, 0);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
+    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg?fileID=2800000&guid=db31ce936e2104caba450d7ddc5ce66f&type=3#scanlines2");
+    background-size: 100% 4px;
+    background-repeat: repeat-y;
     border-left-color: rgb(0, 0, 0);
     border-right-color: rgb(0, 0, 0);
     border-top-color: rgb(0, 0, 0);
     border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+.sergey-kotenev {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url("project://database/Assets/_Images/Backgrounds/sergey-kotenev--gWSFS8rrVg-unsplash.jpg");
+    background-size: 100% 100%;
+    background-repeat: repeat;
+    opacity: 0.30;
+    z-index: -1;
+}
+.code-rain {
+    position: absolute;
+    width: 100%;
+    height: 100%; 
+    background-image: url("project://database/Assets/_Images/Backgrounds/ekaterina-novitskaya-gLroHoWh_as-unsplash.jpg");
+    background-size: 100% 100%;
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: -1;
 }
 
 /* Header */
@@ -112,7 +139,7 @@
     -unity-text-outline-color: rgba(0, 0, 0, 0);
     color: rgb(255, 255, 255);
     -unity-text-align: middle-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&guid=4188192a02890489d82f09c0fa1f97ce&type=3#Cinzel-VariableFont_wght");
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 30px;
 }
 
@@ -128,7 +155,7 @@
     -unity-text-align: upper-center;
     font-size: 30px;
     -unity-font-style: bold;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&guid=4188192a02890489d82f09c0fa1f97ce&type=3#Cinzel-VariableFont_wght");
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
 }
 
 /* Main content */
@@ -664,7 +691,7 @@
 }
 
 .nav-button-active {
-    color: rgb(0, 9, 255);
+    color: rgb(255, 172, 51);
 }
 
 .nav-spacer-left {

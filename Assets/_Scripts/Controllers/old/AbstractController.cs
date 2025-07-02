@@ -16,7 +16,7 @@ namespace _Scripts.Controller
         private Button _menuButton;
         private Button _hideMenuButton;
         // private OldWelcomeController _oldWelcomeController;
-        private DeviceSelectionController _deviceSelectionController;
+        // private OldDeviceSelectionController _oldDeviceSelectionController;
         private Button _operationsButton;
         private Button _logoutButton;
         private Button _trainingButton;
@@ -114,7 +114,7 @@ namespace _Scripts.Controller
             _gameManager.selectedModeUiName = "Devices available for operate";
             HideUi();
             HideMenu(evt);
-            _deviceSelectionController.ShowUi(); 
+            // _oldDeviceSelectionController.ShowUi(); 
             if (evt.currentTarget is Button button) _gameManager.modeSelected = button.name;
             
         }
