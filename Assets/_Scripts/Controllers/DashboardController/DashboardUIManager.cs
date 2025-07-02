@@ -66,9 +66,11 @@ namespace _Scripts.Controllers.DashboardController
                     return false;
                 }
 
-                // ✅ AGREGADO: No interferir con estilos iniciales
-                // InitializeNavigationMenu();
-                // InitializeDefaultStates();
+                // ✅ REHABILITADO: Ahora que está corregido, podemos inicializar el menú
+                InitializeNavigationMenu();
+                
+                // ✅ OPCIONAL: Usar versión segura de estados por defecto
+                InitializeDefaultStatesSafe();
                 
                 RegisterTransitionCallbacks();
 
@@ -209,10 +211,12 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         private void InitializeNavigationMenu()
         {
+            // ✅ CORREGIDO: No interferir con las clases USS base, 
+            // solo asegurar que no tenga la clase de mostrar
             if (_uiConfig.NavigationMenuContainer != null)
             {
-                _uiConfig.NavigationMenuContainer.RemoveFromClassList(_uiConfig.MenuVisibleClass);
-                _uiConfig.NavigationMenuContainer.AddToClassList(_uiConfig.MenuHiddenClass);
+                _uiConfig.NavigationMenuContainer.RemoveFromClassList("NavigationMenuPanelinMainScreen");
+                // No agregar NavigationMenuPanelOutMainScreen - que se mantenga como está en USS
             }
 
             if (_uiConfig.Scrim != null)
@@ -222,6 +226,7 @@ namespace _Scripts.Controllers.DashboardController
             }
 
             _navigationState.IsMenuVisible = false;
+            Debug.Log("[DashboardUIManager] Navigation menu initialized in closed state");
         }
 
         /// <summary>
@@ -372,16 +377,16 @@ namespace _Scripts.Controllers.DashboardController
 
             if (show)
             {
-                _uiConfig.NavigationMenuContainer.RemoveFromClassList(_uiConfig.MenuHiddenClass);
-                _uiConfig.NavigationMenuContainer.AddToClassList(_uiConfig.MenuVisibleClass);
+                // ✅ CORREGIDO: Solo agregar la clase para mostrar, sin remover la base
+                _uiConfig.NavigationMenuContainer.AddToClassList("NavigationMenuPanelinMainScreen");
                 _uiConfig.Scrim.RemoveFromClassList(_uiConfig.ScrimHiddenClass);
                 _uiConfig.Scrim.AddToClassList(_uiConfig.ScrimVisibleClass);
                 Debug.Log("[DashboardUIManager] Navigation menu shown");
             }
             else
             {
-                _uiConfig.NavigationMenuContainer.RemoveFromClassList(_uiConfig.MenuVisibleClass);
-                _uiConfig.NavigationMenuContainer.AddToClassList(_uiConfig.MenuHiddenClass);
+                // ✅ CORREGIDO: Solo remover la clase de mostrar
+                _uiConfig.NavigationMenuContainer.RemoveFromClassList("NavigationMenuPanelinMainScreen");
                 _uiConfig.Scrim.RemoveFromClassList(_uiConfig.ScrimVisibleClass);
                 _uiConfig.Scrim.AddToClassList(_uiConfig.ScrimHiddenClass);
                 Debug.Log("[DashboardUIManager] Navigation menu hidden");
