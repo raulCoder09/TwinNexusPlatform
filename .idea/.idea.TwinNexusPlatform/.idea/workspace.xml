@@ -8,40 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.plastic/plastic.changes" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.changes" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.plastic/plastic.wktree" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.wktree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/AbstractController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/AbstractController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/AbstractController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/AbstractController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/AugmentedRealityEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/AugmentedRealityEnvironmentController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/AugmentedRealityEnvironmentController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/AugmentedRealityEnvironmentController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ConcreteController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/ConcreteController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ConcreteController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/ConcreteController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ControlPanelController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/ControlPanelController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ControlPanelController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/ControlPanelController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/OldDashboardController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/OldDashboardController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DeviceSelectionController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/DeviceSelectionController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DeviceSelectionController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/DeviceSelectionController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/GraphicController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/GraphicController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/GraphicController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/GraphicController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/HybridEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/HybridEnvironmentController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/HybridEnvironmentController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/HybridEnvironmentController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ImageTrackingManagerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/ImageTrackingManagerController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ImageTrackingManagerController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/ImageTrackingManagerController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/IoTController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/IoTController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/IoTController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/IoTController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/JogAndTeachController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/JogAndTeachController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/JogAndTeachController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/JogAndTeachController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/LinkController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/LinkController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/LinkController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/LinkController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/RealDeviceEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/RealDeviceEnvironmentController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/RealDeviceEnvironmentController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/RealDeviceEnvironmentController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ServiceController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ServiceManagement/ServiceController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ServiceController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ServiceManagement/ServiceController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SettingsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/SettingsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SettingsController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/SettingsController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/VirtualEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/VirtualEnvironmentController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/VirtualEnvironmentController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/old/VirtualEnvironmentController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/WelcomeController.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/WelcomeController/WelcomeEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/WelcomeController/WelcomeEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/WelcomeController/WelcomeOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/WelcomeController/WelcomeOrchestrator.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +23,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Controllers/UiManagement/IUIController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Testing/AwsMqttTesting.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ai.toolkit@97783faabe3b/Modules/Accounts/Services/Core/AccountApi.cs" root0="SKIP_HIGHLIGHTING" />
   </component>

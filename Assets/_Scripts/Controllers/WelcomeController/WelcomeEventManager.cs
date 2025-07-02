@@ -11,6 +11,10 @@ namespace _Scripts.Controllers.WelcomeController
         private Action<IWelcomeOps.PanelType> _onPanelTransitionComplete;
         private WelcomeOrchestrator _orchestrator;
 
+        // ✅ AGREGADO: Referencias para poder desregistrar eventos
+        private UIDocument _uiDocument;
+        private VisualElement _root;
+
         public WelcomeEventManager(WelcomeUIManager uiManager, Action onExitApplication, Action<IWelcomeOps.PanelType> onPanelTransitionComplete, WelcomeOrchestrator orchestrator)
         {
             _uiManager = uiManager ?? throw new ArgumentNullException(nameof(uiManager));
@@ -21,77 +25,171 @@ namespace _Scripts.Controllers.WelcomeController
 
         public void RegisterEvents(UIDocument uiDocument)
         {
-            var root = uiDocument.rootVisualElement;
+            // ✅ AGREGADO: Guardar referencias para desregistro posterior
+            _uiDocument = uiDocument;
+            _root = uiDocument.rootVisualElement;
 
-// Eventos principales
-            root.Q<Button>("LaunchButton")?.RegisterCallback<ClickEvent>(OnLaunchButtonClicked);
-            root.Q<Button>("ExitButton")?.RegisterCallback<ClickEvent>(OnExitApplicationClicked);
-            root.Q<Button>("SettingsCognitoParametersButtonButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
+            // Eventos principales
+            _root.Q<Button>("LaunchButton")?.RegisterCallback<ClickEvent>(OnLaunchButtonClicked);
+            _root.Q<Button>("ExitButton")?.RegisterCallback<ClickEvent>(OnExitApplicationClicked);
+            _root.Q<Button>("SettingsCognitoParametersButtonButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
 
             // Eventos de autenticación - AHORA CONECTADOS
-            root.Q<Button>("LoginButton")?.RegisterCallback<ClickEvent>(OnLoginButtonClicked);
-            root.Q<Button>("RegisterAndLoginButton")?.RegisterCallback<ClickEvent>(OnRegisterAndLoginClicked);
-            root.Q<Button>("RecoverPasswordButton")?.RegisterCallback<ClickEvent>(OnRecoverPasswordClicked);
-            root.Q<Button>("VerifyEmailButton")?.RegisterCallback<ClickEvent>(OnVerifyEmailClicked);
-            root.Q<Button>("ResendVerificationCodeButton")?.RegisterCallback<ClickEvent>(OnResendVerificationCodeClicked);
+            _root.Q<Button>("LoginButton")?.RegisterCallback<ClickEvent>(OnLoginButtonClicked);
+            _root.Q<Button>("RegisterAndLoginButton")?.RegisterCallback<ClickEvent>(OnRegisterAndLoginClicked);
+            _root.Q<Button>("RecoverPasswordButton")?.RegisterCallback<ClickEvent>(OnRecoverPasswordClicked);
+            _root.Q<Button>("VerifyEmailButton")?.RegisterCallback<ClickEvent>(OnVerifyEmailClicked);
+            _root.Q<Button>("ResendVerificationCodeButton")?.RegisterCallback<ClickEvent>(OnResendVerificationCodeClicked);
 
             // Eventos de navegación
-            root.Q<Button>("CloseLoginButton")?.RegisterCallback<ClickEvent>(OnCloseLoginPanelClicked);
-            root.Q<Button>("RegisterLoginButton")?.RegisterCallback<ClickEvent>(OnRegisterFromLoginClicked);
-            root.Q<Button>("RecoverPasswordLoginButton")?.RegisterCallback<ClickEvent>(OnRecoverPasswordFromLoginClicked);
-            root.Q<Button>("CloseRegisterPanelButton")?.RegisterCallback<ClickEvent>(OnCloseRegisterPanelClicked);
-            root.Q<Button>("BackToLoginPanelFromRegisterButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromRegisterClicked);
-            root.Q<Button>("CloseRecoverPasswordButton")?.RegisterCallback<ClickEvent>(OnCloseRecoverPasswordPanelClicked);
-            root.Q<Button>("BackToLoginPanelFromRecoverPasswordButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromRecoverPasswordClicked);
-            root.Q<Button>("CloseEmailVerificationButton")?.RegisterCallback<ClickEvent>(OnCloseEmailVerificationPanelClicked);
-            root.Q<Button>("BackToLoginFromVerificationButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromVerificationClicked);
-            root.Q<Button>("CloseSettingsCognitoParametersButton")?.RegisterCallback<ClickEvent>(OnCloseSettingsPanelClicked);
-            root.Q<Button>("SaveButton")?.RegisterCallback<ClickEvent>(OnSaveSettingsButtonClicked);
+            _root.Q<Button>("CloseLoginButton")?.RegisterCallback<ClickEvent>(OnCloseLoginPanelClicked);
+            _root.Q<Button>("RegisterLoginButton")?.RegisterCallback<ClickEvent>(OnRegisterFromLoginClicked);
+            _root.Q<Button>("RecoverPasswordLoginButton")?.RegisterCallback<ClickEvent>(OnRecoverPasswordFromLoginClicked);
+            _root.Q<Button>("CloseRegisterPanelButton")?.RegisterCallback<ClickEvent>(OnCloseRegisterPanelClicked);
+            _root.Q<Button>("BackToLoginPanelFromRegisterButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromRegisterClicked);
+            _root.Q<Button>("CloseRecoverPasswordButton")?.RegisterCallback<ClickEvent>(OnCloseRecoverPasswordPanelClicked);
+            _root.Q<Button>("BackToLoginPanelFromRecoverPasswordButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromRecoverPasswordClicked);
+            _root.Q<Button>("CloseEmailVerificationButton")?.RegisterCallback<ClickEvent>(OnCloseEmailVerificationPanelClicked);
+            _root.Q<Button>("BackToLoginFromVerificationButton")?.RegisterCallback<ClickEvent>(OnBackToLoginFromVerificationClicked);
+            _root.Q<Button>("CloseSettingsCognitoParametersButton")?.RegisterCallback<ClickEvent>(OnCloseSettingsPanelClicked);
+            _root.Q<Button>("SaveButton")?.RegisterCallback<ClickEvent>(OnSaveSettingsButtonClicked);
+
             // Registrar eventos de Enter key para campos de texto
-            RegisterEnterKeyEvents(root);
+            RegisterEnterKeyEvents(_root);
+
+            Debug.Log("[WelcomeEventManager] All events registered successfully");
+        }
+
+        // ✅ AGREGADO: Método para desregistrar eventos
+        public void UnregisterEvents()
+        {
+            try
+            {
+                Debug.Log("[WelcomeEventManager] Unregistering Welcome events...");
+
+                if (_root == null)
+                {
+                    Debug.LogWarning("[WelcomeEventManager] Root element is null - cannot unregister events");
+                    return;
+                }
+
+                // Eventos principales
+                _root.Q<Button>("LaunchButton")?.UnregisterCallback<ClickEvent>(OnLaunchButtonClicked);
+                _root.Q<Button>("ExitButton")?.UnregisterCallback<ClickEvent>(OnExitApplicationClicked);
+                _root.Q<Button>("SettingsCognitoParametersButtonButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
+
+                // Eventos de autenticación
+                _root.Q<Button>("LoginButton")?.UnregisterCallback<ClickEvent>(OnLoginButtonClicked);
+                _root.Q<Button>("RegisterAndLoginButton")?.UnregisterCallback<ClickEvent>(OnRegisterAndLoginClicked);
+                _root.Q<Button>("RecoverPasswordButton")?.UnregisterCallback<ClickEvent>(OnRecoverPasswordClicked);
+                _root.Q<Button>("VerifyEmailButton")?.UnregisterCallback<ClickEvent>(OnVerifyEmailClicked);
+                _root.Q<Button>("ResendVerificationCodeButton")?.UnregisterCallback<ClickEvent>(OnResendVerificationCodeClicked);
+
+                // Eventos de navegación
+                _root.Q<Button>("CloseLoginButton")?.UnregisterCallback<ClickEvent>(OnCloseLoginPanelClicked);
+                _root.Q<Button>("RegisterLoginButton")?.UnregisterCallback<ClickEvent>(OnRegisterFromLoginClicked);
+                _root.Q<Button>("RecoverPasswordLoginButton")?.UnregisterCallback<ClickEvent>(OnRecoverPasswordFromLoginClicked);
+                _root.Q<Button>("CloseRegisterPanelButton")?.UnregisterCallback<ClickEvent>(OnCloseRegisterPanelClicked);
+                _root.Q<Button>("BackToLoginPanelFromRegisterButton")?.UnregisterCallback<ClickEvent>(OnBackToLoginFromRegisterClicked);
+                _root.Q<Button>("CloseRecoverPasswordButton")?.UnregisterCallback<ClickEvent>(OnCloseRecoverPasswordPanelClicked);
+                _root.Q<Button>("BackToLoginPanelFromRecoverPasswordButton")?.UnregisterCallback<ClickEvent>(OnBackToLoginFromRecoverPasswordClicked);
+                _root.Q<Button>("CloseEmailVerificationButton")?.UnregisterCallback<ClickEvent>(OnCloseEmailVerificationPanelClicked);
+                _root.Q<Button>("BackToLoginFromVerificationButton")?.UnregisterCallback<ClickEvent>(OnBackToLoginFromVerificationClicked);
+                _root.Q<Button>("CloseSettingsCognitoParametersButton")?.UnregisterCallback<ClickEvent>(OnCloseSettingsPanelClicked);
+                _root.Q<Button>("SaveButton")?.UnregisterCallback<ClickEvent>(OnSaveSettingsButtonClicked);
+
+                // Desregistrar eventos de Enter key
+                UnregisterEnterKeyEvents(_root);
+
+                Debug.Log("[WelcomeEventManager] All events unregistered successfully");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[WelcomeEventManager] Error unregistering events: {ex.Message}");
+            }
+        }
+
+        // ✅ AGREGADO: Método Cleanup consistente con DashboardEventManager
+        public void Cleanup()
+        {
+            UnregisterEvents();
+            
+            _uiManager = null;
+            _orchestrator = null;
+            _uiDocument = null;
+            _root = null;
+            _onExitApplication = null;
+            _onPanelTransitionComplete = null;
+
+            Debug.Log("[WelcomeEventManager] Event Manager cleaned up");
         }
 
         private void RegisterEnterKeyEvents(VisualElement root)
         {
             // Login panel - Enter en password ejecuta login
             var loginPasswordField = root.Q<TextField>("PasswordLoginField");
-            loginPasswordField?.RegisterCallback<KeyDownEvent>(evt =>
-            {
-                if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
-                {
-                    _orchestrator.HandleLoginButtonClick();
-                }
-            });
+            loginPasswordField?.RegisterCallback<KeyDownEvent>(OnLoginPasswordKeyDown);
 
             // Register panel - Enter en repeat password ejecuta registro
             var registerRepeatPasswordField = root.Q<TextField>("RepeatPasswordRegisterField");
-            registerRepeatPasswordField?.RegisterCallback<KeyDownEvent>(evt =>
-            {
-                if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
-                {
-                    _orchestrator.HandleRegisterButtonClick();
-                }
-            });
+            registerRepeatPasswordField?.RegisterCallback<KeyDownEvent>(OnRegisterRepeatPasswordKeyDown);
 
             // Recovery panel - Enter en email ejecuta recovery
             var recoveryEmailField = root.Q<TextField>("EmailRecoverField");
-            recoveryEmailField?.RegisterCallback<KeyDownEvent>(evt =>
-            {
-                if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
-                {
-                    _orchestrator.HandleRecoverPasswordButtonClick();
-                }
-            });
+            recoveryEmailField?.RegisterCallback<KeyDownEvent>(OnRecoveryEmailKeyDown);
 
             // Verification panel - Enter en código ejecuta verificación
             var verificationCodeField = root.Q<TextField>("VerificationCodeField");
-            verificationCodeField?.RegisterCallback<KeyDownEvent>(evt =>
+            verificationCodeField?.RegisterCallback<KeyDownEvent>(OnVerificationCodeKeyDown);
+        }
+
+        // ✅ AGREGADO: Método para desregistrar eventos de teclado
+        private void UnregisterEnterKeyEvents(VisualElement root)
+        {
+            var loginPasswordField = root.Q<TextField>("PasswordLoginField");
+            loginPasswordField?.UnregisterCallback<KeyDownEvent>(OnLoginPasswordKeyDown);
+
+            var registerRepeatPasswordField = root.Q<TextField>("RepeatPasswordRegisterField");
+            registerRepeatPasswordField?.UnregisterCallback<KeyDownEvent>(OnRegisterRepeatPasswordKeyDown);
+
+            var recoveryEmailField = root.Q<TextField>("EmailRecoverField");
+            recoveryEmailField?.UnregisterCallback<KeyDownEvent>(OnRecoveryEmailKeyDown);
+
+            var verificationCodeField = root.Q<TextField>("VerificationCodeField");
+            verificationCodeField?.UnregisterCallback<KeyDownEvent>(OnVerificationCodeKeyDown);
+        }
+
+        // ✅ AGREGADO: Métodos específicos de eventos de teclado para poder desregistrarlos
+        private void OnLoginPasswordKeyDown(KeyDownEvent evt)
+        {
+            if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
             {
-                if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
-                {
-                    _orchestrator.HandleVerifyEmailButtonClick();
-                }
-            });
+                _orchestrator.HandleLoginButtonClick();
+            }
+        }
+
+        private void OnRegisterRepeatPasswordKeyDown(KeyDownEvent evt)
+        {
+            if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
+            {
+                _orchestrator.HandleRegisterButtonClick();
+            }
+        }
+
+        private void OnRecoveryEmailKeyDown(KeyDownEvent evt)
+        {
+            if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
+            {
+                _orchestrator.HandleRecoverPasswordButtonClick();
+            }
+        }
+
+        private void OnVerificationCodeKeyDown(KeyDownEvent evt)
+        {
+            if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
+            {
+                _orchestrator.HandleVerifyEmailButtonClick();
+            }
         }
 
         #region Navigation Events
@@ -201,5 +299,19 @@ namespace _Scripts.Controllers.WelcomeController
         {
             _onPanelTransitionComplete?.Invoke(panelType);
         }
+
+        #region Public Properties
+
+        /// <summary>
+        /// UI Manager asociado
+        /// </summary>
+        public WelcomeUIManager UIManager => _uiManager;
+
+        /// <summary>
+        /// Orchestrator asociado
+        /// </summary>
+        public WelcomeOrchestrator Orchestrator => _orchestrator;
+
+        #endregion
     }
 }
