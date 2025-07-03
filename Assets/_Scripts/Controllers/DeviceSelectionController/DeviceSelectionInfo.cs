@@ -6,520 +6,316 @@ using UnityEngine.UIElements;
 namespace _Scripts.Controllers.DeviceSelectionController
 {
     /// <summary>
-    /// Contenedor de todas las estructuras de datos específicas de Device Selection
-    /// Organiza la información en categorías lógicas siguiendo el patrón de WelcomeInfo y DashboardInfo
+    /// Clases de configuración e información para el sistema Device Selection
+    /// Maneja contextos, dispositivos y configuración UI
     /// </summary>
-    [Serializable]
+    [System.Serializable]
     public class DeviceSelectionInfo
     {
-        #region UI Configuration
-
         /// <summary>
-        /// Configuración de elementos UI de Device Selection
+        /// Configuración de la UI del Device Selection
         /// </summary>
-        [Serializable]
         public class UIConfiguration
         {
-            #region Main UI Elements
-            
+            // Contenedores principales
             public VisualElement Body { get; set; }
-            public VisualElement Header { get; set; }
-            public VisualElement Main { get; set; }
-            public VisualElement Footer { get; set; }
-            
-            #endregion
-
-            #region Header Elements
-            
-            public Button MenuButton { get; set; }
-            public Label SelectedModeUINameLabel { get; set; }
-            public Label UsernameLabel { get; set; }
-            public Label LogoutLabel { get; set; }
-            
-            #endregion
-
-            #region Main Content Elements
-            
-            public ScrollView MainScrollView { get; set; }
-            public List<VisualElement> DeviceRows { get; set; } = new List<VisualElement>();
-            
-            #endregion
-
-            #region Device Button Elements
-            
-            public Dictionary<string, Button> DeviceButtons { get; set; } = new Dictionary<string, Button>();
-            public Dictionary<string, VisualElement> DeviceVisualElements { get; set; } = new Dictionary<string, VisualElement>();
-            public Dictionary<string, Label> DeviceLabels { get; set; } = new Dictionary<string, Label>();
-            
-            #endregion
-
-            #region Navigation Menu Elements
-            
             public VisualElement SubpanelsContainer { get; set; }
-            public VisualElement NavigationMenuPanel { get; set; }
-            public VisualElement NavigationMenu { get; set; }
             public VisualElement Scrim { get; set; }
-            public Button HideMenuButton { get; set; }
             
-            // Navigation Buttons
-            public Dictionary<NavigationContext, Button> NavigationButtons { get; set; } = new Dictionary<NavigationContext, Button>();
+            // Paneles configurables
+            public Dictionary<IDeviceSelectionOps.PanelType, PanelData> Panels { get; set; } 
+                = new Dictionary<IDeviceSelectionOps.PanelType, PanelData>();
             
-            #endregion
-
-            #region CSS Classes
+            // Referencias específicas del Device Selection
+            public VisualElement NavigationMenuPanel { get; set; }
+            public VisualElement MainContentArea { get; set; }
+            public VisualElement DeviceGridContainer { get; set; }
+            public Label SelectedModeLabel { get; set; }
+            public Label ContextTitleLabel { get; set; }
             
-            public string ScrimVisibleClass { get; set; } = "Opaque";
-            public string ScrimHiddenClass { get; set; } = "Transparent";
-            public string MenuVisibleClass { get; set; } = "NavigationMenuPanelInMainScreen";
-            public string MenuHiddenClass { get; set; } = "NavigationMenuPanelOutMainScreen";
-            public string DeviceSelectedClass { get; set; } = "device-button-selected";
-            public string DeviceAvailableClass { get; set; } = "device-button-available";
-            public string DeviceUnavailableClass { get; set; } = "device-button-unavailable";
-            
-            #endregion
-        }
-
-        #endregion
-
-        #region Device Management
-
-        /// <summary>
-        /// Información y configuración de dispositivos disponibles
-        /// </summary>
-        [Serializable]
-        public class DeviceData
-        {
-            public Dictionary<string, DeviceInfo> AvailableDevices { get; set; } = new Dictionary<string, DeviceInfo>();
-            public string SelectedDevice { get; set; } = "";
-            public DeviceMode CurrentMode { get; set; } = DeviceMode.Operating;
-            public List<string> DeviceDisplayOrder { get; set; } = new List<string>();
-            public int DevicesPerRow { get; set; } = 3;
-            
-            public DeviceData()
-            {
-                InitializeDefaultDevices();
-            }
+            // Botones de dispositivos
+            public Dictionary<string, Button> DeviceButtons { get; set; } = new Dictionary<string, Button>();
             
             /// <summary>
-            /// Inicializa dispositivos por defecto
+            /// Configuración individual de cada panel
             /// </summary>
-            private void InitializeDefaultDevices()
+            [System.Serializable]
+            public class PanelData
             {
-                // Dispositivos principales
-                AvailableDevices["ARSCARA"] = new DeviceInfo("ARSCARA", DeviceType.Industrial, true);
-                AvailableDevices["RobotKit1"] = new DeviceInfo("Robot kit 1", DeviceType.Educational, true);
-                AvailableDevices["RobotKit2"] = new DeviceInfo("Robot kit 2", DeviceType.Educational, false);
+                public VisualElement Panel { get; set; }
+                public string ShowClass { get; set; }
+                public string HideClass { get; set; }
                 
-                // Dispositivos de repuesto/futuros
-                for (int i = 1; i <= 6; i++)
-                {
-                    AvailableDevices[$"Spare{i}"] = new DeviceInfo($"Spare {i}", DeviceType.Placeholder, false);
-                }
-                
-                // Orden de visualización
-                DeviceDisplayOrder = new List<string>
-                {
-                    "ARSCARA", "RobotKit1", "RobotKit2",
-                    "Spare1", "Spare2", "Spare3",
-                    "Spare4", "Spare5", "Spare6"
-                };
-            }
-            
-            /// <summary>
-            /// Obtiene dispositivos disponibles para un modo específico
-            /// </summary>
-            /// <param name="mode">Modo de dispositivo</param>
-            /// <returns>Lista de dispositivos disponibles para el modo</returns>
-            public List<DeviceInfo> GetAvailableDevicesForMode(DeviceMode mode)
-            {
-                var availableDevices = new List<DeviceInfo>();
-                
-                foreach (var device in AvailableDevices.Values)
-                {
-                    if (device.IsAvailable && device.SupportedModes.Contains(mode))
-                    {
-                        availableDevices.Add(device);
-                    }
-                }
-                
-                return availableDevices;
-            }
-            
-            /// <summary>
-            /// Verifica si un dispositivo está disponible para selección
-            /// </summary>
-            /// <param name="deviceId">ID del dispositivo</param>
-            /// <param name="mode">Modo requerido</param>
-            /// <returns>True si está disponible</returns>
-            public bool IsDeviceAvailableForMode(string deviceId, DeviceMode mode)
-            {
-                if (!AvailableDevices.TryGetValue(deviceId, out var device))
-                    return false;
-                    
-                return device.IsAvailable && device.SupportedModes.Contains(mode);
+                // Propiedades específicas para diferentes tipos de panel
+                public bool IsModal { get; set; } = false;
+                public bool RequiresScrim { get; set; } = true;
+                public float AnimationDuration { get; set; } = 0.3f;
             }
         }
 
         /// <summary>
-        /// Información individual de un dispositivo
+        /// Información del contexto de lanzamiento actual
         /// </summary>
-        [Serializable]
-        public class DeviceInfo
+        public class ContextData
         {
-            public string Id { get; set; }
-            public string DisplayName { get; set; }
-            public string Description { get; set; }
-            public DeviceType Type { get; set; }
-            public bool IsAvailable { get; set; }
-            public List<DeviceMode> SupportedModes { get; set; } = new List<DeviceMode>();
-            public string IconPath { get; set; }
-            public Color StatusColor { get; set; } = Color.green;
-            public DateTime LastUpdate { get; set; } = DateTime.Now;
+            public IDeviceSelectionOps.LaunchContext CurrentContext { get; set; } = IDeviceSelectionOps.LaunchContext.None;
+            public IDeviceSelectionOps.LaunchContext PreviousContext { get; set; } = IDeviceSelectionOps.LaunchContext.None;
+            public string SourceController { get; set; } = "Unknown";
+            public DateTime ContextSetTime { get; set; } = DateTime.Now;
             
-            public DeviceInfo() { }
-            
-            public DeviceInfo(string displayName, DeviceType type, bool isAvailable)
-            {
-                Id = displayName.Replace(" ", "").Replace("kit", "Kit"); // "Robot kit 1" → "RobotKit1"
-                DisplayName = displayName;
-                Type = type;
-                IsAvailable = isAvailable;
-                LastUpdate = DateTime.Now;
-                
-                // Configurar modos soportados según el tipo
-                ConfigureSupportedModes();
-                
-                // Configurar descripción según el tipo
-                ConfigureDescription();
-            }
+            // Configuración contextual
+            public string ContextTitle { get; set; }
+            public string ContextDescription { get; set; }
+            public Color ContextColor { get; set; } = Color.white;
+            public List<string> AllowedDevices { get; set; } = new List<string>();
             
             /// <summary>
-            /// Configura los modos soportados según el tipo de dispositivo
+            /// Obtiene el título apropiado para el contexto actual
             /// </summary>
-            private void ConfigureSupportedModes()
+            public string GetContextualTitle()
             {
-                SupportedModes.Clear();
-                
-                switch (Type)
+                return CurrentContext switch
                 {
-                    case DeviceType.Industrial:
-                        // Dispositivos industriales soportan todos los modos
-                        SupportedModes.AddRange(new[]
-                        {
-                            DeviceMode.Learning,
-                            DeviceMode.Operating,
-                            DeviceMode.Monitoring,
-                            DeviceMode.Configuration
-                        });
-                        break;
-                        
-                    case DeviceType.Educational:
-                        // Dispositivos educativos principalmente para learning y monitoring
-                        SupportedModes.AddRange(new[]
-                        {
-                            DeviceMode.Learning,
-                            DeviceMode.Monitoring,
-                            DeviceMode.Configuration
-                        });
-                        break;
-                        
-                    case DeviceType.Simulation:
-                        // Dispositivos de simulación para learning y monitoring
-                        SupportedModes.AddRange(new[]
-                        {
-                            DeviceMode.Learning,
-                            DeviceMode.Monitoring
-                        });
-                        break;
-                        
-                    case DeviceType.Placeholder:
-                        // Placeholders no soportan ningún modo por defecto
-                        break;
-                }
-            }
-            
-            /// <summary>
-            /// Configura la descripción según el tipo de dispositivo
-            /// </summary>
-            private void ConfigureDescription()
-            {
-                Description = Type switch
-                {
-                    DeviceType.Industrial => $"Industrial automation device - {DisplayName}",
-                    DeviceType.Educational => $"Educational robotics kit - {DisplayName}",
-                    DeviceType.Simulation => $"Simulation device - {DisplayName}",
-                    DeviceType.Placeholder => $"Future device slot - {DisplayName}",
-                    _ => DisplayName
+                    IDeviceSelectionOps.LaunchContext.Training => "Devices available for learning",
+                    IDeviceSelectionOps.LaunchContext.Operations => "Devices available for operate",
+                    _ => "Select a device"
                 };
             }
             
             /// <summary>
-            /// Obtiene el color de estado según disponibilidad y tipo
+            /// Obtiene la descripción del contexto actual
             /// </summary>
-            /// <returns>Color del dispositivo</returns>
-            public Color GetDisplayColor()
+            public string GetContextualDescription()
             {
-                if (!IsAvailable)
-                    return Color.gray;
-                    
-                return Type switch
+                return CurrentContext switch
                 {
-                    DeviceType.Industrial => Color.green,
-                    DeviceType.Educational => Color.cyan,
-                    DeviceType.Simulation => Color.yellow,
-                    DeviceType.Placeholder => Color.gray,
+                    IDeviceSelectionOps.LaunchContext.Training => "Choose a device to start your training session. You can practice and learn safely.",
+                    IDeviceSelectionOps.LaunchContext.Operations => "Select a device to begin industrial operations. Ensure all safety protocols are followed.",
+                    _ => "Please select a device from the available options below."
+                };
+            }
+            
+            /// <summary>
+            /// Obtiene el color temático del contexto
+            /// </summary>
+            public Color GetContextualColor()
+            {
+                return CurrentContext switch
+                {
+                    IDeviceSelectionOps.LaunchContext.Training => new Color(0, 1, 1, 1),      // Cyan para entrenamiento
+                    IDeviceSelectionOps.LaunchContext.Operations => new Color(1, 0.5f, 0, 1), // Naranja para operaciones
                     _ => Color.white
                 };
             }
-            
-            /// <summary>
-            /// Verifica si el dispositivo soporta un modo específico
-            /// </summary>
-            /// <param name="mode">Modo a verificar</param>
-            /// <returns>True si soporta el modo</returns>
-            public bool SupportsMode(DeviceMode mode)
-            {
-                return SupportedModes.Contains(mode);
-            }
         }
 
-        #endregion
-
-        #region Context Management
-
         /// <summary>
-        /// Información del contexto de navegación actual
+        /// Información detallada de un dispositivo
         /// </summary>
-        [Serializable]
-        public class ContextData
+        [System.Serializable]
+        public class DeviceInfo
         {
-            public NavigationContext CurrentContext { get; set; } = NavigationContext.None;
-            public NavigationContext SourceContext { get; set; } = NavigationContext.None;
-            public DeviceMode RequiredMode { get; set; } = DeviceMode.Operating;
-            public string UITitle { get; set; } = "Select Device";
-            public string TargetScene { get; set; } = "";
-            public Dictionary<string, object> AdditionalData { get; set; } = new Dictionary<string, object>();
+            public string DeviceId { get; set; }
+            public string DisplayName { get; set; }
+            public string Description { get; set; }
+            public DeviceType Type { get; set; }
+            public DeviceStatus Status { get; set; }
+            public bool IsAvailable { get; set; } = true;
+            
+            // Configuración visual
+            public string IconPath { get; set; }
+            public Color StatusColor { get; set; } = Color.green;
+            public string ButtonClass { get; set; } = "device-button";
+            
+            // Compatibilidad con contextos
+            public List<IDeviceSelectionOps.LaunchContext> SupportedContexts { get; set; } 
+                = new List<IDeviceSelectionOps.LaunchContext>();
+            
+            // Información técnica
+            public Dictionary<string, object> TechnicalSpecs { get; set; } = new Dictionary<string, object>();
+            public DateTime LastUsed { get; set; }
+            public int UsageCount { get; set; }
             
             /// <summary>
-            /// Configura el contexto basado en el NavigationContextManager
+            /// Verifica si el dispositivo es compatible con un contexto específico
             /// </summary>
-            public void ConfigureFromNavigationContext()
+            public bool IsCompatibleWith(IDeviceSelectionOps.LaunchContext context)
             {
-                var navManager = NavigationContextManager.Instance;
-                if (navManager != null)
-                {
-                    CurrentContext = navManager.CurrentContext;
-                    SourceContext = navManager.PreviousContext;
-                    RequiredMode = navManager.GetDeviceModeForContext(CurrentContext);
-                    UITitle = navManager.GetUITitleForContext(CurrentContext);
-                    TargetScene = navManager.GetTargetSceneForContext(CurrentContext);
-                    
-                    // Copiar datos adicionales
-                    AdditionalData.Clear();
-                    foreach (var kvp in navManager.ContextData)
-                    {
-                        AdditionalData[kvp.Key] = kvp.Value;
-                    }
-                }
+                return SupportedContexts.Contains(context) || SupportedContexts.Count == 0;
             }
             
             /// <summary>
-            /// Verifica si el contexto está configurado correctamente
+            /// Obtiene el texto de estado del dispositivo
             /// </summary>
-            /// <returns>True si el contexto es válido</returns>
-            public bool IsValidContext()
+            public string GetStatusText()
             {
-                return CurrentContext != NavigationContext.None && 
-                       !string.IsNullOrEmpty(UITitle) && 
-                       !string.IsNullOrEmpty(TargetScene);
+                return Status switch
+                {
+                    DeviceStatus.Online => "Online",
+                    DeviceStatus.Offline => "Offline", 
+                    DeviceStatus.Busy => "Busy",
+                    DeviceStatus.Maintenance => "Maintenance",
+                    DeviceStatus.Error => "Error",
+                    _ => "Unknown"
+                };
+            }
+            
+            /// <summary>
+            /// Obtiene el color apropiado para el estado
+            /// </summary>
+            public Color GetStatusColor()
+            {
+                return Status switch
+                {
+                    DeviceStatus.Online => Color.green,
+                    DeviceStatus.Offline => Color.red,
+                    DeviceStatus.Busy => Color.yellow,
+                    DeviceStatus.Maintenance => Color.blue,
+                    DeviceStatus.Error => new Color(1, 0.5f, 0, 1), // Naranja
+                    _ => Color.gray
+                };
             }
         }
 
-        #endregion
-
-        #region Navigation State
-
         /// <summary>
-        /// Estado de navegación específico de Device Selection
+        /// Estado del Device Selection Controller
         /// </summary>
-        [Serializable]
-        public class NavigationState
-        {
-            public bool IsMenuVisible { get; set; } = false;
-            public NavigationContext ActiveSection { get; set; } = NavigationContext.DeviceSelection;
-            public bool IsTransitioning { get; set; } = false;
-            public DateTime LastTransition { get; set; } = DateTime.Now;
-            
-            /// <summary>
-            /// Actualiza el estado de la transición
-            /// </summary>
-            /// <param name="isTransitioning">Si está en transición</param>
-            public void SetTransitioning(bool isTransitioning)
-            {
-                IsTransitioning = isTransitioning;
-                if (isTransitioning)
-                {
-                    LastTransition = DateTime.Now;
-                }
-            }
-            
-            /// <summary>
-            /// Alterna la visibilidad del menú
-            /// </summary>
-            public void ToggleMenu()
-            {
-                IsMenuVisible = !IsMenuVisible;
-            }
-        }
-
-        #endregion
-
-        #region User Session
-
-        /// <summary>
-        /// Información de la sesión del usuario en Device Selection
-        /// </summary>
-        [Serializable]
-        public class UserSessionData
-        {
-            public string Username { get; set; } = "";
-            public bool IsAuthenticated { get; set; } = false;
-            public DateTime SessionStart { get; set; } = DateTime.Now;
-            public DateTime LastActivity { get; set; } = DateTime.Now;
-            public List<string> RecentlySelectedDevices { get; set; } = new List<string>();
-            public int MaxRecentDevices { get; set; } = 5;
-            
-            /// <summary>
-            /// Actualiza la actividad del usuario
-            /// </summary>
-            public void UpdateActivity()
-            {
-                LastActivity = DateTime.Now;
-            }
-            
-            /// <summary>
-            /// Agrega un dispositivo a la lista de recientemente seleccionados
-            /// </summary>
-            /// <param name="deviceId">ID del dispositivo seleccionado</param>
-            public void AddRecentDevice(string deviceId)
-            {
-                if (string.IsNullOrEmpty(deviceId)) return;
-                
-                // Remover si ya existe
-                RecentlySelectedDevices.Remove(deviceId);
-                
-                // Agregar al principio
-                RecentlySelectedDevices.Insert(0, deviceId);
-                
-                // Mantener límite
-                if (RecentlySelectedDevices.Count > MaxRecentDevices)
-                {
-                    RecentlySelectedDevices.RemoveAt(RecentlySelectedDevices.Count - 1);
-                }
-                
-                UpdateActivity();
-            }
-            
-            /// <summary>
-            /// Obtiene la duración de la sesión actual
-            /// </summary>
-            /// <returns>Duración de la sesión</returns>
-            public TimeSpan GetSessionDuration()
-            {
-                return DateTime.Now - SessionStart;
-            }
-        }
-
-        #endregion
-
-        #region Device Selection State
-
-        /// <summary>
-        /// Estado general del sistema Device Selection
-        /// </summary>
-        [Serializable]
         public class DeviceSelectionState
         {
-            public bool IsInitialized { get; set; } = false;
-            public bool IsVisible { get; set; } = false;
-            public bool IsDeviceSelected { get; set; } = false;
+            public bool IsInitialized { get; set; }
+            public bool IsNavigationMenuOpen { get; set; }
+            public IDeviceSelectionOps.PanelType CurrentActivePanel { get; set; } = IDeviceSelectionOps.PanelType.None;
+            public string SelectedDeviceId { get; set; }
+            public string CurrentSection { get; set; } = "DeviceSelection";
+            
+            // Estado de dispositivos
+            public Dictionary<string, DeviceStatus> DeviceStates { get; set; } = new Dictionary<string, DeviceStatus>();
             public DateTime LastRefresh { get; set; } = DateTime.Now;
-            public string LastError { get; set; } = "";
             
             // Eventos de estado
-            public event Action OnDeviceSelectionInitialized;
-            public event Action OnDeviceSelectionShown;
-            public event Action OnDeviceSelectionHidden;
+            public event Action<IDeviceSelectionOps.PanelType> OnPanelChanged;
+            public event Action<bool> OnNavigationMenuToggled;
             public event Action<string> OnDeviceSelected;
-            public event Action<string> OnError;
+            public event Action<Dictionary<string, DeviceStatus>> OnDeviceStatesUpdated;
+        }
+
+        /// <summary>
+        /// Configuración de dispositivos disponibles
+        /// </summary>
+        public class DeviceConfiguration
+        {
+            public List<DeviceInfo> AvailableDevices { get; set; } = new List<DeviceInfo>();
+            public Dictionary<string, DeviceInfo> DeviceRegistry { get; set; } = new Dictionary<string, DeviceInfo>();
             
             /// <summary>
-            /// Dispara el evento de inicialización
+            /// Inicializa la configuración por defecto de dispositivos
             /// </summary>
-            public void TriggerInitialized()
+            public static DeviceConfiguration CreateDefault()
             {
-                OnDeviceSelectionInitialized?.Invoke();
+                var config = new DeviceConfiguration();
+                
+                // ARSCARA
+                config.AddDevice(new DeviceInfo
+                {
+                    DeviceId = "ARSCARA",
+                    DisplayName = "ARSCARA Robot",
+                    Description = "Industrial robotic arm for precision tasks and automation",
+                    Type = DeviceType.RoboticArm,
+                    Status = DeviceStatus.Online,
+                    IsAvailable = true,
+                    IconPath = "Icons/arscara_icon",
+                    SupportedContexts = { IDeviceSelectionOps.LaunchContext.Training, IDeviceSelectionOps.LaunchContext.Operations },
+                    TechnicalSpecs = {
+                        ["DOF"] = 6,
+                        ["Payload"] = "3kg",
+                        ["Reach"] = "850mm",
+                        ["Repeatability"] = "±0.1mm"
+                    }
+                });
+                
+                // Robot Kit 1
+                config.AddDevice(new DeviceInfo
+                {
+                    DeviceId = "RobotKit1",
+                    DisplayName = "Robotics Kit 1",
+                    Description = "Educational robotics platform for learning and experimentation",
+                    Type = DeviceType.EducationalKit,
+                    Status = DeviceStatus.Online,
+                    IsAvailable = true,
+                    IconPath = "Icons/robotkit_icon",
+                    SupportedContexts = { IDeviceSelectionOps.LaunchContext.Training, IDeviceSelectionOps.LaunchContext.Operations },
+                    TechnicalSpecs = {
+                        ["Type"] = "Educational",
+                        ["Programming"] = "Visual/Text",
+                        ["Sensors"] = "Multiple",
+                        ["Connectivity"] = "Wireless"
+                    }
+                });
+                
+                // Robot Kit 2
+                config.AddDevice(new DeviceInfo
+                {
+                    DeviceId = "RobotKit2",
+                    DisplayName = "Robotics Kit 2",
+                    Description = "Advanced robotics platform with enhanced capabilities",
+                    Type = DeviceType.EducationalKit,
+                    Status = DeviceStatus.Offline,
+                    IsAvailable = false,
+                    IconPath = "Icons/robotkit2_icon",
+                    SupportedContexts = { IDeviceSelectionOps.LaunchContext.Training },
+                    TechnicalSpecs = {
+                        ["Type"] = "Advanced Educational",
+                        ["Programming"] = "Full SDK",
+                        ["AI"] = "Computer Vision",
+                        ["Connectivity"] = "5G/WiFi"
+                    }
+                });
+                
+                return config;
             }
             
             /// <summary>
-            /// Dispara el evento de UI mostrada
+            /// Agrega un dispositivo a la configuración
             /// </summary>
-            public void TriggerShown()
+            public void AddDevice(DeviceInfo device)
             {
-                OnDeviceSelectionShown?.Invoke();
+                AvailableDevices.Add(device);
+                DeviceRegistry[device.DeviceId] = device;
             }
             
             /// <summary>
-            /// Dispara el evento de UI oculta
+            /// Obtiene dispositivos compatibles con un contexto específico
             /// </summary>
-            public void TriggerHidden()
+            public List<DeviceInfo> GetDevicesForContext(IDeviceSelectionOps.LaunchContext context)
             {
-                OnDeviceSelectionHidden?.Invoke();
-            }
-            
-            /// <summary>
-            /// Dispara el evento de dispositivo seleccionado
-            /// </summary>
-            /// <param name="deviceId">ID del dispositivo seleccionado</param>
-            public void TriggerDeviceSelected(string deviceId)
-            {
-                OnDeviceSelected?.Invoke(deviceId);
-            }
-            
-            /// <summary>
-            /// Dispara el evento de error
-            /// </summary>
-            /// <param name="error">Mensaje de error</param>
-            public void TriggerError(string error)
-            {
-                LastError = error;
-                OnError?.Invoke(error);
-            }
-            
-            /// <summary>
-            /// Marca el último refresh
-            /// </summary>
-            public void MarkRefreshed()
-            {
-                LastRefresh = DateTime.Now;
+                return AvailableDevices.FindAll(d => d.IsCompatibleWith(context) && d.IsAvailable);
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Tipos de dispositivos disponibles
+        /// </summary>
+        public enum DeviceType
+        {
+            Unknown,
+            RoboticArm,
+            EducationalKit,
+            IndustrialMachine,
+            Simulator,
+            IoTDevice
+        }
+
+        /// <summary>
+        /// Estados posibles de un dispositivo
+        /// </summary>
+        public enum DeviceStatus
+        {
+            Unknown,
+            Online,      // Disponible y funcionando
+            Offline,     // No disponible
+            Busy,        // En uso por otro usuario
+            Maintenance, // En mantenimiento
+            Error        // Error de sistema
+        }
     }
-
-    #region Supporting Enums
-
-    /// <summary>
-    /// Tipos de dispositivos disponibles
-    /// </summary>
-    public enum DeviceType
-    {
-        Industrial,     // Dispositivos industriales reales (ARSCARA)
-        Educational,    // Kits educativos (Robot Kit 1, 2)
-        Simulation,     // Dispositivos simulados
-        Placeholder     // Espacios reservados para futuros dispositivos
-    }
-
-    #endregion
 }

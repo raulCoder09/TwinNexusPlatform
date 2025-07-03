@@ -60,7 +60,7 @@ namespace _Scripts.Controllers.UiManagement
         [Header("UI Scenes Configuration")]
         [SerializeField] private string _welcomeSceneTag = "Welcome";
         [SerializeField] private string _dashboardSceneTag = "Dashboard";
-        [SerializeField] private string _deviceSelectionSceneTag = "DeviceSelection";
+        [SerializeField] private string _deviceSelectionSceneTag = "DeviceSelection"; 
 
         #endregion
 
@@ -79,7 +79,7 @@ namespace _Scripts.Controllers.UiManagement
         // Referencias específicas
         private WelcomeOrchestrator _welcomeController;
         private DashboardOrchestrator _dashboardController;
-        private DeviceSelectionOrchestrator _deviceSelectionController;
+        private DeviceSelectionOrchestrator _deviceSelectionController; 
 
         // Lista de controladores que requieren autenticación
         private readonly HashSet<string> _authenticatedControllers = new HashSet<string>();
@@ -232,12 +232,15 @@ namespace _Scripts.Controllers.UiManagement
                 RegisterUIController("Dashboard", _dashboardController, requiresAuth: true);
                 LogDebug("DashboardController discovered and registered");
             }
+            
+            // Buscar DeviceSelectionOrchestrator
             _deviceSelectionController = FindUIController<DeviceSelectionOrchestrator>(_deviceSelectionSceneTag);
             if (_deviceSelectionController != null)
             {
                 RegisterUIController("DeviceSelection", _deviceSelectionController, requiresAuth: true);
                 LogDebug("DeviceSelectionController discovered and registered");
             }
+
 
             // Aquí se pueden agregar más controladores en el futuro:
             // - TrainingController
@@ -327,12 +330,7 @@ namespace _Scripts.Controllers.UiManagement
                 _welcomeController.OnAuthenticationSuccess += OnWelcomeAuthenticationSuccess;
                 LogDebug("Subscribed to WelcomeController authentication events");
             }
-            if (_deviceSelectionController != null)
-            {
-                _deviceSelectionController.OnDeviceLaunched += OnDeviceSelectionDeviceLaunched;
-                _deviceSelectionController.OnContextChanged += OnDeviceSelectionContextChanged;
-                LogDebug("Subscribed to DeviceSelectionController events");
-            }
+
         }
         /// <summary>
         /// Maneja cuando se lanza un dispositivo desde Device Selection
@@ -345,19 +343,6 @@ namespace _Scripts.Controllers.UiManagement
             // Por ejemplo, tracking, analytics, cleanup de UI, etc.
         }
         
-        /// <summary>
-        /// Maneja cambios de contexto desde Device Selection
-        /// </summary>
-        private void OnDeviceSelectionContextChanged(NavigationContext fromContext, NavigationContext toContext)
-        {
-            LogDebug($"Device Selection context changed: {fromContext} → {toContext}");
-    
-            // Si el contexto cambió a Dashboard, navegar automáticamente
-            if (toContext == NavigationContext.Dashboard)
-            {
-                ShowUI("Dashboard");
-            }
-        }
         #endregion
 
         /// <summary>
@@ -525,6 +510,10 @@ namespace _Scripts.Controllers.UiManagement
                     StartCoroutine(InitializeAndShowUICoroutine(uiName, controller));
                     return true;
                 }
+                if (uiName == "DeviceSelection" && parameters != null)
+                {
+                    HandleDeviceSelectionParameters(parameters);
+                }
 
                 // Ejecutar transición
                 StartCoroutine(TransitionToUICoroutine(uiName, controller));
@@ -543,32 +532,21 @@ namespace _Scripts.Controllers.UiManagement
         /// </summary>
         private void HandleDeviceSelectionParameters(Dictionary<string, object> parameters)
         {
-            try
+            if (_deviceSelectionController != null && parameters.ContainsKey("context"))
             {
-                LogDebug("Handling Device Selection parameters");
+                var context = parameters["context"].ToString();
+                var sourceController = parameters.GetValueOrDefault("sourceController", "Unknown").ToString();
         
-                // Los parámetros se pueden pasar al NavigationContextManager
-                var navManager = NavigationContextManager.Instance;
-                if (navManager != null)
+                if (context == "Training")
                 {
-                    // Si no hay contexto específico en parámetros, usar el actual del NavigationContextManager
-                    if (!parameters.ContainsKey("context"))
-                    {
-                        parameters["context"] = navManager.CurrentContext;
-                    }
-            
-                    // Agregar datos adicionales al contexto
-                    foreach (var kvp in parameters)
-                    {
-                        navManager.AddContextData(kvp.Key, kvp.Value);
-                    }
+                    _deviceSelectionController.ConfigureForTraining(sourceController);
+                }
+                else if (context == "Operations")
+                {
+                    _deviceSelectionController.ConfigureForOperations(sourceController);
                 }
         
-                LogDebug($"Device Selection parameters processed: {parameters.Count} items");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error handling Device Selection parameters: {ex.Message}");
+                LogDebug($"DeviceSelection configured for {context} from {sourceController}");
             }
         }
         #endregion
@@ -616,11 +594,6 @@ namespace _Scripts.Controllers.UiManagement
                 yield return new WaitForSeconds(_transitionDelay);
             }
             
-            if (uiName == "DeviceSelection" && _deviceSelectionController != null)
-            {
-                ConfigureDeviceSelectionController(parameters);
-            }
-
             // Mostrar nueva UI
             LogDebug($"Showing new UI: {uiName}");
             
@@ -936,8 +909,7 @@ namespace _Scripts.Controllers.UiManagement
         }
 
         #endregion
-
-        #region Cleanup
+        
 
         /// <summary>
         /// Limpia el UIController
@@ -962,11 +934,6 @@ namespace _Scripts.Controllers.UiManagement
                     _welcomeController.OnAuthenticationSuccess -= OnWelcomeAuthenticationSuccess;
                 }
                 
-                if (_deviceSelectionController != null)
-                {
-                    _deviceSelectionController.OnDeviceLaunched -= OnDeviceSelectionDeviceLaunched;
-                    _deviceSelectionController.OnContextChanged -= OnDeviceSelectionContextChanged;
-                }
 
 
                 // Limpiar controladores
@@ -1004,36 +971,6 @@ namespace _Scripts.Controllers.UiManagement
             }
         }
         
-        /// <summary>
-        /// Método helper para navegar a Device Selection con contexto específico
-        /// </summary>
-        public bool ShowDeviceSelection(NavigationContext context, Dictionary<string, object> additionalData = null)
-        {
-            var parameters = new Dictionary<string, object>
-            {
-                ["context"] = context
-            };
-    
-            if (additionalData != null)
-            {
-                foreach (var kvp in additionalData)
-                {
-                    parameters[kvp.Key] = kvp.Value;
-                }
-            }
-    
-            return ShowUI("DeviceSelection", parameters);
-        }
-
-        /// <summary>
-        /// Verifica si Device Selection está disponible
-        /// </summary>
-        public bool IsDeviceSelectionAvailable()
-        {
-            return _deviceSelectionController != null && 
-                   _controllerInitializationStatus.GetValueOrDefault("DeviceSelection", false);
-        }
-        #endregion
 
         /// <summary>
         /// Desuscribirse de eventos de un controlador

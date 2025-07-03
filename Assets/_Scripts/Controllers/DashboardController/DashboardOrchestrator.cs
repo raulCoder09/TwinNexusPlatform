@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
@@ -328,21 +329,11 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         public void HandleOperationsClick()
         {
-            Debug.Log("Operations button clicked - starting operations mode");
-            
-            // Configurar GameManager (del código original)
-            if (_gameManager != null)
-            {
-                _gameManager.selectedModeUiName = "Devices available for operate";
-                _gameManager.modeSelected = "OperationsButton";
-            }
-            
-            // Cerrar menú y ocultar dashboard
-            _uiManager?.HideNavigationMenu();
-            Hide();
-            
-            // Navegar al siguiente controlador
-            _mainUIController?.ShowUI("DeviceSelection");
+            var parameters = new Dictionary<string, object> {
+                ["context"] = "Operations", 
+                ["sourceController"] = "Dashboard"
+            };
+            _mainUIController?.ShowUI("DeviceSelection", parameters);
         }
 
         /// <summary>
@@ -350,21 +341,11 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         public void HandleTrainingClick()
         {
-            Debug.Log("Training button clicked - starting training mode");
-            
-            // Configurar GameManager (del código original)
-            if (_gameManager != null)
-            {
-                _gameManager.selectedModeUiName = "Devices available for learning";
-                _gameManager.modeSelected = "TrainingButton";
-            }
-            
-            // Cerrar menú y ocultar dashboard
-            _uiManager?.HideNavigationMenu();
-            Hide();
-            
-            // Navegar al siguiente controlador
-            _mainUIController?.ShowUI("DeviceSelection");
+            var parameters = new Dictionary<string, object> {
+                ["context"] = "Training",
+                ["sourceController"] = "Dashboard"
+            };
+            _mainUIController?.ShowUI("DeviceSelection", parameters);
         }
 
         /// <summary>

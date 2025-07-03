@@ -1,55 +1,36 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace _Scripts.Controllers.DeviceSelectionController
 {
     /// <summary>
-    /// Gestor de eventos de UI del Device Selection
-    /// Responsable de registrar y manejar todos los eventos de interacción del usuario
-    /// Equivalente al WelcomeEventManager y DashboardEventManager pero para Device Selection
+    /// Maneja todos los eventos UI del Device Selection
+    /// Equivalente a WelcomeEventManager y DashboardEventManager pero para Device Selection
     /// </summary>
     public class DeviceSelectionEventManager
     {
-        #region Private Fields
-
         private DeviceSelectionUIManager _uiManager;
+        private Action _onReturnToDashboard;
+        private Action<IDeviceSelectionOps.PanelType> _onPanelTransitionComplete;
         private DeviceSelectionOrchestrator _orchestrator;
+
+        // Referencias para poder desregistrar eventos
         private UIDocument _uiDocument;
         private VisualElement _root;
-        private DeviceSelectionInfo.UIConfiguration _uiConfig;
-
-        // Actions para comunicación con sistemas externos
-        private Action _onLogoutRequested;
-        private Action<NavigationContext> _onNavigationRequested;
-        private Action<string> _onDeviceSelected;
-
-        // Referencias para desregistro de eventos
-        private readonly Dictionary<Button, EventCallback<ClickEvent>> _buttonEventReferences = new Dictionary<Button, EventCallback<ClickEvent>>();
-        private readonly Dictionary<VisualElement, EventCallback<KeyDownEvent>> _keyEventReferences = new Dictionary<VisualElement, EventCallback<KeyDownEvent>>();
-
-        #endregion
 
         #region Constructor
 
         public DeviceSelectionEventManager(
             DeviceSelectionUIManager uiManager, 
-            DeviceSelectionOrchestrator orchestrator,
-            UIDocument uiDocument,
-            Action onLogoutRequested = null,
-            Action<NavigationContext> onNavigationRequested = null,
-            Action<string> onDeviceSelected = null)
+            Action onReturnToDashboard, 
+            Action<IDeviceSelectionOps.PanelType> onPanelTransitionComplete, 
+            DeviceSelectionOrchestrator orchestrator)
         {
             _uiManager = uiManager ?? throw new ArgumentNullException(nameof(uiManager));
+            _onReturnToDashboard = onReturnToDashboard ?? throw new ArgumentNullException(nameof(onReturnToDashboard));
+            _onPanelTransitionComplete = onPanelTransitionComplete ?? throw new ArgumentNullException(nameof(onPanelTransitionComplete));
             _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
-            _uiDocument = uiDocument ?? throw new ArgumentNullException(nameof(uiDocument));
-            _uiConfig = _uiManager.UIConfig;
-            _root = _uiDocument.rootVisualElement;
-
-            _onLogoutRequested = onLogoutRequested;
-            _onNavigationRequested = onNavigationRequested;
-            _onDeviceSelected = onDeviceSelected;
         }
 
         #endregion
@@ -59,383 +40,69 @@ namespace _Scripts.Controllers.DeviceSelectionController
         /// <summary>
         /// Registra todos los eventos del Device Selection
         /// </summary>
-        public void RegisterEvents()
+        public void RegisterEvents(UIDocument uiDocument)
         {
-            try
-            {
-                Debug.Log("[DeviceSelectionEventManager] Registering Device Selection events...");
+            // Guardar referencias para desregistro posterior
+            _uiDocument = uiDocument;
+            _root = uiDocument.rootVisualElement;
 
-                RegisterHeaderEvents();
-                RegisterNavigationMenuEvents();
-                RegisterDeviceSelectionEvents();
-                RegisterKeyboardEvents();
+            // Eventos principales del menú
+            _root.Q<Button>("MenuButton")?.RegisterCallback<ClickEvent>(OnMenuButtonClicked);
+            _root.Q<Button>("HideMenuButton")?.RegisterCallback<ClickEvent>(OnHideMenuButtonClicked);
 
-                Debug.Log("[DeviceSelectionEventManager] All events registered successfully");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[DeviceSelectionEventManager] Error registering events: {ex.Message}");
-            }
+            // Eventos de navegación principal
+            _root.Q<Button>("DashboardButton")?.RegisterCallback<ClickEvent>(OnDashboardButtonClicked);
+            _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
+            _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
+
+            // Eventos de dispositivos - DINÁMICOS
+            RegisterDeviceEvents(_root);
+
+            // Eventos de paneles adicionales (futuros)
+            _root.Q<Button>("DeviceInfoButton")?.RegisterCallback<ClickEvent>(OnDeviceInfoButtonClicked);
+            _root.Q<Button>("ContextInfoButton")?.RegisterCallback<ClickEvent>(OnContextInfoButtonClicked);
+            _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
+            _root.Q<Button>("HelpButton")?.RegisterCallback<ClickEvent>(OnHelpButtonClicked);
+
+            // Eventos de cierre de paneles
+            _root.Q<Button>("CloseDeviceInfoButton")?.RegisterCallback<ClickEvent>(OnCloseDeviceInfoPanelClicked);
+            _root.Q<Button>("CloseContextInfoButton")?.RegisterCallback<ClickEvent>(OnCloseContextInfoPanelClicked);
+            _root.Q<Button>("CloseSettingsButton")?.RegisterCallback<ClickEvent>(OnCloseSettingsPanelClicked);
+            _root.Q<Button>("CloseHelpButton")?.RegisterCallback<ClickEvent>(OnCloseHelpPanelClicked);
+
+            // Evento de transición del menú de navegación
+            var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
+            navigationMenuPanel?.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+
+            // Eventos de clic en el scrim para cerrar paneles
+            var scrim = _root.Q<VisualElement>("Scrim");
+            scrim?.RegisterCallback<ClickEvent>(OnScrimClicked);
+
+            // Registrar eventos de teclado
+            RegisterKeyboardEvents(_root);
+
+            Debug.Log("[DeviceSelectionEventManager] All events registered successfully");
         }
 
         /// <summary>
-        /// Registra eventos del header (menú, logout)
+        /// Registra eventos específicos de dispositivos de forma dinámica
         /// </summary>
-        private void RegisterHeaderEvents()
+        private void RegisterDeviceEvents(VisualElement root)
         {
-            // Botón de menú
-            RegisterButtonEvent(_uiConfig.MenuButton, OnMenuButtonClicked);
+            // Dispositivos principales (del código original)
+            _root.Q<Button>("ARSCARAButton")?.RegisterCallback<ClickEvent>(OnDeviceButtonClicked);
+            _root.Q<Button>("RobotKit1Button")?.RegisterCallback<ClickEvent>(OnDeviceButtonClicked);
+            _root.Q<Button>("RobotKit2Button")?.RegisterCallback<ClickEvent>(OnDeviceButtonClicked);
 
-            // Logout (label clickeable)
-            if (_uiConfig.LogoutLabel != null)
+            // También registrar eventos para cualquier botón con clase device-button
+            var deviceButtons = root.Query<Button>(className: "device-button").ToList();
+            foreach (var button in deviceButtons)
             {
-                EventCallback<ClickEvent> logoutAction = OnLogoutClicked;
-                _uiConfig.LogoutLabel.RegisterCallback<ClickEvent>(logoutAction);
-                // No agregamos a _buttonEventReferences porque es Label, no Button
-            }
-
-            Debug.Log("[DeviceSelectionEventManager] Header events registered");
-        }
-
-        /// <summary>
-        /// Registra eventos del menú de navegación
-        /// </summary>
-        private void RegisterNavigationMenuEvents()
-        {
-            // Botón para ocultar menú
-            RegisterButtonEvent(_uiConfig.HideMenuButton, OnHideMenuButtonClicked);
-
-            // Eventos del scrim (click para cerrar menú)
-            if (_uiConfig.Scrim != null)
-            {
-                EventCallback<ClickEvent> scrimAction = OnScrimClicked;
-                _uiConfig.Scrim.RegisterCallback<ClickEvent>(scrimAction);
-            }
-
-            // Botones de navegación
-            foreach (var kvp in _uiConfig.NavigationButtons)
-            {
-                var context = kvp.Key;
-                var button = kvp.Value;
-                
-                if (button != null)
-                {
-                    if (context == NavigationContext.None) // Logout button
-                    {
-                        RegisterButtonEvent(button, OnLogoutClicked);
-                    }
-                    else
-                    {
-                        // Crear EventCallback específico para cada contexto
-                        EventCallback<ClickEvent> navigationAction = (evt) => OnNavigationButtonClicked(evt, context);
-                        button.RegisterCallback<ClickEvent>(navigationAction);
-                        _buttonEventReferences[button] = navigationAction;
-                    }
-                }
+                button.RegisterCallback<ClickEvent>(OnDeviceButtonClicked);
             }
 
-            Debug.Log("[DeviceSelectionEventManager] Navigation menu events registered");
+            Debug.Log($"[DeviceSelectionEventManager] Registered events for {deviceButtons.Count} device buttons");
         }
-
-        /// <summary>
-        /// Registra eventos de selección de dispositivos
-        /// </summary>
-        private void RegisterDeviceSelectionEvents()
-        {
-            // Registrar eventos para todos los botones de dispositivos
-            foreach (var kvp in _uiConfig.DeviceButtons)
-            {
-                var deviceId = kvp.Key;
-                var button = kvp.Value;
-                
-                if (button != null)
-                {
-                    // Crear EventCallback específico para cada dispositivo
-                    EventCallback<ClickEvent> deviceAction = (evt) => OnDeviceButtonClicked(evt, deviceId);
-                    button.RegisterCallback<ClickEvent>(deviceAction);
-                    _buttonEventReferences[button] = deviceAction;
-                }
-            }
-
-            Debug.Log($"[DeviceSelectionEventManager] Device selection events registered for {_uiConfig.DeviceButtons.Count} devices");
-        }
-
-        /// <summary>
-        /// Registra eventos de teclado para accesos rápidos
-        /// </summary>
-        private void RegisterKeyboardEvents()
-        {
-            // Registrar eventos de teclado globales
-            if (_root != null)
-            {
-                EventCallback<KeyDownEvent> keyAction = OnKeyDown;
-                _root.RegisterCallback<KeyDownEvent>(keyAction);
-                _keyEventReferences[_root] = keyAction;
-            }
-
-            Debug.Log("[DeviceSelectionEventManager] Keyboard events registered");
-        }
-
-        /// <summary>
-        /// Método helper para registrar eventos de botones con tracking
-        /// </summary>
-        private void RegisterButtonEvent(Button button, EventCallback<ClickEvent> action)
-        {
-            if (button != null && action != null)
-            {
-                button.RegisterCallback<ClickEvent>(action);
-                _buttonEventReferences[button] = action;
-            }
-        }
-
-        #endregion
-
-        #region Header Event Handlers
-
-        /// <summary>
-        /// Maneja el click del botón de menú
-        /// </summary>
-        private void OnMenuButtonClicked(ClickEvent evt)
-        {
-            Debug.Log("[DeviceSelectionEventManager] Menu button clicked");
-            _uiManager.ToggleNavigationMenu();
-        }
-
-        /// <summary>
-        /// Maneja el click de logout
-        /// </summary>
-        private void OnLogoutClicked(ClickEvent evt)
-        {
-            Debug.Log("[DeviceSelectionEventManager] Logout clicked");
-            
-            // Procesar logout a través del orchestrator
-            _orchestrator?.HandleLogoutRequest();
-            
-            // Notificar a sistemas externos
-            _onLogoutRequested?.Invoke();
-        }
-
-        #endregion
-
-        #region Navigation Event Handlers
-
-        /// <summary>
-        /// Maneja el click del botón para ocultar menú
-        /// </summary>
-        private void OnHideMenuButtonClicked(ClickEvent evt)
-        {
-            Debug.Log("[DeviceSelectionEventManager] Hide menu button clicked");
-            _uiManager.ToggleNavigationMenu(false);
-        }
-
-        /// <summary>
-        /// Maneja el click en el scrim (área oscura detrás del menú)
-        /// </summary>
-        private void OnScrimClicked(ClickEvent evt)
-        {
-            Debug.Log("[DeviceSelectionEventManager] Scrim clicked - closing menu");
-            _uiManager.ToggleNavigationMenu(false);
-        }
-
-        /// <summary>
-        /// Maneja el click en botones de navegación
-        /// </summary>
-        private void OnNavigationButtonClicked(ClickEvent evt, NavigationContext targetContext)
-        {
-            Debug.Log($"[DeviceSelectionEventManager] Navigation button clicked: {targetContext}");
-            
-            // Cerrar menú primero
-            _uiManager.ToggleNavigationMenu(false);
-            
-            // Procesar navegación a través del orchestrator
-            _orchestrator?.HandleNavigationRequest(targetContext);
-            
-            // Notificar a sistemas externos
-            _onNavigationRequested?.Invoke(targetContext);
-        }
-
-        #endregion
-
-        #region Device Selection Event Handlers
-
-        /// <summary>
-        /// Maneja el click en botones de dispositivos
-        /// </summary>
-        private void OnDeviceButtonClicked(ClickEvent evt, string deviceId)
-        {
-            Debug.Log($"[DeviceSelectionEventManager] Device button clicked: {deviceId}");
-            
-            // Validar que el dispositivo está disponible
-            if (!_orchestrator.IsDeviceAvailable(deviceId))
-            {
-                Debug.LogWarning($"[DeviceSelectionEventManager] Device {deviceId} is not available for selection");
-                return;
-            }
-
-            // Procesar selección a través del orchestrator
-            bool selected = _orchestrator.SelectDevice(deviceId);
-            
-            if (selected)
-            {
-                // Actualizar UI
-                _uiManager.SelectDevice(deviceId);
-                
-                // Notificar a sistemas externos
-                _onDeviceSelected?.Invoke(deviceId);
-                
-                // Procesar lanzamiento del dispositivo
-                _orchestrator.HandleDeviceLaunch(deviceId);
-            }
-            else
-            {
-                Debug.LogWarning($"[DeviceSelectionEventManager] Failed to select device: {deviceId}");
-            }
-        }
-
-        #endregion
-
-        #region Keyboard Event Handlers
-
-        /// <summary>
-        /// Maneja eventos de teclado globales
-        /// </summary>
-        private void OnKeyDown(KeyDownEvent evt)
-        {
-            // Atajos de teclado útiles para Device Selection
-            switch (evt.keyCode)
-            {
-                case KeyCode.Escape:
-                    // Cerrar menú si está abierto
-                    if (_uiManager.IsNavigationMenuVisible)
-                    {
-                        _uiManager.ToggleNavigationMenu(false);
-                        evt.StopPropagation();
-                    }
-                    break;
-
-                case KeyCode.M:
-                    // Toggle menú con Ctrl+M
-                    if (evt.ctrlKey)
-                    {
-                        _uiManager.ToggleNavigationMenu();
-                        evt.StopPropagation();
-                    }
-                    break;
-
-                case KeyCode.F5:
-                    // Refresh dispositivos con F5
-                    _orchestrator?.HandleRefreshDevices();
-                    evt.StopPropagation();
-                    break;
-
-                case KeyCode.Return:
-                case KeyCode.KeypadEnter:
-                    // Lanzar dispositivo seleccionado con Enter
-                    if (!string.IsNullOrEmpty(_orchestrator.SelectedDevice))
-                    {
-                        _orchestrator.HandleDeviceLaunch(_orchestrator.SelectedDevice);
-                        evt.StopPropagation();
-                    }
-                    break;
-
-                // Atajos numéricos para selección rápida de dispositivos
-                case KeyCode.Alpha1:
-                    if (evt.ctrlKey) SelectDeviceByShortcut("ARSCARA", evt);
-                    break;
-                case KeyCode.Alpha2:
-                    if (evt.ctrlKey) SelectDeviceByShortcut("RobotKit1", evt);
-                    break;
-                case KeyCode.Alpha3:
-                    if (evt.ctrlKey) SelectDeviceByShortcut("RobotKit2", evt);
-                    break;
-
-                // Atajos de navegación rápida
-                case KeyCode.D:
-                    if (evt.ctrlKey) NavigateByShortcut(NavigationContext.Dashboard, evt);
-                    break;
-                case KeyCode.T:
-                    if (evt.ctrlKey) NavigateByShortcut(NavigationContext.Training, evt);
-                    break;
-                case KeyCode.O:
-                    if (evt.ctrlKey) NavigateByShortcut(NavigationContext.Operations, evt);
-                    break;
-                case KeyCode.R:
-                    if (evt.ctrlKey) NavigateByShortcut(NavigationContext.Reports, evt);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Selecciona un dispositivo usando atajo de teclado
-        /// </summary>
-        private void SelectDeviceByShortcut(string deviceId, KeyDownEvent evt)
-        {
-            if (_orchestrator.IsDeviceAvailable(deviceId))
-            {
-                Debug.Log($"[DeviceSelectionEventManager] Keyboard shortcut device selection: {deviceId}");
-                OnDeviceButtonClicked(null, deviceId);
-                evt.StopPropagation();
-            }
-        }
-
-        /// <summary>
-        /// Navega a una sección usando atajo de teclado
-        /// </summary>
-        private void NavigateByShortcut(NavigationContext context, KeyDownEvent evt)
-        {
-            Debug.Log($"[DeviceSelectionEventManager] Keyboard shortcut navigation to: {context}");
-            _orchestrator?.HandleNavigationRequest(context);
-            _onNavigationRequested?.Invoke(context);
-            evt.StopPropagation();
-        }
-
-        #endregion
-
-        #region Special Device Events (for future expansion)
-
-        /// <summary>
-        /// Maneja doble click en dispositivos (para futuras funcionalidades)
-        /// </summary>
-        private void OnDeviceDoubleClicked(string deviceId)
-        {
-            Debug.Log($"[DeviceSelectionEventManager] Device double-clicked: {deviceId}");
-            
-            // Funcionalidad futura: mostrar detalles del dispositivo, configuración avanzada, etc.
-            _orchestrator?.HandleDeviceDetailsRequest(deviceId);
-        }
-
-        /// <summary>
-        /// Maneja hover sobre dispositivos (para futuras funcionalidades)
-        /// </summary>
-        private void OnDeviceHover(string deviceId, bool isHovering)
-        {
-            Debug.Log($"[DeviceSelectionEventManager] Device hover: {deviceId} - {isHovering}");
-            
-            // Funcionalidad futura: tooltips, preview de información, etc.
-            if (isHovering)
-            {
-                _orchestrator?.HandleDeviceHoverEnter(deviceId);
-            }
-            else
-            {
-                _orchestrator?.HandleDeviceHoverExit(deviceId);
-            }
-        }
-
-        /// <summary>
-        /// Maneja context menu en dispositivos (para futuras funcionalidades)
-        /// </summary>
-        private void OnDeviceContextMenu(string deviceId, Vector2 position)
-        {
-            Debug.Log($"[DeviceSelectionEventManager] Device context menu: {deviceId} at {position}");
-            
-            // Funcionalidad futura: menú contextual con opciones específicas del dispositivo
-            _orchestrator?.HandleDeviceContextMenu(deviceId, position);
-        }
-
-        #endregion
-
-        #region Event Unregistration
 
         /// <summary>
         /// Desregistra todos los eventos del Device Selection
@@ -446,43 +113,46 @@ namespace _Scripts.Controllers.DeviceSelectionController
             {
                 Debug.Log("[DeviceSelectionEventManager] Unregistering Device Selection events...");
 
-                // Desregistrar eventos de botones
-                foreach (var kvp in _buttonEventReferences)
+                if (_root == null)
                 {
-                    var button = kvp.Key;
-                    var action = kvp.Value;
-                    
-                    if (button != null && action != null)
-                    {
-                        button.UnregisterCallback<ClickEvent>(action);
-                    }
+                    Debug.LogWarning("[DeviceSelectionEventManager] Root element is null - cannot unregister events");
+                    return;
                 }
-                _buttonEventReferences.Clear();
+
+                // Eventos principales del menú
+                _root.Q<Button>("MenuButton")?.UnregisterCallback<ClickEvent>(OnMenuButtonClicked);
+                _root.Q<Button>("HideMenuButton")?.UnregisterCallback<ClickEvent>(OnHideMenuButtonClicked);
+
+                // Eventos de navegación principal
+                _root.Q<Button>("DashboardButton")?.UnregisterCallback<ClickEvent>(OnDashboardButtonClicked);
+                _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
+                _root.Q<Button>("TrainingButton")?.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
+
+                // Eventos de dispositivos
+                UnregisterDeviceEvents(_root);
+
+                // Eventos de paneles adicionales
+                _root.Q<Button>("DeviceInfoButton")?.UnregisterCallback<ClickEvent>(OnDeviceInfoButtonClicked);
+                _root.Q<Button>("ContextInfoButton")?.UnregisterCallback<ClickEvent>(OnContextInfoButtonClicked);
+                _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
+                _root.Q<Button>("HelpButton")?.UnregisterCallback<ClickEvent>(OnHelpButtonClicked);
+
+                // Eventos de cierre de paneles
+                _root.Q<Button>("CloseDeviceInfoButton")?.UnregisterCallback<ClickEvent>(OnCloseDeviceInfoPanelClicked);
+                _root.Q<Button>("CloseContextInfoButton")?.UnregisterCallback<ClickEvent>(OnCloseContextInfoPanelClicked);
+                _root.Q<Button>("CloseSettingsButton")?.UnregisterCallback<ClickEvent>(OnCloseSettingsPanelClicked);
+                _root.Q<Button>("CloseHelpButton")?.UnregisterCallback<ClickEvent>(OnCloseHelpPanelClicked);
+
+                // Evento de transición del menú de navegación
+                var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
+                navigationMenuPanel?.UnregisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+
+                // Eventos de clic en el scrim
+                var scrim = _root.Q<VisualElement>("Scrim");
+                scrim?.UnregisterCallback<ClickEvent>(OnScrimClicked);
 
                 // Desregistrar eventos de teclado
-                foreach (var kvp in _keyEventReferences)
-                {
-                    var element = kvp.Key;
-                    var action = kvp.Value;
-                    
-                    if (element != null && action != null)
-                    {
-                        element.UnregisterCallback<KeyDownEvent>(action);
-                    }
-                }
-                _keyEventReferences.Clear();
-
-                // Desregistrar eventos especiales
-                if (_uiConfig.LogoutLabel != null)
-                {
-                    // Note: Necesitaríamos mantener referencia para desregistrar correctamente
-                    // Por simplicidad, asumimos que el cleanup general manejará esto
-                }
-
-                if (_uiConfig.Scrim != null)
-                {
-                    // Similar al logout label
-                }
+                UnregisterKeyboardEvents(_root);
 
                 Debug.Log("[DeviceSelectionEventManager] All events unregistered successfully");
             }
@@ -490,6 +160,310 @@ namespace _Scripts.Controllers.DeviceSelectionController
             {
                 Debug.LogError($"[DeviceSelectionEventManager] Error unregistering events: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Desregistra eventos específicos de dispositivos
+        /// </summary>
+        private void UnregisterDeviceEvents(VisualElement root)
+        {
+            // Dispositivos principales
+            _root.Q<Button>("ARSCARAButton")?.UnregisterCallback<ClickEvent>(OnDeviceButtonClicked);
+            _root.Q<Button>("RobotKit1Button")?.UnregisterCallback<ClickEvent>(OnDeviceButtonClicked);
+            _root.Q<Button>("RobotKit2Button")?.UnregisterCallback<ClickEvent>(OnDeviceButtonClicked);
+
+            // Botones con clase device-button
+            var deviceButtons = root.Query<Button>(className: "device-button").ToList();
+            foreach (var button in deviceButtons)
+            {
+                button.UnregisterCallback<ClickEvent>(OnDeviceButtonClicked);
+            }
+        }
+
+        /// <summary>
+        /// Método Cleanup consistente con otros EventManagers
+        /// </summary>
+        public void Cleanup()
+        {
+            UnregisterEvents();
+            
+            _uiManager = null;
+            _orchestrator = null;
+            _uiDocument = null;
+            _root = null;
+            _onReturnToDashboard = null;
+            _onPanelTransitionComplete = null;
+
+            Debug.Log("[DeviceSelectionEventManager] Event Manager cleaned up");
+        }
+
+        #endregion
+
+        #region Keyboard Events
+
+        /// <summary>
+        /// Registra eventos de teclado para el Device Selection
+        /// </summary>
+        private void RegisterKeyboardEvents(VisualElement root)
+        {
+            // Escape para cerrar paneles/menú
+            root.RegisterCallback<KeyDownEvent>(OnGlobalKeyDown);
+            
+            // Números 1-3 para selección rápida de dispositivos
+            // M para toggle del menú
+        }
+
+        /// <summary>
+        /// Desregistra eventos de teclado
+        /// </summary>
+        private void UnregisterKeyboardEvents(VisualElement root)
+        {
+            root?.UnregisterCallback<KeyDownEvent>(OnGlobalKeyDown);
+        }
+
+        /// <summary>
+        /// Maneja eventos globales de teclado
+        /// </summary>
+        private void OnGlobalKeyDown(KeyDownEvent evt)
+        {
+            switch (evt.keyCode)
+            {
+                case KeyCode.Escape:
+                    HandleEscapeKey();
+                    break;
+                    
+                case KeyCode.M when evt.ctrlKey: // Ctrl+M para toggle menú
+                    _uiManager.ToggleNavigationMenu();
+                    break;
+                    
+                case KeyCode.Alpha1: // Tecla 1 - ARSCARA
+                    _orchestrator.HandleDeviceSelection("ARSCARA");
+                    break;
+                    
+                case KeyCode.Alpha2: // Tecla 2 - RobotKit1
+                    _orchestrator.HandleDeviceSelection("RobotKit1");
+                    break;
+                    
+                case KeyCode.Alpha3: // Tecla 3 - RobotKit2
+                    _orchestrator.HandleDeviceSelection("RobotKit2");
+                    break;
+                    
+                case KeyCode.D when evt.ctrlKey: // Ctrl+D para regresar a Dashboard
+                    _orchestrator.HandleReturnToDashboard();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Maneja la tecla Escape
+        /// </summary>
+        private void HandleEscapeKey()
+        {
+            // Cerrar panel actual o menú lateral
+            if (_uiManager.CurrentActivePanel != IDeviceSelectionOps.PanelType.None)
+            {
+                _uiManager.CloseCurrentPanel();
+            }
+            else if (_uiManager.NavigationMenuOpen)
+            {
+                _uiManager.HideNavigationMenu();
+            }
+            else
+            {
+                // Si no hay paneles abiertos, regresar a Dashboard
+                _orchestrator.HandleReturnToDashboard();
+            }
+        }
+
+        #endregion
+
+        #region Main Navigation Events
+
+        /// <summary>
+        /// Abre el menú lateral de navegación
+        /// </summary>
+        private void OnMenuButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowNavigationMenu();
+        }
+
+        /// <summary>
+        /// Cierra el menú lateral de navegación
+        /// </summary>
+        private void OnHideMenuButtonClicked(ClickEvent evt)
+        {
+            _uiManager.HideNavigationMenu();
+        }
+
+        /// <summary>
+        /// Maneja clic en el scrim para cerrar paneles
+        /// </summary>
+        private void OnScrimClicked(ClickEvent evt)
+        {
+            // Solo cerrar si el clic fue directamente en el scrim, no en sus hijos
+            if (evt.target == evt.currentTarget)
+            {
+                _uiManager.CloseCurrentPanel();
+            }
+        }
+
+        #endregion
+
+        #region Navigation Action Events
+
+        /// <summary>
+        /// Regresa al Dashboard
+        /// </summary>
+        private void OnDashboardButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Dashboard button clicked - returning to dashboard");
+            _orchestrator.HandleReturnToDashboard();
+        }
+
+        /// <summary>
+        /// Cambia contexto a Operations
+        /// </summary>
+        private void OnOperationsButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Operations button clicked - switching context");
+            _orchestrator.HandleContextSwitch(IDeviceSelectionOps.LaunchContext.Operations);
+        }
+
+        /// <summary>
+        /// Cambia contexto a Training
+        /// </summary>
+        private void OnTrainingButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Training button clicked - switching context");
+            _orchestrator.HandleContextSwitch(IDeviceSelectionOps.LaunchContext.Training);
+        }
+
+        #endregion
+
+        #region Device Events
+
+        /// <summary>
+        /// Maneja clic en cualquier botón de dispositivo
+        /// </summary>
+        private void OnDeviceButtonClicked(ClickEvent evt)
+        {
+            if (evt.currentTarget is Button button)
+            {
+                // Extraer device ID del nombre del botón
+                string deviceId = ExtractDeviceIdFromButton(button);
+                
+                if (!string.IsNullOrEmpty(deviceId))
+                {
+                    Debug.Log($"Device button clicked: {deviceId}");
+                    _orchestrator.HandleDeviceSelection(deviceId);
+                }
+                else
+                {
+                    Debug.LogWarning($"Could not extract device ID from button: {button.name}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Extrae el device ID del nombre del botón
+        /// </summary>
+        private string ExtractDeviceIdFromButton(Button button)
+        {
+            // Mapeo de nombres de botones a device IDs
+            return button.name switch
+            {
+                "ARSCARAButton" => "ARSCARA",
+                "RobotKit1Button" => "RobotKit1", 
+                "RobotKit2Button" => "RobotKit2",
+                _ => button.name.Replace("Button", "") // Fallback: remover "Button" del final
+            };
+        }
+
+        #endregion
+
+        #region Panel Events
+
+        /// <summary>
+        /// Abre panel de información de dispositivo
+        /// </summary>
+        private void OnDeviceInfoButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowPanel(IDeviceSelectionOps.PanelType.DeviceInfo);
+        }
+
+        /// <summary>
+        /// Abre panel de información de contexto
+        /// </summary>
+        private void OnContextInfoButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowPanel(IDeviceSelectionOps.PanelType.ContextInfo);
+        }
+
+        /// <summary>
+        /// Abre panel de configuraciones
+        /// </summary>
+        private void OnSettingsButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowPanel(IDeviceSelectionOps.PanelType.Settings);
+        }
+
+        /// <summary>
+        /// Abre panel de ayuda
+        /// </summary>
+        private void OnHelpButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowPanel(IDeviceSelectionOps.PanelType.Help);
+        }
+
+        #endregion
+
+        #region Panel Close Events
+
+        /// <summary>
+        /// Cierra panel de información de dispositivo
+        /// </summary>
+        private void OnCloseDeviceInfoPanelClicked(ClickEvent evt)
+        {
+            _uiManager.HidePanel(IDeviceSelectionOps.PanelType.DeviceInfo);
+        }
+
+        /// <summary>
+        /// Cierra panel de información de contexto
+        /// </summary>
+        private void OnCloseContextInfoPanelClicked(ClickEvent evt)
+        {
+            _uiManager.HidePanel(IDeviceSelectionOps.PanelType.ContextInfo);
+        }
+
+        /// <summary>
+        /// Cierra panel de configuraciones
+        /// </summary>
+        private void OnCloseSettingsPanelClicked(ClickEvent evt)
+        {
+            _uiManager.HidePanel(IDeviceSelectionOps.PanelType.Settings);
+        }
+
+        /// <summary>
+        /// Cierra panel de ayuda
+        /// </summary>
+        private void OnCloseHelpPanelClicked(ClickEvent evt)
+        {
+            _uiManager.HidePanel(IDeviceSelectionOps.PanelType.Help);
+        }
+
+        #endregion
+
+        #region Transition Events
+
+        /// <summary>
+        /// Maneja el final de la transición del menú de navegación
+        /// </summary>
+        private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
+        {
+            // Similar al patrón de Dashboard - notificar completion
+            _onPanelTransitionComplete?.Invoke(_uiManager.CurrentActivePanel);
+            
+            // Si no hay paneles visibles, el UIManager ya maneja ocultar el container
         }
 
         #endregion
@@ -505,76 +479,6 @@ namespace _Scripts.Controllers.DeviceSelectionController
         /// Orchestrator asociado
         /// </summary>
         public DeviceSelectionOrchestrator Orchestrator => _orchestrator;
-
-        #endregion
-
-        #region Cleanup
-
-        /// <summary>
-        /// Limpia recursos del Event Manager
-        /// </summary>
-        public void Cleanup()
-        {
-            try
-            {
-                Debug.Log("[DeviceSelectionEventManager] Cleaning up Event Manager...");
-
-                // Desregistrar todos los eventos
-                UnregisterEvents();
-                
-                // Limpiar referencias
-                _uiManager = null;
-                _orchestrator = null;
-                _uiDocument = null;
-                _root = null;
-                _uiConfig = null;
-                _onLogoutRequested = null;
-                _onNavigationRequested = null;
-                _onDeviceSelected = null;
-
-                Debug.Log("[DeviceSelectionEventManager] Event Manager cleaned up");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[DeviceSelectionEventManager] Cleanup error: {ex.Message}");
-            }
-        }
-
-        #endregion
-
-        #region Utility Methods
-
-        /// <summary>
-        /// Obtiene el número total de eventos registrados
-        /// </summary>
-        /// <returns>Número de eventos activos</returns>
-        public int GetRegisteredEventsCount()
-        {
-            return _buttonEventReferences.Count + _keyEventReferences.Count;
-        }
-
-        /// <summary>
-        /// Verifica si los eventos están correctamente registrados
-        /// </summary>
-        /// <returns>True si todos los eventos críticos están registrados</returns>
-        public bool AreEventsRegistered()
-        {
-            return _buttonEventReferences.Count > 0 && 
-                   _uiConfig.MenuButton != null && 
-                   _buttonEventReferences.ContainsKey(_uiConfig.MenuButton);
-        }
-
-        /// <summary>
-        /// Obtiene estadísticas de eventos registrados
-        /// </summary>
-        /// <returns>Información de eventos</returns>
-        public string GetEventStatistics()
-        {
-            return $"Button Events: {_buttonEventReferences.Count}, " +
-                   $"Keyboard Events: {_keyEventReferences.Count}, " +
-                   $"Device Buttons: {_uiConfig.DeviceButtons.Count}, " +
-                   $"Navigation Buttons: {_uiConfig.NavigationButtons.Count}";
-        }
 
         #endregion
     }

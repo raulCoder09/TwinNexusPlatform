@@ -83,8 +83,10 @@ namespace _Scripts.Controllers.DashboardController
 
             // Mostrar contenedor y aplicar animación
             _uiConfig.SubpanelsContainer.style.display = DisplayStyle.Flex;
+    
+            // ✅ AGREGAR clase de visible (SIN remover la clase base)
             menuPanel.Panel.AddToClassList(menuPanel.ShowClass);
-            
+    
             // Mostrar scrim si es requerido
             if (menuPanel.RequiresScrim)
             {
@@ -93,9 +95,10 @@ namespace _Scripts.Controllers.DashboardController
 
             _currentActivePanel = IDashboardOps.PanelType.NavigationMenu;
             _isNavigationMenuOpen = true;
-            
+    
             Debug.Log("[DashboardUIManager] Navigation menu opened");
         }
+
 
         /// <summary>
         /// Oculta el menú de navegación lateral
@@ -110,16 +113,15 @@ namespace _Scripts.Controllers.DashboardController
                 return;
             }
 
-            // Aplicar animación de ocultar
+
             menuPanel.Panel.RemoveFromClassList(menuPanel.ShowClass);
-            menuPanel.Panel.AddToClassList(menuPanel.HideClass);
-            
+    
             // Ocultar scrim
             _uiConfig.Scrim.RemoveFromClassList(SCRIM_SHOW_CLASS);
 
             _currentActivePanel = IDashboardOps.PanelType.None;
             _isNavigationMenuOpen = false;
-            
+    
             Debug.Log("[DashboardUIManager] Navigation menu closed");
         }
 
@@ -397,14 +399,20 @@ namespace _Scripts.Controllers.DashboardController
             foreach (var kvp in _uiConfig.Panels)
             {
                 var panelData = kvp.Value;
-                if (panelData.Panel != null) // 👈 VERIFICAR null
+                if (panelData.Panel != null)
                 {
+                    // ✅ SOLO remover la clase de "visible" - mantener clases base
                     panelData.Panel.RemoveFromClassList(panelData.ShowClass);
-                    panelData.Panel.RemoveFromClassList(panelData.HideClass);
+            
+                    // ❌ NO remover la clase base de oculto para NavigationMenu
+                    if (kvp.Key != IDashboardOps.PanelType.NavigationMenu)
+                    {
+                        panelData.Panel.RemoveFromClassList(panelData.HideClass);
+                    }
                 }
             }
     
-            _uiConfig.Scrim?.RemoveFromClassList(SCRIM_SHOW_CLASS); // 👈 VERIFICAR null
+            _uiConfig.Scrim?.RemoveFromClassList(SCRIM_SHOW_CLASS);
         }
 
         /// <summary>

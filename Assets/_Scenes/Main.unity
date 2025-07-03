@@ -319,26 +319,14 @@ GameObject:
   m_Component:
   - component: {fileID: 50515949}
   - component: {fileID: 50515948}
-  - component: {fileID: 50515947}
+  - component: {fileID: 50515950}
   m_Layer: 5
   m_Name: DeviceSelection
   m_TagString: DeviceSelection
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &50515947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 50515946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35244b00792bf4dfeb57761c442732fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_IsActive: 1
 --- !u!114 &50515948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,8 +364,20 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 230974503}
+  m_Father: {fileID: 428813212}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &50515950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50515946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40d1b5849eb14f6884dc9e2bee47f44d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.DeviceSelectionController.DeviceSelectionOrchestrator
 --- !u!1 &60426650
 GameObject:
   m_ObjectHideFlags: 0
@@ -498,7 +498,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 50515949}
   - {fileID: 1734392420}
   - {fileID: 1793826479}
   - {fileID: 39795187}
@@ -698,6 +697,7 @@ Transform:
   m_Children:
   - {fileID: 1854782538}
   - {fileID: 6588985}
+  - {fileID: 50515949}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &692204247

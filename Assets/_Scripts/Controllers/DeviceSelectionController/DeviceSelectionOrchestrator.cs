@@ -1,100 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using _Scripts.Controller;
-using _Scripts.Controllers.UiManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.SceneManagement;
+using _Scripts.Controller;
+using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.DeviceSelectionController
 {
     /// <summary>
-    /// Orchestrador principal de Device Selection
-    /// Implementa IDeviceSelectionOps y coordina toda la funcionalidad de selección de dispositivos
-    /// Equivalente al WelcomeOrchestrator y DashboardOrchestrator pero para Device Selection
+    /// Coordinador principal del Device Selection - implementa IDeviceSelectionOps e IUIController
+    /// Maneja la selección de dispositivos para Training y Operations
     /// </summary>
-    public class DeviceSelectionOrchestrator : MonoBehaviour, IDeviceSelectionOps
+    public class DeviceSelectionOrchestrator : MonoBehaviour, IDeviceSelectionOps, IUIController
     {
-        #region Singleton Pattern
-
-        private static DeviceSelectionOrchestrator _instance;
-
-        public static DeviceSelectionOrchestrator Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = FindObjectOfType<DeviceSelectionOrchestrator>();
-                    if (_instance == null)
-                    {
-                        GameObject go = new GameObject("DeviceSelectionOrchestrator");
-                        _instance = go.AddComponent<DeviceSelectionOrchestrator>();
-                        DontDestroyOnLoad(go);
-                    }
-                }
-                return _instance;
-            }
-        }
-
-        private void Awake()
-        {
-            if (_instance == null)
-            {
-                _instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else if (_instance != this)
-            {
-                Destroy(gameObject);
-            }
-        }
-
-        #endregion
-
-        #region Configuration
-
-        [Header("Device Selection Configuration")]
-        [SerializeField] private bool _enableDebugLogs = true;
-        [SerializeField] private float _deviceRefreshInterval = 30.0f;
-        [SerializeField] private bool _autoLaunchOnSelection = true;
-        [SerializeField] private float _launchDelay = 1.0f;
-
-        #endregion
-
-        #region Private Fields
-
-        // Managers y componentes internos
-        private DeviceSelectionUIManager _uiManager;
-        private DeviceSelectionEventManager _eventManager;
-        private UIDocument _uiDocument;
-        
-        // Data containers
-        private DeviceSelectionInfo.UIConfiguration _uiConfig;
-        private DeviceSelectionInfo.DeviceData _deviceData;
-        private DeviceSelectionInfo.ContextData _contextData;
-        private DeviceSelectionInfo.NavigationState _navigationState;
-        private DeviceSelectionInfo.UserSessionData _sessionData;
-        private DeviceSelectionInfo.DeviceSelectionState _deviceSelectionState;
-
-        // Estado interno
-        private bool _isInitialized = false;
-        private bool _isTransitioning = false;
-        private Coroutine _deviceRefreshCoroutine;
-
-        // Referencias externas
-        private GameManager _gameManager;
-
-        #endregion
-
         #region IUIController Implementation
 
-        public bool RequiresAuthentication => true;
+        public bool RequiresAuthentication => true; // Device Selection SÍ requiere autenticación
         public bool IsInitialized => _isInitialized;
-        public bool IsActive => _deviceSelectionState?.IsVisible ?? false;
+        public bool IsActive => _uiConfig?.Body?.style.display == DisplayStyle.Flex;
         public string ControllerName => "DeviceSelectionController";
 
         // Events from IUIController
@@ -105,845 +30,552 @@ namespace _Scripts.Controllers.DeviceSelectionController
 
         #endregion
 
-        #region IDeviceSelectionOps Properties
+        #region IDeviceSelectionOps Implementation
 
-        public NavigationContext CurrentNavigationContext => _contextData?.CurrentContext ?? NavigationContext.None;
-        public DeviceMode CurrentDeviceMode => _contextData?.RequiredMode ?? DeviceMode.Operating;
-        public string SelectedDevice => _deviceData?.SelectedDevice ?? "";
-        public bool IsNavigationMenuVisible => _uiManager?.IsNavigationMenuVisible ?? false;
-        public string CurrentUsername => _sessionData?.Username ?? "Unknown";
-        public string CurrentUITitle => _contextData?.UITitle ?? "Select Device";
+        public bool IsNavigationMenuOpen => _uiManager?.NavigationMenuOpen ?? false;
+        public IDeviceSelectionOps.PanelType CurrentActivePanel => _uiManager?.CurrentActivePanel ?? IDeviceSelectionOps.PanelType.None;
+        public IDeviceSelectionOps.LaunchContext CurrentContext => _uiManager?.CurrentContext ?? IDeviceSelectionOps.LaunchContext.None;
+
+        // Events from IDeviceSelectionOps
+        public event Action<string, IDeviceSelectionOps.LaunchContext> OnDeviceSelected;
+        public event Action<string, IDeviceSelectionOps.LaunchContext> OnDeviceLaunched;
+        public event Action<string, string> OnDeviceLaunchFailed;
+        public event Action<bool> OnNavigationMenuToggled;
+        public event Action<IDeviceSelectionOps.LaunchContext, IDeviceSelectionOps.LaunchContext> OnContextChanged;
 
         #endregion
 
-        #region IDeviceSelectionOps Events
+        #region Private Fields
 
-        public event Action<string, DeviceMode> OnDeviceSelected;
-        public event Action<string, string> OnDeviceLaunched;
-        public event Action<NavigationContext, NavigationContext> OnContextChanged;
-        public event Action<List<DeviceSelectionInfo.DeviceInfo>> OnDeviceAvailabilityChanged;
-        public event Action<bool> OnNavigationMenuToggled;
-        public event Action<string, string> OnDeviceSelectionError;
-        public event Func<string, string, bool> OnDeviceLaunchValidation;
+        private DeviceSelectionInfo.UIConfiguration _uiConfig = new DeviceSelectionInfo.UIConfiguration();
+        private DeviceSelectionInfo.ContextData _contextData = new DeviceSelectionInfo.ContextData();
+        private DeviceSelectionInfo.DeviceSelectionState _deviceSelectionState = new DeviceSelectionInfo.DeviceSelectionState();
+        
+        private DeviceSelectionUIManager _uiManager;
+        private DeviceSelectionEventManager _eventManager;
+        
+        // Referencias a otros controladores
+        private UIController _mainUIController;
+        
+        private VisualElement _subpanelsAndSmokeMaskContainer;
+        private UIDocument _uiDocument;
+        private bool _isInitialized = false;
+
+        // Configuración de dispositivos
+        private DeviceSelectionInfo.DeviceConfiguration _deviceConfig;
 
         #endregion
 
         #region Unity Lifecycle
 
+        private void Awake()
+        {
+            Initialize();
+        }
+        
         private void Start()
         {
-            // La inicialización se hace externamente por UIController
-            if (!_isInitialized)
-            {
-                LogDebug("Device Selection not initialized, waiting for external initialization");
-            }
+            // Device Selection inicia OCULTO hasta que se active desde Dashboard
+            HideUi();
+            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            
+            Debug.Log("[DeviceSelectionOrchestrator] Started - UI hidden until activation");
         }
-
+        
         private void OnDestroy()
         {
-            if (_instance == this)
-            {
-                Cleanup();
-                _instance = null;
-            }
+            Cleanup();
         }
 
         #endregion
 
-        #region Initialization
+        #region IUIController Lifecycle Methods
 
-        /// <summary>
-        /// Inicializa el Device Selection Orchestrator
-        /// </summary>
         public bool Initialize()
         {
             try
             {
-                LogDebug("Initializing Device Selection Orchestrator...");
-
                 if (_isInitialized)
                 {
-                    LogDebug("Device Selection already initialized");
+                    Debug.Log("DeviceSelectionOrchestrator already initialized");
                     return true;
                 }
 
-                // Obtener UIDocument
+                Debug.Log("Initializing DeviceSelectionOrchestrator...");
+
+                // Obtener componentes UI
+                Debug.Log("Getting UIDocument component...");
                 _uiDocument = GetComponent<UIDocument>();
                 if (_uiDocument == null)
                 {
-                    LogError("UIDocument component not found");
+                    Debug.LogError("UIDocument component not found!");
                     return false;
                 }
 
-                // Inicializar datos
-                InitializeDataContainers();
-
-                // Buscar GameManager
-                FindGameManager();
-
-                // Inicializar UI Manager
-                if (!InitializeUIManager())
+                var root = _uiDocument.rootVisualElement;
+                if (root == null)
                 {
-                    LogError("Failed to initialize UI Manager");
+                    Debug.LogError("Root visual element is null!");
                     return false;
                 }
 
-                // Inicializar Event Manager
-                InitializeEventManager();
-
-                // Configurar usuario desde ServiceController
-                SetupUserSession();
-
-                // Configurar contexto desde NavigationContextManager
-                UpdateContextFromNavigationManager();
-
-                // Inicializar datos por defecto
-                InitializeDefaultDevices();
-
-                // Configurar auto-refresh si está habilitado
-                if (_deviceRefreshInterval > 0)
+                Debug.Log("Getting SubpanelsAndSmokeMaskContainer...");
+                _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+                if (_subpanelsAndSmokeMaskContainer == null)
                 {
-                    StartDeviceRefresh();
+                    Debug.LogError("SubpanelsAndSmokeMaskContainer not found in UI!");
+                    return false;
                 }
+
+                // Obtener referencias UI
+                GetUiComponents(root);
+                
+                // Inicializar configuración de dispositivos
+                _deviceConfig = DeviceSelectionInfo.DeviceConfiguration.CreateDefault();
+                
+                // Inicializar managers
+                _uiManager = new DeviceSelectionUIManager(_uiConfig);
+                _eventManager = new DeviceSelectionEventManager(_uiManager, OnReturnToDashboardHandler, OnPanelTransitionCompleteHandler, this);
+                _eventManager.RegisterEvents(_uiDocument);
+                _uiManager.InitializePanelSystem();
+                
+                // Buscar dependencias
+                FindDependencies();
+                
+                // Configurar estado inicial
+                InitializeDeviceSelectionState();
 
                 _isInitialized = true;
-                LogDebug("Device Selection Orchestrator initialized successfully");
+                Debug.Log("DeviceSelectionOrchestrator initialized successfully");
                 
                 OnControllerInitialized?.Invoke(this);
                 return true;
             }
             catch (Exception ex)
             {
-                LogError($"Initialization error: {ex.Message}");
+                Debug.LogError($"DeviceSelectionOrchestrator initialization error: {ex.Message}");
                 OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
                 return false;
             }
         }
 
-        /// <summary>
-        /// Inicializa los contenedores de datos
-        /// </summary>
-        private void InitializeDataContainers()
-        {
-            _uiConfig = new DeviceSelectionInfo.UIConfiguration();
-            _deviceData = new DeviceSelectionInfo.DeviceData();
-            _contextData = new DeviceSelectionInfo.ContextData();
-            _navigationState = new DeviceSelectionInfo.NavigationState();
-            _sessionData = new DeviceSelectionInfo.UserSessionData();
-            _deviceSelectionState = new DeviceSelectionInfo.DeviceSelectionState();
-
-            // Configurar eventos internos
-            _deviceSelectionState.OnDeviceSelectionInitialized += () => LogDebug("Device Selection state initialized");
-            _deviceSelectionState.OnDeviceSelectionShown += () => OnControllerShown?.Invoke(this);
-            _deviceSelectionState.OnDeviceSelectionHidden += () => OnControllerHidden?.Invoke(this);
-            _deviceSelectionState.OnError += (error) => OnControllerError?.Invoke(this, error);
-
-            LogDebug("Data containers initialized");
-        }
-
-        /// <summary>
-        /// Busca y configura referencia al GameManager
-        /// </summary>
-        private void FindGameManager()
-        {
-            try
-            {
-                var gameManagerGO = GameObject.FindGameObjectWithTag("GameManager");
-                if (gameManagerGO != null)
-                {
-                    _gameManager = gameManagerGO.GetComponent<GameManager>();
-                    if (_gameManager != null)
-                    {
-                        LogDebug("GameManager found and referenced");
-                    }
-                    else
-                    {
-                        LogWarning("GameObject with GameManager tag found but no GameManager component");
-                    }
-                }
-                else
-                {
-                    LogWarning("No GameObject with GameManager tag found");
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWarning($"Error finding GameManager: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Inicializa el UI Manager
-        /// </summary>
-        private bool InitializeUIManager()
-        {
-            _uiManager = new DeviceSelectionUIManager(_uiConfig, _uiDocument);
-            return _uiManager.Initialize();
-        }
-
-        /// <summary>
-        /// Inicializa el Event Manager
-        /// </summary>
-        private void InitializeEventManager()
-        {
-            _eventManager = new DeviceSelectionEventManager(
-                _uiManager,
-                this,
-                _uiDocument,
-                onLogoutRequested: () => LogDebug("Logout requested"),
-                onNavigationRequested: (context) => OnContextChanged?.Invoke(CurrentNavigationContext, context),
-                onDeviceSelected: (deviceId) => OnDeviceSelected?.Invoke(deviceId, CurrentDeviceMode)
-            );
-
-            _eventManager.RegisterEvents();
-            LogDebug("Event Manager initialized");
-        }
-
-        /// <summary>
-        /// Configura la sesión del usuario usando ServiceController
-        /// </summary>
-        private void SetupUserSession()
-        {
-            var userInfo = ServiceController.Instance?.GetUserInfo();
-            if (userInfo.HasValue && userInfo.Value.isAuthenticated)
-            {
-                _sessionData.Username = userInfo.Value.username;
-                _sessionData.IsAuthenticated = true;
-                _sessionData.SessionStart = DateTime.Now;
-                _sessionData.UpdateActivity();
-
-                // Actualizar UI
-                _uiManager.UpdateUsername(_sessionData.Username);
-
-                LogDebug($"User session configured: {_sessionData.Username}");
-            }
-            else
-            {
-                LogWarning("No authenticated user found in ServiceController");
-            }
-        }
-
-        /// <summary>
-        /// Inicializa dispositivos por defecto
-        /// </summary>
-        private void InitializeDefaultDevices()
-        {
-            // Los dispositivos ya están inicializados en DeviceData constructor
-            // Actualizar UI con dispositivos disponibles
-            UpdateDeviceDisplayForCurrentMode();
-            
-            LogDebug($"Default devices initialized: {_deviceData.AvailableDevices.Count} devices");
-        }
-
-        #endregion
-
-        #region Lifecycle Methods (IUIController)
-
         public void Show()
         {
-            if (!_isInitialized)
+            // Verificar autenticación antes de mostrar
+            if (!ServiceController.Instance.IsCognitoAuthenticated)
             {
-                LogError("Cannot show Device Selection - not initialized");
+                Debug.LogError("Cannot show Device Selection - user not authenticated");
+                OnControllerError?.Invoke(this, "Authentication required");
+                
+                // Redirigir a Welcome
+                _mainUIController?.ShowUI("Welcome");
                 return;
             }
 
-            // Actualizar contexto antes de mostrar
-            UpdateContextFromNavigationManager();
-            
-            // Configurar UI según contexto
-            ConfigureUIForCurrentContext();
-
-            // Mostrar UI
-            _uiManager.ShowDeviceSelection();
-            _sessionData.UpdateActivity();
-            
-            LogDebug("Device Selection shown");
+            if (_uiConfig?.Body != null)
+            {
+                _uiConfig.Body.style.display = DisplayStyle.Flex;
+                
+                // Actualizar UI con contexto actual
+                _uiManager?.ShowUi();
+                
+                OnControllerShown?.Invoke(this);
+                Debug.Log("[DeviceSelectionOrchestrator] Device Selection UI shown");
+            }
         }
 
         public void Hide()
         {
-            _uiManager.HideDeviceSelection();
-            LogDebug("Device Selection hidden");
+            if (_uiConfig?.Body != null)
+            {
+                _uiConfig.Body.style.display = DisplayStyle.None;
+                
+                // Cerrar cualquier panel abierto
+                _uiManager?.CloseCurrentPanel();
+                
+                OnControllerHidden?.Invoke(this);
+                Debug.Log("[DeviceSelectionOrchestrator] Device Selection UI hidden");
+            }
         }
 
         public void Cleanup()
         {
             try
             {
-                LogDebug("Cleaning up Device Selection Orchestrator...");
-
-                // Detener auto-refresh
-                StopDeviceRefresh();
-
                 // Limpiar managers
                 _eventManager?.Cleanup();
-                _uiManager?.Cleanup();
-
-                // Limpiar datos
-                _uiConfig = null;
-                _deviceData = null;
-                _contextData = null;
-                _navigationState = null;
-                _sessionData = null;
-                _deviceSelectionState = null;
+                _uiManager = null;
+                _eventManager = null;
 
                 // Limpiar referencias
-                _gameManager = null;
+                _mainUIController = null;
+                _uiConfig = null;
+                _contextData = null;
+                _deviceSelectionState = null;
+                _deviceConfig = null;
+                _uiDocument = null;
+                _subpanelsAndSmokeMaskContainer = null;
 
                 _isInitialized = false;
-                LogDebug("Device Selection Orchestrator cleaned up");
+                Debug.Log("[DeviceSelectionOrchestrator] Cleanup completed");
             }
             catch (Exception ex)
             {
-                LogError($"Cleanup error: {ex.Message}");
+                Debug.LogError($"[DeviceSelectionOrchestrator] Cleanup error: {ex.Message}");
             }
         }
 
         #endregion
 
-        #region Device Management (IDeviceSelectionOps)
+        #region IDeviceSelectionOps Implementation
 
-        public List<DeviceSelectionInfo.DeviceInfo> GetAllDevices()
+        public async Task<bool> LaunchDeviceAsync(string deviceId)
         {
-            return _deviceData?.AvailableDevices.Values.ToList() ?? new List<DeviceSelectionInfo.DeviceInfo>();
-        }
-
-        public List<DeviceSelectionInfo.DeviceInfo> GetAvailableDevicesForCurrentMode()
-        {
-            return GetAvailableDevicesForMode(CurrentDeviceMode);
-        }
-
-        public List<DeviceSelectionInfo.DeviceInfo> GetAvailableDevicesForMode(DeviceMode mode)
-        {
-            return _deviceData?.GetAvailableDevicesForMode(mode) ?? new List<DeviceSelectionInfo.DeviceInfo>();
-        }
-
-        public bool SelectDevice(string deviceId)
-        {
-            if (!IsDeviceAvailable(deviceId))
+            try
             {
-                LogWarning($"Cannot select device {deviceId} - not available");
+                Debug.Log($"[DeviceSelectionOrchestrator] Launching device: {deviceId} in context: {CurrentContext}");
+                
+                // Validar dispositivo
+                var deviceInfo = GetDeviceInfo(deviceId);
+                if (deviceInfo == null)
+                {
+                    var errorMsg = $"Device not found: {deviceId}";
+                    Debug.LogError(errorMsg);
+                    OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
+                    return false;
+                }
+                
+                // Verificar disponibilidad
+                if (!IsDeviceAvailable(deviceId))
+                {
+                    var errorMsg = $"Device not available: {deviceId}";
+                    Debug.LogError(errorMsg);
+                    OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
+                    return false;
+                }
+                
+                // Verificar compatibilidad con contexto
+                if (!deviceInfo.IsCompatibleWith(CurrentContext))
+                {
+                    var errorMsg = $"Device {deviceId} not compatible with context {CurrentContext}";
+                    Debug.LogError(errorMsg);
+                    OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
+                    return false;
+                }
+
+                // Resaltar dispositivo seleccionado
+                _uiManager?.HighlightSelectedDevice(deviceId);
+
+                // Simular delay de lanzamiento
+                await Task.Delay(1000);
+
+                // Imprimir mensaje contextual según el contexto
+                PrintContextualLaunchMessage(deviceId, CurrentContext);
+
+                // Disparar eventos
+                OnDeviceLaunched?.Invoke(deviceId, CurrentContext);
+
+                // Ocultar UI actual (Device Selection completado)
+                Hide();
+
+                // Aquí se podría navegar a la escena específica del dispositivo
+                // Por ahora solo navegamos de regreso al Dashboard
+                await Task.Delay(500);
+                ReturnToDashboard();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var errorMsg = $"Error launching device {deviceId}: {ex.Message}";
+                Debug.LogError(errorMsg);
+                OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
                 return false;
             }
+        }
 
-            var previousDevice = _deviceData.SelectedDevice;
-            _deviceData.SelectedDevice = deviceId;
-            _deviceData.CurrentMode = CurrentDeviceMode;
+        public DeviceSelectionInfo.DeviceInfo GetDeviceInfo(string deviceId)
+        {
+            return _deviceConfig?.DeviceRegistry.GetValueOrDefault(deviceId);
+        }
 
-            // Actualizar UI
-            _uiManager.SelectDevice(deviceId);
-
-            // Agregar a historial
-            _sessionData.AddRecentDevice(deviceId);
-
-            // Disparar evento
-            OnDeviceSelected?.Invoke(deviceId, CurrentDeviceMode);
-
-            LogDebug($"Device selected: {deviceId} (previous: {previousDevice})");
-            return true;
+        public DeviceSelectionInfo.DeviceInfo[] GetAvailableDevices()
+        {
+            if (_deviceConfig == null) return new DeviceSelectionInfo.DeviceInfo[0];
+            
+            return _deviceConfig.GetDevicesForContext(CurrentContext).ToArray();
         }
 
         public bool IsDeviceAvailable(string deviceId)
         {
-            return _deviceData?.IsDeviceAvailableForMode(deviceId, CurrentDeviceMode) ?? false;
+            var deviceInfo = GetDeviceInfo(deviceId);
+            return deviceInfo?.IsAvailable == true && 
+                   deviceInfo.Status == DeviceSelectionInfo.DeviceStatus.Online &&
+                   deviceInfo.IsCompatibleWith(CurrentContext);
         }
 
-        public bool IsDeviceSupportedForMode(string deviceId, DeviceMode mode)
+        public void SetLaunchContext(IDeviceSelectionOps.LaunchContext context, string sourceController = null)
         {
-            if (!_deviceData.AvailableDevices.TryGetValue(deviceId, out var device))
-                return false;
-                
-            return device.SupportsMode(mode);
-        }
-
-        public async Task RefreshDeviceAvailabilityAsync()
-        {
-            try
-            {
-                LogDebug("Refreshing device availability...");
-
-                // Simular consulta a servicios reales
-                await Task.Delay(500);
-
-                // Actualizar disponibilidad (en un sistema real, consultar servicios IoT, etc.)
-                UpdateDeviceAvailability();
-
-                // Actualizar UI
-                UpdateDeviceDisplayForCurrentMode();
-
-                // Disparar evento
-                OnDeviceAvailabilityChanged?.Invoke(GetAllDevices());
-
-                LogDebug("Device availability refreshed");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error refreshing device availability: {ex.Message}");
-                OnDeviceSelectionError?.Invoke("RefreshAvailability", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Actualiza la disponibilidad de dispositivos (simulado)
-        /// </summary>
-        private void UpdateDeviceAvailability()
-        {
-            foreach (var device in _deviceData.AvailableDevices.Values)
-            {
-                // En un sistema real, consultar estado real de dispositivos
-                // Por ahora, simular cambios ocasionales
-                if (UnityEngine.Random.value < 0.1f) // 10% chance de cambio
-                {
-                    device.IsAvailable = !device.IsAvailable;
-                    device.LastUpdate = DateTime.Now;
-                    LogDebug($"Device {device.Id} availability changed to: {device.IsAvailable}");
-                }
-            }
-        }
-
-        #endregion
-
-        #region Context and Navigation Management (IDeviceSelectionOps)
-
-        public void ConfigureContext(NavigationContext context, Dictionary<string, object> contextData = null)
-        {
-            var previousContext = _contextData.CurrentContext;
+            var previousContext = CurrentContext;
             
+            _uiManager?.SetLaunchContext(context, sourceController);
             _contextData.CurrentContext = context;
-            _contextData.RequiredMode = NavigationContextManager.Instance?.GetDeviceModeForContext(context) ?? DeviceMode.Operating;
-            _contextData.UITitle = NavigationContextManager.Instance?.GetUITitleForContext(context) ?? "Select Device";
-            _contextData.TargetScene = NavigationContextManager.Instance?.GetTargetSceneForContext(context) ?? "";
-
-            if (contextData != null)
-            {
-                _contextData.AdditionalData.Clear();
-                foreach (var kvp in contextData)
-                {
-                    _contextData.AdditionalData[kvp.Key] = kvp.Value;
-                }
-            }
-
-            // Actualizar UI
-            ConfigureUIForCurrentContext();
-
-            // Disparar evento
-            OnContextChanged?.Invoke(previousContext, context);
-
-            LogDebug($"Context configured: {previousContext} → {context}");
-        }
-
-        public void UpdateContextFromNavigationManager()
-        {
-            var navManager = NavigationContextManager.Instance;
-            if (navManager != null)
-            {
-                _contextData.ConfigureFromNavigationContext();
-                LogDebug($"Context updated from NavigationManager: {_contextData.CurrentContext}");
-            }
-        }
-
-        public string GetUITitleForContext(NavigationContext context)
-        {
-            return NavigationContextManager.Instance?.GetUITitleForContext(context) ?? "Select Device";
-        }
-
-        public string GetTargetSceneForContext(NavigationContext context)
-        {
-            return NavigationContextManager.Instance?.GetTargetSceneForContext(context) ?? "";
-        }
-
-        public bool IsContextValid()
-        {
-            return _contextData?.IsValidContext() ?? false;
-        }
-
-        /// <summary>
-        /// Configura la UI según el contexto actual
-        /// </summary>
-        private void ConfigureUIForCurrentContext()
-        {
-            if (_uiManager == null || _contextData == null) return;
-
-            // Actualizar UI con información del contexto
-            _uiManager.UpdateContextUI(_contextData.CurrentContext, _contextData.RequiredMode, _contextData.UITitle);
+            _contextData.SourceController = sourceController ?? "Unknown";
             
-            // Actualizar dispositivos disponibles según el modo actual
-            UpdateDeviceDisplayForCurrentMode();
+            Debug.Log($"[DeviceSelectionOrchestrator] Context set: {previousContext} → {context} (from {sourceController})");
+            
+            OnContextChanged?.Invoke(previousContext, context);
         }
 
-        /// <summary>
-        /// Actualiza la visualización de dispositivos según el modo actual
-        /// </summary>
-        private void UpdateDeviceDisplayForCurrentMode()
+        public IDeviceSelectionOps.LaunchContext GetCurrentContext()
         {
-            var availableDevices = GetAllDevices();
-            _uiManager.UpdateDeviceDisplay(availableDevices, CurrentDeviceMode);
+            return CurrentContext;
         }
 
-        #endregion
-
-        #region Navigation Menu Management (IDeviceSelectionOps)
-
-        public void ToggleNavigationMenu(bool show)
+        public string GetContextualTitle()
         {
-            _uiManager.ToggleNavigationMenu(show);
-            _navigationState.IsMenuVisible = show;
-            OnNavigationMenuToggled?.Invoke(show);
+            return _contextData.GetContextualTitle();
+        }
+
+        public void NavigateToPanel(IDeviceSelectionOps.PanelType panelType)
+        {
+            if (!_isInitialized) Initialize();
+            _uiManager?.ShowPanel(panelType);
+        }
+
+        public void CloseCurrentPanel()
+        {
+            _uiManager?.CloseCurrentPanel();
+        }
+
+        public void ReturnToDashboard()
+        {
+            Debug.Log("[DeviceSelectionOrchestrator] Returning to Dashboard");
+            Hide();
+            _mainUIController?.ShowUI("Dashboard");
         }
 
         public void ToggleNavigationMenu()
         {
-            ToggleNavigationMenu(!IsNavigationMenuVisible);
-        }
-
-        public async Task NavigateToSectionAsync(NavigationContext targetContext)
-        {
-            try
-            {
-                if (_isTransitioning)
-                {
-                    LogWarning("Navigation already in progress");
-                    return;
-                }
-
-                _isTransitioning = true;
-                LogDebug($"Navigating to section: {targetContext}");
-
-                // Actualizar contexto en NavigationContextManager
-                NavigationContextManager.Instance?.SetContext(targetContext);
-
-                // Usar UIController para navegar
-                var uiController = UIController.Instance;
-                if (uiController != null)
-                {
-                    switch (targetContext)
-                    {
-                        case NavigationContext.Dashboard:
-                            uiController.ShowUI("Dashboard");
-                            break;
-                        case NavigationContext.Training:
-                        case NavigationContext.Operations:
-                            // Estos van a DeviceSelection con contexto específico
-                            ConfigureContext(targetContext);
-                            break;
-                        default:
-                            LogWarning($"Navigation to {targetContext} not implemented yet");
-                            break;
-                    }
-                }
-                else
-                {
-                    LogError("UIController not found - cannot navigate");
-                }
-
-                await Task.Delay(100); // Pequeño delay para permitir transición
-            }
-            catch (Exception ex)
-            {
-                LogError($"Navigation error: {ex.Message}");
-                OnDeviceSelectionError?.Invoke("Navigation", ex.Message);
-            }
-            finally
-            {
-                _isTransitioning = false;
-            }
-        }
-
-        public async Task NavigateToDashboardAsync()
-        {
-            await NavigateToSectionAsync(NavigationContext.Dashboard);
-        }
-
-        public async Task LogoutAsync()
-        {
-            try
-            {
-                LogDebug("Processing logout request...");
-
-                // Limpiar datos de sesión local
-                _sessionData.IsAuthenticated = false;
-                _sessionData.UpdateActivity();
-
-                // Detener procesos en curso
-                StopDeviceRefresh();
-
-                // Usar ServiceController para logout
-                var cognitoManager = ServiceController.Instance?.CognitoManager;
-                if (cognitoManager != null)
-                {
-                    cognitoManager.SignOut();
-                    LogDebug("User signed out via ServiceController");
-                }
-
-                // Usar UIController para volver a Welcome
-                var uiController = UIController.Instance;
-                if (uiController != null)
-                {
-                    uiController.ShowUI("Welcome");
-                }
-
-                LogDebug("Logout completed");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error during logout: {ex.Message}");
-                OnDeviceSelectionError?.Invoke("Logout", ex.Message);
-            }
+            var wasOpen = IsNavigationMenuOpen;
+            _uiManager?.ToggleNavigationMenu();
+            OnNavigationMenuToggled?.Invoke(!wasOpen);
         }
 
         #endregion
 
-        #region Device Launch and Scene Management (IDeviceSelectionOps)
+        #region Public Event Handlers (Called by EventManager)
 
-        public async Task LaunchSelectedDeviceAsync()
+        /// <summary>
+        /// Maneja selección de dispositivo
+        /// </summary>
+        public async void HandleDeviceSelection(string deviceId)
         {
-            if (string.IsNullOrEmpty(SelectedDevice))
-            {
-                LogWarning("No device selected for launch");
-                return;
-            }
-
-            await LaunchDeviceAsync(SelectedDevice, _contextData.TargetScene);
-        }
-
-        public async Task LaunchDeviceAsync(string deviceId, string targetScene)
-        {
-            try
-            {
-                if (!ValidateDeviceLaunch(deviceId))
-                {
-                    LogWarning($"Device launch validation failed for: {deviceId}");
-                    return;
-                }
-
-                LogDebug($"Launching device: {deviceId} → {targetScene}");
-
-                // Preparar datos para la escena de destino
-                var launchData = PrepareDeviceLaunchData(deviceId);
-
-                // Configurar GameManager si está disponible
-                if (_gameManager != null)
-                {
-                    _gameManager.deviceSelected = deviceId;
-                    _gameManager.modeSelected = CurrentNavigationContext.ToString() + "Button";
-                    _gameManager.selectedModeUiName = CurrentUITitle;
-                }
-
-                // Delay antes del lanzamiento si está configurado
-                if (_launchDelay > 0)
-                {
-                    await Task.Delay((int)(_launchDelay * 1000));
-                }
-
-                // Validación final con event
-                bool canLaunch = OnDeviceLaunchValidation?.Invoke(deviceId, targetScene) ?? true;
-                if (!canLaunch)
-                {
-                    LogWarning("Device launch cancelled by validation event");
-                    return;
-                }
-
-                // Lanzar escena
-                if (!string.IsNullOrEmpty(targetScene))
-                {
-                    SceneManager.LoadScene(targetScene);
-                    
-                    // Disparar evento de lanzamiento exitoso
-                    OnDeviceLaunched?.Invoke(deviceId, targetScene);
-                    
-                    LogDebug($"Device launched successfully: {deviceId} → {targetScene}");
-                }
-                else
-                {
-                    LogError("Target scene not specified for device launch");
-                    OnDeviceSelectionError?.Invoke("DeviceLaunch", "Target scene not specified");
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error launching device {deviceId}: {ex.Message}");
-                OnDeviceSelectionError?.Invoke("DeviceLaunch", ex.Message);
-            }
-        }
-
-        public Dictionary<string, object> PrepareDeviceLaunchData(string deviceId)
-        {
-            var launchData = new Dictionary<string, object>
-            {
-                ["deviceId"] = deviceId,
-                ["deviceMode"] = CurrentDeviceMode,
-                ["navigationContext"] = CurrentNavigationContext,
-                ["username"] = CurrentUsername,
-                ["sessionStart"] = _sessionData.SessionStart,
-                ["launchTime"] = DateTime.Now
-            };
-
-            // Agregar datos específicos del dispositivo
-            if (_deviceData.AvailableDevices.TryGetValue(deviceId, out var deviceInfo))
-            {
-                launchData["deviceType"] = deviceInfo.Type;
-                launchData["deviceDisplayName"] = deviceInfo.DisplayName;
-                launchData["supportedModes"] = deviceInfo.SupportedModes;
-            }
-
-            // Agregar datos adicionales del contexto
-            foreach (var kvp in _contextData.AdditionalData)
-            {
-                launchData[$"context_{kvp.Key}"] = kvp.Value;
-            }
-
-            return launchData;
-        }
-
-        public bool ValidateDeviceLaunch(string deviceId)
-        {
-            // Validaciones básicas
-            if (string.IsNullOrEmpty(deviceId))
-            {
-                LogWarning("Device ID is null or empty");
-                return false;
-            }
-
-            if (!IsDeviceAvailable(deviceId))
-            {
-                LogWarning($"Device {deviceId} is not available");
-                return false;
-            }
-
-            if (!IsContextValid())
-            {
-                LogWarning("Current context is not valid");
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(_contextData.TargetScene))
-            {
-                LogWarning("Target scene is not specified");
-                return false;
-            }
-
-            return true;
-        }
-
-        #endregion
-
-        #region User Session Management (IDeviceSelectionOps)
-
-        public List<string> GetRecentlySelectedDevices()
-        {
-            return _sessionData?.RecentlySelectedDevices ?? new List<string>();
-        }
-
-        public void AddToRecentDevices(string deviceId)
-        {
-            _sessionData?.AddRecentDevice(deviceId);
-        }
-
-        public void ClearRecentDevices()
-        {
-            _sessionData?.RecentlySelectedDevices.Clear();
-        }
-
-        public DeviceSelectionSessionStats GetSessionStats()
-        {
-            if (_sessionData == null) return new DeviceSelectionSessionStats();
-
-            var stats = new DeviceSelectionSessionStats
-            {
-                SessionStart = _sessionData.SessionStart,
-                SessionDuration = _sessionData.GetSessionDuration(),
-                DevicesViewed = _deviceData.AvailableDevices.Count,
-                DevicesSelected = _sessionData.RecentlySelectedDevices.Count,
-                NavigationMenuToggles = 0, // TODO: Implementar contador
-                ContextHistory = new List<string> { CurrentNavigationContext.ToString() },
-                MostSelectedDevice = _sessionData.RecentlySelectedDevices.FirstOrDefault(),
-                CurrentContext = CurrentNavigationContext
-            };
-
-            return stats;
-        }
-
-        #endregion
-
-        #region Utility Methods (IDeviceSelectionOps)
-
-        public DeviceSelectionInfo.DeviceInfo GetDeviceInfo(string deviceId)
-        {
-            return _deviceData?.AvailableDevices.TryGetValue(deviceId, out var device) == true ? device : null;
-        }
-
-        public DeviceSelectionStatus GetCurrentStatus()
-        {
-            return new DeviceSelectionStatus
-            {
-                IsInitialized = _isInitialized,
-                IsVisible = IsActive,
-                CurrentContext = CurrentNavigationContext,
-                CurrentMode = CurrentDeviceMode,
-                SelectedDevice = SelectedDevice,
-                AvailableDevicesCount = GetAvailableDevicesForCurrentMode().Count,
-                TotalDevicesCount = GetAllDevices().Count,
-                IsMenuVisible = IsNavigationMenuVisible,
-                IsContextValid = IsContextValid(),
-                LastUpdate = DateTime.Now,
-                LastError = _deviceSelectionState?.LastError ?? ""
-            };
-        }
-
-        public ValidationResult ValidateConfiguration()
-        {
-            var result = new ValidationResult();
-
-            // Validar inicialización
-            if (!_isInitialized)
-                result.AddError("Device Selection not initialized");
-
-            // Validar managers
-            if (_uiManager == null)
-                result.AddError("UI Manager is null");
+            Debug.Log($"[DeviceSelectionOrchestrator] Device selected: {deviceId}");
             
-            if (_eventManager == null)
-                result.AddError("Event Manager is null");
-
-            // Validar datos
-            if (_deviceData?.AvailableDevices.Count == 0)
-                result.AddWarning("No devices available");
-
-            // Validar contexto
-            if (!IsContextValid())
-                result.AddWarning("Current context is not valid");
-
-            // Validar UI
-            if (_uiConfig?.Body == null)
-                result.AddError("UI Body element not found");
-
-            result.GenerateSummary();
-            return result;
+            // Disparar evento de selección
+            OnDeviceSelected?.Invoke(deviceId, CurrentContext);
+            
+            // Intentar lanzar el dispositivo
+            await LaunchDeviceAsync(deviceId);
         }
 
-        public void ResetToInitialState()
+        /// <summary>
+        /// Maneja cambio de contexto
+        /// </summary>
+        public void HandleContextSwitch(IDeviceSelectionOps.LaunchContext newContext)
         {
-            LogDebug("Resetting to initial state...");
-
-            // Limpiar selección
-            _deviceData.SelectedDevice = "";
-            _uiManager.ClearDeviceSelection();
-
-            // Cerrar menú
-            ToggleNavigationMenu(false);
-
-            // Resetear contexto
-            _contextData.CurrentContext = NavigationContext.None;
-
-            // Actualizar UI
-            _uiManager.ForceUIRefresh();
-
-            LogDebug("Reset to initial state completed");
+            Debug.Log($"[DeviceSelectionOrchestrator] Context switch requested: {CurrentContext} → {newContext}");
+            
+            SetLaunchContext(newContext, "DeviceSelection");
+            
+            // Cerrar menú de navegación después del cambio
+            if (IsNavigationMenuOpen)
+            {
+                _uiManager?.HideNavigationMenu();
+            }
         }
 
-        public void ForceUIRefresh()
+        /// <summary>
+        /// Maneja regreso al Dashboard
+        /// </summary>
+        public void HandleReturnToDashboard()
         {
-            _uiManager?.ForceUIRefresh();
+            Debug.Log("[DeviceSelectionOrchestrator] Dashboard return requested");
+            ReturnToDashboard();
+        }
+
+        #endregion
+
+        #region Context-Specific Methods
+
+        /// <summary>
+        /// Configura el Device Selection para modo Training
+        /// </summary>
+        public void ConfigureForTraining(string sourceController = "Dashboard")
+        {
+            SetLaunchContext(IDeviceSelectionOps.LaunchContext.Training, sourceController);
+            Debug.Log("[DeviceSelectionOrchestrator] Configured for Training mode");
+        }
+
+        /// <summary>
+        /// Configura el Device Selection para modo Operations
+        /// </summary>
+        public void ConfigureForOperations(string sourceController = "Dashboard")
+        {
+            SetLaunchContext(IDeviceSelectionOps.LaunchContext.Operations, sourceController);
+            Debug.Log("[DeviceSelectionOrchestrator] Configured for Operations mode");
+        }
+
+        /// <summary>
+        /// Imprime mensaje contextual al lanzar dispositivo
+        /// </summary>
+        private void PrintContextualLaunchMessage(string deviceId, IDeviceSelectionOps.LaunchContext context)
+        {
+            var deviceInfo = GetDeviceInfo(deviceId);
+            var deviceName = deviceInfo?.DisplayName ?? deviceId;
+            
+            switch (context)
+            {
+                case IDeviceSelectionOps.LaunchContext.Training:
+                    Debug.Log($"🎓 Abriendo escena para entrenamiento con {deviceName}");
+                    Debug.Log($"📚 Iniciando sesión de aprendizaje seguro con {deviceName}");
+                    break;
+                    
+                case IDeviceSelectionOps.LaunchContext.Operations:
+                    Debug.Log($"🏭 Abriendo escena para operaciones industriales con {deviceName}");
+                    Debug.Log($"⚙️ Iniciando operaciones industriales con {deviceName} - Verificar protocolos de seguridad");
+                    break;
+                    
+                default:
+                    Debug.Log($"🤖 Lanzando dispositivo: {deviceName}");
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region Private Implementation Methods
+
+        /// <summary>
+        /// Obtiene componentes UI del Device Selection
+        /// </summary>
+        private void GetUiComponents(VisualElement root)
+        {
+            Debug.Log("Getting Device Selection UI components...");
+    
+            // Contenedores principales
+            _uiConfig.Body = root.Q<VisualElement>("Body");
+            _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
+            _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
+            _uiConfig.MainContentArea = root.Q<VisualElement>("Main");
+            _uiConfig.DeviceGridContainer = root.Q<VisualElement>("DeviceGrid");
+            
+            // Labels contextuales
+            _uiConfig.SelectedModeLabel = root.Q<Label>("SelectedModeUiName");
+            _uiConfig.ContextTitleLabel = root.Q<Label>("ContextTitle");
+
+            // Configurar paneles
+            InitializePanelConfiguration(root);
+    
+            Debug.Log("Device Selection UI components obtained successfully");
+        }
+
+        /// <summary>
+        /// Inicializa la configuración de paneles
+        /// </summary>
+        private void InitializePanelConfiguration(VisualElement root)
+        {
+            var panelsContainer = _subpanelsAndSmokeMaskContainer;
+            
+            // Panel de menú de navegación (usando misma estructura que Dashboard)
+            _uiConfig.Panels[IDeviceSelectionOps.PanelType.NavigationMenu] = new DeviceSelectionInfo.UIConfiguration.PanelData
+            {
+                Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
+                ShowClass = "NavigationMenuPanelinMainScreen",
+                HideClass = "NavigationMenuPanelOutMainScreen",
+                RequiresScrim = true,
+                AnimationDuration = 0.3f
+            };
+
+            // Paneles futuros (no existen en UXML actual)
+            _uiConfig.Panels[IDeviceSelectionOps.PanelType.DeviceInfo] = new DeviceSelectionInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "DeviceInfoPanelVisible",
+                HideClass = "DeviceInfoPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[IDeviceSelectionOps.PanelType.ContextInfo] = new DeviceSelectionInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "ContextInfoPanelVisible",
+                HideClass = "ContextInfoPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[IDeviceSelectionOps.PanelType.Settings] = new DeviceSelectionInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "SettingsPanelVisible",
+                HideClass = "SettingsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[IDeviceSelectionOps.PanelType.Help] = new DeviceSelectionInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "HelpPanelVisible",
+                HideClass = "HelpPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            // Registrar callbacks SOLO para paneles que existen
+            foreach (var kvp in _uiConfig.Panels)
+            {
+                var panelData = kvp.Value;
+                if (panelData.Panel != null)
+                {
+                    Debug.Log($"Registering callback for panel: {kvp.Key}");
+                    panelData.Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+                }
+                else
+                {
+                    Debug.Log($"Panel {kvp.Key} not found in UI - skipping callback registration");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Busca dependencias en la escena
+        /// </summary>
+        private void FindDependencies()
+        {
+            // Buscar UIController principal
+            _mainUIController = UIController.Instance;
+            if (_mainUIController == null)
+            {
+                Debug.LogWarning("UIController not found - will try to find it later");
+            }
+            
+            Debug.Log("Device Selection dependencies search completed");
+        }
+
+        /// <summary>
+        /// Inicializa el estado del Device Selection
+        /// </summary>
+        private void InitializeDeviceSelectionState()
+        {
+            _deviceSelectionState.IsInitialized = true;
+            _deviceSelectionState.CurrentSection = "DeviceSelection";
+            _deviceSelectionState.CurrentActivePanel = IDeviceSelectionOps.PanelType.None;
+            
+            Debug.Log("Device Selection state initialized");
         }
 
         #endregion
@@ -951,176 +583,81 @@ namespace _Scripts.Controllers.DeviceSelectionController
         #region Event Handlers
 
         /// <summary>
-        /// Maneja solicitud de navegación
+        /// Maneja el final de transiciones de paneles
         /// </summary>
-        public async void HandleNavigationRequest(NavigationContext targetContext)
+        private void OnTransitionEndEvent(TransitionEndEvent evt)
         {
-            await NavigateToSectionAsync(targetContext);
-        }
-
-        /// <summary>
-        /// Maneja solicitud de logout
-        /// </summary>
-        public async void HandleLogoutRequest()
-        {
-            await LogoutAsync();
-        }
-
-        /// <summary>
-        /// Maneja lanzamiento de dispositivo
-        /// </summary>
-        public async void HandleDeviceLaunch(string deviceId)
-        {
-            if (_autoLaunchOnSelection)
+            if (!_uiManager.IsAnyPanelVisible())
             {
-                await LaunchDeviceAsync(deviceId, _contextData.TargetScene);
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+                Debug.Log("All panels closed - hiding container");
             }
         }
 
         /// <summary>
-        /// Maneja refresh de dispositivos
+        /// Maneja solicitudes de regreso a Dashboard
         /// </summary>
-        public async void HandleRefreshDevices()
+        private void OnReturnToDashboardHandler()
         {
-            await RefreshDeviceAvailabilityAsync();
+            ReturnToDashboard();
         }
 
-        // Placeholders para futuras funcionalidades
-        public void HandleDeviceDetailsRequest(string deviceId) 
+        /// <summary>
+        /// Maneja completado de transiciones de paneles
+        /// </summary>
+        private void OnPanelTransitionCompleteHandler(IDeviceSelectionOps.PanelType panelType)
         {
-            LogDebug($"Device details requested for: {deviceId}");
-            // TODO: Implementar panel de detalles de dispositivo
-        }
-
-        public void HandleDeviceHoverEnter(string deviceId) 
-        {
-            LogDebug($"Device hover enter: {deviceId}");
-            // TODO: Implementar tooltip o preview de dispositivo
-        }
-
-        public void HandleDeviceHoverExit(string deviceId) 
-        {
-            LogDebug($"Device hover exit: {deviceId}");
-            // TODO: Ocultar tooltip o preview
-        }
-
-        public void HandleDeviceContextMenu(string deviceId, Vector2 position) 
-        {
-            LogDebug($"Device context menu: {deviceId} at {position}");
-            // TODO: Implementar menú contextual
+            Debug.Log($"Panel transition complete: {panelType}");
         }
 
         #endregion
 
-        #region Auto Refresh
+        #region Helper Methods
 
         /// <summary>
-        /// Inicia el refresh automático de dispositivos
+        /// Muestra la UI principal (equivalente al método original)
         /// </summary>
-        private void StartDeviceRefresh()
+        internal void ShowUi()
         {
-            if (_deviceRefreshCoroutine != null)
-            {
-                StopCoroutine(_deviceRefreshCoroutine);
-            }
-
-            _deviceRefreshCoroutine = StartCoroutine(DeviceRefreshRoutine());
-            LogDebug($"Auto-refresh started with interval: {_deviceRefreshInterval}s");
+            Show();
         }
 
         /// <summary>
-        /// Detiene el refresh automático
+        /// Oculta la UI principal (equivalente al método original)
         /// </summary>
-        private void StopDeviceRefresh()
+        internal void HideUi()
         {
-            if (_deviceRefreshCoroutine != null)
-            {
-                StopCoroutine(_deviceRefreshCoroutine);
-                _deviceRefreshCoroutine = null;
-                LogDebug("Auto-refresh stopped");
-            }
-        }
-
-        /// <summary>
-        /// Rutina de refresh automático de dispositivos
-        /// </summary>
-        private IEnumerator DeviceRefreshRoutine()
-        {
-            while (_isInitialized && _deviceRefreshInterval > 0)
-            {
-                yield return new WaitForSeconds(_deviceRefreshInterval);
-                
-                if (IsActive && !_isTransitioning)
-                {
-                    RefreshDeviceAvailabilityAsync();
-                }
-            }
+            Hide();
         }
 
         #endregion
 
-        #region Android Specific
+        #region Public Properties
 
         /// <summary>
-        /// Maneja el botón "Back" de Android
+        /// UI Manager asociado
         /// </summary>
-        private void Update()
-        {
-            #if UNITY_ANDROID && !UNITY_EDITOR
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    HandleAndroidBackButton();
-                }
-            #endif
-        }
+        public DeviceSelectionUIManager UIManager => _uiManager;
 
         /// <summary>
-        /// Procesa el botón "Back" de Android
+        /// Event Manager asociado
         /// </summary>
-        private void HandleAndroidBackButton()
-        {
-            LogDebug("Android back button pressed");
+        public DeviceSelectionEventManager EventManager => _eventManager;
 
-            // Si el menú está abierto, cerrarlo
-            if (IsNavigationMenuVisible)
-            {
-                ToggleNavigationMenu(false);
-                return;
-            }
+        /// <summary>
+        /// Estado actual del Device Selection
+        /// </summary>
+        public DeviceSelectionInfo.DeviceSelectionState DeviceSelectionState => _deviceSelectionState;
 
-            // Si hay un dispositivo seleccionado, deseleccionarlo
-            if (!string.IsNullOrEmpty(SelectedDevice))
-            {
-                _deviceData.SelectedDevice = "";
-                _uiManager.ClearDeviceSelection();
-                return;
-            }
+        /// <summary>
+        /// Configuración de dispositivos
+        /// </summary>
+        public DeviceSelectionInfo.DeviceConfiguration DeviceConfiguration => _deviceConfig;
 
-            // Como último recurso, navegar de regreso al Dashboard
-            HandleNavigationRequest(NavigationContext.Dashboard);
-        }
-
-        #endregion
-
-        #region Logging
-
-        private void LogDebug(string message)
-        {
-            if (_enableDebugLogs)
-                Debug.Log($"[DeviceSelectionOrchestrator] {message}");
-        }
-
-        private void LogWarning(string message)
-        {
-            if (_enableDebugLogs)
-                Debug.LogWarning($"[DeviceSelectionOrchestrator] {message}");
-        }
-
-        private void LogError(string message)
-        {
-            if (_enableDebugLogs)
-                Debug.LogError($"[DeviceSelectionOrchestrator] {message}");
-        }
+        /// <summary>
+        /// Datos del contexto actual
+        /// </summary>
+        public DeviceSelectionInfo.ContextData ContextData => _contextData;
 
         #endregion
     }
