@@ -17,7 +17,7 @@ namespace _Scripts.Controllers.DeviceSelectionController
         private bool _isNavigationMenuOpen = false;
         
         // Clases USS para scrim
-        private const string SCRIM_SHOW_CLASS = "Opaque";
+        private const string SCRIM_SHOW_CLASS = "ScrimOpaque";
         
         // Configuración de dispositivos
         private DeviceSelectionInfo.DeviceConfiguration _deviceConfig;

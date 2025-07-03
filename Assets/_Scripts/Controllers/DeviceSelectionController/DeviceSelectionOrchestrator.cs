@@ -242,6 +242,7 @@ namespace _Scripts.Controllers.DeviceSelectionController
                     var errorMsg = $"Device not found: {deviceId}";
                     Debug.LogError(errorMsg);
                     OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
+                    ShowLaunchMessage(errorMsg, true);
                     return false;
                 }
                 
@@ -251,6 +252,7 @@ namespace _Scripts.Controllers.DeviceSelectionController
                     var errorMsg = $"Device not available: {deviceId}";
                     Debug.LogError(errorMsg);
                     OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
+                    ShowLaunchMessage(errorMsg, true);
                     return false;
                 }
                 
@@ -260,22 +262,28 @@ namespace _Scripts.Controllers.DeviceSelectionController
                     var errorMsg = $"Device {deviceId} not compatible with context {CurrentContext}";
                     Debug.LogError(errorMsg);
                     OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
+                    ShowLaunchMessage(errorMsg, true);
                     return false;
                 }
 
                 // Resaltar dispositivo seleccionado
                 _uiManager?.HighlightSelectedDevice(deviceId);
 
-                // Simular delay de lanzamiento
-                await Task.Delay(1000);
+                // Mostrar mensaje contextual en UI
+                var contextualMessage = GetContextualLaunchMessage(deviceId, CurrentContext);
+                ShowLaunchMessage(contextualMessage, false);
 
-                // Imprimir mensaje contextual según el contexto
+                // También imprimir en console para logging
                 PrintContextualLaunchMessage(deviceId, CurrentContext);
+
+                // Simular delay de lanzamiento mientras se muestra el mensaje
+                await Task.Delay(3000);
 
                 // Disparar eventos
                 OnDeviceLaunched?.Invoke(deviceId, CurrentContext);
 
-                // Ocultar UI actual (Device Selection completado)
+                // Ocultar mensaje y UI actual
+                HideLaunchMessage();
                 Hide();
 
                 // Aquí se podría navegar a la escena específica del dispositivo
@@ -290,6 +298,7 @@ namespace _Scripts.Controllers.DeviceSelectionController
                 var errorMsg = $"Error launching device {deviceId}: {ex.Message}";
                 Debug.LogError(errorMsg);
                 OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
+                ShowLaunchMessage(errorMsg, true);
                 return false;
             }
         }
@@ -428,7 +437,7 @@ namespace _Scripts.Controllers.DeviceSelectionController
         }
 
         /// <summary>
-        /// Imprime mensaje contextual al lanzar dispositivo
+        /// Imprime mensaje contextual al lanzar dispositivo (para logging)
         /// </summary>
         private void PrintContextualLaunchMessage(string deviceId, IDeviceSelectionOps.LaunchContext context)
         {
@@ -451,6 +460,127 @@ namespace _Scripts.Controllers.DeviceSelectionController
                     Debug.Log($"🤖 Lanzando dispositivo: {deviceName}");
                     break;
             }
+        }
+
+        /// <summary>
+        /// Obtiene el mensaje contextual para lanzamiento de dispositivo
+        /// </summary>
+        private string GetContextualLaunchMessage(string deviceId, IDeviceSelectionOps.LaunchContext context)
+        {
+            var deviceInfo = GetDeviceInfo(deviceId);
+            var deviceName = deviceInfo?.DisplayName ?? deviceId;
+            
+            return context switch
+            {
+                IDeviceSelectionOps.LaunchContext.Training => 
+                    $"🎓 Abriendo escena para entrenamiento con {deviceName}\n\n📚 Iniciando sesión de aprendizaje seguro.\nPuedes practicar y aprender sin riesgos.",
+                    
+                IDeviceSelectionOps.LaunchContext.Operations => 
+                    $"🏭 Abriendo escena para operaciones industriales con {deviceName}\n\n⚙️ Iniciando operaciones industriales.\n⚠️ Verificar protocolos de seguridad.",
+                    
+                _ => $"🤖 Lanzando dispositivo: {deviceName}"
+            };
+        }
+
+        /// <summary>
+        /// Muestra un mensaje de lanzamiento en la UI
+        /// </summary>
+        private void ShowLaunchMessage(string message, bool isError = false)
+        {
+            // Crear overlay para mensaje
+            var overlay = CreateLaunchMessageOverlay(message, isError);
+            _uiConfig.Body.Add(overlay);
+            
+            Debug.Log($"[DeviceSelectionOrchestrator] Launch message shown: {message}");
+        }
+
+        /// <summary>
+        /// Oculta el mensaje de lanzamiento
+        /// </summary>
+        private void HideLaunchMessage()
+        {
+            var overlay = _uiConfig.Body.Q<VisualElement>("LaunchMessageOverlay");
+            if (overlay != null)
+            {
+                _uiConfig.Body.Remove(overlay);
+                Debug.Log("[DeviceSelectionOrchestrator] Launch message hidden");
+            }
+        }
+
+        /// <summary>
+        /// Crea el overlay visual para el mensaje de lanzamiento
+        /// </summary>
+        private VisualElement CreateLaunchMessageOverlay(string message, bool isError = false)
+        {
+            // Contenedor principal del overlay
+            var overlay = new VisualElement();
+            overlay.name = "LaunchMessageOverlay";
+            overlay.style.position = Position.Absolute;
+            overlay.style.width = Length.Percent(100);
+            overlay.style.height = Length.Percent(100);
+            overlay.style.backgroundColor = new Color(0, 0, 0, 0.8f);
+            overlay.style.alignItems = Align.Center;
+            overlay.style.justifyContent = Justify.Center;
+
+            // Panel del mensaje
+            var messagePanel = new VisualElement();
+            messagePanel.style.backgroundColor = Color.black;
+            messagePanel.style.borderTopColor = isError ? Color.red : Color.green;
+            messagePanel.style.borderBottomColor = isError ? Color.red : Color.green;
+            messagePanel.style.borderLeftColor = isError ? Color.red : Color.green;
+            messagePanel.style.borderRightColor = isError ? Color.red : Color.green;
+            messagePanel.style.borderTopWidth = 3;
+            messagePanel.style.borderBottomWidth = 3;
+            messagePanel.style.borderLeftWidth = 3;
+            messagePanel.style.borderRightWidth = 3;
+            messagePanel.style.paddingTop = 30;
+            messagePanel.style.paddingBottom = 30;
+            messagePanel.style.paddingLeft = 40;
+            messagePanel.style.paddingRight = 40;
+            messagePanel.style.width = Length.Percent(60);
+            messagePanel.style.maxWidth = 800;
+
+            // Label del mensaje
+            var messageLabel = new Label(message);
+            messageLabel.style.color = isError ? Color.red : Color.green;
+            messageLabel.style.fontSize = 28;
+            messageLabel.style.whiteSpace = WhiteSpace.Normal;
+            messageLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+            messageLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            
+            // Aplicar fuente VT323 si está disponible
+            try
+            {
+                messageLabel.style.unityFontDefinition = new StyleFontDefinition(
+                    Resources.Load<Font>("Fonts/VT323-Regular"));
+            }
+            catch
+            {
+                // Fallback a fuente por defecto si VT323 no está disponible
+            }
+
+            // Indicador de progreso
+            var progressContainer = new VisualElement();
+            progressContainer.style.marginTop = 20;
+            progressContainer.style.alignItems = Align.Center;
+
+            var progressLabel = new Label(isError ? "❌ Error" : "⏳ Preparando...");
+            progressLabel.style.color = isError ? Color.red : Color.yellow;
+            progressLabel.style.fontSize = 20;
+            progressLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+
+            progressContainer.Add(progressLabel);
+
+            // Ensamblar el panel
+            messagePanel.Add(messageLabel);
+            if (!isError)
+            {
+                messagePanel.Add(progressContainer);
+            }
+
+            overlay.Add(messagePanel);
+
+            return overlay;
         }
 
         #endregion

@@ -11,9 +11,6 @@
             <ui:VisualElement name="UsernamePanel" class="username-panel">
                 <ui:Label name="Username" class="username" />
             </ui:VisualElement>
-            <ui:VisualElement name="LogoutPanel" class="logout-panel">
-                <ui:Label name="Logout" class="logout" />
-            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Main" class="main">
             <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="main-scroll-view">
