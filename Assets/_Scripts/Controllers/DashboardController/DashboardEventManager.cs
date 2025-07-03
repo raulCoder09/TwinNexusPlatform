@@ -1,49 +1,36 @@
 using System;
-using _Scripts.Controllers.UiManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace _Scripts.Controllers.DashboardController
 {
     /// <summary>
-    /// Gestor de eventos de UI del Dashboard
-    /// Responsable de registrar y manejar todos los eventos de interacción del usuario
-    /// Equivalente al WelcomeEventManager pero para Dashboard
+    /// Maneja todos los eventos UI del Dashboard
+    /// Equivalente a WelcomeEventManager pero para Dashboard
     /// </summary>
     public class DashboardEventManager
     {
-        #region Private Fields
-
         private DashboardUIManager _uiManager;
-        private DashboardOrchestrator _orchestrator;
-        private UIDocument _uiDocument;
-        private DashboardInfo.UIConfiguration _uiConfig;
-
-        // Actions para comunicación con sistemas externos
         private Action _onLogoutRequested;
-        private Action<DashboardSection> _onNavigationRequested;
-        private Action<string> _onDeviceSelectionChanged;
+        private Action<IDashboardOps.PanelType> _onPanelTransitionComplete;
+        private DashboardOrchestrator _orchestrator;
 
-        #endregion
+        // Referencias para poder desregistrar eventos
+        private UIDocument _uiDocument;
+        private VisualElement _root;
 
         #region Constructor
 
         public DashboardEventManager(
             DashboardUIManager uiManager, 
-            DashboardOrchestrator orchestrator,
-            UIDocument uiDocument,
-            Action onLogoutRequested = null,
-            Action<DashboardSection> onNavigationRequested = null,
-            Action<string> onDeviceSelectionChanged = null)
+            Action onLogoutRequested, 
+            Action<IDashboardOps.PanelType> onPanelTransitionComplete, 
+            DashboardOrchestrator orchestrator)
         {
             _uiManager = uiManager ?? throw new ArgumentNullException(nameof(uiManager));
+            _onLogoutRequested = onLogoutRequested ?? throw new ArgumentNullException(nameof(onLogoutRequested));
+            _onPanelTransitionComplete = onPanelTransitionComplete ?? throw new ArgumentNullException(nameof(onPanelTransitionComplete));
             _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
-            _uiDocument = uiDocument ?? throw new ArgumentNullException(nameof(uiDocument));
-            _uiConfig = _uiManager.UIConfig;
-
-            _onLogoutRequested = onLogoutRequested;
-            _onNavigationRequested = onNavigationRequested;
-            _onDeviceSelectionChanged = onDeviceSelectionChanged;
         }
 
         #endregion
@@ -53,395 +40,47 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// Registra todos los eventos del Dashboard
         /// </summary>
-        public void RegisterEvents()
+        public void RegisterEvents(UIDocument uiDocument)
         {
-            try
-            {
-                Debug.Log("[DashboardEventManager] Registering Dashboard events...");
+            // Guardar referencias para desregistro posterior
+            _uiDocument = uiDocument;
+            _root = uiDocument.rootVisualElement;
 
-                RegisterHeaderEvents();
-                RegisterNavigationEvents();
-                RegisterDeviceControlEvents();
-                RegisterMenuEvents();
-                RegisterKeyboardEvents();
+            // Eventos principales del menú
+            _root.Q<Button>("MenuButton")?.RegisterCallback<ClickEvent>(OnMenuButtonClicked);
+            _root.Q<Button>("HideMenuButton")?.RegisterCallback<ClickEvent>(OnHideMenuButtonClicked);
 
-                Debug.Log("[DashboardEventManager] All events registered successfully");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[DashboardEventManager] Error registering events: {ex.Message}");
-            }
+            // Eventos de navegación principal
+            _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
+            _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
+            _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
+            _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
+
+            // Eventos de paneles adicionales (futuros)
+            _root.Q<Button>("NotificationsButton")?.RegisterCallback<ClickEvent>(OnNotificationsButtonClicked);
+            _root.Q<Button>("UserProfileButton")?.RegisterCallback<ClickEvent>(OnUserProfileButtonClicked);
+            _root.Q<Button>("QuickActionsButton")?.RegisterCallback<ClickEvent>(OnQuickActionsButtonClicked);
+            _root.Q<Button>("StatusOverlayButton")?.RegisterCallback<ClickEvent>(OnStatusOverlayButtonClicked);
+
+            // Eventos de cierre de paneles
+            _root.Q<Button>("CloseNotificationsButton")?.RegisterCallback<ClickEvent>(OnCloseNotificationsPanelClicked);
+            _root.Q<Button>("CloseUserProfileButton")?.RegisterCallback<ClickEvent>(OnCloseUserProfilePanelClicked);
+            _root.Q<Button>("CloseQuickActionsButton")?.RegisterCallback<ClickEvent>(OnCloseQuickActionsPanelClicked);
+            _root.Q<Button>("CloseStatusOverlayButton")?.RegisterCallback<ClickEvent>(OnCloseStatusOverlayPanelClicked);
+
+            // Evento de transición del menú de navegación
+            var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
+            navigationMenuPanel?.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+
+            // Eventos de clic en el scrim para cerrar paneles
+            var scrim = _root.Q<VisualElement>("Scrim");
+            scrim?.RegisterCallback<ClickEvent>(OnScrimClicked);
+
+            // Registrar eventos de teclado
+            RegisterKeyboardEvents(_root);
+
+            Debug.Log("[DashboardEventManager] All events registered successfully");
         }
-
-        /// <summary>
-        /// Registra eventos del header (menú, logout)
-        /// </summary>
-        private void RegisterHeaderEvents()
-        {
-            // Botón de menú
-            _uiConfig.MenuButton?.RegisterCallback<ClickEvent>(OnMenuButtonClicked);
-
-            // Logout (puede ser botón o label clickeable)
-            _uiConfig.LogoutLabel?.RegisterCallback<ClickEvent>(OnLogoutClicked);
-
-            Debug.Log("[DashboardEventManager] Header events registered");
-        }
-
-        /// <summary>
-        /// Registra eventos del menú de navegación
-        /// </summary>
-        private void RegisterNavigationEvents()
-        {
-            // Botón para ocultar menú
-            _uiConfig.HideMenuButton?.RegisterCallback<ClickEvent>(OnHideMenuButtonClicked);
-
-            // Eventos del scrim (click para cerrar menú)
-            _uiConfig.Scrim?.RegisterCallback<ClickEvent>(OnScrimClicked);
-
-            // Botones de navegación
-            foreach (var kvp in _uiConfig.NavigationButtons)
-            {
-                var section = kvp.Key;
-                var button = kvp.Value;
-                
-                if (button != null)
-                {
-                    // Usamos una lambda que captura la sección específica
-                    button.RegisterCallback<ClickEvent>(evt => OnNavigationButtonClicked(evt, section));
-                }
-            }
-
-            Debug.Log("[DashboardEventManager] Navigation events registered");
-        }
-
-        /// <summary>
-        /// Registra eventos del panel de control de dispositivos
-        /// </summary>
-        private void RegisterDeviceControlEvents()
-        {
-            // Navegación entre dispositivos
-            _uiConfig.DeviceNavLeftButton?.RegisterCallback<ClickEvent>(OnDeviceNavLeftClicked);
-            _uiConfig.DeviceNavRightButton?.RegisterCallback<ClickEvent>(OnDeviceNavRightClicked);
-
-            // Click en área de visualización del dispositivo (para futuras interacciones)
-            _uiConfig.DeviceVisualizationBox?.RegisterCallback<ClickEvent>(OnDeviceVisualizationClicked);
-
-            Debug.Log("[DashboardEventManager] Device control events registered");
-        }
-
-        /// <summary>
-        /// Registra eventos específicos del menú (navegación lateral)
-        /// </summary>
-        private void RegisterMenuEvents()
-        {
-            // El menú se maneja principalmente a través de RegisterNavigationEvents
-            // Este método está separado para futuras extensiones específicas del menú
-            
-            // Posibles eventos futuros:
-            // - Hover effects
-            // - Context menus
-            // - Keyboard navigation dentro del menú
-            
-            Debug.Log("[DashboardEventManager] Menu-specific events registered");
-        }
-
-        /// <summary>
-        /// Registra eventos de teclado para accesos rápidos
-        /// </summary>
-        private void RegisterKeyboardEvents()
-        {
-            var root = _uiDocument.rootVisualElement;
-
-            // Registrar eventos de teclado globales para el Dashboard
-            root?.RegisterCallback<KeyDownEvent>(OnKeyDown);
-
-            Debug.Log("[DashboardEventManager] Keyboard events registered");
-        }
-
-        #endregion
-
-        #region Header Event Handlers
-
-        /// <summary>
-        /// Maneja el click del botón de menú
-        /// </summary>
-        private void OnMenuButtonClicked(ClickEvent evt)
-        {
-            Debug.Log("[DashboardEventManager] Menu button clicked");
-            _uiManager.ToggleNavigationMenu();
-        }
-
-        /// <summary>
-        /// Maneja el click de logout
-        /// </summary>
-        private void OnLogoutClicked(ClickEvent evt)
-        {
-            Debug.Log("[DashboardEventManager] Logout clicked");
-            
-            // Confirmar logout a través del orchestrator
-            _orchestrator?.HandleLogoutRequest();
-            
-            // Notificar a sistemas externos si es necesario
-            _onLogoutRequested?.Invoke();
-        }
-
-        #endregion
-        
-
-        /// <summary>
-        /// Maneja el click del botón para ocultar menú
-        /// </summary>
-        private void OnHideMenuButtonClicked(ClickEvent evt)
-        {
-            Debug.Log("[DashboardEventManager] Hide menu button clicked");
-            _uiManager.ToggleNavigationMenu(false);
-        }
-
-        /// <summary>
-        /// Maneja el click en el scrim (área oscura detrás del menú)
-        /// </summary>
-        private void OnScrimClicked(ClickEvent evt)
-        {
-            Debug.Log("[DashboardEventManager] Scrim clicked - closing menu");
-            _uiManager.ToggleNavigationMenu(false);
-        }
-
-        /// <summary>
-        /// Maneja el click en botones de navegación
-        /// </summary>
-        /// <summary>
-/// Maneja el click en botones de navegación
-/// </summary>
-private void OnNavigationButtonClicked(ClickEvent evt, DashboardSection section)
-{
-    Debug.Log($"[DashboardEventManager] Navigation button clicked: {section}");
-    
-    // Actualizar UI para mostrar sección activa
-    _uiManager.UpdateActiveNavigationSection(section);
-    
-    // Cerrar menú después de navegar
-    _uiManager.ToggleNavigationMenu(false);
-    
-
-    var uiController = UIController.Instance;
-    var navManager = NavigationContextManager.Instance;
-    
-    if (uiController != null && navManager != null)
-    {
-        switch (section)
-        {
-            case DashboardSection.Training:
-                // Configurar contexto de Training y navegar a Device Selection
-                navManager.SetContext(NavigationContext.Training);
-                uiController.ShowUI("DeviceSelection");
-                break;
-                
-            case DashboardSection.Operations:
-                // Configurar contexto de Operations y navegar a Device Selection
-                navManager.SetContext(NavigationContext.Operations);
-                uiController.ShowUI("DeviceSelection");
-                break;
-                
-            case DashboardSection.Reports:
-                // Para Reports, configurar contexto pero permanecer en Dashboard por ahora
-                // (hasta que se implemente Reports UI)
-                navManager.SetContext(NavigationContext.Reports);
-                Debug.Log("[DashboardEventManager] Reports section - staying in Dashboard for now");
-                break;
-                
-            case DashboardSection.Settings:
-                // Para Settings, configurar contexto pero permanecer en Dashboard por ahora
-                navManager.SetContext(NavigationContext.Settings);
-                Debug.Log("[DashboardEventManager] Settings section - staying in Dashboard for now");
-                break;
-                
-            case DashboardSection.Support:
-                Debug.Log("[DashboardEventManager] Support section - no action defined");
-                break;
-                
-            case DashboardSection.Main:
-            default:
-                // Permanecer en Dashboard
-                navManager.SetContext(NavigationContext.Dashboard);
-                break;
-        }
-    }
-    else
-    {
-        Debug.LogWarning("[DashboardEventManager] UIController or NavigationContextManager not available");
-        
-        // Fallback: notificar al orchestrator (método anterior)
-        _orchestrator?.HandleNavigationRequest(section);
-    }
-    
-    // Notificar a sistemas externos
-    _onNavigationRequested?.Invoke(section);
-}
-
-
-
-        #region Device Control Event Handlers
-
-        /// <summary>
-        /// Maneja navegación hacia el dispositivo anterior
-        /// </summary>
-        private void OnDeviceNavLeftClicked(ClickEvent evt)
-        {
-            Debug.Log("[DashboardEventManager] Device nav left clicked");
-            _orchestrator?.HandleDeviceNavigationLeft();
-        }
-
-        /// <summary>
-        /// Maneja navegación hacia el siguiente dispositivo
-        /// </summary>
-        private void OnDeviceNavRightClicked(ClickEvent evt)
-        {
-            Debug.Log("[DashboardEventManager] Device nav right clicked");
-            _orchestrator?.HandleDeviceNavigationRight();
-        }
-
-        /// <summary>
-        /// Maneja click en el área de visualización del dispositivo
-        /// </summary>
-        private void OnDeviceVisualizationClicked(ClickEvent evt)
-        {
-            Debug.Log("[DashboardEventManager] Device visualization clicked");
-            
-            // Aquí se puede implementar lógica para:
-            // - Mostrar detalles del dispositivo
-            // - Abrir panel de control avanzado
-            // - Cambiar vista de visualización
-            
-            _orchestrator?.HandleDeviceVisualizationClick();
-        }
-
-        #endregion
-
-        #region Keyboard Event Handlers
-
-        /// <summary>
-        /// Maneja eventos de teclado globales
-        /// </summary>
-        private void OnKeyDown(KeyDownEvent evt)
-        {
-            // Atajos de teclado útiles para el Dashboard
-            switch (evt.keyCode)
-            {
-                case KeyCode.Escape:
-                    // Cerrar menú si está abierto
-                    if (_uiManager.IsNavigationMenuVisible)
-                    {
-                        _uiManager.ToggleNavigationMenu(false);
-                        evt.StopPropagation();
-                    }
-                    break;
-
-                case KeyCode.M:
-                    // Toggle menú con M
-                    if (evt.ctrlKey)
-                    {
-                        _uiManager.ToggleNavigationMenu();
-                        evt.StopPropagation();
-                    }
-                    break;
-
-                case KeyCode.LeftArrow:
-                    // Navegar dispositivo anterior con flecha izquierda
-                    if (evt.ctrlKey)
-                    {
-                        _orchestrator?.HandleDeviceNavigationLeft();
-                        evt.StopPropagation();
-                    }
-                    break;
-
-                case KeyCode.RightArrow:
-                    // Navegar siguiente dispositivo con flecha derecha
-                    if (evt.ctrlKey)
-                    {
-                        _orchestrator?.HandleDeviceNavigationRight();
-                        evt.StopPropagation();
-                    }
-                    break;
-
-                case KeyCode.F5:
-                    // Refresh datos con F5
-                    _orchestrator?.HandleRefreshRequest();
-                    evt.StopPropagation();
-                    break;
-
-                // Atajos numéricos para navegación rápida
-                case KeyCode.Alpha1:
-                    if (evt.ctrlKey) NavigateToSectionByShortcut(DashboardSection.Main, evt);
-                    break;
-                case KeyCode.Alpha2:
-                    if (evt.ctrlKey) NavigateToSectionByShortcut(DashboardSection.Training, evt);
-                    break;
-                case KeyCode.Alpha3:
-                    if (evt.ctrlKey) NavigateToSectionByShortcut(DashboardSection.Operations, evt);
-                    break;
-                case KeyCode.Alpha4:
-                    if (evt.ctrlKey) NavigateToSectionByShortcut(DashboardSection.Reports, evt);
-                    break;
-                case KeyCode.Alpha5:
-                    if (evt.ctrlKey) NavigateToSectionByShortcut(DashboardSection.Support, evt);
-                    break;
-                case KeyCode.Alpha6:
-                    if (evt.ctrlKey) NavigateToSectionByShortcut(DashboardSection.Settings, evt);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Navega a una sección usando atajo de teclado
-        /// </summary>
-        private void NavigateToSectionByShortcut(DashboardSection section, KeyDownEvent evt)
-        {
-            Debug.Log($"[DashboardEventManager] Keyboard shortcut navigation to: {section}");
-            _uiManager.UpdateActiveNavigationSection(section);
-            _orchestrator?.HandleNavigationRequest(section);
-            _onNavigationRequested?.Invoke(section);
-            evt.StopPropagation();
-        }
-
-        #endregion
-
-        #region Widget Events (for future expansion)
-
-        /// <summary>
-        /// Registra eventos específicos de widgets (para futuras expansiones)
-        /// </summary>
-        private void RegisterWidgetEvents()
-        {
-            // Eventos futuros para widgets específicos:
-            // - Click en elementos del widget de IoT para cambiar modos
-            // - Click en actividades recientes para ver detalles
-            // - Hover effects en widgets
-            // - Resize de widgets
-            
-            Debug.Log("[DashboardEventManager] Widget events registered (placeholder for future expansion)");
-        }
-
-        /// <summary>
-        /// Maneja clicks en elementos del widget de IoT
-        /// </summary>
-        private void OnIoTWidgetElementClicked(ClickEvent evt, IoTService service)
-        {
-            Debug.Log($"[DashboardEventManager] IoT widget element clicked: {service}");
-            _orchestrator?.HandleIoTServiceInteraction(service);
-        }
-
-        /// <summary>
-        /// Maneja clicks en actividades recientes
-        /// </summary>
-        private void OnRecentActivityClicked(ClickEvent evt, SystemActivity activity)
-        {
-            Debug.Log($"[DashboardEventManager] Recent activity clicked: {activity.Action}");
-            _orchestrator?.HandleActivityDetailsRequest(activity);
-        }
-
-        #endregion
-
-        #region Event Unregistration
 
         /// <summary>
         /// Desregistra todos los eventos del Dashboard
@@ -452,25 +91,44 @@ private void OnNavigationButtonClicked(ClickEvent evt, DashboardSection section)
             {
                 Debug.Log("[DashboardEventManager] Unregistering Dashboard events...");
 
-                // Header events
-                _uiConfig.MenuButton?.UnregisterCallback<ClickEvent>(OnMenuButtonClicked);
-                _uiConfig.LogoutLabel?.UnregisterCallback<ClickEvent>(OnLogoutClicked);
+                if (_root == null)
+                {
+                    Debug.LogWarning("[DashboardEventManager] Root element is null - cannot unregister events");
+                    return;
+                }
 
-                // Navigation events
-                _uiConfig.HideMenuButton?.UnregisterCallback<ClickEvent>(OnHideMenuButtonClicked);
-                _uiConfig.Scrim?.UnregisterCallback<ClickEvent>(OnScrimClicked);
+                // Eventos principales del menú
+                _root.Q<Button>("MenuButton")?.UnregisterCallback<ClickEvent>(OnMenuButtonClicked);
+                _root.Q<Button>("HideMenuButton")?.UnregisterCallback<ClickEvent>(OnHideMenuButtonClicked);
 
-                // Device control events
-                _uiConfig.DeviceNavLeftButton?.UnregisterCallback<ClickEvent>(OnDeviceNavLeftClicked);
-                _uiConfig.DeviceNavRightButton?.UnregisterCallback<ClickEvent>(OnDeviceNavRightClicked);
-                _uiConfig.DeviceVisualizationBox?.UnregisterCallback<ClickEvent>(OnDeviceVisualizationClicked);
+                // Eventos de navegación principal
+                _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
+                _root.Q<Button>("TrainingButton")?.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
+                _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
+                _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
-                // Keyboard events
-                var root = _uiDocument.rootVisualElement;
-                root?.UnregisterCallback<KeyDownEvent>(OnKeyDown);
+                // Eventos de paneles adicionales
+                _root.Q<Button>("NotificationsButton")?.UnregisterCallback<ClickEvent>(OnNotificationsButtonClicked);
+                _root.Q<Button>("UserProfileButton")?.UnregisterCallback<ClickEvent>(OnUserProfileButtonClicked);
+                _root.Q<Button>("QuickActionsButton")?.UnregisterCallback<ClickEvent>(OnQuickActionsButtonClicked);
+                _root.Q<Button>("StatusOverlayButton")?.UnregisterCallback<ClickEvent>(OnStatusOverlayButtonClicked);
 
-                // Navigation buttons (necesitamos un approach diferente para lambdas)
-                UnregisterNavigationButtons();
+                // Eventos de cierre de paneles
+                _root.Q<Button>("CloseNotificationsButton")?.UnregisterCallback<ClickEvent>(OnCloseNotificationsPanelClicked);
+                _root.Q<Button>("CloseUserProfileButton")?.UnregisterCallback<ClickEvent>(OnCloseUserProfilePanelClicked);
+                _root.Q<Button>("CloseQuickActionsButton")?.UnregisterCallback<ClickEvent>(OnCloseQuickActionsPanelClicked);
+                _root.Q<Button>("CloseStatusOverlayButton")?.UnregisterCallback<ClickEvent>(OnCloseStatusOverlayPanelClicked);
+
+                // Evento de transición del menú de navegación
+                var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
+                navigationMenuPanel?.UnregisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
+
+                // Eventos de clic en el scrim
+                var scrim = _root.Q<VisualElement>("Scrim");
+                scrim?.UnregisterCallback<ClickEvent>(OnScrimClicked);
+
+                // Desregistrar eventos de teclado
+                UnregisterKeyboardEvents(_root);
 
                 Debug.Log("[DashboardEventManager] All events unregistered successfully");
             }
@@ -481,22 +139,239 @@ private void OnNavigationButtonClicked(ClickEvent evt, DashboardSection section)
         }
 
         /// <summary>
-        /// Desregistra eventos de botones de navegación
+        /// Método Cleanup consistente con WelcomeEventManager
         /// </summary>
-        private void UnregisterNavigationButtons()
+        public void Cleanup()
         {
-            // Para lambdas, necesitamos recrear la referencia exacta o usar un approach diferente
-            // Por simplicidad, registraremos los eventos de manera que se puedan desregistrar fácilmente
-            foreach (var kvp in _uiConfig.NavigationButtons)
+            UnregisterEvents();
+            
+            _uiManager = null;
+            _orchestrator = null;
+            _uiDocument = null;
+            _root = null;
+            _onLogoutRequested = null;
+            _onPanelTransitionComplete = null;
+
+            Debug.Log("[DashboardEventManager] Event Manager cleaned up");
+        }
+
+        #endregion
+
+        #region Keyboard Events
+
+        /// <summary>
+        /// Registra eventos de teclado para el Dashboard
+        /// </summary>
+        private void RegisterKeyboardEvents(VisualElement root)
+        {
+            // Escape para cerrar paneles/menú
+            root.RegisterCallback<KeyDownEvent>(OnGlobalKeyDown);
+            
+            // M para toggle del menú (si se quiere)
+            // Aquí puedes agregar más shortcuts de teclado
+        }
+
+        /// <summary>
+        /// Desregistra eventos de teclado
+        /// </summary>
+        private void UnregisterKeyboardEvents(VisualElement root)
+        {
+            root?.UnregisterCallback<KeyDownEvent>(OnGlobalKeyDown);
+        }
+
+        /// <summary>
+        /// Maneja eventos globales de teclado
+        /// </summary>
+        private void OnGlobalKeyDown(KeyDownEvent evt)
+        {
+            switch (evt.keyCode)
             {
-                var button = kvp.Value;
-                if (button != null)
+                case KeyCode.Escape:
+                    HandleEscapeKey();
+                    break;
+                    
+                case KeyCode.M when evt.ctrlKey: // Ctrl+M para toggle menú
+                    _uiManager.ToggleNavigationMenu();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Maneja la tecla Escape
+        /// </summary>
+        private void HandleEscapeKey()
+        {
+            // Cerrar panel actual o menú lateral
+            if (_uiManager.CurrentActivePanel != IDashboardOps.PanelType.None)
+            {
+                if (_uiManager.NavigationMenuOpen)
                 {
-                    // Nota: Para desregistrar lambdas correctamente, necesitaríamos almacenar las referencias
-                    // Por ahora, esto es un placeholder para la implementación completa
-                    Debug.Log($"[DashboardEventManager] Unregistering navigation button: {kvp.Key}");
+                    _uiManager.HideNavigationMenu();
+                }
+                else
+                {
+                    _uiManager.CloseCurrentPanel();
                 }
             }
+        }
+
+        #endregion
+
+        #region Main Navigation Events
+
+        /// <summary>
+        /// Abre el menú lateral de navegación
+        /// </summary>
+        private void OnMenuButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowNavigationMenu();
+        }
+
+        /// <summary>
+        /// Cierra el menú lateral de navegación
+        /// </summary>
+        private void OnHideMenuButtonClicked(ClickEvent evt)
+        {
+            _uiManager.HideNavigationMenu();
+        }
+
+        /// <summary>
+        /// Maneja clic en el scrim para cerrar paneles
+        /// </summary>
+        private void OnScrimClicked(ClickEvent evt)
+        {
+            // Solo cerrar si el clic fue directamente en el scrim, no en sus hijos
+            if (evt.target == evt.currentTarget)
+            {
+                _uiManager.CloseCurrentPanel();
+            }
+        }
+
+        #endregion
+
+        #region Navigation Action Events
+
+        /// <summary>
+        /// Inicia modo Operations
+        /// </summary>
+        private void OnOperationsButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Operations button clicked - executing navigation");
+            _orchestrator.HandleOperationsClick();
+        }
+
+        /// <summary>
+        /// Inicia modo Training
+        /// </summary>
+        private void OnTrainingButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Training button clicked - executing navigation");
+            _orchestrator.HandleTrainingClick();
+        }
+
+        /// <summary>
+        /// Abre Settings
+        /// </summary>
+        private void OnSettingsButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Settings button clicked - executing navigation");
+            _orchestrator.HandleSettingsClick();
+        }
+
+        /// <summary>
+        /// Ejecuta Logout
+        /// </summary>
+        private void OnLogoutButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Logout button clicked - executing logout");
+            _orchestrator.HandleLogoutClick();
+        }
+
+        #endregion
+
+        #region Panel Events
+
+        /// <summary>
+        /// Abre panel de notificaciones
+        /// </summary>
+        private void OnNotificationsButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowPanel(IDashboardOps.PanelType.Notifications);
+        }
+
+        /// <summary>
+        /// Abre panel de perfil de usuario
+        /// </summary>
+        private void OnUserProfileButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowPanel(IDashboardOps.PanelType.UserProfile);
+        }
+
+        /// <summary>
+        /// Abre panel de acciones rápidas
+        /// </summary>
+        private void OnQuickActionsButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowPanel(IDashboardOps.PanelType.QuickActions);
+        }
+
+        /// <summary>
+        /// Abre panel de estado de IoT
+        /// </summary>
+        private void OnStatusOverlayButtonClicked(ClickEvent evt)
+        {
+            _uiManager.ShowPanel(IDashboardOps.PanelType.StatusOverlay);
+        }
+
+        #endregion
+
+        #region Panel Close Events
+
+        /// <summary>
+        /// Cierra panel de notificaciones
+        /// </summary>
+        private void OnCloseNotificationsPanelClicked(ClickEvent evt)
+        {
+            _uiManager.HidePanel(IDashboardOps.PanelType.Notifications);
+        }
+
+        /// <summary>
+        /// Cierra panel de perfil de usuario
+        /// </summary>
+        private void OnCloseUserProfilePanelClicked(ClickEvent evt)
+        {
+            _uiManager.HidePanel(IDashboardOps.PanelType.UserProfile);
+        }
+
+        /// <summary>
+        /// Cierra panel de acciones rápidas
+        /// </summary>
+        private void OnCloseQuickActionsPanelClicked(ClickEvent evt)
+        {
+            _uiManager.HidePanel(IDashboardOps.PanelType.QuickActions);
+        }
+
+        /// <summary>
+        /// Cierra panel de estado de IoT
+        /// </summary>
+        private void OnCloseStatusOverlayPanelClicked(ClickEvent evt)
+        {
+            _uiManager.HidePanel(IDashboardOps.PanelType.StatusOverlay);
+        }
+
+        #endregion
+
+        #region Transition Events
+
+        /// <summary>
+        /// Maneja el final de la transición del menú de navegación
+        /// </summary>
+        private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
+        {
+            // Similar al patrón de Welcome - notificar completion
+            _onPanelTransitionComplete?.Invoke(_uiManager.CurrentActivePanel);
+            
+            // Si no hay paneles visibles, el UIManager ya maneja ocultar el container
         }
 
         #endregion
@@ -512,28 +387,6 @@ private void OnNavigationButtonClicked(ClickEvent evt, DashboardSection section)
         /// Orchestrator asociado
         /// </summary>
         public DashboardOrchestrator Orchestrator => _orchestrator;
-
-        #endregion
-
-        #region Cleanup
-
-        /// <summary>
-        /// Limpia recursos del Event Manager
-        /// </summary>
-        public void Cleanup()
-        {
-            UnregisterEvents();
-            
-            _uiManager = null;
-            _orchestrator = null;
-            _uiDocument = null;
-            _uiConfig = null;
-            _onLogoutRequested = null;
-            _onNavigationRequested = null;
-            _onDeviceSelectionChanged = null;
-
-            Debug.Log("[DashboardEventManager] Event Manager cleaned up");
-        }
 
         #endregion
     }

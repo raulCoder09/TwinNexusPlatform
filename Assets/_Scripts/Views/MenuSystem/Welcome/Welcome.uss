@@ -382,7 +382,7 @@
     -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     font-size: 28px;
-    color: rgb(0, 255, 0);
+    color: rgb(0, 0, 0);
     background-color: rgb(0, 0, 0);
     border-top-width: 2px;
     border-right-width: 2px;

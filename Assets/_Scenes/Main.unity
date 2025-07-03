@@ -185,9 +185,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6588983}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e24868a3a89540b4b1a012977837a71, type: 3}
+  m_Script: {fileID: 11500000, guid: ec64fa27bb1b45089f6b42e71f40778b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.DashboardController.DashboardOrchestrator
 --- !u!1 &39795185
 GameObject:
   m_ObjectHideFlags: 0
@@ -986,60 +986,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a01c3a75b3d454324ae563ab2b2e46fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.S3Test
-  uploadTextAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: a983f19b-dc2f-42b3-a8fe-122b76c77da4
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  uploadImageAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: b27c4e1f-fc41-428b-b7f0-c6bd251d1565
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  downloadLastAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 6b224cb0-2e73-4ce4-ad6f-0d4ff7ebba26
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  downloadSpecificAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 82e830b5-7f39-4dfe-a7c7-962b6322d0f2
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  listFilesAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: f4adf0c8-fe71-4f61-b69d-ef80584f17cd
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  deleteAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 9c896e91-e74b-4ce3-be1b-b406827e9c92
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
 --- !u!4 &1058238813
 Transform:
   m_ObjectHideFlags: 0
@@ -1757,25 +1703,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7c43f11db3b46c6b5039b681c46f1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.LambdaTest
-  _testAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: c1ab40a5-1563-46b6-981b-be9111e72f80
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  functionName: test2
-  _executeFunctionLambda:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 69e80af5-cc39-4917-a98e-42b57d19e348
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
 --- !u!4 &2033088598
 Transform:
   m_ObjectHideFlags: 0
