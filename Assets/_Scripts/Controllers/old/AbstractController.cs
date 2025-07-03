@@ -1,3 +1,4 @@
+using _Scripts.Controllers.SettingsController;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,7 +23,7 @@ namespace _Scripts.Controller
         private Button _trainingButton;
         private Button _settingsButton;
         #endregion
-        private SettingsController _settingsController;
+        private SettingsOrchestrator _oldSettingsController;
         private void Awake()
         {
             GetUiComponents();
@@ -39,7 +40,7 @@ namespace _Scripts.Controller
         }
         private void FindObjects()
         {
-            _settingsController=GameObject.FindGameObjectWithTag("Settings").GetComponent<SettingsController>();
+            _oldSettingsController=GameObject.FindGameObjectWithTag("Settings").GetComponent<SettingsOrchestrator>();
         }
         private void RegisterEvents()
         {
@@ -77,7 +78,7 @@ namespace _Scripts.Controller
         {
             HideUi();
             HideMenu(evt);
-            _settingsController.ShowUi(); 
+            _oldSettingsController.ShowUi(); 
         }
 
         private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)

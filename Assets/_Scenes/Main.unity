@@ -499,7 +499,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1734392420}
-  - {fileID: 1793826479}
   - {fileID: 39795187}
   - {fileID: 970288466}
   - {fileID: 60426652}
@@ -698,6 +697,7 @@ Transform:
   - {fileID: 1854782538}
   - {fileID: 6588985}
   - {fileID: 50515949}
+  - {fileID: 1793826479}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &692204247
@@ -1448,7 +1448,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1793826478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1486,7 +1486,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 230974503}
+  m_Father: {fileID: 428813212}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1793826480
 MonoBehaviour:
@@ -1497,9 +1497,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1793826477}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26aaaebbf52094e65b3a3ebc948d6b38, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d970bf7bc31467f9f52944ae7e694c3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SettingsController
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.SettingsController.SettingsOrchestrator
 --- !u!1 &1854782536
 GameObject:
   m_ObjectHideFlags: 0

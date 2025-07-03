@@ -5,6 +5,7 @@ using System.Linq;
 using _Scripts.Controller;
 using _Scripts.Controllers.DashboardController;
 using _Scripts.Controllers.DeviceSelectionController;
+using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.WelcomeController;
 using UnityEngine;
 
@@ -61,6 +62,7 @@ namespace _Scripts.Controllers.UiManagement
         [SerializeField] private string _welcomeSceneTag = "Welcome";
         [SerializeField] private string _dashboardSceneTag = "Dashboard";
         [SerializeField] private string _deviceSelectionSceneTag = "DeviceSelection"; 
+        [SerializeField] private string _settingsSceneTag = "Settings"; 
 
         #endregion
 
@@ -80,6 +82,7 @@ namespace _Scripts.Controllers.UiManagement
         private WelcomeOrchestrator _welcomeController;
         private DashboardOrchestrator _dashboardController;
         private DeviceSelectionOrchestrator _deviceSelectionController; 
+        private SettingsOrchestrator _settingsController;
 
         // Lista de controladores que requieren autenticación
         private readonly HashSet<string> _authenticatedControllers = new HashSet<string>();
@@ -87,6 +90,16 @@ namespace _Scripts.Controllers.UiManagement
 
         // Control de inicialización
         private readonly Dictionary<string, bool> _controllerInitializationStatus = new Dictionary<string, bool>();
+        
+        private readonly List<string> _pendingAWSServices = new List<string>
+        {
+            "SESManager",
+            "CloudWatchManager", 
+            "IoTCoreManager",
+            "S3Manager",
+            "LambdaManager",
+            "EC2Manager"
+        };
 
         #endregion
 
@@ -240,6 +253,14 @@ namespace _Scripts.Controllers.UiManagement
                 RegisterUIController("DeviceSelection", _deviceSelectionController, requiresAuth: true);
                 LogDebug("DeviceSelectionController discovered and registered");
             }
+            
+            _settingsController = FindUIController<SettingsOrchestrator>(_settingsSceneTag);
+            if (_settingsController != null)
+            {
+                RegisterUIController("Settings", _settingsController, requiresAuth: true);
+                LogDebug("SettingsController discovered and registered");
+            }
+            
 
 
             // Aquí se pueden agregar más controladores en el futuro:
@@ -933,7 +954,11 @@ namespace _Scripts.Controllers.UiManagement
                 {
                     _welcomeController.OnAuthenticationSuccess -= OnWelcomeAuthenticationSuccess;
                 }
-                
+                if (_settingsController != null)
+                {
+                    _settingsController.OnConfigurationOpened -= OnSettingsConfigurationOpened;
+                    _settingsController.OnLogoutRequested -= OnSettingsLogoutRequested;
+                }
 
 
                 // Limpiar controladores
@@ -969,6 +994,45 @@ namespace _Scripts.Controllers.UiManagement
             {
                 LogError($"Error during UIController cleanup: {ex.Message}");
             }
+        }
+        
+        /// <summary>
+        /// Observa el SettingsController existente
+        /// </summary>
+        private void ObserveSettingsController()
+        {
+            // Buscar instancia existente
+            _settingsController = FindUIController<SettingsOrchestrator>(_settingsSceneTag);
+    
+            if (_settingsController != null)
+            {
+                LogDebug("Found existing SettingsController - observing");
+        
+                // Suscribirse a eventos existentes
+                _settingsController.OnConfigurationOpened += OnSettingsConfigurationOpened;
+                _settingsController.OnLogoutRequested += OnSettingsLogoutRequested;
+            }
+            else
+            {
+                LogDebug("SettingsController not found - will activate later");
+            }
+        }
+
+        /// <summary>
+        /// Maneja cuando se abre una configuración desde Settings
+        /// </summary>
+        private void OnSettingsConfigurationOpened(ISettingsOps.ConfigurationType configurationType)
+        {
+            LogDebug($"Settings configuration opened: {configurationType}");
+        }
+
+        /// <summary>
+        /// Maneja logout desde Settings
+        /// </summary>
+        private void OnSettingsLogoutRequested()
+        {
+            LogDebug("Logout requested from Settings");
+            HandleUserLogout();
         }
         
 

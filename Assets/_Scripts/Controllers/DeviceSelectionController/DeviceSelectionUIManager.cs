@@ -114,13 +114,15 @@ namespace _Scripts.Controllers.DeviceSelectionController
                 _uiConfig.ContextTitleLabel.text = _contextData.GetContextualTitle();
                 _uiConfig.ContextTitleLabel.style.color = _contextData.GetContextualColor();
             }
-            
+    
             if (_uiConfig.SelectedModeLabel != null)
             {
                 var contextDescription = _contextData.GetContextualDescription();
                 _uiConfig.SelectedModeLabel.text = contextDescription;
             }
             
+            UpdateNavigationMenuActiveStates();
+    
             Debug.Log($"[DeviceSelectionUIManager] UI updated for context: {_contextData.CurrentContext}");
         }
 
@@ -204,6 +206,42 @@ namespace _Scripts.Controllers.DeviceSelectionController
         #endregion
 
         #region Navigation Menu Management
+        
+        /// <summary>
+        /// Actualiza el estado activo de los botones del menú según el contexto
+        /// </summary>
+        private void UpdateNavigationMenuActiveStates()
+        {
+            if (_uiConfig.SubpanelsContainer == null) return;
+
+            // Obtener botones del menú de navegación
+            var trainingButton = _uiConfig.SubpanelsContainer.Q<Button>("TrainingButton");
+            var operationsButton = _uiConfig.SubpanelsContainer.Q<Button>("OperationsButton");
+            var dashboardButton = _uiConfig.SubpanelsContainer.Q<Button>("DashboardButton");
+
+            // Limpiar estados activos existentes
+            trainingButton?.RemoveFromClassList("navigation-menu-button-active");  // ✅ CAMBIO
+            operationsButton?.RemoveFromClassList("navigation-menu-button-active"); // ✅ CAMBIO
+            dashboardButton?.RemoveFromClassList("navigation-menu-button-active");  // ✅ CAMBIO
+
+            // Aplicar clase activa según el contexto actual
+            switch (_contextData.CurrentContext)
+            {
+                case IDeviceSelectionOps.LaunchContext.Training:
+                    trainingButton?.AddToClassList("navigation-menu-button-active");  // ✅ CAMBIO
+                    Debug.Log("[DeviceSelectionUIManager] Training button marked as active");
+                    break;
+        
+                case IDeviceSelectionOps.LaunchContext.Operations:
+                    operationsButton?.AddToClassList("navigation-menu-button-active"); // ✅ CAMBIO
+                    Debug.Log("[DeviceSelectionUIManager] Operations button marked as active");
+                    break;
+        
+                default:
+                    // Por defecto, ningún botón activo
+                    break;
+            }
+        }
 
         /// <summary>
         /// Muestra el menú de navegación lateral
@@ -220,10 +258,10 @@ namespace _Scripts.Controllers.DeviceSelectionController
 
             // Mostrar contenedor y aplicar animación
             _uiConfig.SubpanelsContainer.style.display = DisplayStyle.Flex;
-    
+
             // Agregar clase de visible
             menuPanel.Panel.AddToClassList(menuPanel.ShowClass);
-    
+
             // Mostrar scrim si es requerido
             if (menuPanel.RequiresScrim)
             {
@@ -232,7 +270,8 @@ namespace _Scripts.Controllers.DeviceSelectionController
 
             _currentActivePanel = IDeviceSelectionOps.PanelType.NavigationMenu;
             _isNavigationMenuOpen = true;
-    
+            UpdateNavigationMenuActiveStates();
+
             Debug.Log("[DeviceSelectionUIManager] Navigation menu opened");
         }
 

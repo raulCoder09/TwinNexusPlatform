@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.DashboardController
@@ -54,7 +55,7 @@ namespace _Scripts.Controllers.DashboardController
         
         // Referencias a otros controladores
         private UIController _mainUIController;
-        private SettingsController _settingsController;
+        private SettingsOrchestrator _settingsOrchestrator;
         private GameManager _gameManager;
         
         private VisualElement _subpanelsAndSmokeMaskContainer;
@@ -245,7 +246,7 @@ namespace _Scripts.Controllers.DashboardController
 
                 // Limpiar referencias
                 _mainUIController = null;
-                _settingsController = null;
+                _settingsOrchestrator = null;
                 _gameManager = null;
                 _uiConfig = null;
                 _userData = null;
@@ -360,9 +361,9 @@ namespace _Scripts.Controllers.DashboardController
             Hide();
             
             // Mostrar settings controller
-            if (_settingsController != null)
+            if (_settingsOrchestrator != null)
             {
-                _settingsController.ShowUi();
+                _settingsOrchestrator.ShowUi();
             }
             else
             {
@@ -531,7 +532,7 @@ private void InitializePanelConfiguration(VisualElement root)
             }
 
             // Buscar otros controladores (del código original)
-            _settingsController = FindObjectOfType<SettingsController>();
+            _settingsOrchestrator = FindObjectOfType<SettingsOrchestrator>();
             _gameManager = FindObjectOfType<GameManager>();
             
             Debug.Log("Dashboard dependencies search completed");
