@@ -476,7 +476,7 @@ Test ID: {Guid.NewGuid()}";
         private string GetDefaultRecipient()
         {
             // En una implementación real, esto vendría de configuración
-            return "default@example.com";
+            return "mechar09@gmail.com";
         }
 
         #endregion

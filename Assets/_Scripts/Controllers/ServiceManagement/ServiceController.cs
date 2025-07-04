@@ -57,6 +57,9 @@ namespace _Scripts.Controller
         [SerializeField] private bool _enableDebugLogs = true;
         [SerializeField] private bool _autoInitializeServices = true;
         [SerializeField] private float _serviceInitializationDelay = 1.0f;
+        
+        [Header("AWS Configuration")]
+        [SerializeField] private string _awsAccountId = "156041417101";
 
         #endregion
 
