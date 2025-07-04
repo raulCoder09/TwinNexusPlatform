@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.DashboardController
 {
@@ -182,7 +183,7 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// Maneja eventos globales de teclado
         /// </summary>
-        private void OnGlobalKeyDown(KeyDownEvent evt)
+        private async void OnGlobalKeyDown(KeyDownEvent evt)
         {
             switch (evt.keyCode)
             {
@@ -192,6 +193,12 @@ namespace _Scripts.Controllers.DashboardController
                     
                 case KeyCode.M when evt.ctrlKey: // Ctrl+M para toggle menú
                     _uiManager.ToggleNavigationMenu();
+                    var action = _uiManager.NavigationMenuOpen ? "menu_opened" : "menu_closed";
+                    await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                        action: action,
+                        menuItem: null,
+                        context: "keyboard_shortcut_ctrl_m"
+                    );
                     break;
             }
         }
@@ -199,7 +206,7 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// Maneja la tecla Escape
         /// </summary>
-        private void HandleEscapeKey()
+        private async void HandleEscapeKey()
         {
             // Cerrar panel actual o menú lateral
             if (_uiManager.CurrentActivePanel != IDashboardOps.PanelType.None)
@@ -207,10 +214,20 @@ namespace _Scripts.Controllers.DashboardController
                 if (_uiManager.NavigationMenuOpen)
                 {
                     _uiManager.HideNavigationMenu();
+                    await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                        action: "menu_closed",
+                        menuItem: null,
+                        context: "escape_key"
+                    );
                 }
                 else
                 {
                     _uiManager.CloseCurrentPanel();
+                    await UIAnalyticsManager.Instance?.TrackPanelTransition(
+                        fromPanel: _uiManager.CurrentActivePanel.ToString(),
+                        toPanel: "none",
+                        transitionType: "escape_key"
+                    );
                 }
             }
         }
@@ -222,28 +239,43 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// Abre el menú lateral de navegación
         /// </summary>
-        private void OnMenuButtonClicked(ClickEvent evt)
+        private async void OnMenuButtonClicked(ClickEvent evt)
         {
             _uiManager.ShowNavigationMenu();
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_opened",
+                menuItem: null,
+                context: "dashboard_main"
+            );
         }
 
         /// <summary>
         /// Cierra el menú lateral de navegación
         /// </summary>
-        private void OnHideMenuButtonClicked(ClickEvent evt)
+        private async void OnHideMenuButtonClicked(ClickEvent evt)
         {
             _uiManager.HideNavigationMenu();
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_closed",
+                menuItem: null,
+                context: "hide_button_click"
+            );
         }
 
         /// <summary>
         /// Maneja clic en el scrim para cerrar paneles
         /// </summary>
-        private void OnScrimClicked(ClickEvent evt)
+        private async void OnScrimClicked(ClickEvent evt)
         {
             // Solo cerrar si el clic fue directamente en el scrim, no en sus hijos
             if (evt.target == evt.currentTarget)
             {
                 _uiManager.CloseCurrentPanel();
+                await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                    action: "menu_closed",
+                    menuItem: null,
+                    context: "scrim_click"
+                );
             }
         }
 
@@ -254,36 +286,56 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// Inicia modo Operations
         /// </summary>
-        private void OnOperationsButtonClicked(ClickEvent evt)
+        private async void OnOperationsButtonClicked(ClickEvent evt)
         {
             Debug.Log("Operations button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "OperationsButton",
+                context: "navigation_menu"
+            );
             _orchestrator.HandleOperationsClick();
         }
 
         /// <summary>
         /// Inicia modo Training
         /// </summary>
-        private void OnTrainingButtonClicked(ClickEvent evt)
+        private async void OnTrainingButtonClicked(ClickEvent evt)
         {
             Debug.Log("Training button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "TrainingButton", 
+                context: "navigation_menu"
+            );
             _orchestrator.HandleTrainingClick();
         }
 
         /// <summary>
         /// Abre Settings
         /// </summary>
-        private void OnSettingsButtonClicked(ClickEvent evt)
+        private async void OnSettingsButtonClicked(ClickEvent evt)
         {
             Debug.Log("Settings button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "SettingsButton",
+                context: "navigation_menu"
+            );
             _orchestrator.HandleSettingsClick();
         }
 
         /// <summary>
         /// Ejecuta Logout
         /// </summary>
-        private void OnLogoutButtonClicked(ClickEvent evt)
+        private async void OnLogoutButtonClicked(ClickEvent evt)
         {
             Debug.Log("Logout button clicked - executing logout");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "LogoutButton",
+                context: "navigation_menu"
+            );
             _orchestrator.HandleLogoutClick();
         }
 
@@ -294,9 +346,14 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// Abre panel de notificaciones
         /// </summary>
-        private void OnNotificationsButtonClicked(ClickEvent evt)
+        private async void OnNotificationsButtonClicked(ClickEvent evt)
         {
             _uiManager.ShowPanel(IDashboardOps.PanelType.Notifications);
+            await UIAnalyticsManager.Instance?.TrackPanelTransition(
+                fromPanel: "dashboard_main",
+                toPanel: "modal_notifications",
+                transitionType: "button_click"
+            );
         }
 
         /// <summary>
@@ -330,9 +387,14 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// Cierra panel de notificaciones
         /// </summary>
-        private void OnCloseNotificationsPanelClicked(ClickEvent evt)
+        private async void OnCloseNotificationsPanelClicked(ClickEvent evt)
         {
             _uiManager.HidePanel(IDashboardOps.PanelType.Notifications);
+            await UIAnalyticsManager.Instance?.TrackPanelTransition(
+                fromPanel: "modal_notifications",
+                toPanel: "none", 
+                transitionType: "close_button_click"
+            );
         }
 
         /// <summary>

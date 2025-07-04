@@ -522,6 +522,7 @@ Transform:
   - {fileID: 270192446}
   - {fileID: 692204249}
   - {fileID: 1289987569}
+  - {fileID: 2005068995}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &270192444
@@ -702,6 +703,57 @@ Transform:
   - {fileID: 6588985}
   - {fileID: 50515949}
   - {fileID: 1793826479}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &535692126
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 535692128}
+  - component: {fileID: 535692127}
+  m_Layer: 0
+  m_Name: UIAnalyticsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &535692127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535692126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b20b63c597fa4d6ab910f97866777cca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.UiManagement.UIAnalyticsManager
+  _enableTracking: 1
+  _enableDebugLogs: 1
+  _trackAnonymousUsers: 0
+  _trackMenuEvents: 1
+  _trackButtonClicks: 1
+  _trackPanelTransitions: 1
+  _trackFormInteractions: 1
+--- !u!4 &535692128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535692126}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &692204247
@@ -1703,6 +1755,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 230974503}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2005068993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2005068995}
+  - component: {fileID: 2005068994}
+  m_Layer: 0
+  m_Name: CloudWatchTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2005068994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005068993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6e713016071445999df75b196ce4703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.CloudWatchTestScript
+  testKeyPublishMetric: 109
+  testKeyListMetrics: 108
+  testKeyCreateAlarm: 97
+  testKeySendLog: 103
+  testKeyMonitoringLog: 111
+  testKeyUIEvent: 117
+  testKeyTestMetric: 116
+  testKeyTestAlarm: 121
+  _publishMetricButton: {fileID: 0}
+  _listMetricsButton: {fileID: 0}
+  _createAlarmButton: {fileID: 0}
+  _sendLogButton: {fileID: 0}
+  _monitoringLogButton: {fileID: 0}
+  _uiEventButton: {fileID: 0}
+  _testMetricButton: {fileID: 0}
+  _testAlarmButton: {fileID: 0}
+  _testMetricName: UnityTestMetric
+  _testMetricValue: 100
+  _testAlarmName: UnityTestAlarm
+  _testAlarmThreshold: 75
+  _testLogMessage: Test log from Unity CloudWatch
+  _testEventTypes:
+  - UserLogin
+  - ButtonClick
+  - SceneChange
+  - Performance
+  - Error
+  _statusText: {fileID: 0}
+  _metricsText: {fileID: 0}
+  _logsText: {fileID: 0}
+  _enableEditorTesting: 1
+--- !u!4 &2005068995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005068993}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 230974503}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2032840322
 GameObject:
   m_ObjectHideFlags: 0
@@ -1941,3 +2068,4 @@ SceneRoots:
   - {fileID: 428813212}
   - {fileID: 1347529279}
   - {fileID: 230974503}
+  - {fileID: 535692128}
