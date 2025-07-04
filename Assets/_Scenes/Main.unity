@@ -185,9 +185,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6588983}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e24868a3a89540b4b1a012977837a71, type: 3}
+  m_Script: {fileID: 11500000, guid: ec64fa27bb1b45089f6b42e71f40778b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.DashboardController.DashboardOrchestrator
 --- !u!1 &39795185
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 48528215}
   m_Layer: 0
   m_Name: SESManager
-  m_TagString: Untagged
+  m_TagString: SESManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -303,8 +303,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ddcffd60f8ea424d9753bb598c695ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Models.SESManagement.SESManager
-  _senderEmail: noreply@twinnexus.com
+  _senderEmail: mechar09@gmail.com
   _senderName: Twin Nexus Platform
+  _platformName: Twin Nexus Platform
+  _defaultRecipient: mechar09@outlook.com
+  _adminEmail: mechar09@outlook.com
   _enableLogging: 1
   _autoInitializeTemplates: 1
   _maxRetryAttempts: 3
@@ -319,26 +322,14 @@ GameObject:
   m_Component:
   - component: {fileID: 50515949}
   - component: {fileID: 50515948}
-  - component: {fileID: 50515947}
+  - component: {fileID: 50515950}
   m_Layer: 5
   m_Name: DeviceSelection
   m_TagString: DeviceSelection
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &50515947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 50515946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35244b00792bf4dfeb57761c442732fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_IsActive: 1
 --- !u!114 &50515948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,8 +367,20 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 230974503}
+  m_Father: {fileID: 428813212}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &50515950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50515946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40d1b5849eb14f6884dc9e2bee47f44d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.DeviceSelectionController.DeviceSelectionOrchestrator
 --- !u!1 &60426650
 GameObject:
   m_ObjectHideFlags: 0
@@ -498,9 +501,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 50515949}
   - {fileID: 1734392420}
-  - {fileID: 1793826479}
   - {fileID: 39795187}
   - {fileID: 970288466}
   - {fileID: 60426652}
@@ -520,6 +521,8 @@ Transform:
   - {fileID: 2113571590}
   - {fileID: 270192446}
   - {fileID: 692204249}
+  - {fileID: 1289987569}
+  - {fileID: 2005068995}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &270192444
@@ -698,6 +701,59 @@ Transform:
   m_Children:
   - {fileID: 1854782538}
   - {fileID: 6588985}
+  - {fileID: 50515949}
+  - {fileID: 1793826479}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &535692126
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 535692128}
+  - component: {fileID: 535692127}
+  m_Layer: 0
+  m_Name: UIAnalyticsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &535692127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535692126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b20b63c597fa4d6ab910f97866777cca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.UiManagement.UIAnalyticsManager
+  _enableTracking: 1
+  _enableDebugLogs: 1
+  _trackAnonymousUsers: 0
+  _trackMenuEvents: 1
+  _trackButtonClicks: 1
+  _trackPanelTransitions: 1
+  _trackFormInteractions: 1
+--- !u!4 &535692128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535692126}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &692204247
@@ -986,60 +1042,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a01c3a75b3d454324ae563ab2b2e46fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.S3Test
-  uploadTextAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: a983f19b-dc2f-42b3-a8fe-122b76c77da4
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  uploadImageAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: b27c4e1f-fc41-428b-b7f0-c6bd251d1565
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  downloadLastAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 6b224cb0-2e73-4ce4-ad6f-0d4ff7ebba26
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  downloadSpecificAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 82e830b5-7f39-4dfe-a7c7-962b6322d0f2
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  listFilesAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: f4adf0c8-fe71-4f61-b69d-ef80584f17cd
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  deleteAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 9c896e91-e74b-4ce3-be1b-b406827e9c92
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
 --- !u!4 &1058238813
 Transform:
   m_ObjectHideFlags: 0
@@ -1199,6 +1201,75 @@ Transform:
   m_Children: []
   m_Father: {fileID: 230974503}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1289987567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1289987569}
+  - component: {fileID: 1289987568}
+  m_Layer: 0
+  m_Name: SESTestScript
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1289987568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289987567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17d1c7e1e78b4423a5a1fdc44e4ee776, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.SESTestScript
+  testKeyTestEmail: 116
+  testKeyWelcomeEmail: 119
+  testKeyBulkEmail: 98
+  testKeyCriticalAlert: 99
+  testKeyHealth: 104
+  testKeyQuota: 113
+  testKeyCustomEmail: 109
+  testKeyPermissions: 112
+  testKeyReconfigure: 114
+  _sendTestEmailButton: {fileID: 0}
+  _sendWelcomeEmailButton: {fileID: 0}
+  _sendBulkEmailButton: {fileID: 0}
+  _sendCriticalAlertButton: {fileID: 0}
+  _checkHealthButton: {fileID: 0}
+  _getQuotaButton: {fileID: 0}
+  _testEmail: mechar09@gmail.com
+  _bulkTestEmails:
+  - mechar09@gmail.com
+  - mechar09@outlook.com
+  - mechar09@gmail.com
+  _useBasicMode: 1
+  _statusText: {fileID: 0}
+  _quotaText: {fileID: 0}
+  _healthText: {fileID: 0}
+  _enableEditorTesting: 1
+--- !u!4 &1289987569
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289987567}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 230974503}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1347529277
 GameObject:
   m_ObjectHideFlags: 0
@@ -1231,6 +1302,7 @@ MonoBehaviour:
   _enableDebugLogs: 1
   _autoInitializeServices: 1
   _serviceInitializationDelay: 1
+  _awsAccountId: 156041417101
 --- !u!4 &1347529279
 Transform:
   m_ObjectHideFlags: 0
@@ -1502,7 +1574,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1793826478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1540,7 +1612,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 230974503}
+  m_Father: {fileID: 428813212}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1793826480
 MonoBehaviour:
@@ -1551,9 +1623,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1793826477}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26aaaebbf52094e65b3a3ebc948d6b38, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d970bf7bc31467f9f52944ae7e694c3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SettingsController
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.SettingsController.SettingsOrchestrator
 --- !u!1 &1854782536
 GameObject:
   m_ObjectHideFlags: 0
@@ -1683,6 +1755,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 230974503}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2005068993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2005068995}
+  - component: {fileID: 2005068994}
+  m_Layer: 0
+  m_Name: CloudWatchTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2005068994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005068993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6e713016071445999df75b196ce4703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.CloudWatchTestScript
+  testKeyPublishMetric: 109
+  testKeyListMetrics: 108
+  testKeyCreateAlarm: 97
+  testKeySendLog: 103
+  testKeyMonitoringLog: 111
+  testKeyUIEvent: 117
+  testKeyTestMetric: 116
+  testKeyTestAlarm: 121
+  _publishMetricButton: {fileID: 0}
+  _listMetricsButton: {fileID: 0}
+  _createAlarmButton: {fileID: 0}
+  _sendLogButton: {fileID: 0}
+  _monitoringLogButton: {fileID: 0}
+  _uiEventButton: {fileID: 0}
+  _testMetricButton: {fileID: 0}
+  _testAlarmButton: {fileID: 0}
+  _testMetricName: UnityTestMetric
+  _testMetricValue: 100
+  _testAlarmName: UnityTestAlarm
+  _testAlarmThreshold: 75
+  _testLogMessage: Test log from Unity CloudWatch
+  _testEventTypes:
+  - UserLogin
+  - ButtonClick
+  - SceneChange
+  - Performance
+  - Error
+  _statusText: {fileID: 0}
+  _metricsText: {fileID: 0}
+  _logsText: {fileID: 0}
+  _enableEditorTesting: 1
+--- !u!4 &2005068995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005068993}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 230974503}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2032840322
 GameObject:
   m_ObjectHideFlags: 0
@@ -1757,25 +1904,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7c43f11db3b46c6b5039b681c46f1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Testing.LambdaTest
-  _testAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: c1ab40a5-1563-46b6-981b-be9111e72f80
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  functionName: test2
-  _executeFunctionLambda:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 69e80af5-cc39-4917-a98e-42b57d19e348
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
 --- !u!4 &2033088598
 Transform:
   m_ObjectHideFlags: 0
@@ -1822,6 +1950,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SESManager
   _senderEmail: 
   _senderName: 
+  _platformName: Twin Nexus Platform
+  _defaultRecipient: mechar09@gmail.com
+  _adminEmail: mechar09@outlook.com
   _enableLogging: 1
   _autoInitializeTemplates: 1
   _maxRetryAttempts: 3
@@ -1937,3 +2068,4 @@ SceneRoots:
   - {fileID: 428813212}
   - {fileID: 1347529279}
   - {fileID: 230974503}
+  - {fileID: 535692128}

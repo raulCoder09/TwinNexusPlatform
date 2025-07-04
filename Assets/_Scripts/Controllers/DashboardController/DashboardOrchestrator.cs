@@ -1,93 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using _Scripts.Controller;
-using _Scripts.Controllers.UiManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
+using _Scripts.Controller;
+using _Scripts.Controllers.SettingsController;
+using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.DashboardController
 {
     /// <summary>
-    /// Orchestrador principal del Dashboard
-    /// Implementa IDashboardOps y coordina toda la funcionalidad del Dashboard
-    /// Equivalente al WelcomeOrchestrator pero para Dashboard
+    /// Coordinador principal del Dashboard - implementa IDashboardOps e IUIController
+    /// Equivalente a WelcomeOrchestrator pero para Dashboard
     /// </summary>
-    public class DashboardOrchestrator : MonoBehaviour, IDashboardOps
+    public class DashboardOrchestrator : MonoBehaviour, IDashboardOps, IUIController
     {
-        #region Singleton Pattern
-
-        private static DashboardOrchestrator _instance;
-
-        public static DashboardOrchestrator Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = FindObjectOfType<DashboardOrchestrator>();
-                    if (_instance == null)
-                    {
-                        GameObject go = new GameObject("DashboardOrchestrator");
-                        _instance = go.AddComponent<DashboardOrchestrator>();
-                        DontDestroyOnLoad(go);
-                    }
-                }
-                return _instance;
-            }
-        }
-
-        private void Awake()
-        {
-            if (_instance == null)
-            {
-                _instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else if (_instance != this)
-            {
-                Destroy(gameObject);
-            }
-        }
-
-        #endregion
-
-        #region Private Fields
-
-        // Managers y componentes internos
-        private DashboardUIManager _uiManager;
-        private DashboardEventManager _eventManager;
-        private UIDocument _uiDocument;
-        
-        // Data containers
-        private DashboardInfo.UIConfiguration _uiConfig;
-        private DashboardInfo.DeviceData _deviceData;
-        private DashboardInfo.IoTInfrastructureData _iotData;
-        private DashboardInfo.SystemActivityData _activityData;
-        private DashboardInfo.UserSessionData _sessionData;
-        private DashboardInfo.NavigationState _navigationState;
-        private DashboardInfo.DashboardState _dashboardState;
-
-        // Estado interno
-        private bool _isInitialized = false;
-        private bool _isRefreshing = false;
-        private Coroutine _autoRefreshCoroutine;
-
-        // Configuración
-        [Header("Dashboard Configuration")]
-        [SerializeField] private float _autoRefreshInterval = 5.0f;
-        [SerializeField] private bool _enableAutoRefresh = true;
-        [SerializeField] private bool _enableDebugLogs = true;
-
-        #endregion
-
         #region IUIController Implementation
 
-        public bool RequiresAuthentication => true;
+        public bool RequiresAuthentication => true; // Dashboard SÍ requiere autenticación
         public bool IsInitialized => _isInitialized;
-        public bool IsActive => _dashboardState?.IsVisible ?? false;
+        public bool IsActive => _uiConfig?.Body?.style.display == DisplayStyle.Flex;
         public string ControllerName => "DashboardController";
 
         // Events from IUIController
@@ -100,588 +32,550 @@ namespace _Scripts.Controllers.DashboardController
 
         #region IDashboardOps Implementation
 
-        #region Properties
+        public bool IsNavigationMenuOpen => _uiManager?.NavigationMenuOpen ?? false;
+        public IDashboardOps.PanelType CurrentActivePanel => _uiManager?.CurrentActivePanel ?? IDashboardOps.PanelType.None;
 
-        public string CurrentUsername => _sessionData?.Username ?? "Unknown";
-        public bool IsNavigationMenuVisible => _uiManager?.IsNavigationMenuVisible ?? false;
-        public string SelectedDevice => _deviceData?.CurrentSelectedDevice ?? "None";
-
-        #endregion
-
-        #region Events
-
-        public event Action<string, DeviceStatus> OnDeviceStatusChanged;
-        public event Action<string> OnDeviceSelected;
-        public event Action<IoTService, ConnectionStatus> OnIoTServiceStatusChanged;
-        public event Action<SystemActivity> OnNewActivityLogged;
-        public event Action<DashboardSection> OnSectionNavigated;
-        public event Action OnUserLoggedOut;
+        // Events from IDashboardOps
+        public event Action OnNavigationMenuOpened;
+        public event Action OnNavigationMenuClosed;
+        public event Action<IDashboardOps.PanelType> OnPanelTransitionComplete;
+        public event Action OnLogoutRequested;
+        public event Action<DashboardInfo.ConnectionStatus, DashboardInfo.ConnectionStatus, DashboardInfo.ConnectionStatus> OnIoTStatusChanged;
 
         #endregion
+
+        #region Private Fields
+
+        private DashboardInfo.UIConfiguration _uiConfig = new DashboardInfo.UIConfiguration();
+        private DashboardInfo.UserData _userData = new DashboardInfo.UserData();
+        private DashboardInfo.DashboardState _dashboardState = new DashboardInfo.DashboardState();
+        
+        private DashboardUIManager _uiManager;
+        private DashboardEventManager _eventManager;
+        
+        // Referencias a otros controladores
+        private UIController _mainUIController;
+        private SettingsOrchestrator _settingsOrchestrator;
+        private GameManager _gameManager;
+        
+        private VisualElement _subpanelsAndSmokeMaskContainer;
+        private UIDocument _uiDocument;
+        private bool _isInitialized = false;
+
+        // Referencias a Labels de IoT (del código original)
+        private Label _localIoTStatusLabel;
+        private Label _localIoTModeLabel;
+        private Label _vMIoTStatusLabel;
+        private Label _vMIoTModeLabel;
+        private Label _cloudIoTStatusLabel;
+        private Label _cloudIoTModeLabel;
 
         #endregion
 
         #region Unity Lifecycle
 
+        private void Awake()
+        {
+            // Verificar si ya hay una instancia (no singleton como Welcome)
+            Initialize();
+        }
+        
         private void Start()
         {
-            // La inicialización se hace externamente por UIController
-            // Start solo verifica que todo esté listo
-            if (!_isInitialized)
-            {
-                LogDebug("Dashboard not initialized, waiting for external initialization");
-            }
+            // CRÍTICO: Dashboard inicia OCULTO hasta autenticación
+            HideUi();
+            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            
+            Debug.Log("[DashboardOrchestrator] Started - UI hidden until authentication");
         }
-
+        
         private void OnDestroy()
         {
-            if (_instance == this)
-            {
-                Cleanup();
-                _instance = null;
-            }
+            Cleanup();
         }
 
         #endregion
 
-        #region Initialization
+        #region IUIController Lifecycle Methods
 
-        /// <summary>
-        /// Inicializa el Dashboard Orchestrator
-        /// </summary>
         public bool Initialize()
+{
+    try
+    {
+        if (_isInitialized)
         {
-            try
-            {
-                LogDebug("Initializing Dashboard Orchestrator...");
-
-                if (_isInitialized)
-                {
-                    LogDebug("Dashboard already initialized");
-                    return true;
-                }
-
-                // Obtener UIDocument
-                _uiDocument = GetComponent<UIDocument>();
-                if (_uiDocument == null)
-                {
-                    LogError("UIDocument component not found");
-                    return false;
-                }
-
-                // Inicializar datos
-                InitializeDataContainers();
-
-                // Inicializar UI Manager
-                if (!InitializeUIManager())
-                {
-                    LogError("Failed to initialize UI Manager");
-                    return false;
-                }
-
-                // Inicializar Event Manager
-                InitializeEventManager();
-
-                // Configurar usuario desde ServiceController
-                SetupUserSession();
-
-                // Inicializar datos por defecto
-                InitializeDefaultData();
-
-                // Configurar auto-refresh si está habilitado
-                if (_enableAutoRefresh)
-                {
-                    StartAutoRefresh();
-                }
-
-                _isInitialized = true;
-                LogDebug("Dashboard Orchestrator initialized successfully");
-                
-                OnControllerInitialized?.Invoke(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                LogError($"Initialization error: {ex.Message}");
-                OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
-                return false;
-            }
+            Debug.Log("DashboardOrchestrator already initialized");
+            return true;
         }
 
-        /// <summary>
-        /// Inicializa los contenedores de datos
-        /// </summary>
-        private void InitializeDataContainers()
+        Debug.Log("Initializing DashboardOrchestrator...");
+
+        // Obtener componentes UI - CON DEBUG
+        Debug.Log("Step 1: Getting UIDocument component...");
+        _uiDocument = GetComponent<UIDocument>();
+        if (_uiDocument == null)
         {
-            _uiConfig = new DashboardInfo.UIConfiguration();
-            _deviceData = new DashboardInfo.DeviceData();
-            _iotData = new DashboardInfo.IoTInfrastructureData();
-            _activityData = new DashboardInfo.SystemActivityData();
-            _sessionData = new DashboardInfo.UserSessionData();
-            _navigationState = new DashboardInfo.NavigationState();
-            _dashboardState = new DashboardInfo.DashboardState();
-
-            // Configurar eventos internos
-            _dashboardState.OnDashboardInitialized += () => LogDebug("Dashboard state initialized");
-            _dashboardState.OnDashboardShown += () => OnControllerShown?.Invoke(this);
-            _dashboardState.OnDashboardHidden += () => OnControllerHidden?.Invoke(this);
-            _dashboardState.OnError += (error) => OnControllerError?.Invoke(this, error);
-
-            LogDebug("Data containers initialized");
+            Debug.LogError("UIDocument component not found!");
+            return false;
         }
+        Debug.Log("✅ UIDocument found successfully");
 
-        /// <summary>
-        /// Inicializa el UI Manager
-        /// </summary>
-        private bool InitializeUIManager()
+        Debug.Log("Step 2: Getting root visual element...");
+        var root = _uiDocument.rootVisualElement;
+        if (root == null)
         {
-            _uiManager = new DashboardUIManager(_uiConfig, _uiDocument);
-            return _uiManager.Initialize();
+            Debug.LogError("Root visual element is null!");
+            return false;
         }
+        Debug.Log("✅ Root visual element found successfully");
 
-        /// <summary>
-        /// Inicializa el Event Manager
-        /// </summary>
-        private void InitializeEventManager()
+        Debug.Log("Step 3: Getting SubpanelsAndSmokeMaskContainer...");
+        _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+        if (_subpanelsAndSmokeMaskContainer == null)
         {
-            _eventManager = new DashboardEventManager(
-                _uiManager,
-                this,
-                _uiDocument,
-                onLogoutRequested: () => OnUserLoggedOut?.Invoke(),
-                onNavigationRequested: (section) => OnSectionNavigated?.Invoke(section),
-                onDeviceSelectionChanged: (device) => OnDeviceSelected?.Invoke(device)
-            );
-
-            _eventManager.RegisterEvents();
-            LogDebug("Event Manager initialized");
+            Debug.LogError("SubpanelsAndSmokeMaskContainer not found in UI!");
+            return false;
         }
+        Debug.Log("✅ SubpanelsAndSmokeMaskContainer found successfully");
 
-        /// <summary>
-        /// Configura la sesión del usuario usando ServiceController
-        /// </summary>
-        private void SetupUserSession()
+        // Obtener referencias UI - CON DEBUG
+        Debug.Log("Step 4: Getting UI components...");
+        GetUiComponents(root);
+        Debug.Log("✅ UI components obtained");
+        
+        // Inicializar managers - CON DEBUG
+        Debug.Log("Step 5: Creating DashboardUIManager...");
+        if (_uiConfig == null)
         {
-            var userInfo = ServiceController.Instance?.GetUserInfo();
-            if (userInfo.HasValue && userInfo.Value.isAuthenticated)
-            {
-                _sessionData.Username = userInfo.Value.username;
-                _sessionData.UserGroup = userInfo.Value.userGroup;
-                _sessionData.IsAuthenticated = true;
-                _sessionData.LoginTime = DateTime.Now;
-                _sessionData.UpdateActivity();
-
-                LogDebug($"User session configured: {_sessionData.Username}");
-            }
-            else
-            {
-                LogWarning("No authenticated user found in ServiceController");
-            }
+            Debug.LogError("_uiConfig is null!");
+            return false;
         }
+        _uiManager = new DashboardUIManager(_uiConfig);
+        Debug.Log("✅ DashboardUIManager created successfully");
 
-        /// <summary>
-        /// Inicializa datos por defecto del sistema
-        /// </summary>
-        private void InitializeDefaultData()
-        {
-            // Inicializar dispositivos por defecto
-            InitializeDefaultDevices();
+        Debug.Log("Step 6: Creating DashboardEventManager...");
+        _eventManager = new DashboardEventManager(_uiManager, OnLogoutRequestedHandler, OnPanelTransitionCompleteHandler, this);
+        Debug.Log("✅ DashboardEventManager created successfully");
 
-            // Inicializar actividad por defecto
-            InitializeDefaultActivity();
+        Debug.Log("Step 7: Registering events...");
+        _eventManager.RegisterEvents(_uiDocument);
+        Debug.Log("✅ Events registered successfully");
 
-            // Actualizar UI con datos iniciales
-            UpdateUIWithCurrentData();
+        Debug.Log("Step 8: Initializing panel system...");
+        _uiManager.InitializePanelSystem();
+        Debug.Log("✅ Panel system initialized successfully");
+        
+        // Buscar dependencias - CON DEBUG
+        Debug.Log("Step 9: Finding dependencies...");
+        FindDependencies();
+        Debug.Log("✅ Dependencies found");
+        
+        // Configurar estado inicial - CON DEBUG
+        Debug.Log("Step 10: Initializing dashboard state...");
+        InitializeDashboardState();
+        Debug.Log("✅ Dashboard state initialized");
 
-            LogDebug("Default data initialized");
-        }
-
-        /// <summary>
-        /// Inicializa dispositivos por defecto
-        /// </summary>
-        private void InitializeDefaultDevices()
-        {
-            var devices = new[]
-            {
-                new DashboardInfo.DeviceInfo("ARSCARA") { Status = DeviceStatus.Online },
-                new DashboardInfo.DeviceInfo("Robotics kit 1") { Status = DeviceStatus.Online },
-                new DashboardInfo.DeviceInfo("Robotics kit 2") { Status = DeviceStatus.Offline },
-                new DashboardInfo.DeviceInfo("Device 3") { Status = DeviceStatus.Offline }
-            };
-
-            foreach (var device in devices)
-            {
-                _deviceData.Devices[device.Name] = device;
-            }
-
-            _deviceData.CurrentSelectedDevice = "ARSCARA";
-        }
-
-        /// <summary>
-        /// Inicializa actividad por defecto del sistema
-        /// </summary>
-        private void InitializeDefaultActivity()
-        {
-            var defaultActivities = new[]
-            {
-                new SystemActivity("ARSCARA", "simulation started", "at 10:05 am", ActivityType.Info),
-                new SystemActivity("ARSCARA", "monitoring stopped", "at 9:45 am", ActivityType.Warning),
-                new SystemActivity("ARSCARA", "report generated", "at 9:30 am", ActivityType.Success)
-            };
-
-            foreach (var activity in defaultActivities)
-            {
-                _activityData.AddActivity(activity);
-            }
-        }
-
-        #endregion
-
-        #region Lifecycle Methods (IUIController)
+        _isInitialized = true;
+        Debug.Log("✅ DashboardOrchestrator initialized successfully");
+        
+        OnControllerInitialized?.Invoke(this);
+        return true;
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"DashboardOrchestrator initialization error: {ex.Message}");
+        Debug.LogError($"Stack trace: {ex.StackTrace}");
+        OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
+        return false;
+    }
+}
+        
+        
+        
+        
+        
+        
 
         public void Show()
         {
-            if (!_isInitialized)
+            // SEGURIDAD: Verificar autenticación antes de mostrar
+            if (!ServiceController.Instance.IsCognitoAuthenticated)
             {
-                LogError("Cannot show Dashboard - not initialized");
+                Debug.LogError("Cannot show Dashboard - user not authenticated");
+                OnControllerError?.Invoke(this, "Authentication required");
+                
+                // Redirigir a Welcome
+                _mainUIController?.ShowUI("Welcome");
                 return;
             }
 
-            _uiManager.ShowDashboard();
-            _sessionData.UpdateActivity();
-            
-            LogDebug("Dashboard shown");
+            if (_uiConfig?.Body != null)
+            {
+                _uiConfig.Body.style.display = DisplayStyle.Flex;
+                
+                // Actualizar datos de usuario
+                UpdateUserData();
+                
+                OnControllerShown?.Invoke(this);
+                Debug.Log("[DashboardOrchestrator] Dashboard UI shown");
+            }
         }
 
         public void Hide()
         {
-            _uiManager.HideDashboard();
-            LogDebug("Dashboard hidden");
+            if (_uiConfig?.Body != null)
+            {
+                _uiConfig.Body.style.display = DisplayStyle.None;
+                
+                // Cerrar cualquier panel abierto
+                _uiManager?.CloseCurrentPanel();
+                
+                OnControllerHidden?.Invoke(this);
+                Debug.Log("[DashboardOrchestrator] Dashboard UI hidden");
+            }
         }
 
         public void Cleanup()
         {
             try
             {
-                LogDebug("Cleaning up Dashboard Orchestrator...");
-
-                // Detener auto-refresh
-                StopAutoRefresh();
-
                 // Limpiar managers
                 _eventManager?.Cleanup();
-                _uiManager?.Cleanup();
+                _uiManager = null;
+                _eventManager = null;
 
-                // Limpiar datos
+                // Limpiar referencias
+                _mainUIController = null;
+                _settingsOrchestrator = null;
+                _gameManager = null;
                 _uiConfig = null;
-                _deviceData = null;
-                _iotData = null;
-                _activityData = null;
-                _sessionData = null;
-                _navigationState = null;
+                _userData = null;
                 _dashboardState = null;
+                _uiDocument = null;
+                _subpanelsAndSmokeMaskContainer = null;
 
                 _isInitialized = false;
-                LogDebug("Dashboard Orchestrator cleaned up");
+                Debug.Log("[DashboardOrchestrator] Cleanup completed");
             }
             catch (Exception ex)
             {
-                LogError($"Cleanup error: {ex.Message}");
+                Debug.LogError($"[DashboardOrchestrator] Cleanup error: {ex.Message}");
             }
         }
 
         #endregion
 
-        #region Device Management (IDashboardOps)
+        #region IDashboardOps Implementation
 
-        public async Task<bool> RefreshDeviceStatusAsync()
+        public void NavigateToPanel(IDashboardOps.PanelType panelType)
         {
-            if (_isRefreshing)
+            if (!_isInitialized) Initialize();
+            if (_uiManager == null)
             {
-                LogDebug("Device refresh already in progress");
-                return false;
-            }
-
-            try
-            {
-                _isRefreshing = true;
-                LogDebug("Refreshing device status...");
-
-                // Simular consulta a servicios reales (IoT, ServiceController, etc.)
-                await Task.Delay(500); // Simular latencia de red
-
-                // Actualizar estados de dispositivos
-                UpdateDeviceStatuses();
-
-                // Actualizar UI
-                UpdateDeviceUI();
-
-                // Registrar actividad
-                LogActivity(new SystemActivity("System", "device status refresh", "completed", ActivityType.Info));
-
-                LogDebug("Device status refreshed successfully");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error refreshing device status: {ex.Message}");
-                return false;
-            }
-            finally
-            {
-                _isRefreshing = false;
-            }
-        }
-
-        public void SelectDevice(string deviceName)
-        {
-            if (string.IsNullOrEmpty(deviceName) || !_deviceData.Devices.ContainsKey(deviceName))
-            {
-                LogWarning($"Invalid device name: {deviceName}");
+                Debug.LogError("UI manager not initialized");
                 return;
             }
 
-            var previousDevice = _deviceData.CurrentSelectedDevice;
-            _deviceData.CurrentSelectedDevice = deviceName;
-
-            // Actualizar UI
-            var deviceInfo = _deviceData.Devices[deviceName];
-            _uiManager.UpdateSelectedDevice(deviceInfo);
-
-            // Registrar actividad
-            LogActivity(new SystemActivity(deviceName, "device selected", $"switched from {previousDevice}", ActivityType.Info));
-
-            // Disparar evento
-            OnDeviceSelected?.Invoke(deviceName);
-
-            LogDebug($"Device selected: {deviceName}");
+            _uiManager.ShowPanel(panelType);
         }
 
-        public List<string> GetAvailableDevices()
+        public void CloseCurrentPanel()
         {
-            return _deviceData.DeviceOrder.Where(name => _deviceData.Devices.ContainsKey(name)).ToList();
+            _uiManager?.CloseCurrentPanel();
         }
 
-        public DeviceStatus GetDeviceStatus(string deviceName)
+        public void SwitchPanel(IDashboardOps.PanelType fromPanel, IDashboardOps.PanelType toPanel)
         {
-            return _deviceData.Devices.TryGetValue(deviceName, out var device) ? device.Status : DeviceStatus.Unknown;
+            _uiManager?.SwitchPanel(fromPanel, toPanel);
         }
 
-        /// <summary>
-        /// Actualiza los estados de dispositivos (simulado)
-        /// </summary>
-        private void UpdateDeviceStatuses()
+        public void ShowNavigationMenu()
         {
-            foreach (var kvp in _deviceData.Devices)
-            {
-                var device = kvp.Value;
-                var previousStatus = device.Status;
-
-                // Simular cambios de estado aleatorios para demo
-                if (UnityEngine.Random.value < 0.1f) // 10% chance de cambio
-                {
-                    device.Status = (DeviceStatus)UnityEngine.Random.Range(1, 4); // Online, Offline, Busy
-                    device.LastUpdate = DateTime.Now;
-
-                    if (device.Status != previousStatus)
-                    {
-                        OnDeviceStatusChanged?.Invoke(device.Name, device.Status);
-                        LogActivity(new SystemActivity(device.Name, "status changed", $"from {previousStatus} to {device.Status}", ActivityType.Info));
-                    }
-                }
-            }
+            _uiManager?.ShowNavigationMenu();
+            OnNavigationMenuOpened?.Invoke();
         }
 
-        /// <summary>
-        /// Actualiza la UI con información actual de dispositivos
-        /// </summary>
-        private void UpdateDeviceUI()
+        public void HideNavigationMenu()
         {
-            // Actualizar dispositivo seleccionado
-            if (_deviceData.Devices.TryGetValue(_deviceData.CurrentSelectedDevice, out var selectedDevice))
-            {
-                _uiManager.UpdateSelectedDevice(selectedDevice);
-            }
+            _uiManager?.HideNavigationMenu();
+            OnNavigationMenuClosed?.Invoke();
+        }
 
-            // Actualizar lista de estado del sistema
-            _uiManager.UpdateSystemDevicesList(_deviceData.Devices);
+        public void StartOperations()
+        {
+            HandleOperationsClick();
+        }
+
+        public void StartTraining()
+        {
+            HandleTrainingClick();
+        }
+
+        public void OpenSettings()
+        {
+            HandleSettingsClick();
+        }
+
+        public void Logout()
+        {
+            HandleLogoutClick();
         }
 
         #endregion
 
-        #region IoT Infrastructure (IDashboardOps)
+        #region Public Event Handlers (Called by EventManager)
 
-        public async Task RefreshIoTInfrastructureAsync()
+        /// <summary>
+        /// Maneja clic en botón Operations
+        /// </summary>
+        public void HandleOperationsClick()
         {
-            try
-            {
-                LogDebug("Refreshing IoT infrastructure...");
-
-                // Simular consulta a servicios IoT reales
-                await Task.Delay(300);
-
-                // Actualizar estados IoT (simulado)
-                UpdateIoTServiceStatuses();
-
-                // Actualizar UI
-                _uiManager.UpdateIoTServicesStatus(_iotData.Services);
-
-                LogDebug("IoT infrastructure refreshed");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error refreshing IoT infrastructure: {ex.Message}");
-            }
+            var parameters = new Dictionary<string, object> {
+                ["context"] = "Operations", 
+                ["sourceController"] = "Dashboard"
+            };
+            _mainUIController?.ShowUI("DeviceSelection", parameters);
         }
 
-        public Dictionary<IoTService, ConnectionStatus> GetIoTServicesStatus()
+        /// <summary>
+        /// Maneja clic en botón Training
+        /// </summary>
+        public void HandleTrainingClick()
         {
-            return _iotData.Services.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Status);
+            var parameters = new Dictionary<string, object> {
+                ["context"] = "Training",
+                ["sourceController"] = "Dashboard"
+            };
+            _mainUIController?.ShowUI("DeviceSelection", parameters);
         }
 
-        public async Task<bool> SetIoTServiceModeAsync(IoTService service, OperationMode mode)
+        /// <summary>
+        /// Maneja clic en botón Settings
+        /// </summary>
+        public void HandleSettingsClick()
         {
-            try
+            Debug.Log("Settings button clicked - opening settings");
+            
+            // Cerrar menú y ocultar dashboard
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            // Mostrar settings controller
+            if (_settingsOrchestrator != null)
             {
-                LogDebug($"Setting {service} mode to {mode}");
-
-                if (!_iotData.Services.TryGetValue(service, out var serviceInfo))
-                {
-                    LogWarning($"IoT service not found: {service}");
-                    return false;
-                }
-
-                // Simular cambio de modo
-                await Task.Delay(200);
-
-                var previousMode = serviceInfo.Mode;
-                serviceInfo.Mode = mode;
-                serviceInfo.LastUpdate = DateTime.Now;
-
-                // Actualizar UI
-                _uiManager.UpdateIoTServicesStatus(_iotData.Services);
-
-                // Registrar actividad
-                LogActivity(new SystemActivity(service.ToString(), "mode changed", $"from {previousMode} to {mode}", ActivityType.Info));
-
-                LogDebug($"IoT service mode updated: {service} = {mode}");
-                return true;
+                _settingsOrchestrator.ShowUi();
             }
-            catch (Exception ex)
+            else
             {
-                LogError($"Error setting IoT service mode: {ex.Message}");
-                return false;
+                // Fallback: usar UIController
+                _mainUIController?.ShowUI("Settings");
             }
         }
 
         /// <summary>
-        /// Actualiza estados de servicios IoT (simulado)
+        /// Maneja clic en botón Logout
         /// </summary>
-        private void UpdateIoTServiceStatuses()
+        public void HandleLogoutClick()
         {
-            foreach (var kvp in _iotData.Services)
+            Debug.Log("🔴 Dashboard HandleLogoutClick() called");
+    
+            // Cerrar menú y ocultar dashboard
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // ✅ CAMBIO: Llamar a UIController en lugar de hacer logout directo
+            var uiController = UIController.Instance;
+            if (uiController != null)
             {
-                var service = kvp.Key;
-                var serviceInfo = kvp.Value;
-                var previousStatus = serviceInfo.Status;
-
-                // Simular cambios de estado
-                if (UnityEngine.Random.value < 0.05f) // 5% chance de cambio
-                {
-                    var statuses = new[] { ConnectionStatus.Connected, ConnectionStatus.Disconnected, ConnectionStatus.Error };
-                    serviceInfo.Status = statuses[UnityEngine.Random.Range(0, statuses.Length)];
-                    serviceInfo.LastUpdate = DateTime.Now;
-
-                    if (serviceInfo.Status != previousStatus)
-                    {
-                        OnIoTServiceStatusChanged?.Invoke(service, serviceInfo.Status);
-                        LogActivity(new SystemActivity(service.ToString(), "connection status", $"changed to {serviceInfo.Status}", ActivityType.Info));
-                    }
-                }
+                Debug.Log("🔴 Calling UIController.HandleUserLogout()");
+                // Necesitamos hacer público el método o crear un método público
+                uiController.RequestLogout(); // Nuevo método público
             }
+            else
+            {
+                Debug.Log("🔴 UIController not found - doing direct logout");
+                // Fallback al método anterior
+                ServiceController.Instance?.CognitoManager?.SignOut();
+            }
+    
+            // Notificar evento
+            OnLogoutRequested?.Invoke();
         }
 
         #endregion
 
-        #region System Activity (IDashboardOps)
+        #region Private Implementation Methods
 
-        public List<SystemActivity> GetRecentActivity(int maxItems = 10)
+        /// <summary>
+        /// Obtiene componentes UI del Dashboard
+        /// </summary>
+        private void GetUiComponents(VisualElement root)
         {
-            return _activityData.GetRecentActivities(maxItems);
+            Debug.Log("Getting UI components...");
+    
+            // Contenedores principales
+            Debug.Log("Getting Body...");
+            _uiConfig.Body = root.Q<VisualElement>("Body");
+            Debug.Log($"Body found: {_uiConfig.Body != null}");
+    
+            Debug.Log("Setting SubpanelsContainer...");
+            _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
+            Debug.Log($"SubpanelsContainer set: {_uiConfig.SubpanelsContainer != null}");
+    
+            Debug.Log("Getting Scrim...");
+            _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
+            Debug.Log($"Scrim found: {_uiConfig.Scrim != null}");
+    
+            Debug.Log("Getting MainContentArea...");
+            _uiConfig.MainContentArea = root.Q<VisualElement>("MainContentArea");
+            Debug.Log($"MainContentArea found: {_uiConfig.MainContentArea != null}");
+    
+            Debug.Log("Getting StatusBar...");
+            _uiConfig.StatusBar = root.Q<VisualElement>("StatusBar");
+            Debug.Log($"StatusBar found: {_uiConfig.StatusBar != null}");
+
+            // Referencias a Labels de IoT (del código original)
+            Debug.Log("Getting IoT Status Labels...");
+            _localIoTStatusLabel = root.Q<Label>("LocalIoTStatusLabel");
+            _localIoTModeLabel = root.Q<Label>("LocalIoTModeLabel");
+            _vMIoTStatusLabel = root.Q<Label>("VMIoTStatusLabel");
+            _vMIoTModeLabel = root.Q<Label>("VMIoTModeLabel");
+            _cloudIoTStatusLabel = root.Q<Label>("CloudIoTStatusLabel");
+            _cloudIoTModeLabel = root.Q<Label>("CloudlIoTModeLabel");
+    
+            Debug.Log($"IoT Labels found - Local: {_localIoTStatusLabel != null}, VM: {_vMIoTStatusLabel != null}, Cloud: {_cloudIoTStatusLabel != null}");
+
+            // Configurar paneles
+            Debug.Log("Initializing panel configuration...");
+            InitializePanelConfiguration(root);
+    
+            Debug.Log("✅ Dashboard UI components obtained successfully");
         }
 
-        public void LogActivity(SystemActivity activity)
+        /// <summary>
+        /// Inicializa la configuración de paneles
+        /// </summary>
+        /// <summary>
+/// Inicializa la configuración de paneles
+/// </summary>
+private void InitializePanelConfiguration(VisualElement root)
+{
+    var panelsContainer = _subpanelsAndSmokeMaskContainer;
+    
+    // Panel de menú de navegación (SÍ existe en tu UXML)
+    _uiConfig.Panels[IDashboardOps.PanelType.NavigationMenu] = new DashboardInfo.UIConfiguration.PanelData
+    {
+        Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
+        ShowClass = "NavigationMenuPanelinMainScreen",
+        HideClass = "NavigationMenuPanelOutMainScreen", // 👈 CORREGIDO: usa la clase del USS
+        RequiresScrim = true,
+        AnimationDuration = 0.3f
+    };
+
+    // Paneles futuros (NO existen en UXML actual - Panel será null)
+    _uiConfig.Panels[IDashboardOps.PanelType.Notifications] = new DashboardInfo.UIConfiguration.PanelData
+    {
+        Panel = null, // 👈 SERÁ NULL porque no existe en UXML
+        ShowClass = "NotificationsPanelVisible",
+        HideClass = "NotificationsPanelHidden",
+        IsModal = true,
+        RequiresScrim = true
+    };
+
+    _uiConfig.Panels[IDashboardOps.PanelType.UserProfile] = new DashboardInfo.UIConfiguration.PanelData
+    {
+        Panel = null, // 👈 SERÁ NULL porque no existe en UXML
+        ShowClass = "UserProfilePanelVisible",
+        HideClass = "UserProfilePanelHidden",
+        IsModal = true,
+        RequiresScrim = true
+    };
+
+    _uiConfig.Panels[IDashboardOps.PanelType.QuickActions] = new DashboardInfo.UIConfiguration.PanelData
+    {
+        Panel = null, // 👈 SERÁ NULL porque no existe en UXML
+        ShowClass = "QuickActionsPanelVisible",
+        HideClass = "QuickActionsPanelHidden",
+        IsModal = true,
+        RequiresScrim = true
+    };
+
+    _uiConfig.Panels[IDashboardOps.PanelType.StatusOverlay] = new DashboardInfo.UIConfiguration.PanelData
+    {
+        Panel = null, // 👈 SERÁ NULL porque no existe en UXML
+        ShowClass = "StatusOverlayPanelVisible",
+        HideClass = "StatusOverlayPanelHidden",
+        IsModal = true,
+        RequiresScrim = false
+    };
+
+    // Registrar callbacks SOLO para paneles que existen
+    foreach (var kvp in _uiConfig.Panels)
+    {
+        var panelData = kvp.Value;
+        if (panelData.Panel != null) // 👈 VERIFICAR null
         {
-            if (activity == null) return;
-
-            _activityData.AddActivity(activity);
-            _uiManager.UpdateRecentActivities(_activityData.GetRecentActivities(5));
-            OnNewActivityLogged?.Invoke(activity);
-
-            LogDebug($"Activity logged: {activity}");
+            Debug.Log($"Registering callback for panel: {kvp.Key}");
+            panelData.Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
         }
-
-        public void ClearActivityHistory()
+        else
         {
-            _activityData.ClearHistory();
-            _uiManager.UpdateRecentActivities(_activityData.GetRecentActivities(5));
-            LogDebug("Activity history cleared");
+            Debug.Log($"Panel {kvp.Key} not found in UI - skipping callback registration");
         }
+    }
+}
 
-        #endregion
-
-        #region Navigation (IDashboardOps)
-
-        public void ToggleNavigationMenu(bool show)
+        /// <summary>
+        /// Busca dependencias en la escena
+        /// </summary>
+        private void FindDependencies()
         {
-            _uiManager.ToggleNavigationMenu(show);
-        }
-
-        public void NavigateToSection(DashboardSection section)
-        {
-            var previousSection = _navigationState.CurrentSection;
-            _navigationState.NavigateTo(section);
-            
-            _uiManager.UpdateActiveNavigationSection(section);
-            
-            LogActivity(new SystemActivity("System", "navigation", $"navigated to {section}", ActivityType.Info));
-            OnSectionNavigated?.Invoke(section);
-            
-            LogDebug($"Navigated to section: {section} (from {previousSection})");
-        }
-
-        public async Task LogoutAsync()
-        {
-            try
+            // Buscar UIController principal
+            _mainUIController = UIController.Instance;
+            if (_mainUIController == null)
             {
-                LogDebug("Processing logout request...");
-
-                // Registrar actividad de logout
-                LogActivity(new SystemActivity("System", "user logout", $"user {CurrentUsername} logged out", ActivityType.Info));
-
-                // Limpiar datos de sesión local
-                _sessionData.IsAuthenticated = false;
-                _sessionData.UpdateActivity();
-
-                // Cerrar cualquier proceso en curso
-                StopAutoRefresh();
-
-                // Usar ServiceController para logout
-                var cognitoManager = ServiceController.Instance?.CognitoManager;
-                if (cognitoManager != null)
-                {
-                    cognitoManager.SignOut();
-                    LogDebug("User signed out via ServiceController");
-                }
-
-                // Disparar evento
-                OnUserLoggedOut?.Invoke();
-
-                LogDebug("Logout completed");
+                Debug.LogWarning("UIController not found - will try to find it later");
             }
-            catch (Exception ex)
+
+            // Buscar otros controladores (del código original)
+            _settingsOrchestrator = FindObjectOfType<SettingsOrchestrator>();
+            _gameManager = FindObjectOfType<GameManager>();
+            
+            Debug.Log("Dashboard dependencies search completed");
+        }
+
+        /// <summary>
+        /// Inicializa el estado del Dashboard
+        /// </summary>
+        private void InitializeDashboardState()
+        {
+            _dashboardState.IsInitialized = true;
+            _dashboardState.CurrentSection = "Dashboard";
+            _dashboardState.CurrentActivePanel = IDashboardOps.PanelType.None;
+            
+            // Inicializar estados de IoT
+            _dashboardState.LocalIoTStatus = DashboardInfo.ConnectionStatus.Unknown;
+            _dashboardState.VMIoTStatus = DashboardInfo.ConnectionStatus.Unknown;
+            _dashboardState.CloudIoTStatus = DashboardInfo.ConnectionStatus.Unknown;
+            
+            Debug.Log("Dashboard state initialized");
+        }
+
+        /// <summary>
+        /// Actualiza datos del usuario autenticado
+        /// </summary>
+        private void UpdateUserData()
+        {
+            var userInfo = ServiceController.Instance?.GetUserInfo();
+            if (userInfo.HasValue)
             {
-                LogError($"Error during logout: {ex.Message}");
+                _userData.Username = userInfo.Value.username;
+                _userData.UserGroup = userInfo.Value.userGroup;
+                _userData.IsAuthenticated = userInfo.Value.isAuthenticated;
+                _userData.UserRole = ServiceController.Instance?.GetUserRole() ?? "usuarios-basicos";
+                _userData.LastLoginTime = DateTime.Now;
+                
+                Debug.Log($"User data updated - User: {_userData.Username}, Role: {_userData.UserRole}");
             }
         }
 
@@ -690,194 +584,101 @@ namespace _Scripts.Controllers.DashboardController
         #region Event Handlers
 
         /// <summary>
-        /// Maneja navegación hacia el dispositivo anterior
+        /// Maneja el final de transiciones de paneles
         /// </summary>
-        public void HandleDeviceNavigationLeft()
+        private void OnTransitionEndEvent(TransitionEndEvent evt)
         {
-            var devices = GetAvailableDevices();
-            var currentIndex = devices.IndexOf(_deviceData.CurrentSelectedDevice);
+            if (!_uiManager.IsAnyPanelVisible())
+            {
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+                Debug.Log("All panels closed - hiding container");
+            }
+        }
+
+        /// <summary>
+        /// Maneja solicitudes de logout
+        /// </summary>
+        private void OnLogoutRequestedHandler()
+        {
+            OnLogoutRequested?.Invoke();
+        }
+
+        /// <summary>
+        /// Maneja completado de transiciones de paneles
+        /// </summary>
+        private void OnPanelTransitionCompleteHandler(IDashboardOps.PanelType panelType)
+        {
+            OnPanelTransitionComplete?.Invoke(panelType);
+            Debug.Log($"Panel transition complete: {panelType}");
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Muestra la UI principal (equivalente al método original)
+        /// </summary>
+        internal void ShowUi()
+        {
+            Show();
+        }
+
+        /// <summary>
+        /// Oculta la UI principal (equivalente al método original)
+        /// </summary>
+        internal void HideUi()
+        {
+            Hide();
+        }
+
+        /// <summary>
+        /// Actualiza estados de IoT
+        /// </summary>
+        public void UpdateIoTStatus(
+            DashboardInfo.ConnectionStatus localStatus,
+            DashboardInfo.ConnectionStatus vmStatus,
+            DashboardInfo.ConnectionStatus cloudStatus)
+        {
+            _dashboardState.LocalIoTStatus = localStatus;
+            _dashboardState.VMIoTStatus = vmStatus;
+            _dashboardState.CloudIoTStatus = cloudStatus;
             
-            if (currentIndex > 0)
-            {
-                SelectDevice(devices[currentIndex - 1]);
-            }
-            else if (devices.Count > 0)
-            {
-                SelectDevice(devices[devices.Count - 1]); // Wrap around
-            }
-        }
-
-        /// <summary>
-        /// Maneja navegación hacia el siguiente dispositivo
-        /// </summary>
-        public void HandleDeviceNavigationRight()
-        {
-            var devices = GetAvailableDevices();
-            var currentIndex = devices.IndexOf(_deviceData.CurrentSelectedDevice);
+            // Actualizar UI a través del UIManager
+            _uiManager?.UpdateIoTLabels(
+                _localIoTStatusLabel, _localIoTModeLabel,
+                _vMIoTStatusLabel, _vMIoTModeLabel,
+                _cloudIoTStatusLabel, _cloudIoTModeLabel,
+                localStatus, vmStatus, cloudStatus
+            );
             
-            if (currentIndex < devices.Count - 1)
-            {
-                SelectDevice(devices[currentIndex + 1]);
-            }
-            else if (devices.Count > 0)
-            {
-                SelectDevice(devices[0]); // Wrap around
-            }
-        }
-
-        /// <summary>
-        /// Maneja click en visualización de dispositivo
-        /// </summary>
-        public void HandleDeviceVisualizationClick()
-        {
-            LogDebug($"Device visualization clicked for: {SelectedDevice}");
-            // Aquí se puede implementar lógica específica como:
-            // - Mostrar panel de control avanzado
-            // - Cambiar modo de visualización
-            // - Abrir detalles del dispositivo
-        }
-
-        /// <summary>
-        /// Maneja solicitud de navegación
-        /// </summary>
-        public void HandleNavigationRequest(DashboardSection section)
-        {
-            NavigateToSection(section);
-        }
-
-        /// <summary>
-        /// Maneja solicitud de logout
-        /// </summary>
-        public async void HandleLogoutRequest()
-        {
-            await LogoutAsync();
-        }
-
-        /// <summary>
-        /// Maneja solicitud de refresh
-        /// </summary>
-        public async void HandleRefreshRequest()
-        {
-            LogDebug("Manual refresh requested");
-            await RefreshDeviceStatusAsync();
-            await RefreshIoTInfrastructureAsync();
-        }
-
-        /// <summary>
-        /// Maneja interacción con servicio IoT
-        /// </summary>
-        public void HandleIoTServiceInteraction(IoTService service)
-        {
-            LogDebug($"IoT service interaction: {service}");
-            // Implementar lógica específica de interacción
-        }
-
-        /// <summary>
-        /// Maneja solicitud de detalles de actividad
-        /// </summary>
-        public void HandleActivityDetailsRequest(SystemActivity activity)
-        {
-            LogDebug($"Activity details requested: {activity.Action}");
-            // Implementar mostrar detalles de actividad
+            // ✅ CORRECTO - Notificar cambio de estado usando nuestro evento
+            OnIoTStatusChanged?.Invoke(localStatus, vmStatus, cloudStatus);
         }
 
         #endregion
 
-        #region Auto Refresh
+        #region Public Properties
 
         /// <summary>
-        /// Inicia el refresh automático
+        /// UI Manager asociado
         /// </summary>
-        private void StartAutoRefresh()
-        {
-            if (_autoRefreshCoroutine != null)
-            {
-                StopCoroutine(_autoRefreshCoroutine);
-            }
-
-            _autoRefreshCoroutine = StartCoroutine(AutoRefreshRoutine());
-            LogDebug($"Auto-refresh started with interval: {_autoRefreshInterval}s");
-        }
+        public DashboardUIManager UIManager => _uiManager;
 
         /// <summary>
-        /// Detiene el refresh automático
+        /// Event Manager asociado
         /// </summary>
-        private void StopAutoRefresh()
-        {
-            if (_autoRefreshCoroutine != null)
-            {
-                StopCoroutine(_autoRefreshCoroutine);
-                _autoRefreshCoroutine = null;
-                LogDebug("Auto-refresh stopped");
-            }
-        }
+        public DashboardEventManager EventManager => _eventManager;
 
         /// <summary>
-        /// Rutina de refresh automático
+        /// Estado actual del Dashboard
         /// </summary>
-        private IEnumerator AutoRefreshRoutine()
-        {
-            while (_enableAutoRefresh && _isInitialized)
-            {
-                yield return new WaitForSeconds(_autoRefreshInterval);
-                
-                if (_dashboardState.IsVisible && !_isRefreshing)
-                {
-                    RefreshDeviceStatusAsync();
-                    RefreshIoTInfrastructureAsync();
-                }
-            }
-        }
-
-        #endregion
-
-        #region UI Data Update
+        public DashboardInfo.DashboardState DashboardState => _dashboardState;
 
         /// <summary>
-        /// Actualiza toda la UI con datos actuales
+        /// Datos del usuario actual
         /// </summary>
-        private void UpdateUIWithCurrentData()
-        {
-            // Actualizar información de usuario
-            _uiManager.UpdateUsername(_sessionData.Username);
-            _uiManager.UpdateWelcomeMessage(_sessionData.GetWelcomeMessage());
-
-            // Actualizar dispositivo seleccionado
-            if (_deviceData.Devices.TryGetValue(_deviceData.CurrentSelectedDevice, out var selectedDevice))
-            {
-                _uiManager.UpdateSelectedDevice(selectedDevice);
-            }
-
-            // Actualizar servicios IoT
-            _uiManager.UpdateIoTServicesStatus(_iotData.Services);
-
-            // Actualizar actividades recientes
-            _uiManager.UpdateRecentActivities(_activityData.GetRecentActivities(5));
-
-            LogDebug("UI updated with current data");
-        }
-
-        #endregion
-
-        #region Logging
-
-        private void LogDebug(string message)
-        {
-            if (_enableDebugLogs)
-                Debug.Log($"[DashboardOrchestrator] {message}");
-        }
-
-        private void LogWarning(string message)
-        {
-            if (_enableDebugLogs)
-                Debug.LogWarning($"[DashboardOrchestrator] {message}");
-        }
-
-        private void LogError(string message)
-        {
-            if (_enableDebugLogs)
-                Debug.LogError($"[DashboardOrchestrator] {message}");
-        }
+        public DashboardInfo.UserData UserData => _userData;
 
         #endregion
     }

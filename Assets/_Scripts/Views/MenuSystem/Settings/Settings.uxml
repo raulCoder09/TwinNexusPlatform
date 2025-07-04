@@ -1,93 +1,173 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/_Scripts/Views/MenuSystem/Settings/Settings.uss?fileID=7433441132597879392&amp;guid=dc7f6e881b7bc4eb4b8eed75d408d0db&amp;type=3#Settings" />
-    <ui:VisualElement name="Body" style="flex-grow: 1; background-image: none; background-color: rgb(0, 0, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0);">
-        <ui:VisualElement name="Header" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
-            <ui:VisualElement name="MenuPanel" style="flex-grow: 1; width: 25%; height: 100%; align-items: center;">
-                <ui:Button name="MenuButton" text="Menu" style="height: 100%; width: 50%; background-image: none; background-color: rgba(0, 0, 0, 0); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; translate: 0 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; border-left-color: rgb(3, 255, 0); border-right-color: rgb(3, 255, 0); border-top-color: rgb(3, 255, 0); border-bottom-color: rgb(3, 255, 0); color: rgb(4, 201, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 30px;" />
+    <ui:VisualElement name="Body">
+        <ui:VisualElement name="Header">
+            <ui:VisualElement name="MenuPanel">
+                <ui:Button name="MenuButton" text="Menu" />
             </ui:VisualElement>
-            <ui:VisualElement name="PonerAlgo" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel0" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
+            <ui:VisualElement name="PonerAlgo">
+                <ui:Label name="SpareLabel0" text="Settings Configuration" class="selected-mode-ui-name" />
             </ui:VisualElement>
-            <ui:VisualElement name="UsernamePanel" style="flex-grow: 1; width: 25%; height: 100%; -unity-text-align: upper-left; justify-content: center;">
-                <ui:Label name="Username" style="-unity-font-style: bold; -unity-text-outline-color: rgba(0, 0, 0, 0); color: rgb(255, 255, 255); -unity-text-align: middle-center; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;); font-size: 30px;" />
+            <ui:VisualElement name="UsernamePanel">
+                <ui:Label name="Username" />
             </ui:VisualElement>
-            <ui:VisualElement name="LogoutPanel" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="Logout" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; font-size: 30px; -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/Cinzel-VariableFont_wght.ttf?fileID=12800000&amp;guid=4188192a02890489d82f09c0fa1f97ce&amp;type=3#Cinzel-VariableFont_wght&quot;);" />
-            </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement name="Main" style="flex-grow: 1; width: 100%; height: 80%; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
-            <ui:Button text="IoT" name="IoTButton" />
-        </ui:VisualElement>
-        <ui:VisualElement name="Footer" style="flex-grow: 1; width: 100%; height: 10%; flex-direction: row;">
-            <ui:VisualElement name="SparePanel0" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel0" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="SparePanel1" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel1" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="SparePanel2" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel2" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="SparePanel3" style="flex-grow: 1; width: 25%; height: 100%; justify-content: center;">
-                <ui:Label name="SpareLabel3" style="color: rgb(255, 255, 255); font-size: 20px; -unity-text-align: upper-center;" />
+            <ui:VisualElement name="LogoutPanel">
+                <ui:Label name="Logout" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; display: flex; opacity: 1;">
+        <ui:VisualElement name="Main">
+            <ui:VisualElement name="ConfigurationGrid" class="config-grid" style="width: 80%; height: 80%;">
+                <ui:VisualElement class="config-row">
+                    <ui:Button name="IoTButton" text="IoT Configuration" class="config-button config-primary">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="🔧" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="IoT Settings" class="config-title" />
+                            <ui:Label text="Devices &amp; Connections" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="UserConfigButton" text="User Configuration" class="config-button config-primary">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="👤" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="User Profile" class="config-title" />
+                            <ui:Label text="Profile &amp; Preferences" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="CognitoConfigButton" text="Cognito Configuration" class="config-button config-admin">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="🔐" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="Authentication" class="config-title" />
+                            <ui:Label text="AWS Cognito Settings" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement class="config-row">
+                    <ui:Button name="SystemConfigButton" text="System Configuration" class="config-button config-admin">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="⚙️" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="System Settings" class="config-title" />
+                            <ui:Label text="Global Configuration" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="NetworkConfigButton" text="Network Configuration" class="config-button config-admin">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="🌐" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="Network Settings" class="config-title" />
+                            <ui:Label text="Connectivity &amp; Protocols" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="DatabaseConfigButton" text="Database Configuration" class="config-button config-admin">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="🗄️" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="Database Settings" class="config-title" />
+                            <ui:Label text="DB Connections &amp; Schema" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement class="config-row">
+                    <ui:Button name="SecurityConfigButton" text="Security Configuration" class="config-button config-admin">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="🛡️" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="Security Settings" class="config-title" />
+                            <ui:Label text="Access Control &amp; Certs" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="BackupConfigButton" text="Backup Configuration" class="config-button config-admin">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="💾" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="Backup Settings" class="config-title" />
+                            <ui:Label text="Auto-backup &amp; Recovery" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:VisualElement class="config-spacer" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Footer">
+            <ui:VisualElement name="SparePanel0">
+                <ui:Label name="SpareLabel0" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel1">
+                <ui:Label name="SpareLabel1" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel2">
+                <ui:Label name="SpareLabel2" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel3">
+                <ui:Label name="SpareLabel3" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer">
             <ui:VisualElement name="Scrim" class="ScrimTransparent" />
             <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
-                <ui:VisualElement name="NavigationMenu" style="flex-grow: 1; position: relative; width: 25%; height: 100%; translate: 0% 0; background-color: rgb(0, 0, 0); border-top-right-radius: 0; border-bottom-right-radius: 0; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-                    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 30%;">
-                        <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; width: 100%; height: 25%; margin-top: 0; margin-left: 0;">
-                            <ui:Label text="Username" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); -unity-font-style: bold; font-size: 50px; color: rgb(0, 255, 0);" />
+                <ui:VisualElement name="NavigationMenu">
+                    <ui:VisualElement class="nav-header">
+                        <ui:VisualElement class="nav-username-container">
+                            <ui:Label text="Main Menu" class="nav-username-label" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 70%;">
-                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Button text="Dashboard" style="color: rgb(0, 255, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 40px; -unity-font-style: bold; background-color: rgba(255, 255, 255, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                    <ui:VisualElement class="nav-body">
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Dashboard" name="DashboardButton" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement name="TrainingButton" style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Button name="TrainingButton" text="Training" style="font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); color: rgb(0, 255, 0); -unity-font-style: bold; background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement name="TrainingButton" class="nav-button-container">
+                                <ui:Button name="TrainingButton" text="Training" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Button text="Operations" name="OperationsButton" style="-unity-font-style: bold; color: rgb(0, 255, 0); font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Operations" name="OperationsButton" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Button text="Reports" style="-unity-font-style: bold; font-size: 40px; color: rgb(0, 255, 0); -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Reports" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Button text="Support" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); -unity-font-style: bold; font-size: 40px; color: rgb(0, 255, 0); background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Support" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Button text="Settings" name="SettingsButton" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); -unity-font-style: bold; font-size: 40px; color: rgb(0, 255, 0); background-color: rgba(188, 188, 188, 0); border-left-color: rgba(149, 149, 149, 0); border-right-color: rgba(149, 149, 149, 0); border-top-color: rgba(149, 149, 149, 0); border-bottom-color: rgba(149, 149, 149, 0);" />
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Settings" name="SettingsButton" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Button text="Logout" name="LogoutButton" style="-unity-font-style: bold; color: rgb(0, 255, 0); font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Logout" name="LogoutButton" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement style="flex-grow: 1; width: 20%; height: 100%;">
-                                <ui:VisualElement style="flex-grow: 1; width: 50%; height: 50%;" />
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-spacer-container">
+                                <ui:VisualElement class="nav-spacer" />
                             </ui:VisualElement>
-                            <ui:VisualElement style="flex-grow: 1; width: 80%; height: 100%; justify-content: center; align-items: center;">
-                                <ui:Label name="Label" style="-unity-font-style: bold; font-size: 30px;" />
+                            <ui:VisualElement class="nav-label-container">
+                                <ui:Label name="Label" class="nav-label" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:Button name="HideMenuButton" style="width: 75%; height: 100%; background-color: rgba(188, 188, 188, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+                <ui:Button name="HideMenuButton" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

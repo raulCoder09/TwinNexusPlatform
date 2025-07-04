@@ -30,6 +30,7 @@ TagManager:
   - CognitoManager
   - LambdaManager
   - S3Manager
+  - SESManager
   layers:
   - Default
   - TransparentFX

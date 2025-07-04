@@ -45,9 +45,11 @@ namespace _Scripts.Models.SESManagement
         #region Configuration Fields
 
         [Header("SES Configuration")]
-        [SerializeField]
-        internal string _senderEmail = "noreply@twinnexus.com";
+        [SerializeField] internal string _senderEmail = "mechar09@gmail.com";
         [SerializeField] internal string _senderName = "Twin Nexus Platform";
+        [SerializeField] internal string _platformName = "Twin Nexus Platform"; 
+        [SerializeField] internal string _defaultRecipient = "mechar09@gmail.com";
+        [SerializeField] internal string _adminEmail = "mechar09@outlook.com";
         [SerializeField] internal RegionEndpoint _region = RegionEndpoint.USEast1;
         
         [Header("Production Settings")]

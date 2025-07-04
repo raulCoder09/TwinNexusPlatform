@@ -2,8 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using _Scripts.Controller;
 using _Scripts.Controllers.DashboardController;
+using _Scripts.Controllers.DeviceSelectionController;
+using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.WelcomeController;
 using UnityEngine;
 
@@ -59,6 +62,8 @@ namespace _Scripts.Controllers.UiManagement
         [Header("UI Scenes Configuration")]
         [SerializeField] private string _welcomeSceneTag = "Welcome";
         [SerializeField] private string _dashboardSceneTag = "Dashboard";
+        [SerializeField] private string _deviceSelectionSceneTag = "DeviceSelection"; 
+        [SerializeField] private string _settingsSceneTag = "Settings"; 
 
         #endregion
 
@@ -77,6 +82,8 @@ namespace _Scripts.Controllers.UiManagement
         // Referencias específicas
         private WelcomeOrchestrator _welcomeController;
         private DashboardOrchestrator _dashboardController;
+        private DeviceSelectionOrchestrator _deviceSelectionController; 
+        private SettingsOrchestrator _settingsController;
 
         // Lista de controladores que requieren autenticación
         private readonly HashSet<string> _authenticatedControllers = new HashSet<string>();
@@ -84,6 +91,16 @@ namespace _Scripts.Controllers.UiManagement
 
         // Control de inicialización
         private readonly Dictionary<string, bool> _controllerInitializationStatus = new Dictionary<string, bool>();
+        
+        private readonly List<string> _pendingAWSServices = new List<string>
+        {
+            "SESManager",
+            "CloudWatchManager", 
+            "IoTCoreManager",
+            "S3Manager",
+            "LambdaManager",
+            "EC2Manager"
+        };
 
         #endregion
 
@@ -229,6 +246,23 @@ namespace _Scripts.Controllers.UiManagement
                 RegisterUIController("Dashboard", _dashboardController, requiresAuth: true);
                 LogDebug("DashboardController discovered and registered");
             }
+            
+            // Buscar DeviceSelectionOrchestrator
+            _deviceSelectionController = FindUIController<DeviceSelectionOrchestrator>(_deviceSelectionSceneTag);
+            if (_deviceSelectionController != null)
+            {
+                RegisterUIController("DeviceSelection", _deviceSelectionController, requiresAuth: true);
+                LogDebug("DeviceSelectionController discovered and registered");
+            }
+            
+            _settingsController = FindUIController<SettingsOrchestrator>(_settingsSceneTag);
+            if (_settingsController != null)
+            {
+                RegisterUIController("Settings", _settingsController, requiresAuth: true);
+                LogDebug("SettingsController discovered and registered");
+            }
+            
+
 
             // Aquí se pueden agregar más controladores en el futuro:
             // - TrainingController
@@ -318,7 +352,20 @@ namespace _Scripts.Controllers.UiManagement
                 _welcomeController.OnAuthenticationSuccess += OnWelcomeAuthenticationSuccess;
                 LogDebug("Subscribed to WelcomeController authentication events");
             }
+
         }
+        /// <summary>
+        /// Maneja cuando se lanza un dispositivo desde Device Selection
+        /// </summary>
+        private void OnDeviceSelectionDeviceLaunched(string deviceId, string sceneName)
+        {
+            LogDebug($"Device launched from Device Selection: {deviceId} → {sceneName}");
+    
+            // Aquí se puede agregar lógica adicional si es necesario
+            // Por ejemplo, tracking, analytics, cleanup de UI, etc.
+        }
+        
+        #endregion
 
         /// <summary>
         /// Se suscribe a eventos de un controlador específico
@@ -438,15 +485,14 @@ namespace _Scripts.Controllers.UiManagement
                 ShowUI("Welcome");
             }
         }
-
-        #endregion
+        
 
         #region UI Management
 
         /// <summary>
         /// Muestra una UI específica
         /// </summary>
-        public bool ShowUI(string uiName)
+        public bool ShowUI(string uiName, Dictionary<string, object> parameters = null)
         {
             try
             {
@@ -474,6 +520,10 @@ namespace _Scripts.Controllers.UiManagement
                     }
                     return false;
                 }
+                if (uiName == "DeviceSelection" && parameters != null)
+                {
+                    HandleDeviceSelectionParameters(parameters);
+                }
 
                 // Verificar si el controlador está inicializado
                 if (!_controllerInitializationStatus.GetValueOrDefault(uiName, false))
@@ -481,6 +531,10 @@ namespace _Scripts.Controllers.UiManagement
                     LogDebug($"Controller {uiName} not initialized - initializing now");
                     StartCoroutine(InitializeAndShowUICoroutine(uiName, controller));
                     return true;
+                }
+                if (uiName == "DeviceSelection" && parameters != null)
+                {
+                    HandleDeviceSelectionParameters(parameters);
                 }
 
                 // Ejecutar transición
@@ -494,11 +548,35 @@ namespace _Scripts.Controllers.UiManagement
                 return false;
             }
         }
+        
+        /// <summary>
+        /// Maneja parámetros específicos para Device Selection
+        /// </summary>
+        private void HandleDeviceSelectionParameters(Dictionary<string, object> parameters)
+        {
+            if (_deviceSelectionController != null && parameters.ContainsKey("context"))
+            {
+                var context = parameters["context"].ToString();
+                var sourceController = parameters.GetValueOrDefault("sourceController", "Unknown").ToString();
+        
+                if (context == "Training")
+                {
+                    _deviceSelectionController.ConfigureForTraining(sourceController);
+                }
+                else if (context == "Operations")
+                {
+                    _deviceSelectionController.ConfigureForOperations(sourceController);
+                }
+        
+                LogDebug($"DeviceSelection configured for {context} from {sourceController}");
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Inicializa y muestra una UI en secuencia
         /// </summary>
-        private IEnumerator InitializeAndShowUICoroutine(string uiName, IUIController controller)
+        private IEnumerator InitializeAndShowUICoroutine(string uiName, IUIController controller, Dictionary<string, object> parameters = null)
         {
             // Inicializar primero
             yield return StartCoroutine(InitializeControllerCoroutine(uiName, controller));
@@ -518,7 +596,7 @@ namespace _Scripts.Controllers.UiManagement
         /// <summary>
         /// Ejecuta transición entre UIs
         /// </summary>
-        private IEnumerator TransitionToUICoroutine(string uiName, IUIController targetController)
+        private IEnumerator TransitionToUICoroutine(string uiName, IUIController targetController, Dictionary<string, object> parameters = null)
         {
             _isTransitioning = true;
             _previousController = _currentActiveController;
@@ -537,7 +615,7 @@ namespace _Scripts.Controllers.UiManagement
                 // Delay para permitir animaciones de salida
                 yield return new WaitForSeconds(_transitionDelay);
             }
-
+            
             // Mostrar nueva UI
             LogDebug($"Showing new UI: {uiName}");
             
@@ -551,7 +629,27 @@ namespace _Scripts.Controllers.UiManagement
             LogDebug($"UI transition completed: {uiName}");
             _isTransitioning = false;
         }
-
+        
+        /// <summary>
+        /// Configura el Device Selection Controller antes de mostrarlo
+        /// </summary>
+        private void ConfigureDeviceSelectionController(Dictionary<string, object> parameters)
+        {
+            try
+            {
+                LogDebug("Configuring Device Selection Controller");
+        
+                // El DeviceSelectionOrchestrator se configurará automáticamente 
+                // desde el NavigationContextManager en su método Show()
+                // No necesitamos configuración adicional aquí
+        
+                LogDebug("Device Selection Controller configured");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error configuring Device Selection Controller: {ex.Message}");
+            }
+        }
         /// <summary>
         /// Oculta una UI específica
         /// </summary>
@@ -603,8 +701,7 @@ namespace _Scripts.Controllers.UiManagement
 
             _currentActiveController = null;
         }
-
-        #endregion
+        
 
         #region Authentication Management
 
@@ -630,7 +727,7 @@ namespace _Scripts.Controllers.UiManagement
 
             // Transición automática a Dashboard
             ShowUI("Dashboard");
-
+            SendLoginNotificationEmail();
             // Disparar evento
             OnUserAuthenticated?.Invoke();
 
@@ -640,10 +737,18 @@ namespace _Scripts.Controllers.UiManagement
         /// <summary>
         /// Maneja logout del usuario
         /// </summary>
-        private void HandleUserLogout()
+        private async void HandleUserLogout()
         {
-            LogDebug("Handling user logout...");
+            LogDebug("🔴 HandleUserLogout() CALLED - Starting logout process");
+    
+            // Enviar email ANTES de cambiar estados
+            LogDebug("🔴 About to send logout notification email");
+            await SendLogoutNotificationEmail();
+            LogDebug("🔴 Logout notification email sent");
+    
+            // AHORA sí cambiar estados
             _isUserAuthenticated = false;
+            LogDebug("🔴 User authentication state set to false");
 
             // Ocultar UIs autenticadas si está configurado
             if (_autoHideUnauthenticatedUIs)
@@ -657,7 +762,15 @@ namespace _Scripts.Controllers.UiManagement
             // Disparar evento
             OnUserLoggedOut?.Invoke();
 
-            LogDebug("User logout handled successfully");
+            LogDebug("🔴 User logout handled successfully");
+        }
+        /// <summary>
+        /// Solicita logout desde cualquier UI
+        /// </summary>
+        public void RequestLogout()
+        {
+            LogDebug("🔴 RequestLogout() called from external UI");
+            HandleUserLogout();
         }
 
         /// <summary>
@@ -691,6 +804,84 @@ namespace _Scripts.Controllers.UiManagement
             foreach (var controllerName in _authenticatedControllers)
             {
                 HideUI(controllerName);
+            }
+        }
+        
+        /// <summary>
+        /// Envía notificación de login por email
+        /// </summary>
+        private async void SendLoginNotificationEmail()
+        {
+            try
+            {
+                var userInfo = ServiceController.Instance?.GetUserInfo();
+                var sesManager = ServiceController.Instance?.SESManager;
+                
+                if (userInfo?.isAuthenticated == true && sesManager != null)
+                {
+                    await sesManager.SendEmailAsync(
+                        sesManager._adminEmail, // Email configurable
+                        $"Inicio de sesión - {sesManager._platformName}",
+                        $@"Se ha iniciado sesión en {sesManager._platformName}:
+
+Usuario: {userInfo.Value.username}
+Grupo: {userInfo.Value.userGroup}  
+Rol: {ServiceController.Instance?.GetUserRole()}
+Fecha: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
+Plataforma: Unity Application"
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error sending login notification: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Envía notificación de logout por email
+        /// </summary>
+        private async Task SendLogoutNotificationEmail()
+        {
+            LogDebug("🔴 SendLogoutNotificationEmail() called");
+    
+            try
+            {
+                var userInfo = ServiceController.Instance?.GetUserInfo();
+                var sesManager = ServiceController.Instance?.SESManager;
+        
+                LogDebug($"🔴 UserInfo: {userInfo?.username}, SESManager: {sesManager != null}");
+        
+                if (userInfo?.isAuthenticated == true && sesManager != null)
+                {
+                    LogDebug("🔴 Sending logout email...");
+            
+                    var username = userInfo.Value.username;
+                    var userGroup = userInfo.Value.userGroup;
+                    var userRole = ServiceController.Instance?.GetUserRole();
+            
+                    await sesManager.SendEmailAsync(
+                        sesManager._adminEmail,
+                        $"Cierre de sesión - {sesManager._platformName}",
+                        $@"Se ha cerrado sesión en {sesManager._platformName}:
+
+Usuario: {username}
+Grupo: {userGroup}
+Rol: {userRole}
+Fecha: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
+Plataforma: Unity Application"
+                    );
+            
+                    LogDebug($"🔴 Logout notification sent for user: {username}");
+                }
+                else
+                {
+                    LogWarning("🔴 Cannot send logout notification - user not authenticated or SES unavailable");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"🔴 Error sending logout notification: {ex.Message}");
             }
         }
 
@@ -834,8 +1025,7 @@ namespace _Scripts.Controllers.UiManagement
         }
 
         #endregion
-
-        #region Cleanup
+        
 
         /// <summary>
         /// Limpia el UIController
@@ -859,6 +1049,12 @@ namespace _Scripts.Controllers.UiManagement
                 {
                     _welcomeController.OnAuthenticationSuccess -= OnWelcomeAuthenticationSuccess;
                 }
+                if (_settingsController != null)
+                {
+                    _settingsController.OnConfigurationOpened -= OnSettingsConfigurationOpened;
+                    _settingsController.OnLogoutRequested -= OnSettingsLogoutRequested;
+                }
+
 
                 // Limpiar controladores
                 foreach (var kvp in _uiControllers)
@@ -894,6 +1090,46 @@ namespace _Scripts.Controllers.UiManagement
                 LogError($"Error during UIController cleanup: {ex.Message}");
             }
         }
+        
+        /// <summary>
+        /// Observa el SettingsController existente
+        /// </summary>
+        private void ObserveSettingsController()
+        {
+            // Buscar instancia existente
+            _settingsController = FindUIController<SettingsOrchestrator>(_settingsSceneTag);
+    
+            if (_settingsController != null)
+            {
+                LogDebug("Found existing SettingsController - observing");
+        
+                // Suscribirse a eventos existentes
+                _settingsController.OnConfigurationOpened += OnSettingsConfigurationOpened;
+                _settingsController.OnLogoutRequested += OnSettingsLogoutRequested;
+            }
+            else
+            {
+                LogDebug("SettingsController not found - will activate later");
+            }
+        }
+
+        /// <summary>
+        /// Maneja cuando se abre una configuración desde Settings
+        /// </summary>
+        private void OnSettingsConfigurationOpened(ISettingsOps.ConfigurationType configurationType)
+        {
+            LogDebug($"Settings configuration opened: {configurationType}");
+        }
+
+        /// <summary>
+        /// Maneja logout desde Settings
+        /// </summary>
+        private void OnSettingsLogoutRequested()
+        {
+            LogDebug("Logout requested from Settings");
+            HandleUserLogout();
+        }
+        
 
         /// <summary>
         /// Desuscribirse de eventos de un controlador
@@ -905,8 +1141,7 @@ namespace _Scripts.Controllers.UiManagement
             controller.OnControllerHidden -= OnControllerHidden;
             controller.OnControllerError -= OnControllerError;
         }
-
-        #endregion
+        
 
         #region Logging
 

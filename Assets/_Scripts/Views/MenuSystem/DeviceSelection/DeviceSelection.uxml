@@ -2,17 +2,11 @@
     <Style src="project://database/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uss?fileID=7433441132597879392&amp;guid=bc57c67fc80854b19bb75cec3253e725&amp;type=3#DeviceSelection" />
     <ui:VisualElement name="Body" class="body">
         <ui:VisualElement name="Header" class="header">
-            <ui:VisualElement name="MenuPanel" class="menu-panel">
-                <ui:Button name="MenuButton" text="Menu" class="menu-button" />
+            <ui:VisualElement name="MenuPanel" class="menu-panel" style="justify-content: center; width: 20%;">
+                <ui:Button name="MenuButton" text="Menu" class="menu-button" style="height: 70%;" />
             </ui:VisualElement>
-            <ui:VisualElement name="PonerAlgo" class="poner-algo">
+            <ui:VisualElement name="PonerAlgo" class="poner-algo" style="width: 80%;">
                 <ui:Label name="SelectedModeUiName" class="selected-mode-ui-name" />
-            </ui:VisualElement>
-            <ui:VisualElement name="UsernamePanel" class="username-panel">
-                <ui:Label name="Username" class="username" />
-            </ui:VisualElement>
-            <ui:VisualElement name="LogoutPanel" class="logout-panel">
-                <ui:Label name="Logout" class="logout" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Main" class="main">
@@ -117,7 +111,7 @@
                 <ui:VisualElement name="NavigationMenu" class="navigation-menu">
                     <ui:VisualElement class="navigation-header">
                         <ui:VisualElement class="navigation-username-container">
-                            <ui:Label text="Username" class="navigation-username-label" />
+                            <ui:Label text="Menu" class="navigation-username-label" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement class="navigation-menu-items">
