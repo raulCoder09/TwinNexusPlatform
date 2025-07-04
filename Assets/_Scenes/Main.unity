@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 48528215}
   m_Layer: 0
   m_Name: SESManager
-  m_TagString: Untagged
+  m_TagString: SESManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -307,6 +307,7 @@ MonoBehaviour:
   _senderName: Twin Nexus Platform
   _platformName: Twin Nexus Platform
   _defaultRecipient: mechar09@outlook.com
+  _adminEmail: mechar09@outlook.com
   _enableLogging: 1
   _autoInitializeTemplates: 1
   _maxRetryAttempts: 3
@@ -520,6 +521,7 @@ Transform:
   - {fileID: 2113571590}
   - {fileID: 270192446}
   - {fileID: 692204249}
+  - {fileID: 1289987569}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &270192444
@@ -1209,12 +1211,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289987567}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 230974503}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1347529277
 GameObject:
@@ -1823,6 +1825,7 @@ MonoBehaviour:
   _senderName: 
   _platformName: Twin Nexus Platform
   _defaultRecipient: mechar09@gmail.com
+  _adminEmail: mechar09@outlook.com
   _enableLogging: 1
   _autoInitializeTemplates: 1
   _maxRetryAttempts: 3
@@ -1938,4 +1941,3 @@ SceneRoots:
   - {fileID: 428813212}
   - {fileID: 1347529279}
   - {fileID: 230974503}
-  - {fileID: 1289987569}

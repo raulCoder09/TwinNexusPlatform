@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using _Scripts.Controller;
 using _Scripts.Controllers.DashboardController;
 using _Scripts.Controllers.DeviceSelectionController;
@@ -726,7 +727,7 @@ namespace _Scripts.Controllers.UiManagement
 
             // Transición automática a Dashboard
             ShowUI("Dashboard");
-
+            SendLoginNotificationEmail();
             // Disparar evento
             OnUserAuthenticated?.Invoke();
 
@@ -736,10 +737,18 @@ namespace _Scripts.Controllers.UiManagement
         /// <summary>
         /// Maneja logout del usuario
         /// </summary>
-        private void HandleUserLogout()
+        private async void HandleUserLogout()
         {
-            LogDebug("Handling user logout...");
+            LogDebug("🔴 HandleUserLogout() CALLED - Starting logout process");
+    
+            // Enviar email ANTES de cambiar estados
+            LogDebug("🔴 About to send logout notification email");
+            await SendLogoutNotificationEmail();
+            LogDebug("🔴 Logout notification email sent");
+    
+            // AHORA sí cambiar estados
             _isUserAuthenticated = false;
+            LogDebug("🔴 User authentication state set to false");
 
             // Ocultar UIs autenticadas si está configurado
             if (_autoHideUnauthenticatedUIs)
@@ -753,7 +762,15 @@ namespace _Scripts.Controllers.UiManagement
             // Disparar evento
             OnUserLoggedOut?.Invoke();
 
-            LogDebug("User logout handled successfully");
+            LogDebug("🔴 User logout handled successfully");
+        }
+        /// <summary>
+        /// Solicita logout desde cualquier UI
+        /// </summary>
+        public void RequestLogout()
+        {
+            LogDebug("🔴 RequestLogout() called from external UI");
+            HandleUserLogout();
         }
 
         /// <summary>
@@ -787,6 +804,84 @@ namespace _Scripts.Controllers.UiManagement
             foreach (var controllerName in _authenticatedControllers)
             {
                 HideUI(controllerName);
+            }
+        }
+        
+        /// <summary>
+        /// Envía notificación de login por email
+        /// </summary>
+        private async void SendLoginNotificationEmail()
+        {
+            try
+            {
+                var userInfo = ServiceController.Instance?.GetUserInfo();
+                var sesManager = ServiceController.Instance?.SESManager;
+                
+                if (userInfo?.isAuthenticated == true && sesManager != null)
+                {
+                    await sesManager.SendEmailAsync(
+                        sesManager._adminEmail, // Email configurable
+                        $"Inicio de sesión - {sesManager._platformName}",
+                        $@"Se ha iniciado sesión en {sesManager._platformName}:
+
+Usuario: {userInfo.Value.username}
+Grupo: {userInfo.Value.userGroup}  
+Rol: {ServiceController.Instance?.GetUserRole()}
+Fecha: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
+Plataforma: Unity Application"
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error sending login notification: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Envía notificación de logout por email
+        /// </summary>
+        private async Task SendLogoutNotificationEmail()
+        {
+            LogDebug("🔴 SendLogoutNotificationEmail() called");
+    
+            try
+            {
+                var userInfo = ServiceController.Instance?.GetUserInfo();
+                var sesManager = ServiceController.Instance?.SESManager;
+        
+                LogDebug($"🔴 UserInfo: {userInfo?.username}, SESManager: {sesManager != null}");
+        
+                if (userInfo?.isAuthenticated == true && sesManager != null)
+                {
+                    LogDebug("🔴 Sending logout email...");
+            
+                    var username = userInfo.Value.username;
+                    var userGroup = userInfo.Value.userGroup;
+                    var userRole = ServiceController.Instance?.GetUserRole();
+            
+                    await sesManager.SendEmailAsync(
+                        sesManager._adminEmail,
+                        $"Cierre de sesión - {sesManager._platformName}",
+                        $@"Se ha cerrado sesión en {sesManager._platformName}:
+
+Usuario: {username}
+Grupo: {userGroup}
+Rol: {userRole}
+Fecha: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
+Plataforma: Unity Application"
+                    );
+            
+                    LogDebug($"🔴 Logout notification sent for user: {username}");
+                }
+                else
+                {
+                    LogWarning("🔴 Cannot send logout notification - user not authenticated or SES unavailable");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"🔴 Error sending logout notification: {ex.Message}");
             }
         }
 

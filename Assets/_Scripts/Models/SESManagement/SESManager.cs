@@ -49,6 +49,7 @@ namespace _Scripts.Models.SESManagement
         [SerializeField] internal string _senderName = "Twin Nexus Platform";
         [SerializeField] internal string _platformName = "Twin Nexus Platform"; 
         [SerializeField] internal string _defaultRecipient = "mechar09@gmail.com";
+        [SerializeField] internal string _adminEmail = "mechar09@outlook.com";
         [SerializeField] internal RegionEndpoint _region = RegionEndpoint.USEast1;
         
         [Header("Production Settings")]

@@ -377,23 +377,29 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         public void HandleLogoutClick()
         {
-            Debug.Log("Logout button clicked - logging out user");
-            
+            Debug.Log("🔴 Dashboard HandleLogoutClick() called");
+    
             // Cerrar menú y ocultar dashboard
             _uiManager?.HideNavigationMenu();
             Hide();
-            
-            // Ejecutar logout via ServiceController
-            ServiceController.Instance?.CognitoManager?.SignOut();
-            
-            // Limpiar datos de usuario
-            _userData = new DashboardInfo.UserData();
-            
+    
+            // ✅ CAMBIO: Llamar a UIController en lugar de hacer logout directo
+            var uiController = UIController.Instance;
+            if (uiController != null)
+            {
+                Debug.Log("🔴 Calling UIController.HandleUserLogout()");
+                // Necesitamos hacer público el método o crear un método público
+                uiController.RequestLogout(); // Nuevo método público
+            }
+            else
+            {
+                Debug.Log("🔴 UIController not found - doing direct logout");
+                // Fallback al método anterior
+                ServiceController.Instance?.CognitoManager?.SignOut();
+            }
+    
             // Notificar evento
             OnLogoutRequested?.Invoke();
-            
-            // Navegar a Welcome
-            _mainUIController?.ShowUI("Welcome");
         }
 
         #endregion
