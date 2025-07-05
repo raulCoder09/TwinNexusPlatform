@@ -8,6 +8,7 @@ using _Scripts.Controllers.DashboardController;
 using _Scripts.Controllers.DeviceSelectionController;
 using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.WelcomeController;
+using _Scripts.Controllers.SupportController;
 using UnityEngine;
 
 namespace _Scripts.Controllers.UiManagement
@@ -64,6 +65,7 @@ namespace _Scripts.Controllers.UiManagement
         [SerializeField] private string _dashboardSceneTag = "Dashboard";
         [SerializeField] private string _deviceSelectionSceneTag = "DeviceSelection"; 
         [SerializeField] private string _settingsSceneTag = "Settings"; 
+        [SerializeField] private string _supportSceneTag = "Support";
 
         #endregion
 
@@ -84,6 +86,7 @@ namespace _Scripts.Controllers.UiManagement
         private DashboardOrchestrator _dashboardController;
         private DeviceSelectionOrchestrator _deviceSelectionController; 
         private SettingsOrchestrator _settingsController;
+        private SupportOrchestrator _supportController;
 
         // Lista de controladores que requieren autenticación
         private readonly HashSet<string> _authenticatedControllers = new HashSet<string>();
@@ -262,7 +265,12 @@ namespace _Scripts.Controllers.UiManagement
                 LogDebug("SettingsController discovered and registered");
             }
             
-
+            _supportController = FindUIController<SupportOrchestrator>(_supportSceneTag);
+            if (_supportController != null)
+            {
+                RegisterUIController("Support", _supportController, requiresAuth: true);
+                LogDebug("SupportController discovered and registered");
+            }
 
             // Aquí se pueden agregar más controladores en el futuro:
             // - TrainingController
@@ -352,8 +360,11 @@ namespace _Scripts.Controllers.UiManagement
                 _welcomeController.OnAuthenticationSuccess += OnWelcomeAuthenticationSuccess;
                 LogDebug("Subscribed to WelcomeController authentication events");
             }
+            
+            ObserveSupportController();
 
         }
+        
         /// <summary>
         /// Maneja cuando se lanza un dispositivo desde Device Selection
         /// </summary>
@@ -366,6 +377,27 @@ namespace _Scripts.Controllers.UiManagement
         }
         
         #endregion
+        /// <summary>
+        /// Observa el SupportController existente
+        /// </summary>
+        private void ObserveSupportController()
+        {
+            // Buscar instancia existente
+            _supportController = FindUIController<SupportOrchestrator>(_supportSceneTag);
+
+            if (_supportController != null)
+            {
+                LogDebug("Found existing SupportController - observing");
+
+                // Suscribirse a eventos existentes si los hay en el futuro
+                // _supportController.OnSupportActionCompleted += OnSupportActionCompleted;
+                // _supportController.OnDiagnosticsCompleted += OnSupportDiagnosticsCompleted;
+            }
+            else
+            {
+                LogDebug("SupportController not found - will activate later");
+            }
+        }
 
         /// <summary>
         /// Se suscribe a eventos de un controlador específico
@@ -1053,6 +1085,12 @@ Plataforma: Unity Application"
                 {
                     _settingsController.OnConfigurationOpened -= OnSettingsConfigurationOpened;
                     _settingsController.OnLogoutRequested -= OnSettingsLogoutRequested;
+                }
+                
+                if (_supportController != null)
+                {
+                    // _supportController.OnSupportActionCompleted -= OnSupportActionCompleted;
+                    // _supportController.OnDiagnosticsCompleted -= OnSupportDiagnosticsCompleted;
                 }
 
 

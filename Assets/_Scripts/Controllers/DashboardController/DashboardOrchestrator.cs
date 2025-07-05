@@ -373,6 +373,20 @@ namespace _Scripts.Controllers.DashboardController
         }
 
         /// <summary>
+        /// Maneja clic en botón Support
+        /// </summary>
+        public void HandleSupportClick()
+        {
+            Debug.Log("Support button clicked - opening support center");
+    
+            // Cerrar menú y ocultar dashboard
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar support controller
+            _mainUIController?.ShowUI("Support");
+        }
+        /// <summary>
         /// Maneja clic en botón Logout
         /// </summary>
         public void HandleLogoutClick()

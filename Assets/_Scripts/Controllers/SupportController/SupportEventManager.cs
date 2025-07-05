@@ -1,20 +1,20 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controllers.UiManagement;
 
-namespace _Scripts.Controllers.DashboardController
+namespace _Scripts.Controllers.SupportController
 {
     /// <summary>
-    /// Maneja todos los eventos UI del Dashboard
-    /// Equivalente a WelcomeEventManager pero para Dashboard
+    /// Maneja todos los eventos UI del Support Center
+    /// Equivalente a DashboardEventManager pero para Support
     /// </summary>
-    public class DashboardEventManager
+    public class SupportEventManager
     {
-        private DashboardUIManager _uiManager;
-        private Action _onLogoutRequested;
-        private Action<IDashboardOps.PanelType> _onPanelTransitionComplete;
-        private DashboardOrchestrator _orchestrator;
+        private SupportUIManager _uiManager;
+        private Action<ISupportOps.PanelType> _onPanelTransitionComplete;
+        private SupportOrchestrator _orchestrator;
 
         // Referencias para poder desregistrar eventos
         private UIDocument _uiDocument;
@@ -22,14 +22,12 @@ namespace _Scripts.Controllers.DashboardController
 
         #region Constructor
 
-        public DashboardEventManager(
-            DashboardUIManager uiManager, 
-            Action onLogoutRequested, 
-            Action<IDashboardOps.PanelType> onPanelTransitionComplete, 
-            DashboardOrchestrator orchestrator)
+        public SupportEventManager(
+            SupportUIManager uiManager, 
+            Action<ISupportOps.PanelType> onPanelTransitionComplete, 
+            SupportOrchestrator orchestrator)
         {
             _uiManager = uiManager ?? throw new ArgumentNullException(nameof(uiManager));
-            _onLogoutRequested = onLogoutRequested ?? throw new ArgumentNullException(nameof(onLogoutRequested));
             _onPanelTransitionComplete = onPanelTransitionComplete ?? throw new ArgumentNullException(nameof(onPanelTransitionComplete));
             _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
         }
@@ -39,7 +37,7 @@ namespace _Scripts.Controllers.DashboardController
         #region Event Registration
 
         /// <summary>
-        /// Registra todos los eventos del Dashboard
+        /// Registra todos los eventos del Support Center
         /// </summary>
         public void RegisterEvents(UIDocument uiDocument)
         {
@@ -52,23 +50,17 @@ namespace _Scripts.Controllers.DashboardController
             _root.Q<Button>("HideMenuButton")?.RegisterCallback<ClickEvent>(OnHideMenuButtonClicked);
 
             // Eventos de navegación principal
-            _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
+            _root.Q<Button>("DashboardButton")?.RegisterCallback<ClickEvent>(OnDashboardButtonClicked);
             _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
-            _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked); 
+            _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
             _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
-            // Eventos de paneles adicionales (futuros)
-            _root.Q<Button>("NotificationsButton")?.RegisterCallback<ClickEvent>(OnNotificationsButtonClicked);
-            _root.Q<Button>("UserProfileButton")?.RegisterCallback<ClickEvent>(OnUserProfileButtonClicked);
-            _root.Q<Button>("QuickActionsButton")?.RegisterCallback<ClickEvent>(OnQuickActionsButtonClicked);
-            _root.Q<Button>("StatusOverlayButton")?.RegisterCallback<ClickEvent>(OnStatusOverlayButtonClicked);
-
-            // Eventos de cierre de paneles
-            _root.Q<Button>("CloseNotificationsButton")?.RegisterCallback<ClickEvent>(OnCloseNotificationsPanelClicked);
-            _root.Q<Button>("CloseUserProfileButton")?.RegisterCallback<ClickEvent>(OnCloseUserProfilePanelClicked);
-            _root.Q<Button>("CloseQuickActionsButton")?.RegisterCallback<ClickEvent>(OnCloseQuickActionsPanelClicked);
-            _root.Q<Button>("CloseStatusOverlayButton")?.RegisterCallback<ClickEvent>(OnCloseStatusOverlayPanelClicked);
+            // Eventos específicos del Support Center
+            _root.Q<Button>("TechnicalSupportButton")?.RegisterCallback<ClickEvent>(OnTechnicalSupportButtonClicked);
+            _root.Q<Button>("DocumentationButton")?.RegisterCallback<ClickEvent>(OnDocumentationButtonClicked);
+            _root.Q<Button>("DiagnosticsButton")?.RegisterCallback<ClickEvent>(OnDiagnosticsButtonClicked);
+            _root.Q<Button>("RemoteAssistanceButton")?.RegisterCallback<ClickEvent>(OnRemoteAssistanceButtonClicked);
 
             // Evento de transición del menú de navegación
             var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
@@ -81,21 +73,21 @@ namespace _Scripts.Controllers.DashboardController
             // Registrar eventos de teclado
             RegisterKeyboardEvents(_root);
 
-            Debug.Log("[DashboardEventManager] All events registered successfully");
+            Debug.Log("[SupportEventManager] All events registered successfully");
         }
 
         /// <summary>
-        /// Desregistra todos los eventos del Dashboard
+        /// Desregistra todos los eventos del Support Center
         /// </summary>
         public void UnregisterEvents()
         {
             try
             {
-                Debug.Log("[DashboardEventManager] Unregistering Dashboard events...");
+                Debug.Log("[SupportEventManager] Unregistering Support events...");
 
                 if (_root == null)
                 {
-                    Debug.LogWarning("[DashboardEventManager] Root element is null - cannot unregister events");
+                    Debug.LogWarning("[SupportEventManager] Root element is null - cannot unregister events");
                     return;
                 }
 
@@ -104,23 +96,17 @@ namespace _Scripts.Controllers.DashboardController
                 _root.Q<Button>("HideMenuButton")?.UnregisterCallback<ClickEvent>(OnHideMenuButtonClicked);
 
                 // Eventos de navegación principal
-                _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
+                _root.Q<Button>("DashboardButton")?.UnregisterCallback<ClickEvent>(OnDashboardButtonClicked);
                 _root.Q<Button>("TrainingButton")?.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
-                _root.Q<Button>("SupportButton")?.UnregisterCallback<ClickEvent>(OnSupportButtonClicked);
+                _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
                 _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
                 _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
-                // Eventos de paneles adicionales
-                _root.Q<Button>("NotificationsButton")?.UnregisterCallback<ClickEvent>(OnNotificationsButtonClicked);
-                _root.Q<Button>("UserProfileButton")?.UnregisterCallback<ClickEvent>(OnUserProfileButtonClicked);
-                _root.Q<Button>("QuickActionsButton")?.UnregisterCallback<ClickEvent>(OnQuickActionsButtonClicked);
-                _root.Q<Button>("StatusOverlayButton")?.UnregisterCallback<ClickEvent>(OnStatusOverlayButtonClicked);
-
-                // Eventos de cierre de paneles
-                _root.Q<Button>("CloseNotificationsButton")?.UnregisterCallback<ClickEvent>(OnCloseNotificationsPanelClicked);
-                _root.Q<Button>("CloseUserProfileButton")?.UnregisterCallback<ClickEvent>(OnCloseUserProfilePanelClicked);
-                _root.Q<Button>("CloseQuickActionsButton")?.UnregisterCallback<ClickEvent>(OnCloseQuickActionsPanelClicked);
-                _root.Q<Button>("CloseStatusOverlayButton")?.UnregisterCallback<ClickEvent>(OnCloseStatusOverlayPanelClicked);
+                // Eventos específicos del Support Center
+                _root.Q<Button>("TechnicalSupportButton")?.UnregisterCallback<ClickEvent>(OnTechnicalSupportButtonClicked);
+                _root.Q<Button>("DocumentationButton")?.UnregisterCallback<ClickEvent>(OnDocumentationButtonClicked);
+                _root.Q<Button>("DiagnosticsButton")?.UnregisterCallback<ClickEvent>(OnDiagnosticsButtonClicked);
+                _root.Q<Button>("RemoteAssistanceButton")?.UnregisterCallback<ClickEvent>(OnRemoteAssistanceButtonClicked);
 
                 // Evento de transición del menú de navegación
                 var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
@@ -133,16 +119,16 @@ namespace _Scripts.Controllers.DashboardController
                 // Desregistrar eventos de teclado
                 UnregisterKeyboardEvents(_root);
 
-                Debug.Log("[DashboardEventManager] All events unregistered successfully");
+                Debug.Log("[SupportEventManager] All events unregistered successfully");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[DashboardEventManager] Error unregistering events: {ex.Message}");
+                Debug.LogError($"[SupportEventManager] Error unregistering events: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Método Cleanup consistente con WelcomeEventManager
+        /// Método Cleanup consistente con otros EventManagers
         /// </summary>
         public void Cleanup()
         {
@@ -152,10 +138,9 @@ namespace _Scripts.Controllers.DashboardController
             _orchestrator = null;
             _uiDocument = null;
             _root = null;
-            _onLogoutRequested = null;
             _onPanelTransitionComplete = null;
 
-            Debug.Log("[DashboardEventManager] Event Manager cleaned up");
+            Debug.Log("[SupportEventManager] Event Manager cleaned up");
         }
 
         #endregion
@@ -163,15 +148,11 @@ namespace _Scripts.Controllers.DashboardController
         #region Keyboard Events
 
         /// <summary>
-        /// Registra eventos de teclado para el Dashboard
+        /// Registra eventos de teclado para el Support Center
         /// </summary>
         private void RegisterKeyboardEvents(VisualElement root)
         {
-            // Escape para cerrar paneles/menú
             root.RegisterCallback<KeyDownEvent>(OnGlobalKeyDown);
-            
-            // M para toggle del menú (si se quiere)
-            // Aquí puedes agregar más shortcuts de teclado
         }
 
         /// <summary>
@@ -193,13 +174,29 @@ namespace _Scripts.Controllers.DashboardController
                     HandleEscapeKey();
                     break;
                     
-                case KeyCode.M when evt.ctrlKey: // Ctrl+M para toggle menú
+                case KeyCode.M when evt.ctrlKey:
                     _uiManager.ToggleNavigationMenu();
                     var action = _uiManager.NavigationMenuOpen ? "menu_opened" : "menu_closed";
                     await UIAnalyticsManager.Instance?.TrackMenuEvent(
                         action: action,
                         menuItem: null,
                         context: "keyboard_shortcut_ctrl_m"
+                    );
+                    break;
+                    
+                case KeyCode.F1:
+                    _orchestrator.HandleDocumentationClick();
+                    await UIAnalyticsManager.Instance?.TrackButtonClick(
+                        "DocumentationButton",
+                        "keyboard_shortcut_f1"
+                    );
+                    break;
+                    
+                case KeyCode.F12:
+                    _orchestrator.HandleDiagnosticsClick();
+                    await UIAnalyticsManager.Instance?.TrackButtonClick(
+                        "DiagnosticsButton", 
+                        "keyboard_shortcut_f12"
                     );
                     break;
             }
@@ -210,8 +207,7 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         private async void HandleEscapeKey()
         {
-            // Cerrar panel actual o menú lateral
-            if (_uiManager.CurrentActivePanel != IDashboardOps.PanelType.None)
+            if (_uiManager.CurrentActivePanel != ISupportOps.PanelType.None)
             {
                 if (_uiManager.NavigationMenuOpen)
                 {
@@ -247,7 +243,7 @@ namespace _Scripts.Controllers.DashboardController
             await UIAnalyticsManager.Instance?.TrackMenuEvent(
                 action: "menu_opened",
                 menuItem: null,
-                context: "dashboard_main"
+                context: "support_main"
             );
         }
 
@@ -269,7 +265,6 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         private async void OnScrimClicked(ClickEvent evt)
         {
-            // Solo cerrar si el clic fue directamente en el scrim, no en sus hijos
             if (evt.target == evt.currentTarget)
             {
                 _uiManager.CloseCurrentPanel();
@@ -286,6 +281,34 @@ namespace _Scripts.Controllers.DashboardController
         #region Navigation Action Events
 
         /// <summary>
+        /// Navega al Dashboard
+        /// </summary>
+        private async void OnDashboardButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Dashboard button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "DashboardButton",
+                context: "navigation_menu"
+            );
+            _orchestrator.HandleDashboardClick();
+        }
+
+        /// <summary>
+        /// Inicia modo Training
+        /// </summary>
+        private async void OnTrainingButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Training button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "TrainingButton",
+                context: "navigation_menu"
+            );
+            _orchestrator.HandleTrainingClick();
+        }
+
+        /// <summary>
         /// Inicia modo Operations
         /// </summary>
         private async void OnOperationsButtonClicked(ClickEvent evt)
@@ -300,20 +323,6 @@ namespace _Scripts.Controllers.DashboardController
         }
 
         /// <summary>
-        /// Inicia modo Training
-        /// </summary>
-        private async void OnTrainingButtonClicked(ClickEvent evt)
-        {
-            Debug.Log("Training button clicked - executing navigation");
-            await UIAnalyticsManager.Instance?.TrackMenuEvent(
-                action: "menu_item_clicked",
-                menuItem: "TrainingButton", 
-                context: "navigation_menu"
-            );
-            _orchestrator.HandleTrainingClick();
-        }
-
-        /// <summary>
         /// Abre Settings
         /// </summary>
         private async void OnSettingsButtonClicked(ClickEvent evt)
@@ -325,19 +334,6 @@ namespace _Scripts.Controllers.DashboardController
                 context: "navigation_menu"
             );
             _orchestrator.HandleSettingsClick();
-        }
-        /// <summary>
-        /// Abre Support Center
-        /// </summary>
-        private async void OnSupportButtonClicked(ClickEvent evt)
-        {
-            Debug.Log("Support button clicked - executing navigation");
-            await UIAnalyticsManager.Instance?.TrackMenuEvent(
-                action: "menu_item_clicked",
-                menuItem: "SupportButton",
-                context: "navigation_menu"
-            );
-            _orchestrator.HandleSupportClick();
         }
 
         /// <summary>
@@ -356,84 +352,62 @@ namespace _Scripts.Controllers.DashboardController
 
         #endregion
 
-        #region Panel Events
+        #region Support-Specific Events
 
         /// <summary>
-        /// Abre panel de notificaciones
+        /// Contacta con soporte técnico
         /// </summary>
-        private async void OnNotificationsButtonClicked(ClickEvent evt)
+        private async void OnTechnicalSupportButtonClicked(ClickEvent evt)
         {
-            _uiManager.ShowPanel(IDashboardOps.PanelType.Notifications);
-            await UIAnalyticsManager.Instance?.TrackPanelTransition(
-                fromPanel: "dashboard_main",
-                toPanel: "modal_notifications",
-                transitionType: "button_click"
+            Debug.Log("Technical Support button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                "TechnicalSupportButton",
+                "support_main",
+                new Dictionary<string, object> { ["support_type"] = "technical" }
             );
+            _orchestrator.HandleTechnicalSupportClick();
         }
 
         /// <summary>
-        /// Abre panel de perfil de usuario
+        /// Abre documentación
         /// </summary>
-        private void OnUserProfileButtonClicked(ClickEvent evt)
+        private async void OnDocumentationButtonClicked(ClickEvent evt)
         {
-            _uiManager.ShowPanel(IDashboardOps.PanelType.UserProfile);
-        }
-
-        /// <summary>
-        /// Abre panel de acciones rápidas
-        /// </summary>
-        private void OnQuickActionsButtonClicked(ClickEvent evt)
-        {
-            _uiManager.ShowPanel(IDashboardOps.PanelType.QuickActions);
-        }
-
-        /// <summary>
-        /// Abre panel de estado de IoT
-        /// </summary>
-        private void OnStatusOverlayButtonClicked(ClickEvent evt)
-        {
-            _uiManager.ShowPanel(IDashboardOps.PanelType.StatusOverlay);
-        }
-
-        #endregion
-
-        #region Panel Close Events
-
-        /// <summary>
-        /// Cierra panel de notificaciones
-        /// </summary>
-        private async void OnCloseNotificationsPanelClicked(ClickEvent evt)
-        {
-            _uiManager.HidePanel(IDashboardOps.PanelType.Notifications);
-            await UIAnalyticsManager.Instance?.TrackPanelTransition(
-                fromPanel: "modal_notifications",
-                toPanel: "none", 
-                transitionType: "close_button_click"
+            Debug.Log("Documentation button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                "DocumentationButton",
+                "support_main",
+                new Dictionary<string, object> { ["support_type"] = "documentation" }
             );
+            _orchestrator.HandleDocumentationClick();
         }
 
         /// <summary>
-        /// Cierra panel de perfil de usuario
+        /// Ejecuta diagnósticos del sistema
         /// </summary>
-        private void OnCloseUserProfilePanelClicked(ClickEvent evt)
+        private async void OnDiagnosticsButtonClicked(ClickEvent evt)
         {
-            _uiManager.HidePanel(IDashboardOps.PanelType.UserProfile);
+            Debug.Log("Diagnostics button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                "DiagnosticsButton",
+                "support_main",
+                new Dictionary<string, object> { ["support_type"] = "diagnostics" }
+            );
+            _orchestrator.HandleDiagnosticsClick();
         }
 
         /// <summary>
-        /// Cierra panel de acciones rápidas
+        /// Solicita asistencia remota
         /// </summary>
-        private void OnCloseQuickActionsPanelClicked(ClickEvent evt)
+        private async void OnRemoteAssistanceButtonClicked(ClickEvent evt)
         {
-            _uiManager.HidePanel(IDashboardOps.PanelType.QuickActions);
-        }
-
-        /// <summary>
-        /// Cierra panel de estado de IoT
-        /// </summary>
-        private void OnCloseStatusOverlayPanelClicked(ClickEvent evt)
-        {
-            _uiManager.HidePanel(IDashboardOps.PanelType.StatusOverlay);
+            Debug.Log("Remote Assistance button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                "RemoteAssistanceButton",
+                "support_main",
+                new Dictionary<string, object> { ["support_type"] = "remote_assistance" }
+            );
+            _orchestrator.HandleRemoteAssistanceClick();
         }
 
         #endregion
@@ -445,10 +419,7 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
         {
-            // Similar al patrón de Welcome - notificar completion
             _onPanelTransitionComplete?.Invoke(_uiManager.CurrentActivePanel);
-            
-            // Si no hay paneles visibles, el UIManager ya maneja ocultar el container
         }
 
         #endregion
@@ -458,12 +429,12 @@ namespace _Scripts.Controllers.DashboardController
         /// <summary>
         /// UI Manager asociado
         /// </summary>
-        public DashboardUIManager UIManager => _uiManager;
+        public SupportUIManager UIManager => _uiManager;
 
         /// <summary>
         /// Orchestrator asociado
         /// </summary>
-        public DashboardOrchestrator Orchestrator => _orchestrator;
+        public SupportOrchestrator Orchestrator => _orchestrator;
 
         #endregion
     }

@@ -94,7 +94,15 @@
                             <ui:Label text="Auto-backup &amp; Recovery" class="config-description" />
                         </ui:VisualElement>
                     </ui:Button>
-                    <ui:VisualElement class="config-spacer" />
+                    <ui:Button name="AwsServicesConfigButton" text="AWS services" class="config-button config-admin">
+                        <ui:VisualElement class="config-icon-container">
+                            <ui:Label text="💾" class="config-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="config-label-container">
+                            <ui:Label text="Backup Settings" class="config-title" />
+                            <ui:Label text="Auto-backup &amp; Recovery" class="config-description" />
+                        </ui:VisualElement>
+                    </ui:Button>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
