@@ -411,7 +411,7 @@ namespace _Scripts.Controllers.SupportController
             _uiConfig.Panels[ISupportOps.PanelType.NavigationMenu] = new SupportInfo.UIConfiguration.PanelData
             {
                 Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
-                ShowClass = "NavigationMenuPanelinMainScreen",
+                ShowClass = "NavigationMenuPanelInMainScreen",
                 HideClass = "NavigationMenuPanelOutMainScreen",
                 RequiresScrim = true,
                 AnimationDuration = 0.3f

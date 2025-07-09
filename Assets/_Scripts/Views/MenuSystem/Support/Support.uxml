@@ -121,61 +121,61 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" class="overlay-container">
-            <ui:VisualElement name="CodeRain" class="code-rain" />
-            <ui:VisualElement name="Scrim" class="ScrimTransparent" />
-            <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
-                <ui:VisualElement name="NavigationMenu" class="navigation-menu">
-                    <ui:VisualElement class="nav-menu-header">
-                        <ui:VisualElement class="nav-username-container">
-                            <ui:Label text="Main Menu" class="nav-username" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    <ui:VisualElement class="nav-menu-content">
-                        <ui:VisualElement class="nav-menu-row">
-                            <ui:VisualElement class="nav-button-container">
-                                <ui:Button text="Dashboard" class="nav-button" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        <ui:VisualElement class="nav-menu-row">
-                            <ui:VisualElement class="nav-button-container">
-                                <ui:Button name="TrainingButton" text="Training" class="nav-button" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        <ui:VisualElement class="nav-menu-row">
-                            <ui:VisualElement class="nav-button-container">
-                                <ui:Button name="OperationsButton" text="Operations" class="nav-button" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        <ui:VisualElement class="nav-menu-row">
-                            <ui:VisualElement class="nav-button-container">
-                                <ui:Button text="Reports" class="nav-button" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        <ui:VisualElement class="nav-menu-row">
-                            <ui:VisualElement class="nav-button-container">
-                                <ui:Button name="SupportButton" text="Support" class="nav-button nav-button-active" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        <ui:VisualElement class="nav-menu-row">
-                            <ui:VisualElement class="nav-button-container">
-                                <ui:Button name="SettingsButton" text="Settings" class="nav-button" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        <ui:VisualElement class="nav-menu-row">
-                            <ui:VisualElement class="nav-button-container">
-                                <ui:Button name="LogoutButton" text="Logout" class="nav-button" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                        <ui:VisualElement class="nav-menu-row">
-                            <ui:VisualElement class="nav-spacer-left" />
-                            <ui:VisualElement class="nav-spacer-right">
-                                <ui:Label name="Label" class="nav-spacer-label" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
+    <ui:VisualElement name="CodeRain" class="code-rain" />
+    <ui:VisualElement name="Scrim" class="ScrimTransparent" />
+    <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
+        <ui:VisualElement name="NavigationMenu" class="navigation-menu">
+            <ui:VisualElement class="nav-menu-header">
+                <ui:VisualElement class="nav-username-container">
+                    <ui:Label text="Main Menu" class="nav-username" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="nav-menu-content">
+                <ui:VisualElement class="nav-menu-row">
+                    <ui:VisualElement class="nav-button-container">
+                        <ui:Button text="Dashboard" name="DashboardButton" class="nav-button" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:Button name="HideMenuButton" class="hide-menu-button" />
+                <ui:VisualElement class="nav-menu-row">
+                    <ui:VisualElement name="TrainingButton" class="nav-button-container">
+                        <ui:Button name="TrainingButton" text="Training" class="nav-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="nav-menu-row">
+                    <ui:VisualElement class="nav-button-container">
+                        <ui:Button text="Operations" name="OperationsButton" class="nav-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="nav-menu-row">
+                    <ui:VisualElement class="nav-button-container">
+                        <ui:Button text="Reports" class="nav-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="nav-menu-row">
+                    <ui:VisualElement class="nav-button-container">
+                        <ui:Button text="Support" class="nav-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="nav-menu-row">
+                    <ui:VisualElement class="nav-button-container">
+                        <ui:Button text="Settings" name="SettingsButton" class="nav-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="nav-menu-row">
+                    <ui:VisualElement class="nav-button-container">
+                        <ui:Button text="Logout" name="LogoutButton" class="nav-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="nav-menu-row">
+                    <ui:VisualElement class="nav-spacer-left" />
+                    <ui:VisualElement class="nav-spacer-right">
+                        <ui:Label name="Label" class="nav-spacer-label" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:Button name="HideMenuButton" class="hide-menu-button" />
+    </ui:VisualElement>
+</ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
