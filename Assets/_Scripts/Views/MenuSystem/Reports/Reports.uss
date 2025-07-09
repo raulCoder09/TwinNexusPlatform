@@ -1,0 +1,438 @@
+/* Transition classes */
+.ScrimTransparent {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.78);
+    transition-duration: 1s;
+    opacity: 0;
+}
+
+.ScrimOpaque {
+    background-color: rgba(0, 0, 0, 0.78);
+    opacity: 1;
+}
+
+.NavigationMenuPanelOutMainScreen {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+    translate: -100% 0;
+    transition-duration: 1s;
+    transition-timing-function: ease-in-cubic;
+}
+
+.NavigationMenuPanelInMainScreen {
+    translate: 0% 0;
+}
+
+/* Body */
+.body {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-self: stretch;
+    align-content: stretch;
+    background-color: rgb(0, 0, 0);
+    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg?fileID=2800000&guid=db31ce936e2104caba450d7ddc5ce66f&type=3#scanlines2");
+    background-size: 100% 4px;
+    background-repeat: repeat-y;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.code-rain {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url("project://database/Assets/_Images/Backgrounds/ekaterina-novitskaya-gLroHoWh_as-unsplash.jpg");
+    background-size: 100% 100%;
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: -1;
+}
+
+/* Header */
+.header {
+    flex-grow: 1;
+    width: 100%;
+    height: 10%;
+    flex-direction: row;
+}
+
+.menu-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    align-items: center;
+}
+
+.menu-button {
+    height: 100%;
+    width: 50%;
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    translate: 0 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-left-color: rgb(3, 255, 0);
+    border-right-color: rgb(3, 255, 0);
+    border-top-color: rgb(3, 255, 0);
+    border-bottom-color: rgb(3, 255, 0);
+    color: rgb(4, 201, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+}
+
+.spare-header-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    justify-content: center;
+}
+
+.spare-header-label {
+    color: rgb(255, 255, 255);
+    font-size: 20px;
+    -unity-text-align: upper-center;
+}
+
+.username-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    -unity-text-align: upper-left;
+    justify-content: center;
+}
+
+.username-label {
+    -unity-font-style: bold;
+    -unity-text-outline-color: rgba(0, 0, 0, 0);
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+}
+
+.logout-panel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    justify-content: center;
+}
+
+.logout-label {
+    color: rgb(255, 255, 255);
+    -unity-text-align: upper-center;
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* Main */
+.main {
+    flex-grow: 1;
+    width: 100%;
+    height: 80%;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+/* Reports Content */
+.reports-content {
+    width: 90%;
+    height: 90%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+.reports-row {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 30%;
+    justify-content: space-evenly;
+    align-items: stretch;
+    align-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Reports Panels */
+.reports-panel {
+    flex-grow: 1;
+    width: 30%;
+    height: 100%;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    transition-duration: 0.3s;
+    transition-property: background-color, border-color;
+}
+
+.reports-panel:hover {
+    background-color: rgba(0, 255, 0, 0.05);
+    border-left-color: rgb(0, 255, 100);
+    border-right-color: rgb(0, 255, 100);
+    border-top-color: rgb(0, 255, 100);
+    border-bottom-color: rgb(0, 255, 100);
+}
+
+.reports-header {
+    flex-grow: 1;
+    width: 100%;
+    height: 25%;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.reports-title {
+    color: rgb(0, 255, 0);
+    font-size: 28px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.reports-body {
+    flex-grow: 1;
+    width: 100%;
+    height: 75%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.reports-description {
+    color: rgb(200, 200, 200);
+    font-size: 18px;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    white-space: normal;
+    margin-bottom: 15px;
+}
+
+.reports-button {
+    width: 80%;
+    height: 25%;
+    color: rgb(0, 255, 0);
+    background-color: rgb(0, 0, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 22px;
+    -unity-font-style: bold;
+    transition-duration: 0.2s;
+    transition-property: background-color, color;
+    margin-bottom: 10px;
+}
+
+.reports-button:hover {
+    background-color: rgb(0, 255, 0);
+    color: rgb(0, 0, 0);
+}
+
+.reports-button:active {
+    background-color: rgb(0, 200, 0);
+    color: rgb(0, 0, 0);
+}
+
+.reports-button:disabled {
+    background-color: rgb(50, 50, 50);
+    color: rgb(100, 100, 100);
+    border-left-color: rgb(100, 100, 100);
+    border-right-color: rgb(100, 100, 100);
+    border-top-color: rgb(100, 100, 100);
+    border-bottom-color: rgb(100, 100, 100);
+}
+
+.reports-info {
+    color: rgb(150, 150, 150);
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: italic;
+}
+
+/* Report Status Panel */
+.status-panel .reports-body {
+    justify-content: space-around;
+}
+
+.status-row {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 20%;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.status-label {
+    color: rgb(200, 200, 200);
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    width: 60%;
+}
+
+.status-value {
+    color: rgb(0, 255, 0);
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    width: 40%;
+    -unity-text-align: middle-right;
+}
+
+.status-ready {
+    color: rgb(0, 255, 0);
+}
+
+.status-generating {
+    color: rgb(255, 255, 0);
+}
+
+.status-processing {
+    color: rgb(255, 165, 0);
+}
+
+.status-exporting {
+    color: rgb(0, 191, 255);
+}
+
+.status-completed {
+    color: rgb(0, 255, 0);
+}
+
+.status-error {
+    color: rgb(255, 0, 0);
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.progress-bar .unity-progress-bar__background {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.progress-bar .unity-progress-bar__progress {
+    background-color: rgb(0, 255, 0);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+/* Recent Reports */
+.recent-reports-container {
+    width: 100%;
+    height: 60%;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.recent-report-item {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 20%;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: rgba(0, 255, 0, 0.1);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.recent-report-title {
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    width: 50%;
+}
+
+.recent-report-date {
+    color: rgb(200, 200, 200);
+    font-size: 12px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    width: 30%;
+    -unity-text-align: middle-center;
+}
+
+.recent-report-size {
+    color: rgb(150, 150, 150);
+    font-size: 12px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
