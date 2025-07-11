@@ -6,20 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.plastic/plastic.changes" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.changes" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.plastic/plastic.wktree" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.wktree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_References/ReferenceImageLibrary.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_References/ReferenceImageLibrary.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardEventManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DashboardController/DashboardOrchestrator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/UiManagement/UIController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/UiManagement/UIController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Dashboard/Dashboard.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Dashboard/Dashboard.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DeviceSelectionController/DeviceSelectionEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DeviceSelectionController/DeviceSelectionEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DeviceSelectionController/DeviceSelectionOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/DeviceSelectionController/DeviceSelectionOrchestrator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ReportsController/ReportsEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ReportsController/ReportsEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ReportsController/ReportsOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ReportsController/ReportsOrchestrator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SettingsController/SettingsEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SettingsController/SettingsEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SettingsController/SettingsOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SettingsController/SettingsOrchestrator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SupportController/SupportEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SupportController/SupportEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SupportController/SupportOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SupportController/SupportOrchestrator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/DeviceSelection/DeviceSelection.uxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Settings/Settings.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Settings/Settings.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Support/Support.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Support/Support.uxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -205,7 +206,10 @@
       <workItem from="1751714088561" duration="9051000" />
       <workItem from="1752015138358" duration="9023000" />
       <workItem from="1752083409172" duration="429000" />
-      <workItem from="1752086803334" duration="7108000" />
+      <workItem from="1752086803334" duration="7568000" />
+      <workItem from="1752151921624" duration="505000" />
+      <workItem from="1752152519264" duration="3165000" />
+      <workItem from="1752228389616" duration="10048000" />
     </task>
     <servers />
   </component>

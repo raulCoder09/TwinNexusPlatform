@@ -267,6 +267,14 @@ namespace _Scripts.Controllers.ReportsController
             Hide();
             _mainUIController?.ShowUI("DeviceSelection", parameters);
         }
+        
+        public void HandleReportsClick()
+        {
+            Debug.Log("NombreBoton button clicked - opening NombreBoton UI");
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            _mainUIController?.ShowUI("Reports");
+        }
 
         public void HandleSupportClick()
         {

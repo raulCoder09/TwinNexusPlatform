@@ -413,6 +413,61 @@ namespace _Scripts.Controllers.DeviceSelectionController
             Debug.Log("[DeviceSelectionOrchestrator] Dashboard return requested");
             ReturnToDashboard();
         }
+        
+        /// <summary>
+        /// Maneja clic en botón Reports
+        /// </summary>
+        public void HandleReportsClick()
+        {
+            Debug.Log("Reports button clicked - opening Reports Center");
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            _mainUIController?.ShowUI("Reports");
+        }
+
+        /// <summary>
+        /// Maneja clic en botón Support
+        /// </summary>
+        public void HandleSupportClick()
+        {
+            Debug.Log("Support button clicked - opening support center");
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            _mainUIController?.ShowUI("Support");
+        }
+
+        /// <summary>
+        /// Maneja clic en botón Settings
+        /// </summary>
+        public void HandleSettingsClick()
+        {
+            Debug.Log("Settings button clicked - opening settings");
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            _mainUIController?.ShowUI("Settings");
+        }
+
+        /// <summary>
+        /// Maneja clic en botón Logout
+        /// </summary>
+        public void HandleLogoutClick()
+        {
+            Debug.Log("DeviceSelection HandleLogoutClick() called");
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            var uiController = UIController.Instance;
+            if (uiController != null)
+            {
+                Debug.Log("Calling UIController.RequestLogout() from DeviceSelection");
+                uiController.RequestLogout();
+            }
+            else
+            {
+                Debug.Log("UIController not found - doing direct logout");
+                ServiceController.Instance?.CognitoManager?.SignOut();
+            }
+        }
 
         #endregion
 

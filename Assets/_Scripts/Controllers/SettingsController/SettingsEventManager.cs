@@ -1,4 +1,5 @@
 using System;
+using _Scripts.Controllers.UiManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -54,6 +55,8 @@ namespace _Scripts.Controllers.SettingsController
             _root.Q<Button>("DashboardButton")?.RegisterCallback<ClickEvent>(OnDashboardButtonClicked);
             _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
             _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
+            _root.Q<Button>("ReportsButton")?.RegisterCallback<ClickEvent>(OnReportsButtonClicked);
+            _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked);
             _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
@@ -127,6 +130,8 @@ namespace _Scripts.Controllers.SettingsController
                 _root.Q<Button>("DashboardButton")?.UnregisterCallback<ClickEvent>(OnDashboardButtonClicked);
                 _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
                 _root.Q<Button>("TrainingButton")?.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
+                _root.Q<Button>("ReportsButton")?.UnregisterCallback<ClickEvent>(OnReportsButtonClicked);
+                _root.Q<Button>("SupportButton")?.UnregisterCallback<ClickEvent>(OnSupportButtonClicked);
                 _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
                 _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
@@ -323,6 +328,28 @@ namespace _Scripts.Controllers.SettingsController
         {
             Debug.Log("Training button clicked - navigating to training");
             _orchestrator.HandleTrainingClick();
+        }
+        
+        private async void OnReportsButtonClicked(ClickEvent evt)
+        {
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "ReportsButton",
+                context: "navigation_menu"
+            );
+            _orchestrator.HandleReportsClick();
+        }
+
+        private async void OnSupportButtonClicked(ClickEvent evt)
+        {
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "SupportButton",
+                context: "navigation_menu"
+            );
+            _orchestrator.HandleSupportClick();
+                
+                
         }
 
         /// <summary>
