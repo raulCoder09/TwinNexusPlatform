@@ -1,0 +1,204 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/Reports/Reports.uss?fileID=7433441132597879392&amp;guid=74562541e00c24a0e865b8d174b3bb6b&amp;type=3#Reports" />
+    <ui:VisualElement name="Body" class="body">
+        <ui:VisualElement name="Header" class="header">
+            <ui:VisualElement name="MenuPanel" class="menu-panel">
+                <ui:Button name="MenuButton" text="Menu" class="menu-button" />
+            </ui:VisualElement>
+            <ui:VisualElement name="PonerAlgo" class="spare-header-panel">
+                <ui:Label name="SpareLabel0" text="Reports Center" class="spare-header-label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="UsernamePanel" class="username-panel">
+                <ui:Label name="Username" class="username-label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="LogoutPanel" class="logout-panel">
+                <ui:Label name="Logout" class="logout-label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Main" class="main">
+            <ui:VisualElement name="ReportsContent" class="reports-content">
+                <ui:VisualElement class="reports-row">
+                    <ui:VisualElement name="SystemReportsPanel" class="reports-panel">
+                        <ui:VisualElement class="reports-header">
+                            <ui:Label text="📊 System Reports" class="reports-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reports-body">
+                            <ui:Label text="Generate comprehensive system performance and usage reports" class="reports-description" />
+                            <ui:Button name="SystemReportButton" text="Generate System Report" class="reports-button" />
+                            <ui:Label text="Last generated: Never" class="reports-info" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ActivityReportsPanel" class="reports-panel">
+                        <ui:VisualElement class="reports-header">
+                            <ui:Label text="👥 Activity Reports" class="reports-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reports-body">
+                            <ui:Label text="Track user activity, login patterns, and system usage statistics" class="reports-description" />
+                            <ui:Button name="ActivityReportButton" text="Generate Activity Report" class="reports-button" />
+                            <ui:Label text="Last generated: Never" class="reports-info" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="IoTReportsPanel" class="reports-panel">
+                        <ui:VisualElement class="reports-header">
+                            <ui:Label text="🔧 IoT Reports" class="reports-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reports-body">
+                            <ui:Label text="Monitor IoT device status, connectivity, and performance metrics" class="reports-description" />
+                            <ui:Button name="IoTReportButton" text="Generate IoT Report" class="reports-button" />
+                            <ui:Label text="Last generated: Never" class="reports-info" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="reports-row">
+                    <ui:VisualElement name="CustomReportsPanel" class="reports-panel">
+                        <ui:VisualElement class="reports-header">
+                            <ui:Label text="⚙️ Custom Reports" class="reports-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reports-body">
+                            <ui:Label text="Create custom reports with specific filters and data sources" class="reports-description" />
+                            <ui:Button name="CustomReportButton" text="Create Custom Report" class="reports-button" />
+                            <ui:Label text="Advanced users only" class="reports-info" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="QuickActionsPanel" class="reports-panel quick-actions">
+                        <ui:VisualElement class="reports-header">
+                            <ui:Label text="⚡ Quick Actions" class="reports-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reports-body">
+                            <ui:Button name="ExportReportButton" text="Export Last Report" class="reports-button" />
+                            <ui:Button name="ScheduleReportButton" text="Schedule Report" class="reports-button" />
+                            <ui:Button name="ViewHistoryButton" text="View History" class="reports-button" />
+                            <ui:Label text="Quick report actions" class="reports-info" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ReportsStatusPanel" class="reports-panel statistics">
+                        <ui:VisualElement class="reports-header">
+                            <ui:Label text="📈 Report Statistics" class="reports-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reports-body">
+                            <ui:VisualElement class="status-row">
+                                <ui:Label text="System Status:" class="status-label" />
+                                <ui:Label text="Ready" name="ReportStatusLabel" class="status-value status-ready" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="status-row">
+                                <ui:Label text="Total Reports:" class="status-label" />
+                                <ui:Label text="0" name="TotalReportsLabel" class="status-value" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="status-row">
+                                <ui:Label text="Reports Today:" class="status-label" />
+                                <ui:Label text="0" name="ReportsTodayLabel" class="status-value" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="status-row">
+                                <ui:Label text="Scheduled:" class="status-label" />
+                                <ui:Label text="0" name="ScheduledReportsLabel" class="status-value" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="status-row">
+                                <ui:Label text="Storage Used:" class="status-label" />
+                                <ui:Label text="0 MB" name="StorageUsedLabel" class="status-value" />
+                            </ui:VisualElement>
+                            <ui:ProgressBar name="ReportProgressBar" class="progress-bar" style="display: none;" />
+                            <ui:Label name="ReportStatusMessage" class="reports-info" style="display: none;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="reports-row">
+                    <ui:VisualElement name="RecentReportsPanel" class="reports-panel">
+                        <ui:VisualElement class="reports-header">
+                            <ui:Label text="📋 Recent Reports" class="reports-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reports-body">
+                            <ui:VisualElement name="RecentReportsContainer" class="recent-reports-container">
+                                <ui:Label text="No reports generated yet" class="reports-info" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ScheduledReportsPanel" class="reports-panel">
+                        <ui:VisualElement class="reports-header">
+                            <ui:Label text="⏰ Scheduled Reports" class="reports-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reports-body">
+                            <ui:VisualElement name="ScheduledReportsContainer" class="scheduled-reports-container">
+                                <ui:Label text="No scheduled reports" class="reports-info" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ReportGeneratingIndicator" class="report-generating-indicator" style="display: none;">
+                        <ui:Label name="GeneratingReportLabel" text="Generating Report..." class="generating-report-label" />
+                        <ui:ProgressBar name="GeneratingProgressBar" class="progress-bar" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Footer" class="footer">
+            <ui:VisualElement name="SparePanel0" class="footer-panel">
+                <ui:Label name="SpareLabel0" class="footer-label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel1" class="footer-panel">
+                <ui:Label name="SpareLabel1" class="footer-label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel2" class="footer-panel">
+                <ui:Label name="SpareLabel2" class="footer-label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel3" class="footer-panel">
+                <ui:Label name="SpareLabel3" class="footer-label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" class="overlay-container" style="position: absolute; width: 100%; height: 100%;">
+            <ui:VisualElement name="CodeRain" class="code-rain" />
+            <ui:VisualElement name="Scrim" class="ScrimTransparent" />
+            <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
+                <ui:VisualElement name="NavigationMenu" class="navigation-menu" style="width: 25%; height: 100%;">
+                    <ui:VisualElement class="nav-menu-header">
+                        <ui:VisualElement class="nav-username-container">
+                            <ui:Label text="Main Menu" class="nav-username" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="nav-menu-content">
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Dashboard" name="DashboardButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement name="TrainingButton" class="nav-button-container">
+                                <ui:Button name="TrainingButton" text="Training" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Operations" name="OperationsButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Reports" name="ReportsButton" class="nav-button nav-button-active" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Support" name="SupportButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Settings" name="SettingsButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Logout" name="LogoutButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-spacer-left" />
+                            <ui:VisualElement class="nav-spacer-right">
+                                <ui:Label name="Label" class="nav-spacer-label" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="HideMenuButton" class="hide-menu-button" style="width: 75%;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

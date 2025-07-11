@@ -6,11 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SupportController/SupportOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/SupportController/SupportOrchestrator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Support/Support.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Support/Support.uss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Support/Support.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Support/Support.uxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.plastic/plastic.wktree" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.wktree" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Reports/Reports.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Reports/Reports.uss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Settings/Settings.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Settings/Settings.uss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Settings/Settings.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/Settings/Settings.uxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +53,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.39784947&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/reportsUi&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -75,7 +76,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.2.0b5/Unity.app/Contents/MacOS/Unity" />
+      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.2.0b8/Unity.app/Contents/MacOS/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath $PROJECT_DIR$ -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -86,7 +87,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.2.0b5/Unity.app/Contents/MacOS/Unity" />
+      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.2.0b8/Unity.app/Contents/MacOS/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath $PROJECT_DIR$ -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -194,7 +195,12 @@
       <workItem from="1751400047446" duration="7999000" />
       <workItem from="1751502411530" duration="23677000" />
       <workItem from="1751714088561" duration="9051000" />
-      <workItem from="1752015138358" duration="4374000" />
+      <workItem from="1752015138358" duration="9023000" />
+      <workItem from="1752083409172" duration="429000" />
+      <workItem from="1752086803334" duration="7568000" />
+      <workItem from="1752151921624" duration="505000" />
+      <workItem from="1752152519264" duration="3165000" />
+      <workItem from="1752228389616" duration="15496000" />
     </task>
     <servers />
   </component>

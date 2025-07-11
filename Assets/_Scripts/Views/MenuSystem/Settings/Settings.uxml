@@ -94,13 +94,13 @@
                             <ui:Label text="Auto-backup &amp; Recovery" class="config-description" />
                         </ui:VisualElement>
                     </ui:Button>
-                    <ui:Button name="AwsServicesConfigButton" text="AWS services" class="config-button config-admin">
+                    <ui:Button name="AwsServicesConfigButton" class="config-button config-admin" style="border-left-color: rgb(0, 152, 255); border-right-color: rgb(0, 152, 255); border-top-color: rgb(0, 152, 255); border-bottom-color: rgb(0, 152, 255);">
                         <ui:VisualElement class="config-icon-container">
-                            <ui:Label text="💾" class="config-icon" />
+                            <ui:Label text="☁️" class="config-icon" style="color: rgb(0, 151, 255);" />
                         </ui:VisualElement>
                         <ui:VisualElement class="config-label-container">
-                            <ui:Label text="Backup Settings" class="config-title" />
-                            <ui:Label text="Auto-backup &amp; Recovery" class="config-description" />
+                            <ui:Label text="AWS services" class="config-title" style="color: rgb(0, 151, 255);" />
+                            <ui:Label text="AWS service configuration" class="config-description" />
                         </ui:VisualElement>
                     </ui:Button>
                 </ui:VisualElement>
@@ -121,6 +121,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="SubpanelsAndSmokeMaskContainer">
+            <ui:VisualElement name="CodeRain" class="code-rain" /> 
             <ui:VisualElement name="Scrim" class="ScrimTransparent" />
             <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
                 <ui:VisualElement name="NavigationMenu">
@@ -147,12 +148,12 @@
                         </ui:VisualElement>
                         <ui:VisualElement class="nav-row">
                             <ui:VisualElement class="nav-button-container">
-                                <ui:Button text="Reports" class="nav-button" />
+                                <ui:Button text="Reports" name="ReportsButton" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement class="nav-row">
                             <ui:VisualElement class="nav-button-container">
-                                <ui:Button text="Support" class="nav-button" />
+                                <ui:Button text="Support" name="SupportButton" class="nav-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement class="nav-row">

@@ -54,6 +54,7 @@ namespace _Scripts.Controllers.DashboardController
             // Eventos de navegación principal
             _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
             _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
+            _root.Q<Button>("ReportsButton")?.RegisterCallback<ClickEvent>(OnReportsButtonClicked);
             _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked); 
             _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
@@ -106,6 +107,7 @@ namespace _Scripts.Controllers.DashboardController
                 // Eventos de navegación principal
                 _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
                 _root.Q<Button>("TrainingButton")?.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
+                _root.Q<Button>("ReportsButton")?.UnregisterCallback<ClickEvent>(OnReportsButtonClicked);
                 _root.Q<Button>("SupportButton")?.UnregisterCallback<ClickEvent>(OnSupportButtonClicked);
                 _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
                 _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
@@ -352,6 +354,20 @@ namespace _Scripts.Controllers.DashboardController
                 context: "navigation_menu"
             );
             _orchestrator.HandleLogoutClick();
+        }
+        
+        // <summary>
+        /// Abre Reports Center
+        /// </summary>
+        private async void OnReportsButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Reports button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "ReportsButton",
+                context: "navigation_menu"
+            );
+            _orchestrator.HandleReportsClick();
         }
 
         #endregion

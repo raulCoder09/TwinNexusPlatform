@@ -1,4 +1,5 @@
 using System;
+using _Scripts.Controllers.UiManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -54,6 +55,9 @@ namespace _Scripts.Controllers.DeviceSelectionController
             _root.Q<Button>("DashboardButton")?.RegisterCallback<ClickEvent>(OnDashboardButtonClicked);
             _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
             _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
+            _root.Q<Button>("ReportsButton")?.RegisterCallback<ClickEvent>(OnReportsButtonClicked);
+            _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked);
+            _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
             // Eventos de dispositivos - DINÁMICOS
             RegisterDeviceEvents(_root);
@@ -142,6 +146,12 @@ namespace _Scripts.Controllers.DeviceSelectionController
                 _root.Q<Button>("CloseContextInfoButton")?.UnregisterCallback<ClickEvent>(OnCloseContextInfoPanelClicked);
                 _root.Q<Button>("CloseSettingsButton")?.UnregisterCallback<ClickEvent>(OnCloseSettingsPanelClicked);
                 _root.Q<Button>("CloseHelpButton")?.UnregisterCallback<ClickEvent>(OnCloseHelpPanelClicked);
+                
+                // En la sección de eventos de navegación principal
+                _root.Q<Button>("ReportsButton")?.UnregisterCallback<ClickEvent>(OnReportsButtonClicked);
+                _root.Q<Button>("SupportButton")?.UnregisterCallback<ClickEvent>(OnSupportButtonClicked);
+                _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
+                _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
                 // Evento de transición del menú de navegación
                 var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
@@ -337,6 +347,62 @@ namespace _Scripts.Controllers.DeviceSelectionController
             Debug.Log("Training button clicked - switching context");
             _orchestrator.HandleContextSwitch(IDeviceSelectionOps.LaunchContext.Training);
         }
+        
+        /// <summary>
+        /// Abre Reports
+        /// </summary>
+        private async void OnReportsButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Reports button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "ReportsButton",
+                context: "device_selection_menu"
+            );
+            _orchestrator.HandleReportsClick();
+        }
+
+        /// <summary>
+        /// Abre Support Center
+        /// </summary>
+        private async void OnSupportButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Support button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "SupportButton", 
+                context: "device_selection_menu"
+            );
+            _orchestrator.HandleSupportClick();
+        }
+
+        /// <summary>
+        /// Abre Settings
+        /// </summary>
+        private async void OnSettingsButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Settings button clicked - executing navigation");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "SettingsButton",
+                context: "device_selection_menu"
+            );
+            _orchestrator.HandleSettingsClick();
+        }
+
+        /// <summary>
+        /// Ejecuta Logout
+        /// </summary>
+        private async void OnLogoutButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Logout button clicked - executing logout");
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "LogoutButton",
+                context: "device_selection_menu"
+            );
+            _orchestrator.HandleLogoutClick();
+        }
 
         #endregion
 
@@ -398,14 +464,7 @@ namespace _Scripts.Controllers.DeviceSelectionController
         {
             _uiManager.ShowPanel(IDeviceSelectionOps.PanelType.ContextInfo);
         }
-
-        /// <summary>
-        /// Abre panel de configuraciones
-        /// </summary>
-        private void OnSettingsButtonClicked(ClickEvent evt)
-        {
-            _uiManager.ShowPanel(IDeviceSelectionOps.PanelType.Settings);
-        }
+        
 
         /// <summary>
         /// Abre panel de ayuda

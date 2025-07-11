@@ -324,6 +324,20 @@ namespace _Scripts.Controllers.DashboardController
         #endregion
 
         #region Public Event Handlers (Called by EventManager)
+        /// <summary>
+        /// Maneja clic en botón Reports
+        /// </summary>
+        public void HandleReportsClick()
+        {
+            Debug.Log("Reports button clicked - opening Reports Center");
+    
+            // Cerrar menú y ocultar dashboard
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar reports controller
+            _mainUIController?.ShowUI("Reports");
+        }
 
         /// <summary>
         /// Maneja clic en botón Operations

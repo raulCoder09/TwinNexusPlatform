@@ -32,6 +32,7 @@ TagManager:
   - S3Manager
   - SESManager
   - Support
+  - Reports
   layers:
   - Default
   - TransparentFX

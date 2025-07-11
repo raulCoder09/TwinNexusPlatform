@@ -319,6 +319,22 @@ namespace _Scripts.Controllers.SettingsController
             Hide();
             _mainUIController?.ShowUI("DeviceSelection", parameters);
         }
+        
+        public void HandleReportsClick()
+        {
+            Debug.Log("Reports button clicked from Support");
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            _mainUIController?.ShowUI("Reports");
+        }
+        
+        public void HandleSupportClick()
+        {
+            Debug.Log("Reports button clicked from Support");
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            _mainUIController?.ShowUI("Support");
+        }
 
         /// <summary>
         /// Maneja navegación a Training (vía DeviceSelection)

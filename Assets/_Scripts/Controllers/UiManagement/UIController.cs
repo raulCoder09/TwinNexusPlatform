@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using _Scripts.Controller;
 using _Scripts.Controllers.DashboardController;
 using _Scripts.Controllers.DeviceSelectionController;
+using _Scripts.Controllers.ReportsController;
 using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.WelcomeController;
 using _Scripts.Controllers.SupportController;
+
 using UnityEngine;
 
 namespace _Scripts.Controllers.UiManagement
@@ -66,9 +68,11 @@ namespace _Scripts.Controllers.UiManagement
         [SerializeField] private string _deviceSelectionSceneTag = "DeviceSelection"; 
         [SerializeField] private string _settingsSceneTag = "Settings"; 
         [SerializeField] private string _supportSceneTag = "Support";
-
+        [SerializeField] private string _reportsSceneTag = "Reports";
         #endregion
 
+        
+        
         #region Private Fields
 
         // Estado del sistema
@@ -87,6 +91,8 @@ namespace _Scripts.Controllers.UiManagement
         private DeviceSelectionOrchestrator _deviceSelectionController; 
         private SettingsOrchestrator _settingsController;
         private SupportOrchestrator _supportController;
+        private ReportsOrchestrator _reportsController;
+
 
         // Lista de controladores que requieren autenticación
         private readonly HashSet<string> _authenticatedControllers = new HashSet<string>();
@@ -234,6 +240,12 @@ namespace _Scripts.Controllers.UiManagement
         {
             LogDebug("Discovering UI controllers...");
 
+            _reportsController = FindUIController<ReportsOrchestrator>(_reportsSceneTag);
+            if (_reportsController != null)
+            {
+                RegisterUIController("Reports", _reportsController, requiresAuth: true);
+                LogDebug("ReportsController discovered and registered");
+            }
             // Buscar WelcomeOrchestrator
             _welcomeController = FindUIController<WelcomeOrchestrator>(_welcomeSceneTag);
             if (_welcomeController != null)
@@ -271,6 +283,9 @@ namespace _Scripts.Controllers.UiManagement
                 RegisterUIController("Support", _supportController, requiresAuth: true);
                 LogDebug("SupportController discovered and registered");
             }
+            
+            
+ 
 
             // Aquí se pueden agregar más controladores en el futuro:
             // - TrainingController
@@ -382,9 +397,10 @@ namespace _Scripts.Controllers.UiManagement
         /// </summary>
         private void ObserveSupportController()
         {
-            // Buscar instancia existente
-            _supportController = FindUIController<SupportOrchestrator>(_supportSceneTag);
+            
 
+
+            _supportController = FindUIController<SupportOrchestrator>(_supportSceneTag);
             if (_supportController != null)
             {
                 LogDebug("Found existing SupportController - observing");
@@ -1092,6 +1108,7 @@ Plataforma: Unity Application"
                     // _supportController.OnSupportActionCompleted -= OnSupportActionCompleted;
                     // _supportController.OnDiagnosticsCompleted -= OnSupportDiagnosticsCompleted;
                 }
+                
 
 
                 // Limpiar controladores

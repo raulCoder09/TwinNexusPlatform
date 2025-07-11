@@ -132,17 +132,17 @@
                         </ui:VisualElement>
                         <ui:VisualElement class="navigation-menu-row">
                             <ui:VisualElement class="navigation-menu-button-container">
-                                <ui:Button text="Reports" class="navigation-menu-button" />
+                                <ui:Button text="Reports" name="ReportsButton" class="navigation-menu-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement class="navigation-menu-row">
                             <ui:VisualElement class="navigation-menu-button-container">
-                                <ui:Button text="Support" class="navigation-menu-button" />
+                                <ui:Button text="Support" name="SupportButton" class="navigation-menu-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement class="navigation-menu-row">
                             <ui:VisualElement class="navigation-menu-button-container">
-                                <ui:Button text="Settings" class="navigation-settings-button" />
+                                <ui:Button text="Settings" name="SettingsButton" class="navigation-settings-button" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement class="navigation-menu-row">

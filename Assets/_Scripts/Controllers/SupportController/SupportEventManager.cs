@@ -53,6 +53,7 @@ namespace _Scripts.Controllers.SupportController
             _root.Q<Button>("DashboardButton")?.RegisterCallback<ClickEvent>(OnDashboardButtonClicked);
             _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
             _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
+            _root.Q<Button>("ReportsButton")?.RegisterCallback<ClickEvent>(OnReportsButtonClicked);
             _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
@@ -99,6 +100,7 @@ namespace _Scripts.Controllers.SupportController
                 _root.Q<Button>("DashboardButton")?.UnregisterCallback<ClickEvent>(OnDashboardButtonClicked);
                 _root.Q<Button>("TrainingButton")?.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
                 _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
+                _root.Q<Button>("ReportsButton")?.UnregisterCallback<ClickEvent>(OnReportsButtonClicked);
                 _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
                 _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
@@ -307,6 +309,7 @@ namespace _Scripts.Controllers.SupportController
             );
             _orchestrator.HandleTrainingClick();
         }
+        
 
         /// <summary>
         /// Inicia modo Operations
@@ -321,6 +324,17 @@ namespace _Scripts.Controllers.SupportController
             );
             _orchestrator.HandleOperationsClick();
         }
+        
+        private async void OnReportsButtonClicked(ClickEvent evt)
+        {
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "ReportsButton",
+                context: "navigation_menu"
+            );
+            _orchestrator.HandleReportsClick();
+        }
+
 
         /// <summary>
         /// Abre Settings
