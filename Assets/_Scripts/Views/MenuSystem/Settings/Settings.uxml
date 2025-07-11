@@ -121,6 +121,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="SubpanelsAndSmokeMaskContainer">
+            <ui:VisualElement name="CodeRain" class="code-rain" /> 
             <ui:VisualElement name="Scrim" class="ScrimTransparent" />
             <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
                 <ui:VisualElement name="NavigationMenu">

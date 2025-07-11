@@ -13,6 +13,155 @@
     opacity: 1;
 }
 
+/* Overlay and navigation menu - AGREGAR ESTAS CLASES */
+.overlay-container {
+    flex-grow: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    opacity: 1;
+}
+
+.navigation-menu {
+    flex-grow: 1;
+    position: relative;
+    width: 25%;
+    height: 100%;
+    translate: 0 0;
+    background-color: rgb(0, 0, 0);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.nav-menu-header {
+    flex-grow: 1;
+    width: 100%;
+    height: 30%;
+}
+
+.nav-username-container {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 25%;
+    margin-top: 0;
+    margin-left: 0;
+}
+
+.nav-username {
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: bold;
+    font-size: 50px;
+    color: rgb(0, 255, 0);
+}
+
+.nav-menu-content {
+    flex-grow: 1;
+    width: 100%;
+    height: 70%;
+}
+
+.nav-menu-row {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.nav-button-container {
+    flex-grow: 1;
+    width: 80%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-button {
+    font-size: 40px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    color: rgb(0, 255, 0);
+    -unity-font-style: bold;
+    background-color: rgba(188, 188, 188, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.nav-button-active {
+    color: rgb(255, 172, 51);
+}
+
+.nav-spacer-left {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+}
+
+.nav-spacer-right {
+    flex-grow: 1;
+    width: 80%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-spacer-label {
+    -unity-font-style: bold;
+    font-size: 30px;
+}
+
+.hide-menu-button {
+    width: 75%;
+    height: 100%;
+    background-color: rgba(188, 188, 188, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.hide-menu-button {
+    width: 75%;
+    height: 100%;
+    background-color: rgba(188, 188, 188, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.navigation-menu {
+    flex-grow: 1;
+    position: relative;
+    width: 25%;
+    height: 100%;
+    translate: 0 0;
+    background-color: rgb(0, 0, 0);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 .NavigationMenuPanelOutMainScreen {
     flex-grow: 1;
     background-color: rgba(0, 0, 0, 0);
