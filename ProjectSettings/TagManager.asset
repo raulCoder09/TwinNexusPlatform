@@ -33,6 +33,13 @@ TagManager:
   - SESManager
   - Support
   - Reports
+  - AwsSettings
+  - SesSettings
+  - CloudwatchSettings
+  - IotCoreSettings
+  - S3Settings
+  - LambdaSettings
+  - MEDARAAbstract
   layers:
   - Default
   - TransparentFX
