@@ -6,62 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.plastic/plastic.changes" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.changes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.plastic/plastic.wktree" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.wktree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.plastic/plastic.workspace" beforeDir="false" afterPath="$PROJECT_DIR$/.plastic/plastic.workspace" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/CinematicUIs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/ContextMenus.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/DialogSystems.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/EquipmentScreens.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/HUDOverlays.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/HUDs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/Inventorys.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Abstract.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Abstract.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Abstract.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Abstract.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Documents.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Documents/Documents.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Documents/Documents.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Documents/Documents.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Documents/Documents.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Infographics.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Infographics/Infographics.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Infographics/Infographics.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Infographics/Infographics.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Infographics/Infographics.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/InteractiveSimulator.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/InteractiveSimulator/InteractiveSimulator.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/InteractiveSimulator/InteractiveSimulator.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/InteractiveSimulator/InteractiveSimulator.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/InteractiveSimulator/InteractiveSimulator.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Videos.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Videos/Videos.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Videos/Videos.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Videos/Videos.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Abstract/ArscaraLearning/Videos/Videos.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArscaraLearning.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArscaraLearning/Concrete.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArscaraLearning/Concrete.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArscaraLearning/Concrete.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Concrete/ArscaraLearning/Concrete.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Graphic.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Graphic/ArscaraLearning.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Graphic/ArscaraLearning/Graphic.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Graphic/ArscaraLearning/Graphic.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Graphic/ArscaraLearning/Graphic.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/MEDARA/Graphic/ArscaraLearning/Graphic.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/Notifications.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/Popups.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/TipsScreens.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/Tooltips.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/Tutorials.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/Widgets.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/MedaraGraphicArScara.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/MedaraGraphicArScaraController.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -254,7 +200,7 @@
       <workItem from="1752152519264" duration="3165000" />
       <workItem from="1752228389616" duration="18336000" />
       <workItem from="1752258233953" duration="5283000" />
-      <workItem from="1752265012836" duration="6123000" />
+      <workItem from="1752265012836" duration="8489000" />
     </task>
     <servers />
   </component>

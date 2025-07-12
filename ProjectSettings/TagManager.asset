@@ -39,7 +39,16 @@ TagManager:
   - IotCoreSettings
   - S3Settings
   - LambdaSettings
-  - MEDARAAbstract
+  - MedaraAbstract
+  - MedaraDocuments
+  - MedaraInfographics
+  - MedaraInteractiveSimulator
+  - MedaraVideos
+  - MedaraConcreteArScara
+  - MedaraGraphicArScara
+  - ArScaraControlPanel
+  - ArScaraJogAndTeach
+  - ArScaraPoints
   layers:
   - Default
   - TransparentFX

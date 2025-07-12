@@ -787,16 +787,16 @@ namespace _Scripts.Controllers.UiManagement
         /// </summary>
         private async void HandleUserLogout()
         {
-            LogDebug("🔴 HandleUserLogout() CALLED - Starting logout process");
+            LogDebug("HandleUserLogout() CALLED - Starting logout process");
     
             // Enviar email ANTES de cambiar estados
-            LogDebug("🔴 About to send logout notification email");
+            LogDebug("About to send logout notification email");
             await SendLogoutNotificationEmail();
-            LogDebug("🔴 Logout notification email sent");
+            LogDebug("Logout notification email sent");
     
             // AHORA sí cambiar estados
             _isUserAuthenticated = false;
-            LogDebug("🔴 User authentication state set to false");
+            LogDebug("User authentication state set to false");
 
             // Ocultar UIs autenticadas si está configurado
             if (_autoHideUnauthenticatedUIs)
@@ -810,14 +810,14 @@ namespace _Scripts.Controllers.UiManagement
             // Disparar evento
             OnUserLoggedOut?.Invoke();
 
-            LogDebug("🔴 User logout handled successfully");
+            LogDebug("User logout handled successfully");
         }
         /// <summary>
         /// Solicita logout desde cualquier UI
         /// </summary>
         public void RequestLogout()
         {
-            LogDebug("🔴 RequestLogout() called from external UI");
+            LogDebug("RequestLogout() called from external UI");
             HandleUserLogout();
         }
 
@@ -891,18 +891,18 @@ Plataforma: Unity Application"
         /// </summary>
         private async Task SendLogoutNotificationEmail()
         {
-            LogDebug("🔴 SendLogoutNotificationEmail() called");
+            LogDebug("SendLogoutNotificationEmail() called");
     
             try
             {
                 var userInfo = ServiceController.Instance?.GetUserInfo();
                 var sesManager = ServiceController.Instance?.SESManager;
         
-                LogDebug($"🔴 UserInfo: {userInfo?.username}, SESManager: {sesManager != null}");
+                LogDebug($"UserInfo: {userInfo?.username}, SESManager: {sesManager != null}");
         
                 if (userInfo?.isAuthenticated == true && sesManager != null)
                 {
-                    LogDebug("🔴 Sending logout email...");
+                    LogDebug("Sending logout email...");
             
                     var username = userInfo.Value.username;
                     var userGroup = userInfo.Value.userGroup;
@@ -920,16 +920,16 @@ Fecha: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
 Plataforma: Unity Application"
                     );
             
-                    LogDebug($"🔴 Logout notification sent for user: {username}");
+                    LogDebug($"Logout notification sent for user: {username}");
                 }
                 else
                 {
-                    LogWarning("🔴 Cannot send logout notification - user not authenticated or SES unavailable");
+                    LogWarning("Cannot send logout notification - user not authenticated or SES unavailable");
                 }
             }
             catch (Exception ex)
             {
-                LogError($"🔴 Error sending logout notification: {ex.Message}");
+                LogError($"Error sending logout notification: {ex.Message}");
             }
         }
 

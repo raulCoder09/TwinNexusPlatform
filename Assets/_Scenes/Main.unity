@@ -635,9 +635,10 @@ GameObject:
   m_Component:
   - component: {fileID: 289407788}
   - component: {fileID: 289407789}
+  - component: {fileID: 289407790}
   m_Layer: 0
   m_Name: ArScaraControlPanel
-  m_TagString: Untagged
+  m_TagString: ArScaraControlPanel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -681,6 +682,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &289407790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289407787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc3b5d9977794321a2504ea5ab098e7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.ArScaraControlPanelController.ArScaraControlPanelOrchestrator
 --- !u!1 &336417327
 GameObject:
   m_ObjectHideFlags: 0
@@ -736,9 +749,10 @@ GameObject:
   m_Component:
   - component: {fileID: 356504315}
   - component: {fileID: 356504316}
+  - component: {fileID: 356504317}
   m_Layer: 0
   m_Name: ArScaraJogAndTeach
-  m_TagString: Untagged
+  m_TagString: ArScaraJogAndTeach
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -782,6 +796,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &356504317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356504314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56998757f67e46cfa03978d6ccb6bc55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.ArScaraJogAndTeachController.ArScaraJogAndTeachOrchestrator
 --- !u!1 &390629638
 GameObject:
   m_ObjectHideFlags: 0
@@ -1034,9 +1060,10 @@ GameObject:
   m_Component:
   - component: {fileID: 612935387}
   - component: {fileID: 612935388}
+  - component: {fileID: 612935389}
   m_Layer: 0
   m_Name: MedaraInteractiveSimulator
-  m_TagString: Untagged
+  m_TagString: MedaraInteractiveSimulator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1080,6 +1107,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &612935389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612935386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b8797324a3d4ce89f082240ac229fc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.MedaraInteractiveSimulatorController.MedaraInteractiveSimulatorOrchestrator
 --- !u!1 &648594670
 GameObject:
   m_ObjectHideFlags: 0
@@ -1090,9 +1129,10 @@ GameObject:
   m_Component:
   - component: {fileID: 648594671}
   - component: {fileID: 648594672}
+  - component: {fileID: 648594673}
   m_Layer: 0
   m_Name: MedaraInfographics
-  m_TagString: Untagged
+  m_TagString: MedaraInfographics
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1136,6 +1176,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &648594673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 648594670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69904fcc9bc7421585be540bb2b0a45a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.MedaraInfographicsController.MedaraInfographicsOrchestrator
 --- !u!1 &692204247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,9 +1345,10 @@ GameObject:
   m_Component:
   - component: {fileID: 751164658}
   - component: {fileID: 751164659}
+  - component: {fileID: 751164660}
   m_Layer: 0
   m_Name: MedaraGraphicArScara
-  m_TagString: Untagged
+  m_TagString: MedaraGraphicArScara
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1339,6 +1392,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &751164660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 751164657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b26ef372550b467d9087171eb48f81c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.MedaraGraphicArScaraController.MedaraGraphicArScaraOrchestrator
 --- !u!1 &823960720
 GameObject:
   m_ObjectHideFlags: 0
@@ -1418,9 +1483,10 @@ GameObject:
   m_Component:
   - component: {fileID: 901820947}
   - component: {fileID: 901820948}
+  - component: {fileID: 901820949}
   m_Layer: 0
   m_Name: MedaraVideos
-  m_TagString: Untagged
+  m_TagString: MedaraVideos
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1464,6 +1530,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &901820949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901820946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82eb791a0fb144689d7688b81fbeddb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.MedaraVideosController.MedaraVideosOrchestrator
 --- !u!1 &970288464
 GameObject:
   m_ObjectHideFlags: 0
@@ -1910,9 +1988,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1343514605}
   - component: {fileID: 1343514606}
+  - component: {fileID: 1343514607}
   m_Layer: 0
   m_Name: MedaraAbstract
-  m_TagString: MEDARAAbstract
+  m_TagString: MedaraAbstract
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1956,6 +2035,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &1343514607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1343514604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa3ebd30a5734b6a8aee559568578054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.MedaraAbstractController.MedaraAbstractOrchestrator
 --- !u!1 &1347529277
 GameObject:
   m_ObjectHideFlags: 0
@@ -2234,9 +2325,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1585648443}
   - component: {fileID: 1585648444}
+  - component: {fileID: 1585648445}
   m_Layer: 0
   m_Name: MedaraConcreteArScara
-  m_TagString: Untagged
+  m_TagString: MedaraConcreteArScara
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2280,6 +2372,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &1585648445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585648442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f5181a84cc641baa0da659ffff07e87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.MedaraConcreteArScaraController.MedaraConcreteArScaraOrchestrator
 --- !u!1 &1626606018
 GameObject:
   m_ObjectHideFlags: 0
@@ -2290,9 +2394,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1626606019}
   - component: {fileID: 1626606020}
+  - component: {fileID: 1626606021}
   m_Layer: 0
   m_Name: MedaraDocuments
-  m_TagString: Untagged
+  m_TagString: MedaraDocuments
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2336,6 +2441,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &1626606021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626606018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4ab3a6c4545491493827757bfce7b4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.MedaraDocumentsController.MedaraDocumentsOrchestrator
 --- !u!1 &1631193499
 GameObject:
   m_ObjectHideFlags: 0
@@ -3145,9 +3262,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2122421934}
   - component: {fileID: 2122421935}
+  - component: {fileID: 2122421936}
   m_Layer: 0
   m_Name: ArScaraPoints
-  m_TagString: Untagged
+  m_TagString: ArScaraPoints
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3191,6 +3309,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &2122421936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2122421933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10628cd482014d68b1cb042a218c8623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.ArScaraPointsController.ArScaraPointsOrchestrator
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
