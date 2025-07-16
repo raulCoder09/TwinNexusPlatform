@@ -58,6 +58,13 @@ namespace _Scripts.Controllers.AwsSettingsController
             _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked); 
             _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
+            
+            //eventos de navegacion secundaria
+            _root.Q<Button>("SESSettingsButton")?.RegisterCallback<ClickEvent>(OnSESSettingsButtonClicked);
+            _root.Q<Button>("CloudwatchSettingsButton")?.RegisterCallback<ClickEvent>(OnCloudwatchSettingsButtonClicked);
+            _root.Q<Button>("IoTCoreSettingsButton")?.RegisterCallback<ClickEvent>(OnIoTCoreSettingsButtonClicked);
+            _root.Q<Button>("S3SettingsButton")?.RegisterCallback<ClickEvent>(OnS3SettingsButtonClicked);
+            _root.Q<Button>("LambdaSettingsButton")?.RegisterCallback<ClickEvent>(OnLambdaSettingsButtonClicked);
 
             // Buscar el botón Dashboard para regresar
             var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
@@ -156,6 +163,8 @@ namespace _Scripts.Controllers.AwsSettingsController
         }
 
         #endregion
+        
+
 
         #region Keyboard Events
 
@@ -383,14 +392,60 @@ namespace _Scripts.Controllers.AwsSettingsController
 
         #region AWS Settings Specific Events (Futuros)
 
-        /// <summary>
-        /// Maneja eventos específicos de AWS Settings cuando se implementen
-        /// </summary>
+        private async void OnSESSettingsButtonClicked(ClickEvent evt)
+        {
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "SESSettingsButton",
+                context: "aws_settings_config"
+            );
+            _orchestrator.HandleSESSettingsClick();
+        }
         
-        // TODO: Implementar cuando se agregue contenido específico
-        // private async void OnCredentialsButtonClicked(ClickEvent evt) { ... }
-        // private async void OnTestConnectionButtonClicked(ClickEvent evt) { ... }
-        // private async void OnSaveConfigurationButtonClicked(ClickEvent evt) { ... }
+        private async void OnCloudwatchSettingsButtonClicked(ClickEvent evt)
+        {
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "CloudwatchSettingsButton",
+                context: "aws_settings_config"
+            );
+            _orchestrator.HandleCloudwatchSettingsClick();
+        }
+
+        private async void OnIoTCoreSettingsButtonClicked(ClickEvent evt)
+        {
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "IoTCoreSettingsButton",
+                context: "aws_settings_config"
+            );
+            _orchestrator.HandleIoTCoreSettingsClick();
+        }
+        
+
+        private async void OnS3SettingsButtonClicked(ClickEvent evt)
+        {
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "S3SettingsButton",
+                context: "aws_settings_config"
+            );
+            _orchestrator.HandleS3SettingsClick();
+        }
+
+        private async void OnLambdaSettingsButtonClicked(ClickEvent evt)
+        {
+            await UIAnalyticsManager.Instance?.TrackMenuEvent(
+                action: "menu_item_clicked",
+                menuItem: "LambdaSettingsButton",
+                context: "aws_settings_config"
+            );
+            _orchestrator.HandleLambdaSettingsClick();
+        }
+        
+        
+        
+
 
         #endregion
 

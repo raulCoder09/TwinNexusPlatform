@@ -5,9 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using _Scripts.Controller;
 using _Scripts.Controllers.AwsSettingsController;
+using _Scripts.Controllers.CloudwatchSettingsController;
 using _Scripts.Controllers.DashboardController;
 using _Scripts.Controllers.DeviceSelectionController;
+using _Scripts.Controllers.IotCoreSettingsController;
+using _Scripts.Controllers.LambdaSettingsController;
 using _Scripts.Controllers.ReportsController;
+using _Scripts.Controllers.S3SettingsController;
+using _Scripts.Controllers.SESSettingsController;
 using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.WelcomeController;
 using _Scripts.Controllers.SupportController;
@@ -71,6 +76,11 @@ namespace _Scripts.Controllers.UiManagement
         [SerializeField] private string _supportSceneTag = "Support";
         [SerializeField] private string _reportsSceneTag = "Reports";
         [SerializeField] private string _awsSettingsSceneTag = "AwsSettings";
+        [SerializeField] private string _sesSettingsSceneTag = "SesSettings";
+        [SerializeField] private string _cloudwatchSettingsSceneTag = "CloudwatchSettings";
+        [SerializeField] private string _iotCoreSettingsSceneTag = "IotCoreSettings";
+        [SerializeField] private string _s3SettingsSceneTag = "S3Settings";
+        [SerializeField] private string _lambdaSettingsSceneTag = "LambdaSettings";
         #endregion
 
         
@@ -95,6 +105,12 @@ namespace _Scripts.Controllers.UiManagement
         private SupportOrchestrator _supportController;
         private ReportsOrchestrator _reportsController;
         private AwsSettingsOrchestrator _awsSettingsController;
+        private SESSettingsOrchestrator _sesSettingsController;
+        private CloudwatchSettingsOrchestrator _cloudwatchSettingsOrchestratorController;
+        
+        private IotCoreSettingsOrchestrator _iotCoreSettingsOrchestratorController;
+        private S3SettingsOrchestrator _s3SettingsOrchestratorController;
+        private LambdaSettingsOrchestrator _lambdaSettingsOrchestratorController;
 
 
         // Lista de controladores que requieren autenticación
@@ -240,8 +256,44 @@ namespace _Scripts.Controllers.UiManagement
         /// Descubre y registra todos los controladores UI disponibles
         /// </summary>
         private void DiscoverUIControllers()
-{
+
+        {
     LogDebug("Discovering UI controllers...");
+    
+
+        
+        _iotCoreSettingsOrchestratorController = FindUIController<IotCoreSettingsOrchestrator>(_iotCoreSettingsSceneTag);
+    if (_iotCoreSettingsOrchestratorController != null)
+    {
+        RegisterUIController("IotCoreSettings", _iotCoreSettingsOrchestratorController, requiresAuth: true);
+    }
+    
+    _s3SettingsOrchestratorController = FindUIController<S3SettingsOrchestrator>(_s3SettingsSceneTag);
+    if (_s3SettingsOrchestratorController != null)
+    {
+        RegisterUIController("S3Settings", _s3SettingsOrchestratorController, requiresAuth: true);
+    }
+    
+    _lambdaSettingsOrchestratorController = FindUIController<LambdaSettingsOrchestrator>(_lambdaSettingsSceneTag);
+    if (_lambdaSettingsOrchestratorController != null)
+    {
+        RegisterUIController("LambdaSettings", _lambdaSettingsOrchestratorController, requiresAuth: true);
+    }
+
+    
+    
+    _cloudwatchSettingsOrchestratorController = FindUIController<CloudwatchSettingsOrchestrator>(_cloudwatchSettingsSceneTag);
+    if (_cloudwatchSettingsOrchestratorController != null)
+    {
+        RegisterUIController("CloudwatchSettings", _cloudwatchSettingsOrchestratorController, requiresAuth: true);
+    }
+
+    _sesSettingsController = FindUIController<SESSettingsOrchestrator>(_sesSettingsSceneTag);
+    if (_sesSettingsController != null)
+    {
+        RegisterUIController("SesSettings", _sesSettingsController, requiresAuth: true);
+        LogDebug("SESSettingsController discovered and registered");
+    }
 
     _reportsController = FindUIController<ReportsOrchestrator>(_reportsSceneTag);
     if (_reportsController != null)

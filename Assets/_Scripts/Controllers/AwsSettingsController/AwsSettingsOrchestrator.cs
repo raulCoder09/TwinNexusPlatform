@@ -308,7 +308,64 @@ namespace _Scripts.Controllers.AwsSettingsController
         #endregion
 
         #region Public Event Handlers (Called by EventManager)
+        
+        /// <summary>
+        /// Maneja clic en botón SES Settings
+        /// </summary>
+        public void HandleSESSettingsClick()
+        {
+            Debug.Log("SES Settings button clicked - navigating to SES Settings");
 
+            // Cerrar menú y ocultar AWS Settings
+            _uiManager?.HideNavigationMenu();
+            Hide();
+
+            // Mostrar SES Settings controller
+            _mainUIController?.ShowUI("SesSettings");
+        }
+        
+        
+        /// <summary>
+        /// Maneja clic en botón Cloudwatch Settings
+        /// </summary>
+        public void HandleCloudwatchSettingsClick()
+        {
+            
+            _uiManager?.HideNavigationMenu();
+            Hide();
+
+            // Mostrar SES Settings controller
+            _mainUIController?.ShowUI("CloudwatchSettings");
+        }
+        
+        
+        public void HandleIoTCoreSettingsClick()
+        {
+            
+            _uiManager?.HideNavigationMenu();
+            Hide();
+
+            // Mostrar SES Settings controller
+            _mainUIController?.ShowUI("IotCoreSettings");
+        }
+        public void HandleS3SettingsClick()
+        {
+            
+            _uiManager?.HideNavigationMenu();
+            Hide();
+
+            // Mostrar SES Settings controller
+            _mainUIController?.ShowUI("S3Settings");
+        }
+        public void HandleLambdaSettingsClick()
+        {
+            
+            _uiManager?.HideNavigationMenu();
+            Hide();
+
+            // Mostrar SES Settings controller
+            _mainUIController?.ShowUI("LambdaSettings");
+        }
         /// <summary>
         /// Maneja clic en botón Dashboard
         /// </summary>
