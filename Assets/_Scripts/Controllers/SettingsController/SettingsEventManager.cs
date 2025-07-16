@@ -410,6 +410,7 @@ namespace _Scripts.Controllers.SettingsController
                 "CognitoConfigButton" => ISettingsOps.ConfigurationType.Cognito,
                 "SystemConfigButton" => ISettingsOps.ConfigurationType.System,
                 "NetworkConfigButton" => ISettingsOps.ConfigurationType.Network,
+                "AwsServicesConfigButton" => ISettingsOps.ConfigurationType.AwsServices,
                 _ => null // No reconocido
             };
         }

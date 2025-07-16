@@ -1,4 +1,0 @@
-repository "TwinNexusPlatform/TwinNexusPlatform@4674046584131@cloud"
-  path "/"
-    br "/main"
-    co "/main"

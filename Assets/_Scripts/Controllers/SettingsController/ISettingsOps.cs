@@ -113,7 +113,8 @@ namespace _Scripts.Controllers.SettingsController
             Network,
             Database,
             Security,
-            Backup
+            Backup,
+            AwsServices
         }
         
         /// <summary>

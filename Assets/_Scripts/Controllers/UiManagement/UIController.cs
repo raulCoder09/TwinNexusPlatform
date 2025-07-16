@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using _Scripts.Controller;
+using _Scripts.Controllers.AwsSettingsController;
 using _Scripts.Controllers.DashboardController;
 using _Scripts.Controllers.DeviceSelectionController;
 using _Scripts.Controllers.ReportsController;
@@ -69,6 +70,7 @@ namespace _Scripts.Controllers.UiManagement
         [SerializeField] private string _settingsSceneTag = "Settings"; 
         [SerializeField] private string _supportSceneTag = "Support";
         [SerializeField] private string _reportsSceneTag = "Reports";
+        [SerializeField] private string _awsSettingsSceneTag = "AwsSettings";
         #endregion
 
         
@@ -92,6 +94,7 @@ namespace _Scripts.Controllers.UiManagement
         private SettingsOrchestrator _settingsController;
         private SupportOrchestrator _supportController;
         private ReportsOrchestrator _reportsController;
+        private AwsSettingsOrchestrator _awsSettingsController;
 
 
         // Lista de controladores que requieren autenticación
@@ -237,64 +240,60 @@ namespace _Scripts.Controllers.UiManagement
         /// Descubre y registra todos los controladores UI disponibles
         /// </summary>
         private void DiscoverUIControllers()
-        {
-            LogDebug("Discovering UI controllers...");
+{
+    LogDebug("Discovering UI controllers...");
 
-            _reportsController = FindUIController<ReportsOrchestrator>(_reportsSceneTag);
-            if (_reportsController != null)
-            {
-                RegisterUIController("Reports", _reportsController, requiresAuth: true);
-                LogDebug("ReportsController discovered and registered");
-            }
-            // Buscar WelcomeOrchestrator
-            _welcomeController = FindUIController<WelcomeOrchestrator>(_welcomeSceneTag);
-            if (_welcomeController != null)
-            {
-                RegisterUIController("Welcome", _welcomeController, requiresAuth: false);
-                LogDebug("WelcomeController discovered and registered");
-            }
+    _reportsController = FindUIController<ReportsOrchestrator>(_reportsSceneTag);
+    if (_reportsController != null)
+    {
+        RegisterUIController("Reports", _reportsController, requiresAuth: true);
+        LogDebug("ReportsController discovered and registered");
+    }
 
-            // Buscar DashboardOrchestrator
-            _dashboardController = FindUIController<DashboardOrchestrator>(_dashboardSceneTag);
-            if (_dashboardController != null)
-            {
-                RegisterUIController("Dashboard", _dashboardController, requiresAuth: true);
-                LogDebug("DashboardController discovered and registered");
-            }
-            
-            // Buscar DeviceSelectionOrchestrator
-            _deviceSelectionController = FindUIController<DeviceSelectionOrchestrator>(_deviceSelectionSceneTag);
-            if (_deviceSelectionController != null)
-            {
-                RegisterUIController("DeviceSelection", _deviceSelectionController, requiresAuth: true);
-                LogDebug("DeviceSelectionController discovered and registered");
-            }
-            
-            _settingsController = FindUIController<SettingsOrchestrator>(_settingsSceneTag);
-            if (_settingsController != null)
-            {
-                RegisterUIController("Settings", _settingsController, requiresAuth: true);
-                LogDebug("SettingsController discovered and registered");
-            }
-            
-            _supportController = FindUIController<SupportOrchestrator>(_supportSceneTag);
-            if (_supportController != null)
-            {
-                RegisterUIController("Support", _supportController, requiresAuth: true);
-                LogDebug("SupportController discovered and registered");
-            }
-            
-            
- 
+    _welcomeController = FindUIController<WelcomeOrchestrator>(_welcomeSceneTag);
+    if (_welcomeController != null)
+    {
+        RegisterUIController("Welcome", _welcomeController, requiresAuth: false);
+        LogDebug("WelcomeController discovered and registered");
+    }
 
-            // Aquí se pueden agregar más controladores en el futuro:
-            // - TrainingController
-            // - OperationsController  
-            // - ReportsController
-            // - SettingsController
+    _dashboardController = FindUIController<DashboardOrchestrator>(_dashboardSceneTag);
+    if (_dashboardController != null)
+    {
+        RegisterUIController("Dashboard", _dashboardController, requiresAuth: true);
+        LogDebug("DashboardController discovered and registered");
+    }
 
-            LogDebug($"Discovery completed. Found {_uiControllers.Count} UI controllers");
-        }
+    _deviceSelectionController = FindUIController<DeviceSelectionOrchestrator>(_deviceSelectionSceneTag);
+    if (_deviceSelectionController != null)
+    {
+        RegisterUIController("DeviceSelection", _deviceSelectionController, requiresAuth: true);
+        LogDebug("DeviceSelectionController discovered and registered");
+    }
+
+    _settingsController = FindUIController<SettingsOrchestrator>(_settingsSceneTag);
+    if (_settingsController != null)
+    {
+        RegisterUIController("Settings", _settingsController, requiresAuth: true);
+        LogDebug("SettingsController discovered and registered");
+    }
+
+    _supportController = FindUIController<SupportOrchestrator>(_supportSceneTag);
+    if (_supportController != null)
+    {
+        RegisterUIController("Support", _supportController, requiresAuth: true);
+        LogDebug("SupportController discovered and registered");
+    }
+
+    _awsSettingsController = FindUIController<AwsSettingsOrchestrator>(_awsSettingsSceneTag);
+    if (_awsSettingsController != null)
+    {
+        RegisterUIController("AwsSettings", _awsSettingsController, requiresAuth: true);
+        LogDebug("AwsSettingsController discovered and registered");
+    }
+
+    LogDebug($"Discovery completed. Found {_uiControllers.Count} UI controllers");
+}
 
         /// <summary>
         /// Busca un controlador UI específico por tipo y tag
@@ -377,6 +376,8 @@ namespace _Scripts.Controllers.UiManagement
             }
             
             ObserveSupportController();
+            ObserveSettingsController();
+            ObserveAwsSettingsController();
 
         }
         
@@ -1079,92 +1080,113 @@ Plataforma: Unity Application"
         /// Limpia el UIController
         /// </summary>
         private void CleanupUIController()
+{
+    try
+    {
+        LogDebug("Cleaning up UIController...");
+
+        var serviceController = ServiceController.Instance;
+        if (serviceController != null)
+        {
+            serviceController.OnCognitoServiceReady -= OnCognitoServiceReady;
+            serviceController.OnServiceError -= OnServiceControllerError;
+        }
+
+        if (_welcomeController != null)
+        {
+            _welcomeController.OnAuthenticationSuccess -= OnWelcomeAuthenticationSuccess;
+        }
+
+        if (_settingsController != null)
+        {
+            _settingsController.OnConfigurationOpened -= OnSettingsConfigurationOpened;
+            _settingsController.OnLogoutRequested -= OnSettingsLogoutRequested;
+        }
+
+        if (_awsSettingsController != null)
+        {
+            // Desuscribirse de eventos de AwsSettings si los hay
+            // Por ejemplo:
+            // _awsSettingsController.OnNavigationMenuOpened -= () => LogDebug("AWS Settings Navigation Menu Opened");
+            // _awsSettingsController.OnLogoutRequested -= OnSettingsLogoutRequested;
+        }
+
+        if (_supportController != null)
+        {
+            // _supportController.OnSupportActionCompleted -= OnSupportActionCompleted;
+            // _supportController.OnDiagnosticsCompleted -= OnSupportDiagnosticsCompleted;
+        }
+
+        foreach (var kvp in _uiControllers)
         {
             try
             {
-                LogDebug("Cleaning up UIController...");
-
-                // Desuscribirse de eventos de ServiceController
-                var serviceController = ServiceController.Instance;
-                if (serviceController != null)
-                {
-                    serviceController.OnCognitoServiceReady -= OnCognitoServiceReady;
-                    serviceController.OnServiceError -= OnServiceControllerError;
-                }
-
-                // Desuscribirse de eventos de WelcomeController
-                if (_welcomeController != null)
-                {
-                    _welcomeController.OnAuthenticationSuccess -= OnWelcomeAuthenticationSuccess;
-                }
-                if (_settingsController != null)
-                {
-                    _settingsController.OnConfigurationOpened -= OnSettingsConfigurationOpened;
-                    _settingsController.OnLogoutRequested -= OnSettingsLogoutRequested;
-                }
-                
-                if (_supportController != null)
-                {
-                    // _supportController.OnSupportActionCompleted -= OnSupportActionCompleted;
-                    // _supportController.OnDiagnosticsCompleted -= OnSupportDiagnosticsCompleted;
-                }
-                
-
-
-                // Limpiar controladores
-                foreach (var kvp in _uiControllers)
-                {
-                    try
-                    {
-                        UnsubscribeFromControllerEvents(kvp.Value);
-                        kvp.Value.Cleanup();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError($"Error cleaning up controller {kvp.Key}: {ex.Message}");
-                    }
-                }
-
-                // Limpiar colecciones
-                _uiControllers.Clear();
-                _authenticatedControllers.Clear();
-                _publicControllers.Clear();
-                _controllerInitializationStatus.Clear();
-
-                // Reset estado
-                _isInitialized = false;
-                _isUserAuthenticated = false;
-                _isTransitioning = false;
-                _currentActiveController = null;
-                _previousController = null;
-
-                LogDebug("UIController cleanup completed");
+                UnsubscribeFromControllerEvents(kvp.Value);
+                kvp.Value.Cleanup();
             }
             catch (Exception ex)
             {
-                LogError($"Error during UIController cleanup: {ex.Message}");
+                LogError($"Error cleaning up controller {kvp.Key}: {ex.Message}");
             }
         }
+
+        _uiControllers.Clear();
+        _authenticatedControllers.Clear();
+        _publicControllers.Clear();
+        _controllerInitializationStatus.Clear();
+
+        _isInitialized = false;
+        _isUserAuthenticated = false;
+        _isTransitioning = false;
+        _currentActiveController = null;
+        _previousController = null;
+
+        LogDebug("UIController cleanup completed");
+    }
+    catch (Exception ex)
+    {
+        LogError($"Error during UIController cleanup: {ex.Message}");
+    }
+}
         
+        /// <summary>
+        /// Observa el SettingsController existente
+        /// </summary>
         /// <summary>
         /// Observa el SettingsController existente
         /// </summary>
         private void ObserveSettingsController()
         {
-            // Buscar instancia existente
             _settingsController = FindUIController<SettingsOrchestrator>(_settingsSceneTag);
-    
             if (_settingsController != null)
             {
                 LogDebug("Found existing SettingsController - observing");
-        
-                // Suscribirse a eventos existentes
                 _settingsController.OnConfigurationOpened += OnSettingsConfigurationOpened;
                 _settingsController.OnLogoutRequested += OnSettingsLogoutRequested;
             }
             else
             {
                 LogDebug("SettingsController not found - will activate later");
+            }
+        }
+
+        /// <summary>
+        /// Observa el AwsSettingsController existente
+        /// </summary>
+        private void ObserveAwsSettingsController()
+        {
+            _awsSettingsController = FindUIController<AwsSettingsOrchestrator>(_awsSettingsSceneTag);
+            if (_awsSettingsController != null)
+            {
+                LogDebug("Found existing AwsSettingsController - observing");
+                // Suscribirse a eventos de AwsSettings si los hay
+                // Por ejemplo:
+                // _awsSettingsController.OnNavigationMenuOpened += () => LogDebug("AWS Settings Navigation Menu Opened");
+                // _awsSettingsController.OnLogoutRequested += OnSettingsLogoutRequested;
+            }
+            else
+            {
+                LogDebug("AwsSettingsController not found - will activate later");
             }
         }
 

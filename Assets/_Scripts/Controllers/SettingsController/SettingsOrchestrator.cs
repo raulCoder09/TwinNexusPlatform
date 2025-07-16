@@ -301,6 +301,28 @@ namespace _Scripts.Controllers.SettingsController
 
             // Mostrar mensaje específico para cada configuración
             ShowConfigurationMessage(configurationType);
+
+            // Si es AwsServices, navegar a AWS Settings después de que el pop-up se cierre
+            if (configurationType == ISettingsOps.ConfigurationType.AwsServices)
+            {
+                StartCoroutine(NavigateToAwsSettingsAfterPopup());
+            }
+        }
+
+        private IEnumerator NavigateToAwsSettingsAfterPopup()
+        {
+            // Esperar el tiempo del pop-up (2 segundos, como en HideConfigurationMessageCoroutine)
+            yield return new WaitForSeconds(2.0f);
+
+            // Cerrar menú si está abierto
+            _uiManager?.HideNavigationMenu();
+
+            // Ocultar Settings
+            Hide();
+
+            // Navegar a AWS Settings
+            _mainUIController?.ShowUI("AwsSettings");
+            Debug.Log("[SettingsOrchestrator] Navigated to AWS Settings after popup");
         }
 
         /// <summary>
@@ -414,28 +436,22 @@ namespace _Scripts.Controllers.SettingsController
             {
                 ISettingsOps.ConfigurationType.IoT =>
                     "🔧 Ingresando a configuración de IoT\n\nConfiguración de dispositivos IoT, conexiones y protocolos de comunicación.",
-
                 ISettingsOps.ConfigurationType.User =>
                     "👤 Ingresando a configuración de usuario\n\nGestión de perfil, preferencias y configuración personal.",
-
                 ISettingsOps.ConfigurationType.Cognito =>
                     "🔐 Ingresando a configuración de autenticación\n\nConfiguración de AWS Cognito y parámetros de autenticación.",
-
                 ISettingsOps.ConfigurationType.System =>
                     "⚙️ Ingresando a configuración del sistema\n\nConfiguración general del sistema y parámetros globales.",
-
                 ISettingsOps.ConfigurationType.Network =>
                     "🌐 Ingresando a configuración de red\n\nConfiguración de conectividad, puertos y protocolos de red.",
-
                 ISettingsOps.ConfigurationType.Database =>
                     "🗄️ Ingresando a configuración de base de datos\n\nConfiguración de conexiones y parámetros de base de datos.",
-
                 ISettingsOps.ConfigurationType.Security =>
                     "🛡️ Ingresando a configuración de seguridad\n\nConfiguración de seguridad, certificados y control de acceso.",
-
                 ISettingsOps.ConfigurationType.Backup =>
                     "💾 Ingresando a configuración de respaldo\n\nConfiguración de backups automáticos y recuperación.",
-
+                ISettingsOps.ConfigurationType.AwsServices =>
+                    "☁️ Ingresando a configuración de servicios AWS\n\nConfiguración de servicios AWS como SES, CloudWatch, IoT Core, S3 y Lambda.", // Agrega este caso
                 _ => $"⚡ Ingresando a configuración: {configurationType}"
             };
         }

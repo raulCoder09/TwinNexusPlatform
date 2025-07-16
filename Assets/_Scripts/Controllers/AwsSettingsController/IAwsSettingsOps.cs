@@ -46,5 +46,16 @@ namespace _Scripts.Controllers.AwsSettingsController
             RegionSettings,     // Panel de configuración de regiones
             Help                // Panel de ayuda
         }
+        /// <summary>
+        /// Tipos de configuraciones disponibles en AWS Settings
+        /// </summary>
+        public enum ConfigurationType
+        {
+            SESSettings,
+            CloudwatchSettings,
+            IoTCoreSettings,
+            S3Settings,
+            LambdaSettings
+        }
     }
 }
