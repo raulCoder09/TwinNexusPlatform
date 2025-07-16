@@ -9,7 +9,74 @@
                 <ui:Label name="TitleLabel" text="IoT Core Settings" class="spare-header-label" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 50px;" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="Main" class="main" />
+        <ui:VisualElement name="Main" class="main">
+            <ui:VisualElement name="MainLeft" class="main-left">
+                <ui:VisualElement name="MainTopRow" class="main-top-row" style="height: 70%;">
+                    <ui:VisualElement name="ThingsConfigPanel" class="widget-panel">
+                        <ui:VisualElement name="ThingsConfigHeader" class="widget-header">
+                            <ui:Label name="ThingsConfigTitle" text="Things Configuration" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="ThingsConfigContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:Label name="ThingNameLabel" text="Thing Name:" class="recent-activity-item" />
+                            <ui:TextField name="ThingNameField" value="Unity-Test-Device" class="device-mode-label" style="width: 80%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Label name="ThingTypeLabel" text="Thing Type:" class="recent-activity-item" />
+                            <ui:TextField name="ThingTypeField" value="Enter thing type (optional)" class="device-mode-label" style="width: 80%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Button name="CreateThingButton" text="Create Thing" class="device-nav-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="PolicyConfigPanel" class="widget-panel">
+                        <ui:VisualElement name="PolicyConfigHeader" class="widget-header">
+                            <ui:Label name="PolicyConfigTitle" text="Policy Configuration" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="PolicyConfigContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:Label name="PolicyNameLabel" text="Policy Name:" class="recent-activity-item" />
+                            <ui:TextField name="PolicyNameField" value="Unity-IoT-Policy" class="device-mode-label" style="width: 80%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Label name="PolicyDocumentLabel" text="Policy Document:" class="recent-activity-item" />
+                            <ui:TextField name="PolicyDocumentField" value="Enter JSON policy document" multiline="true" class="device-mode-label" style="width: 80%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Button name="CreatePolicyButton" text="Create Policy" class="device-nav-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="CertificatesConfigPanel" class="widget-panel system-status-panel">
+                        <ui:VisualElement name="CertificatesConfigHeader" class="widget-header">
+                            <ui:Label name="CertificatesConfigTitle" text="Certificates Configuration" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="CertificatesConfigContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:Button name="CreateCertificateButton" text="Create New Certificate" class="device-nav-button" />
+                            <ui:Label name="AttachCertificateLabel" text="Attach Certificate to Thing:" class="recent-activity-item" />
+                            <ui:TextField name="CertificateIdField" value="Enter certificate ID" class="device-mode-label" style="width: 50%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:TextField name="ThingNameForCertificateField" value="Enter thing name" class="device-mode-label" style="width: 50%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Button name="AttachCertificateButton" text="Attach Certificate" class="device-nav-button" />
+                            <ui:Label name="AttachPolicyLabel" text="Attach Policy to Certificate:" class="recent-activity-item" />
+                            <ui:TextField name="PolicyNameForCertificateField" value="Enter policy name" class="device-mode-label" style="width: 50%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Button name="AttachPolicyButton" text="Attach Policy" class="device-nav-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="MainBottomRow" class="main-bottom-row" style="height: 30%;">
+                    <ui:VisualElement name="ThingsStatusPanel" class="widget-panel">
+                        <ui:VisualElement name="ThingsStatusHeader" class="widget-header">
+                            <ui:Label name="ThingsStatusTitle" text="Things Status" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="ThingsStatusContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:VisualElement name="ThingsList" class="recent-activity-content">
+                                <ui:Label name="Thing1" text="Unity-Test-Device (Type: None)" class="recent-activity-item" />
+                            </ui:VisualElement>
+                            <ui:Button name="RefreshThingsButton" text="Refresh Things" class="device-nav-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="TestPanel" class="widget-panel">
+                        <ui:VisualElement name="TestHeader" class="widget-header">
+                            <ui:Label name="TestTitle" text="Test IoT Core" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="TestContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:Button name="TestConnectivityButton" text="Test Connectivity" class="device-nav-button" />
+                            <ui:Button name="EnableDisableServiceButton" text="Enable/Disable Service" class="device-nav-button" />
+                            <ui:Label name="TestResult" text="Result: Not tested" class="recent-activity-item" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
         <ui:VisualElement name="Footer" class="footer">
             <ui:VisualElement name="SparePanel0" class="footer-panel">
                 <ui:Label name="SpareLabel0" class="footer-label" />
