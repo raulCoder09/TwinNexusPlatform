@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using _Scripts.Controllers.EnvironmentController;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controllers.UiManagement;
+using Object = UnityEngine.Object;
 
 namespace _Scripts.Controllers.ArScaraControlPanelController
 {
@@ -19,6 +22,8 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         // Referencias para poder desregistrar eventos
         private UIDocument _uiDocument;
         private VisualElement _root;
+        
+        private CameraViewManager _cameraViewManager;
 
         #region Constructor
 
@@ -32,6 +37,13 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             _onReturnToDashboard = onReturnToDashboard ?? throw new ArgumentNullException(nameof(onReturnToDashboard));
             _onPanelTransitionComplete = onPanelTransitionComplete ?? throw new ArgumentNullException(nameof(onPanelTransitionComplete));
             _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
+    
+            // Buscar CameraViewManager en la escena
+            _cameraViewManager = Object.FindObjectOfType<CameraViewManager>();
+            if (_cameraViewManager == null)
+            {
+                Debug.LogWarning("[ArScaraControlPanelEventManager] CameraViewManager not found in scene");
+            }
         }
 
         #endregion
@@ -58,7 +70,9 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked); 
             _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
-
+            _root.Q<DropdownField>("MenuRobotARSCARADropdownField")?.RegisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
+            _root.Q<DropdownField>("MenuEnvironmentDropdownField")?.RegisterCallback<ChangeEvent<string>>(OnEnvironmentDropdownChanged);
+            _root.Q<DropdownField>("Views")?.RegisterCallback<ChangeEvent<string>>(OnViewsDropdownChanged);
             // Buscar el botón Dashboard para regresar
             var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
             foreach (var dashboardButton in dashboardButtons)
@@ -112,6 +126,10 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
                 _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
                 _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
+                _root.Q<DropdownField>("MenuRobotARSCARADropdownField")?.UnregisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
+                _root.Q<DropdownField>("MenuEnvironmentDropdownField")?.UnregisterCallback<ChangeEvent<string>>(OnEnvironmentDropdownChanged);
+                _root.Q<DropdownField>("Views")?.UnregisterCallback<ChangeEvent<string>>(OnViewsDropdownChanged);
+
                 // Desregistrar botones Dashboard
                 var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
                 foreach (var dashboardButton in dashboardButtons)
@@ -151,6 +169,7 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             _root = null;
             _onReturnToDashboard = null;
             _onPanelTransitionComplete = null;
+            _cameraViewManager = null;
 
             Debug.Log("[ArScaraControlPanelEventManager] Event Manager cleaned up");
         }
@@ -422,5 +441,118 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         public ArScaraControlPanelOrchestrator Orchestrator => _orchestrator;
 
         #endregion
+        /// <summary>
+        /// Maneja cambios en el dropdown de ARSCARA
+        /// </summary>
+        private async void OnArScaraDropdownChanged(ChangeEvent<string> evt)
+        {
+            var selectedValue = evt.newValue;
+    
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                buttonName: "ArScaraDropdown",
+                context: "dropdown_navigation",
+                additionalData: new Dictionary<string, object> { ["selection"] = selectedValue }
+            );
+    
+            switch (selectedValue)
+            {
+                case "Control panel":
+                    // Ya estamos en Control Panel, no hacer nada
+                    break;
+            
+                case "Jog and teach":
+                    Debug.Log("Navigating to ArScaraJogAndTeach");
+                    _orchestrator.HandleArScaraJogAndTeachNavigation();
+                    break;
+            
+                case "Points":
+                    Debug.Log("Navigating to ArScaraPoints");
+                    _orchestrator.HandleArScaraPointsNavigation();
+                    break;
+            }
+        }
+        /// <summary>
+        /// Maneja cambios en el dropdown de Environment
+        /// </summary>
+        /// <summary>
+        /// Maneja cambios en el dropdown de Environment
+        /// </summary>
+        private async void OnEnvironmentDropdownChanged(ChangeEvent<string> evt)
+        {
+            var selectedValue = evt.newValue;
+    
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                buttonName: "EnvironmentDropdown",
+                context: "environment_navigation",
+                additionalData: new Dictionary<string, object> { ["selection"] = selectedValue }
+            );
+    
+            // Usar EnvironmentLoadingManager a través del singleton
+            var environmentManager = EnvironmentManager.Instance;
+            if (environmentManager != null)
+            {
+                // Buscar EnvironmentLoadingManager en la escena a través del EnvironmentManager
+                var loadingManager = environmentManager.GetComponent<EnvironmentLoadingManager>();
+                if (loadingManager == null)
+                {
+                    // Si no está en el mismo GameObject, buscar en toda la escena
+                    loadingManager = Object.FindObjectOfType<EnvironmentLoadingManager>();
+                }
+        
+                if (loadingManager != null)
+                {
+                    loadingManager.HandleEnvironmentDropdownChange(selectedValue);
+                }
+                else
+                {
+                    Debug.LogWarning("EnvironmentLoadingManager not found");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("EnvironmentManager not found");
+            }
+        }
+        /// <summary>
+        /// Maneja cambios en el dropdown de vistas
+        /// </summary>
+        private async void OnViewsDropdownChanged(ChangeEvent<string> evt)
+        {
+            var selectedView = evt.newValue;
+    
+            // Skip si es la opción por defecto
+            if (selectedView == "Select view")
+                return;
+
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                buttonName: "ViewsDropdown",
+                context: "camera_view_change",
+                additionalData: new Dictionary<string, object> { ["view"] = selectedView }
+            );
+
+            if (_cameraViewManager != null)
+            {
+                bool success = _cameraViewManager.ChangeView(selectedView);
+                if (success)
+                {
+                    Debug.Log($"Camera view changed to: {selectedView}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Failed to change camera view to: {selectedView}");
+            
+                    // Revertir dropdown al valor anterior si falló
+                    var viewsDropdown = _root.Q<DropdownField>("Views");
+                    if (viewsDropdown != null)
+                    {
+                        viewsDropdown.SetValueWithoutNotify(_cameraViewManager.GetCurrentView());
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning("CameraViewManager not available - cannot change view");
+            }
+        }
     }
 }

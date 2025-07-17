@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controllers.UiManagement;
@@ -58,6 +59,8 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
             _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked); 
             _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
+            
+            _root.Q<DropdownField>("MenuRobotARSCARADropdownField")?.RegisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
 
             // Buscar el botón Dashboard para regresar
             var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
@@ -111,7 +114,7 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
                 _root.Q<Button>("SupportButton")?.UnregisterCallback<ClickEvent>(OnSupportButtonClicked);
                 _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
                 _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
-
+                _root.Q<DropdownField>("MenuRobotARSCARADropdownField")?.UnregisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
                 // Desregistrar botones Dashboard
                 var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
                 foreach (var dashboardButton in dashboardButtons)
@@ -422,5 +425,35 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
         public ArScaraJogAndTeachOrchestrator Orchestrator => _orchestrator;
 
         #endregion
+        /// <summary>
+        /// Maneja cambios en el dropdown de ARSCARA
+        /// </summary>
+        private async void OnArScaraDropdownChanged(ChangeEvent<string> evt)
+        {
+            var selectedValue = evt.newValue;
+    
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                buttonName: "ArScaraDropdown",
+                context: "dropdown_navigation",
+                additionalData: new Dictionary<string, object> { ["selection"] = selectedValue }
+            );
+    
+            switch (selectedValue)
+            {
+                case "Control panel":
+                    Debug.Log("Navigating to ArScaraControlPanel");
+                    _orchestrator.HandleArScaraControlPanelNavigation();
+                    break;
+            
+                case "Jog and teach":
+                    // Ya estamos en Jog and Teach, no hacer nada
+                    break;
+            
+                case "Points":
+                    Debug.Log("Navigating to ArScaraPoints");
+                    _orchestrator.HandleArScaraPointsNavigation();
+                    break;
+            }
+        }
     }
 }

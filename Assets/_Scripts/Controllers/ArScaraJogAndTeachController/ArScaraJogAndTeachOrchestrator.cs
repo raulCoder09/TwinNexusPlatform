@@ -175,7 +175,6 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
 
         public void Show()
         {
-            // SEGURIDAD: Verificar autenticación antes de mostrar
             if (!ServiceController.Instance.IsCognitoAuthenticated)
             {
                 Debug.LogError("Cannot show AWS Settings - user not authenticated");
@@ -195,6 +194,12 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
                 
                 OnControllerShown?.Invoke(this);
                 Debug.Log("[ArScaraJogAndTeachOrchestrator] AWS Settings UI shown");
+            }
+            
+            var arScaraDropdown = _uiDocument?.rootVisualElement?.Q<DropdownField>("MenuRobotARSCARADropdownField");
+            if (arScaraDropdown != null)
+            {
+                arScaraDropdown.SetValueWithoutNotify("Jog and teach");
             }
         }
 
@@ -308,6 +313,35 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
         #endregion
 
         #region Public Event Handlers (Called by EventManager)
+        /// <summary>
+        /// Maneja navegación a ArScaraPoints
+        /// </summary>
+        public void HandleArScaraPointsNavigation()
+        {
+            Debug.Log("ArScaraPoints navigation requested");
+    
+            // Cerrar menú si está abierto
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar ArScaraPoints
+            _mainUIController?.ShowUI("ArScaraPoints");
+        }
+        
+        /// <summary>
+        /// Maneja navegación a ArScaraControlPanel
+        /// </summary>
+        public void HandleArScaraControlPanelNavigation()
+        {
+            Debug.Log("ArScaraControlPanel navigation requested");
+    
+            // Cerrar menú si está abierto
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar ArScaraControlPanel
+            _mainUIController?.ShowUI("ArScaraControlPanel");
+        }
 
         /// <summary>
         /// Maneja clic en botón Dashboard

@@ -49,6 +49,7 @@ TagManager:
   - ArScaraControlPanel
   - ArScaraJogAndTeach
   - ArScaraPoints
+  - EnvironmentManager
   layers:
   - Default
   - TransparentFX

@@ -1858,6 +1858,80 @@ Transform:
   m_Children: []
   m_Father: {fileID: 230974503}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1204550297
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1204550299}
+  - component: {fileID: 1204550298}
+  - component: {fileID: 1204550300}
+  m_Layer: 0
+  m_Name: EnvironmentManager
+  m_TagString: EnvironmentManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1204550298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204550297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ca380e92ba04b18a145c6f97b7c3d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.EnvironmentController.EnvironmentManager
+  _enableDebugLogs: 1
+  _autoCleanupOnTransition: 1
+  _transitionDelay: 0.5
+  _environmentConfigs:
+  - environmentType: 1
+    environmentName: Virtual Environment
+    environmentPrefab: {fileID: 6418777021491892331, guid: c0f55aa25607d4b25ab0896690ec24c8,
+      type: 3}
+    requiresTransparentUI: 1
+    uiOpacity: 0.8
+    estimatedLoadTime: 2
+    loadingMessage: Loading Virtual Environment...
+--- !u!4 &1204550299
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204550297}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1204550300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204550297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ae3029dade141dda5335d166976acd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Controllers.EnvironmentController.EnvironmentLoadingManager
+  _loadingUIDocument: {fileID: 0}
+  _enableDebugLogs: 1
+  _minimumLoadingTime: 1
+  _fadeInDuration: 0.3
+  _fadeOutDuration: 0.3
 --- !u!1 &1258067409
 GameObject:
   m_ObjectHideFlags: 0
@@ -3329,3 +3403,4 @@ SceneRoots:
   - {fileID: 428813212}
   - {fileID: 1347529279}
   - {fileID: 230974503}
+  - {fileID: 1204550299}

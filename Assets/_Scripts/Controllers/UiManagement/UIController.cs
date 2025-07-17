@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using _Scripts.Controller;
 using _Scripts.Controllers.ArScaraControlPanelController;
+using _Scripts.Controllers.ArScaraJogAndTeachController;
+using _Scripts.Controllers.ArScaraPointsController;
 using _Scripts.Controllers.AwsSettingsController;
 using _Scripts.Controllers.CloudwatchSettingsController;
 using _Scripts.Controllers.DashboardController;
@@ -84,6 +86,8 @@ namespace _Scripts.Controllers.UiManagement
         [SerializeField] private string _s3SettingsSceneTag = "S3Settings";
         [SerializeField] private string _lambdaSettingsSceneTag = "LambdaSettings";
         [SerializeField] private string _arScaraControlPanelSceneTag = "ArScaraControlPanel";
+        [SerializeField] private string _arScaraJogAndTeachSceneTag = "ArScaraJogAndTeach";
+        [SerializeField] private string _arScaraPointsSceneTag = "ArScaraPoints";
         [SerializeField] private string _medaraConcreteArScaraSceneTag = "MedaraConcreteArScara";
         #endregion
 
@@ -117,6 +121,8 @@ namespace _Scripts.Controllers.UiManagement
         private LambdaSettingsOrchestrator _lambdaSettingsOrchestratorController;
         private ArScaraControlPanelOrchestrator _arScaraControlPanelController;
         private MedaraConcreteArScaraOrchestrator _medaraConcreteArScaraController;
+        private ArScaraJogAndTeachOrchestrator _arScaraJogAndTeachController;
+        private ArScaraPointsOrchestrator _arScaraPointsController;
 
 
         // Lista de controladores que requieren autenticación
@@ -267,6 +273,20 @@ namespace _Scripts.Controllers.UiManagement
             
             
     LogDebug("Discovering UI controllers...");
+    
+    _arScaraPointsController = FindUIController<ArScaraPointsOrchestrator>(_arScaraPointsSceneTag);
+    if (_arScaraPointsController != null)
+    {
+        RegisterUIController("ArScaraPoints", _arScaraPointsController, requiresAuth: true);
+        LogDebug("ArScaraPointsController discovered and registered");
+    }
+    
+    _arScaraJogAndTeachController = FindUIController<ArScaraJogAndTeachOrchestrator>(_arScaraJogAndTeachSceneTag);
+    if (_arScaraJogAndTeachController != null)
+    {
+        RegisterUIController("ArScaraJogAndTeach", _arScaraJogAndTeachController, requiresAuth: true);
+        LogDebug("ArScaraJogAndTeachController discovered and registered");
+    }
     
     _medaraConcreteArScaraController = FindUIController<MedaraConcreteArScaraOrchestrator>(_medaraConcreteArScaraSceneTag);
     if (_medaraConcreteArScaraController != null)

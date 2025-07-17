@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.EnvironmentController;
 using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.ArScaraControlPanelController
@@ -175,13 +176,11 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
 
         public void Show()
         {
-            // SEGURIDAD: Verificar autenticación antes de mostrar
+            // Código existente de autenticación...
             if (!ServiceController.Instance.IsCognitoAuthenticated)
             {
                 Debug.LogError("Cannot show AWS Settings - user not authenticated");
                 OnControllerError?.Invoke(this, "Authentication required");
-                
-                // Redirigir a Welcome
                 _mainUIController?.ShowUI("Welcome");
                 return;
             }
@@ -189,12 +188,39 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.Flex;
-                
-                // Actualizar configuraciones AWS si es necesario
                 LoadAwsConfiguration();
-                
                 OnControllerShown?.Invoke(this);
                 Debug.Log("[ArScaraControlPanelOrchestrator] AWS Settings UI shown");
+            }
+    
+            var arScaraDropdown = _uiDocument?.rootVisualElement?.Q<DropdownField>("MenuRobotARSCARADropdownField");
+            if (arScaraDropdown != null)
+            {
+                arScaraDropdown.SetValueWithoutNotify("Control panel");
+            }
+    
+            // VERIFICAR AMBIENTE ACTUAL Y APLICAR TRANSPARENCIA
+            var environmentManager = EnvironmentManager.Instance;
+            if (environmentManager != null)
+            {
+                bool shouldBeTransparent = (environmentManager.CurrentEnvironment == EnvironmentType.Virtual);
+                SetUITransparency(shouldBeTransparent);
+                Debug.Log($"UI transparency applied on show: {shouldBeTransparent} (current env: {environmentManager.CurrentEnvironment})");
+        
+                // AGREGAR ESTA LÍNEA:
+                UpdateViewsDropdownForEnvironment(environmentManager.CurrentEnvironment);
+            }
+            else
+            {
+                Debug.LogWarning("EnvironmentManager not found when showing UI");
+                SetUITransparency(false);
+        
+                // Ocultar dropdown si no hay EnvironmentManager
+                var viewsDropdown = _uiDocument?.rootVisualElement?.Q<DropdownField>("Views");
+                if (viewsDropdown != null)
+                {
+                    viewsDropdown.style.display = DisplayStyle.None;
+                }
             }
         }
 
@@ -216,12 +242,18 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         {
             try
             {
-                // Limpiar managers
+                // Desuscribirse de eventos del EnvironmentManager
+                var environmentManager = EnvironmentManager.Instance;
+                if (environmentManager != null)
+                {
+                    environmentManager.OnEnvironmentLoaded -= OnEnvironmentChanged;
+                    Debug.Log("ArScaraControlPanel unsubscribed from EnvironmentManager events");
+                }
+
+                // Resto del código de cleanup existente...
                 _eventManager?.Cleanup();
                 _uiManager = null;
                 _eventManager = null;
-
-                // Limpiar referencias
                 _mainUIController = null;
                 _uiConfig = null;
                 _awsConfig = null;
@@ -308,7 +340,36 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         #endregion
 
         #region Public Event Handlers (Called by EventManager)
+        
+        /// <summary>
+        /// Maneja navegación a ArScaraPoints
+        /// </summary>
+        public void HandleArScaraPointsNavigation()
+        {
+            Debug.Log("ArScaraPoints navigation requested");
+    
+            // Cerrar menú si está abierto
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar ArScaraPoints
+            _mainUIController?.ShowUI("ArScaraPoints");
+        }
 
+        /// <summary>
+        /// Maneja navegación a ArScaraJogAndTeach
+        /// </summary>
+        public void HandleArScaraJogAndTeachNavigation()
+        {
+            Debug.Log("ArScaraJogAndTeach navigation requested");
+    
+            // Cerrar menú si está abierto
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar ArScaraJogAndTeach
+            _mainUIController?.ShowUI("ArScaraJogAndTeach");
+        }
         /// <summary>
         /// Maneja clic en botón Dashboard
         /// </summary>
@@ -556,6 +617,18 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
                 Debug.LogWarning("UIController not found - will try to find it later");
             }
 
+            var environmentManager = EnvironmentManager.Instance;
+            if (environmentManager != null)
+            {
+                environmentManager.OnEnvironmentLoaded += OnEnvironmentChanged;
+                Debug.Log("ArScaraControlPanel subscribed to EnvironmentManager events");
+            }
+            else
+            {
+                Debug.LogWarning("EnvironmentManager not found");
+            }
+
+            Debug.Log("AWS Settings dependencies search completed");
             Debug.Log("AWS Settings dependencies search completed");
         }
 
@@ -630,6 +703,96 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         #endregion
 
         #region Helper Methods
+        
+        /// <summary>
+        /// Ajusta la transparencia de la UI para ambiente virtual
+        /// </summary>
+        private void SetUITransparency(bool isVirtualEnvironment)
+{
+    if (_uiConfig?.Body == null)
+    {
+        Debug.LogWarning("UI Body is null - cannot set transparency");
+        return;
+    }
+
+    var root = _uiDocument?.rootVisualElement;
+    if (root == null)
+    {
+        Debug.LogWarning("Root visual element is null - cannot set transparency");
+        return;
+    }
+
+    Debug.Log($"Setting UI transparency - Virtual Environment: {isVirtualEnvironment}");
+
+    if (isVirtualEnvironment)
+    {
+        // Activar modo transparente
+        _uiConfig.Body.AddToClassList("body-transparent");
+        
+        // Aplicar transparencia a elementos específicos
+        var codeRain = root.Q<VisualElement>("CodeRain");
+        if (codeRain != null)
+        {
+            codeRain.AddToClassList("code-rain-transparent");
+            Debug.Log("CodeRain transparency applied");
+        }
+        
+        var motorControlsInner = root.Q<VisualElement>("MotorControlsInner");
+        if (motorControlsInner != null)
+        {
+            motorControlsInner.AddToClassList("motor-controls-inner-transparent");
+            Debug.Log("MotorControlsInner transparency applied");
+        }
+        
+        var statusPanel = root.Q<VisualElement>("StatusPanel");
+        if (statusPanel != null)
+        {
+            statusPanel.AddToClassList("status-panel-container-transparent");
+            Debug.Log("StatusPanel transparency applied");
+        }
+        
+        var jointControlsPanel = root.Q<VisualElement>("JointControlsPanel");
+        if (jointControlsPanel != null)
+        {
+            jointControlsPanel.AddToClassList("joint-controls-container-transparent");
+            Debug.Log("JointControlsPanel transparency applied");
+        }
+        
+        var navigationMenu = root.Q<VisualElement>("NavigationMenu");
+        if (navigationMenu != null)
+        {
+            navigationMenu.AddToClassList("navigation-menu-transparent");
+            Debug.Log("NavigationMenu transparency applied");
+        }
+
+        Debug.Log("[ArScaraControlPanelOrchestrator] Virtual environment transparency activated");
+    }
+    else
+    {
+        // Desactivar modo transparente
+        _uiConfig.Body.RemoveFromClassList("body-transparent");
+        
+        var codeRain = root.Q<VisualElement>("CodeRain");
+        codeRain?.RemoveFromClassList("code-rain-transparent");
+        
+        var motorControlsInner = root.Q<VisualElement>("MotorControlsInner");
+        motorControlsInner?.RemoveFromClassList("motor-controls-inner-transparent");
+        
+        var statusPanel = root.Q<VisualElement>("StatusPanel");
+        statusPanel?.RemoveFromClassList("status-panel-container-transparent");
+        
+        var jointControlsPanel = root.Q<VisualElement>("JointControlsPanel");
+        jointControlsPanel?.RemoveFromClassList("joint-controls-container-transparent");
+        
+        var navigationMenu = root.Q<VisualElement>("NavigationMenu");
+        navigationMenu?.RemoveFromClassList("navigation-menu-transparent");
+
+        Debug.Log("[ArScaraControlPanelOrchestrator] Normal UI mode activated");
+    }
+
+    // Forzar actualización visual
+    root.MarkDirtyRepaint();
+}
 
         /// <summary>
         /// Muestra la UI principal (equivalente al método original)
@@ -720,6 +883,68 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             _settingsState.TriggerConnectionTestCompleted(serviceName, testResult);
             _settingsState.IsTestingConnection = false;
         }
+        
+        // AGREGAR ESTE NUEVO MÉTODO:
+        /// <summary>
+        /// Maneja cambios de ambiente desde EnvironmentManager
+        /// </summary>
+        private void OnEnvironmentChanged(EnvironmentType environmentType)
+        {
+            Debug.Log($"ArScaraControlPanel detected environment change: {environmentType}");
+    
+            // Solo aplicar transparencia si la UI está activa
+            if (IsActive)
+            {
+                bool shouldBeTransparent = (environmentType == EnvironmentType.Virtual);
+                SetUITransparency(shouldBeTransparent);
+                Debug.Log($"UI transparency set to: {shouldBeTransparent}");
+                UpdateViewsDropdownForEnvironment(environmentType);
+            }
+        }
+        
+        /// <summary>
+        /// Actualiza las opciones del dropdown de vistas basado en el ambiente actual
+        /// </summary>
+        private void UpdateViewsDropdownForEnvironment(EnvironmentType environmentType)
+        {
+            var viewsDropdown = _uiDocument?.rootVisualElement?.Q<DropdownField>("Views");
+            if (viewsDropdown == null)
+            {
+                Debug.LogWarning("Views dropdown not found");
+                return;
+            }
+
+            // Buscar CameraViewManager
+            var cameraViewManager = FindObjectOfType<CameraViewManager>();
+            if (cameraViewManager == null)
+            {
+                Debug.LogWarning("CameraViewManager not found");
+                return;
+            }
+
+            // Obtener vistas disponibles para el ambiente actual
+            var availableViews = cameraViewManager.GetAvailableViews();
+    
+            // Construir lista de opciones para el dropdown
+            var dropdownChoices = new List<string> { "Select view" };
+            dropdownChoices.AddRange(availableViews);
+
+            // Actualizar dropdown
+            viewsDropdown.choices = dropdownChoices;
+    
+            // Mostrar/ocultar dropdown basado en disponibilidad
+            if (environmentType == EnvironmentType.Virtual && availableViews.Count > 0)
+            {
+                viewsDropdown.style.display = DisplayStyle.Flex;
+                viewsDropdown.SetValueWithoutNotify("Select view");
+                Debug.Log($"Views dropdown updated with {availableViews.Count} options for Virtual environment");
+            }
+            else
+            {
+                viewsDropdown.style.display = DisplayStyle.None;
+                Debug.Log($"Views dropdown hidden for environment: {environmentType}");
+            }
+        }
 
         #endregion
 
@@ -746,5 +971,25 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         public ArScaraControlPanelInfo.AwsConfiguration AwsConfig => _awsConfig;
 
         #endregion
+        
+        [ContextMenu("Debug UI Elements")]
+        public void DebugUIElements()
+        {
+            var root = _uiDocument?.rootVisualElement;
+            if (root == null)
+            {
+                Debug.LogError("Root is null");
+                return;
+            }
+
+            Debug.Log("=== UI Elements Debug ===");
+            Debug.Log($"Body: {root.Q<VisualElement>("Body") != null}");
+            Debug.Log($"CodeRain: {root.Q<VisualElement>("CodeRain") != null}");
+            Debug.Log($"MotorControlsInner: {root.Q<VisualElement>("MotorControlsInner") != null}");
+            Debug.Log($"StatusPanel: {root.Q<VisualElement>("StatusPanel") != null}");
+            Debug.Log($"JointControlsPanel: {root.Q<VisualElement>("JointControlsPanel") != null}");
+            Debug.Log($"NavigationMenu: {root.Q<VisualElement>("NavigationMenu") != null}");
+            Debug.Log($"Current Environment: {EnvironmentManager.Instance?.CurrentEnvironment}");
+        }
     }
 }

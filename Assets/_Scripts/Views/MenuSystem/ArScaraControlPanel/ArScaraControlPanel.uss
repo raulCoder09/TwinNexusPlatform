@@ -953,3 +953,31 @@
     border-bottom-width: 0;
     border-left-width: 0;
 }
+.body-transparent {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    background-image: none !important;
+}
+
+.code-rain-transparent {
+    opacity: 0 !important;
+}
+
+.motor-controls-inner-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.status-panel-container-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.joint-controls-container-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.navigation-menu-transparent {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.joint-controls-panel-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}

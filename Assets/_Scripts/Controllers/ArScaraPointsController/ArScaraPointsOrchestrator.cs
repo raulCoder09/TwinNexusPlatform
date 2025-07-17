@@ -196,6 +196,11 @@ namespace _Scripts.Controllers.ArScaraPointsController
                 OnControllerShown?.Invoke(this);
                 Debug.Log("[ArScaraPointsOrchestrator] AWS Settings UI shown");
             }
+            var arScaraDropdown = _uiDocument?.rootVisualElement?.Q<DropdownField>("MenuRobotARSCARADropdownField");
+            if (arScaraDropdown != null)
+            {
+                arScaraDropdown.SetValueWithoutNotify("Points");
+            }
         }
 
         public void Hide()
@@ -309,6 +314,35 @@ namespace _Scripts.Controllers.ArScaraPointsController
 
         #region Public Event Handlers (Called by EventManager)
 
+        /// <summary>
+        /// Maneja navegación a ArScaraControlPanel
+        /// </summary>
+        public void HandleArScaraControlPanelNavigation()
+        {
+            Debug.Log("ArScaraControlPanel navigation requested");
+    
+            // Cerrar menú si está abierto
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar ArScaraControlPanel
+            _mainUIController?.ShowUI("ArScaraControlPanel");
+        }
+
+        /// <summary>
+        /// Maneja navegación a ArScaraJogAndTeach
+        /// </summary>
+        public void HandleArScaraJogAndTeachNavigation()
+        {
+            Debug.Log("ArScaraJogAndTeach navigation requested");
+    
+            // Cerrar menú si está abierto
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar ArScaraJogAndTeach
+            _mainUIController?.ShowUI("ArScaraJogAndTeach");
+        }
         /// <summary>
         /// Maneja clic en botón Dashboard
         /// </summary>
