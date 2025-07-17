@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using _Scripts.Controller;
+using _Scripts.Controllers.ArScaraControlPanelController;
 using _Scripts.Controllers.AwsSettingsController;
 using _Scripts.Controllers.CloudwatchSettingsController;
 using _Scripts.Controllers.DashboardController;
 using _Scripts.Controllers.DeviceSelectionController;
 using _Scripts.Controllers.IotCoreSettingsController;
 using _Scripts.Controllers.LambdaSettingsController;
+using _Scripts.Controllers.MedaraConcreteArScaraController;
 using _Scripts.Controllers.ReportsController;
 using _Scripts.Controllers.S3SettingsController;
 using _Scripts.Controllers.SESSettingsController;
@@ -81,6 +83,8 @@ namespace _Scripts.Controllers.UiManagement
         [SerializeField] private string _iotCoreSettingsSceneTag = "IotCoreSettings";
         [SerializeField] private string _s3SettingsSceneTag = "S3Settings";
         [SerializeField] private string _lambdaSettingsSceneTag = "LambdaSettings";
+        [SerializeField] private string _arScaraControlPanelSceneTag = "ArScaraControlPanel";
+        [SerializeField] private string _medaraConcreteArScaraSceneTag = "MedaraConcreteArScara";
         #endregion
 
         
@@ -111,6 +115,8 @@ namespace _Scripts.Controllers.UiManagement
         private IotCoreSettingsOrchestrator _iotCoreSettingsOrchestratorController;
         private S3SettingsOrchestrator _s3SettingsOrchestratorController;
         private LambdaSettingsOrchestrator _lambdaSettingsOrchestratorController;
+        private ArScaraControlPanelOrchestrator _arScaraControlPanelController;
+        private MedaraConcreteArScaraOrchestrator _medaraConcreteArScaraController;
 
 
         // Lista de controladores que requieren autenticación
@@ -258,8 +264,22 @@ namespace _Scripts.Controllers.UiManagement
         private void DiscoverUIControllers()
 
         {
+            
+            
     LogDebug("Discovering UI controllers...");
     
+    _medaraConcreteArScaraController = FindUIController<MedaraConcreteArScaraOrchestrator>(_medaraConcreteArScaraSceneTag);
+    if (_medaraConcreteArScaraController != null)
+    {
+        RegisterUIController("MedaraConcreteArScara", _medaraConcreteArScaraController, requiresAuth: true);
+        LogDebug("MedaraConcreteArScaraController discovered and registered");
+    }
+    _arScaraControlPanelController = FindUIController<ArScaraControlPanelOrchestrator>(_arScaraControlPanelSceneTag);
+    if (_arScaraControlPanelController != null)
+    {
+        RegisterUIController("ArScaraControlPanel", _arScaraControlPanelController, requiresAuth: true);
+        LogDebug("ArScaraControlPanelController discovered and registered");
+    }
 
         
         _iotCoreSettingsOrchestratorController = FindUIController<IotCoreSettingsOrchestrator>(_iotCoreSettingsSceneTag);

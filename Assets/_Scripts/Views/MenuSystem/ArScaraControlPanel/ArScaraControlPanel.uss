@@ -1,4 +1,4 @@
-/* Existing classes */
+/* Estilos base existentes */
 .ScrimTransparent {
     flex-grow: 1;
     position: relative;
@@ -29,37 +29,6 @@
     translate: 0% 0;
 }
 
-
-#Body {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    justify-content: space-between;
-    align-self: stretch;
-    align-content: stretch;
-    background-color: rgb(0, 0, 0);
-    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg?fileID=2800000&guid=db31ce936e2104caba450d7ddc5ce66f&type=3#scanlines2");
-    background-size: 100% 4px;
-    background-repeat: repeat-y;
-    border-left-color: rgb(0, 0, 0);
-    border-right-color: rgb(0, 0, 0);
-    border-top-color: rgb(0, 0, 0);
-    border-bottom-color: rgb(0, 0, 0);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
-}
-.sergey-kotenev {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: url("project://database/Assets/_Images/Backgrounds/sergey-kotenev--gWSFS8rrVg-unsplash.jpg");
-    background-size: 100% 100%;
-    background-repeat: repeat;
-    opacity: 0.30;
-    z-index: -1;
-}
 .code-rain {
     position: absolute;
     width: 100%;
@@ -71,349 +40,465 @@
     z-index: -1;
 }
 
+/* Body principal */
+.body {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-self: stretch;
+    align-content: stretch;
+    background-color: rgb(0, 0, 0);
+    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg?fileID=2800000&guid=db31ce936e2104caba450d7ddc5ce66f&type=3#scanlines2");
+    background-size: 100% 4px;
+    background-repeat: repeat-y;
+}
+
 /* Header */
 .header {
     flex-grow: 1;
     width: 100%;
     height: 10%;
     flex-direction: row;
+    border-bottom-width: 2px;
+    border-bottom-color: rgba(0, 255, 0, 0.3);
 }
 
 .menu-panel {
     flex-grow: 1;
-    width: 25%;
+    width: 20%;
     height: 100%;
     align-items: center;
+    justify-content: center;
 }
 
 .menu-button {
-    height: 100%;
-    width: 50%;
-    background-image: none;
-    background-color: rgba(0, 0, 0, 0);
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    translate: 0 0;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-    padding-top: 0;
-    padding-right: 0;
-    padding-bottom: 0;
-    padding-left: 0;
+    height: 80%;
+    width: 60%;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
     border-left-color: rgb(3, 255, 0);
     border-right-color: rgb(3, 255, 0);
     border-top-color: rgb(3, 255, 0);
     border-bottom-color: rgb(3, 255, 0);
-    color: rgb(4, 201, 0);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: rgb(0, 255, 0);
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    font-size: 30px;
+    font-size: 28px;
+    -unity-font-style: bold;
+    transition-duration: 0.3s;
+    transition-property: background-color, border-color, scale;
+}
+
+.menu-button:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    scale: 1.05;
+}
+
+.menu-button:active {
+    scale: 0.95;
+    background-color: rgba(0, 255, 0, 0.2);
 }
 
 .spare-header-panel {
     flex-grow: 1;
-    width: 25%;
+    width: 20%;
     height: 100%;
     justify-content: center;
+    align-items: center;
 }
 
 .spare-header-label {
     color: rgb(255, 255, 255);
-    font-size: 20px;
-    -unity-text-align: upper-center;
-}
-
-.username-panel {
-    flex-grow: 1;
-    width: 25%;
-    height: 100%;
-    -unity-text-align: upper-left;
-    justify-content: center;
-}
-
-.username-label {
-    -unity-font-style: bold;
-    -unity-text-outline-color: rgba(0, 0, 0, 0);
-    color: rgb(255, 255, 255);
+    font-size: 50px;
     -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    font-size: 30px;
-}
-
-.logout-panel {
-    flex-grow: 1;
-    width: 25%;
-    height: 100%;
-    justify-content: center;
-}
-
-.logout-label {
-    color: rgb(255, 255, 255);
-    -unity-text-align: upper-center;
-    font-size: 30px;
     -unity-font-style: bold;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-/* Main content */
+/* Dropdown Styles */
+.control-dropdown {
+    width: 80%;
+    height: 60%;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 24px;
+    transition-duration: 0.3s;
+    transition-property: border-color, background-color;
+}
+
+.control-dropdown:hover {
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    background-color: rgba(0, 255, 0, 0.05);
+}
+
+/* Main Content */
 .main {
     flex-grow: 1;
     width: 100%;
     height: 80%;
     flex-direction: row;
-    flex-wrap: wrap;
+    padding: 10px;
 }
 
-.main-left {
+/* Control Panels */
+.control-panel-left {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+    margin-right: 10px;
+}
+
+.control-panel-center {
+    flex-grow: 1;
+    width: 60%;
+    height: 100%;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.control-panel-right {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+    margin-left: 10px;
+}
+
+/* Motor Controls Section */
+.motor-controls-section {
+    flex-grow: 1;
+    width: 100%;
+    height: 33%;
+    margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    padding: 10px;
+}
+
+.motor-control-row {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 50%;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+/* Control Buttons */
+.control-button {
+    width: 45%;
+    height: 80%;
+    background-color: rgba(12, 53, 17, 0.8);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(3, 255, 0);
+    border-right-color: rgb(3, 255, 0);
+    border-top-color: rgb(3, 255, 0);
+    border-bottom-color: rgb(3, 255, 0);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 26px;
+    -unity-font-style: bold;
+    transition-duration: 0.3s;
+    transition-property: background-color, border-color, scale;
+}
+
+.control-button:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    scale: 1.03;
+}
+
+.control-button:active {
+    scale: 0.97;
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+/* Control Button States */
+.control-button.active {
+    background-color: rgba(0, 255, 0, 0.15);
+    border-left-color: rgb(0, 255, 200);
+    border-right-color: rgb(0, 255, 200);
+    border-top-color: rgb(0, 255, 200);
+    border-bottom-color: rgb(0, 255, 200);
+}
+
+.control-button.inactive {
+    opacity: 0.6;
+    border-left-color: rgb(128, 128, 128);
+    border-right-color: rgb(128, 128, 128);
+    border-top-color: rgb(128, 128, 128);
+    border-bottom-color: rgb(128, 128, 128);
+}
+
+/* Status Panel */
+.status-panel {
+    flex-grow: 1;
+    width: 100%;
+    height: 40%;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    padding: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.status-label {
+    color: rgb(0, 255, 0);
+    font-size: 28px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    margin-bottom: 5px;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+}
+
+.status-label.warning {
+    color: rgb(255, 255, 0);
+    text-shadow: 0 0 8px rgba(255, 255, 0, 0.5);
+}
+
+.status-label.error {
+    color: rgb(255, 0, 0);
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+}
+
+/* Joint Controls */
+.joint-controls-panel {
+    flex-grow: 1;
+    width: 100%;
+    height: 40%;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    padding: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.joint-toggle {
+    color: rgb(0, 255, 0);
+    -unity-text-align: middle-center;
+    font-size: 28px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+    transition-duration: 0.3s;
+    transition-property: color, scale;
+}
+
+.joint-toggle:hover {
+    color: rgb(0, 255, 150);
+    scale: 1.05;
+}
+
+.joint-toggle:checked {
+    color: rgb(0, 255, 200);
+    text-shadow: 0 0 8px rgba(0, 255, 200, 0.5);
+}
+
+/* Específico para elementos del UXML */
+
+/* Header - Panels específicos */
+.header-menu-panel {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-title-panel {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-dropdown-panel {
+    flex-grow: 1;
+    width: 30%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Main - Secciones específicas */
+.main-left-section {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+    margin-right: 10px;
+}
+
+.main-center-section {
+    flex-grow: 1;
+    width: 60%;
+    height: 100%;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.main-right-section {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+    margin-left: 10px;
+}
+
+/* Motor Controls - Estructura específica */
+.motor-controls-container {
+    flex-grow: 1;
+    width: 100%;
+    height: 33%;
+    margin-bottom: 10px;
+}
+
+.motor-controls-inner {
     flex-grow: 1;
     flex-direction: column;
-    flex-wrap: nowrap;
-    width: 60%;
-    height: 100%;
-}
-
-.main-top-row {
-    flex-grow: 1;
-    flex-direction: row;
-    width: 100%;
-    height: 50%;
-    justify-content: space-evenly;
-    align-items: center;
-    align-content: stretch;
-    margin-bottom: 0;
-    margin-top: 0;
-    margin-right: 0;
-    margin-left: 0;
-}
-
-.main-bottom-row {
-    flex-grow: 1;
-    flex-direction: row;
-    width: 100%;
-    height: 50%;
-    align-items: center;
-    justify-content: space-evenly;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-}
-
-/* Widget panels */
-.widget-panel {
-    flex-grow: 1;
-    width: 50%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0);
-    background-image: none;
-    margin-top: 0;
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-right: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    border-left-color: rgb(0, 255, 0);
-    border-right-color: rgb(0, 255, 0);
-    border-top-color: rgb(0, 255, 0);
-    border-bottom-color: rgb(0, 255, 0);
+    background-color: rgba(0, 0, 0, 0.6);
     border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-    -unity-background-scale-mode: scale-and-crop;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    padding: 10px;
 }
 
-.widget-panel.recent-activity-panel,
-.widget-panel.system-status-panel {
-    width: 100%;
-}
-
-.widget-header {
-    flex-grow: 1;
-    width: 100%;
-    height: 20%;
-    justify-content: flex-end;
-}
-
-.widget-content {
-    flex-grow: 1;
-    width: 100%;
-    height: 80%;
-    justify-content: center;
-}
-
-.widget-title {
-    color: rgb(255, 255, 255);
-    font-size: 40px;
-    -unity-text-align: upper-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-/* Welcome panel */
-.welcome-title {
-    color: rgb(255, 255, 255);
-    -unity-text-align: middle-center;
-    font-size: 40px;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.welcome-description {
-    color: rgb(255, 255, 255);
-    font-size: 30px;
-    white-space: normal;
-    -unity-text-align: middle-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-/* IoT status panel */
-.iot-status-header {
-    flex-grow: 1;
-    width: 100%;
-    height: 20%;
-    justify-content: space-evenly;
-    align-self: auto;
-    align-items: center;
-    flex-direction: row;
-}
-
-.iot-status-row {
-    flex-grow: 1;
-    width: 100%;
-    height: 20%;
-    justify-content: space-evenly;
-    align-self: auto;
-    align-items: center;
-    flex-direction: row;
-}
-
-.iot-status-column-header {
-    color: rgb(255, 255, 255);
-    height: 100%;
-    width: 33%;
-    -unity-text-align: middle-center;
-    font-size: 22px;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.iot-status-column {
-    color: rgb(255, 255, 255);
-    height: 100%;
-    width: 33%;
-    -unity-text-align: middle-center;
-    font-size: 20px;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-/* System status panel */
-.system-status-content {
+.motor-row-1, .motor-row-2 {
     flex-grow: 1;
     flex-direction: row;
-    width: 100%;
-    height: 80%;
-}
-
-.system-status-devices {
-    flex-grow: 1;
-    width: 50%;
-    height: 100%;
     justify-content: space-evenly;
     align-items: center;
-    -unity-text-align: upper-right;
+    margin-bottom: 5px;
 }
 
-.system-status-states {
-    flex-grow: 1;
-    width: 50%;
-    height: 100%;
-    justify-content: space-evenly;
-    align-self: auto;
-    align-items: center;
-}
-
-.system-device-name {
-    color: rgb(255, 255, 255);
-    font-size: 30px;
-    -unity-text-align: upper-right;
-    -unity-font-style: normal;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.system-status-online {
-    color: rgb(0, 255, 0);
-    font-size: 30px;
-    -unity-font-style: bold;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.system-status-offline {
-    color: rgb(238, 0, 0);
-    font-size: 30px;
-    -unity-font-style: bold;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.system-status-offline-red {
-    color: rgb(255, 0, 0);
-    font-size: 30px;
-    -unity-font-style: bold;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-/* Recent activity panel */
-.recent-activity-title {
-    color: rgb(255, 255, 255);
-    -unity-text-align: upper-center;
-    font-size: 30px;
-    -unity-font-style: bold;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.recent-activity-content {
-    flex-grow: 1;
-    width: 100%;
-    height: 80%;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
-.recent-activity-item {
-    color: rgb(255, 255, 255);
-    -unity-font-style: normal;
-    font-size: 30px;
-    white-space: normal;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.recent-activity-link {
-    color: rgb(255, 255, 255);
-    font-size: 35px;
-    white-space: normal;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-/* Main right panel - Device control */
-.device-control-panel {
-    flex-grow: 1;
+/* Botones específicos del motor */
+.motor-button-off, .motor-button-on, .power-button-low, .power-button-high {
     width: 40%;
-    background-image: none;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-    background-color: rgba(0, 0, 0, 0);
+    height: 50%;
+    background-color: rgba(12, 53, 17, 0.8);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(3, 255, 0);
+    border-right-color: rgb(3, 255, 0);
+    border-top-color: rgb(3, 255, 0);
+    border-bottom-color: rgb(3, 255, 0);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    color: rgb(3, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+    -unity-font-style: bold;
+    transition-duration: 0.3s;
+    transition-property: background-color, border-color, scale;
+}
+
+.motor-button-off:hover, .motor-button-on:hover,
+.power-button-low:hover, .power-button-high:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    scale: 1.03;
+}
+
+.motor-button-off:active, .motor-button-on:active,
+.power-button-low:active, .power-button-high:active {
+    scale: 0.97;
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+/* Status Panel - Estructura específica */
+.status-panel-container {
+    flex-grow: 1;
+    width: 100%;
+    height: 40%;
+    background-color: rgba(0, 0, 0, 0.6);
     border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -422,117 +507,146 @@
     border-right-color: rgb(0, 255, 0);
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    padding: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-.device-control-header {
+/* Status Labels específicos */
+.status-emergency, .status-safeguard, .status-motors, .status-power {
+    color: rgb(3, 255, 0);
+    font-size: 30px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    margin-bottom: 5px;
+    text-shadow: 0 0 8px rgba(3, 255, 0, 0.5);
+}
+
+/* Joint Controls - Estructura específica */
+.joint-controls-container {
     flex-grow: 1;
     width: 100%;
-    height: 20%;
-    flex-direction: row;
-}
-
-.device-nav-left {
-    flex-grow: 1;
-    width: 20%;
-    height: 100%;
+    height: 40%;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    padding: 15px;
     justify-content: center;
     align-items: center;
 }
 
-.device-nav-right {
-    flex-grow: 1;
-    width: 20%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-}
-
-.device-nav-button {
-    width: 50%;
+/* Joint Toggles específicos */
+.joint-j1, .joint-j2, .joint-j3, .joint-j4 {
+    color: rgb(3, 255, 0);
+    -unity-text-align: upper-right;
     font-size: 30px;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-font-style: bold;
-    background-color: rgb(0, 0, 0);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-left-color: rgb(0, 255, 0);
-    border-right-color: rgb(0, 255, 0);
-    border-top-color: rgb(0, 255, 0);
-    border-bottom-color: rgb(0, 255, 0);
-    color: rgb(0, 255, 0);
+    margin-bottom: 8px;
+    transition-duration: 0.3s;
+    transition-property: color, scale;
 }
 
-.device-title-container {
+.joint-j1:hover, .joint-j2:hover, .joint-j3:hover, .joint-j4:hover {
+    color: rgb(0, 255, 150);
+    scale: 1.05;
+}
+
+.joint-j1:checked, .joint-j2:checked, .joint-j3:checked, .joint-j4:checked {
+    color: rgb(0, 255, 200);
+    text-shadow: 0 0 8px rgba(0, 255, 200, 0.5);
+}
+
+/* Footer - Secciones específicas */
+.footer-left-section {
+    flex-grow: 1;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 20%;
+    height: 100%;
+    align-items: center;
+}
+
+.footer-center-section {
     flex-grow: 1;
     width: 60%;
     height: 100%;
-    justify-content: center;
-}
-
-.device-title {
-    font-size: 50px;
-    color: rgb(255, 255, 255);
-    -unity-font-style: bold;
-    -unity-text-align: upper-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.device-status-row {
-    flex-grow: 1;
-    flex-direction: row;
-    width: 100%;
-    height: 10%;
-}
-
-.device-status-container {
-    flex-grow: 1;
-    justify-content: center;
-}
-
-.device-status-online {
-    font-size: 40px;
-    -unity-font-style: bold;
-    color: rgb(0, 255, 0);
-    -unity-text-align: upper-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.device-status-busy {
-    -unity-font-style: bold;
-    color: rgb(253, 255, 0);
-    font-size: 40px;
-    -unity-text-align: upper-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.device-status-alarmed {
-    font-size: 30px;
-    -unity-font-style: bold;
-    -unity-text-align: upper-center;
-    color: rgb(255, 0, 0);
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.device-visualization-container {
-    flex-grow: 1;
-    width: 100%;
-    height: 50%;
     align-items: center;
     justify-content: center;
 }
 
-.device-visualization-box {
+.footer-right-section {
     flex-grow: 1;
-    width: 80%;
-    height: auto;
-    justify-content: center;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-    background-color: rgb(0, 0, 0);
+    flex-direction: row;
+    width: 20%;
+    height: 100%;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+/* Botones específicos del footer */
+.footer-reset-button, .footer-home-button, .footer-free-button, .footer-lock-button {
+    height: 80%;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: rgba(12, 53, 17, 0.8);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(3, 255, 0);
+    border-right-color: rgb(3, 255, 0);
+    border-top-color: rgb(3, 255, 0);
+    border-bottom-color: rgb(3, 255, 0);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: rgb(3, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+    -unity-font-style: bold;
+    transition-duration: 0.3s;
+    transition-property: background-color, border-color, scale;
+}
+
+.footer-reset-button:hover, .footer-home-button:hover,
+.footer-free-button:hover, .footer-lock-button:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    scale: 1.02;
+}
+
+.footer-reset-button:active, .footer-home-button:active,
+.footer-free-button:active, .footer-lock-button:active {
+    scale: 0.98;
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+/* Dropdown específico de views */
+.views-dropdown {
+    width: 25%;
+    height: 50%;
+    background-color: rgba(0, 0, 0, 0.8);
     border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -541,71 +655,70 @@
     border-right-color: rgb(0, 255, 0);
     border-top-color: rgb(0, 255, 0);
     border-bottom-color: rgb(0, 255, 0);
-}
-
-.device-controls-bottom {
-    flex-grow: 1;
-    height: 20%;
-    width: 100%;
-}
-
-.device-mode-container {
-    flex-grow: 1;
-}
-
-.device-mode-label {
-    color: rgb(255, 255, 255);
-    -unity-font-style: bold;
-    font-size: 30px;
-    -unity-text-align: upper-center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: rgb(12, 53, 17);
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-}
-
-.device-coordinates-container {
-    flex-grow: 1;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-    justify-content: flex-start;
-}
-
-.coordinate-container {
-    flex-grow: 1;
-    width: 33%;
-    height: 100%;
-    justify-content: center;
-}
-
-.coordinate-label {
-    color: rgb(255, 255, 255);
-    -unity-font-style: bold;
     font-size: 30px;
-    -unity-text-align: upper-center;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    transition-duration: 0.3s;
+    transition-property: border-color, background-color;
 }
 
-/* Footer */
-.footer {
+.views-dropdown:hover {
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    background-color: rgba(0, 255, 0, 0.05);
+}
+
+/* Dropdowns específicos del header */
+.environment-dropdown, .arscara-dropdown {
+    width: 80%;
+    height: 50%;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: rgb(12, 53, 17);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+    transition-duration: 0.3s;
+    transition-property: border-color, background-color;
+}
+
+.environment-dropdown:hover, .arscara-dropdown:hover {
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    background-color: rgba(0, 255, 0, 0.05);
+}
+
+/* Contenedores vacíos */
+.empty-section-33 {
     flex-grow: 1;
     width: 100%;
-    height: 10%;
-    flex-direction: row;
+    height: 33%;
 }
 
-.footer-panel {
+.empty-section-20 {
     flex-grow: 1;
-    width: 25%;
-    height: 100%;
-    justify-content: center;
+    align-items: center;
 }
 
-.footer-label {
-    color: rgb(255, 255, 255);
-    font-size: 20px;
-    -unity-text-align: upper-center;
-}
-
-/* Overlay and navigation menu */
+/* Overlay y Navigation específicos */
 .overlay-container {
     flex-grow: 1;
     position: absolute;
@@ -615,59 +728,25 @@
     opacity: 1;
 }
 
-.navigation-menu {
-    flex-grow: 1;
-    position: relative;
-    width: 25%;
-    height: 100%;
-    translate: 0 0;
-    background-color: rgb(0, 0, 0);
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-left-color: rgba(0, 0, 0, 0);
-    border-right-color: rgba(0, 0, 0, 0);
-    border-top-color: rgba(0, 0, 0, 0);
-    border-bottom-color: rgba(0, 0, 0, 0);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
 .nav-menu-header {
     flex-grow: 1;
     width: 100%;
     height: 30%;
-}
-
-.nav-username-container {
-    flex-grow: 1;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 25%;
-    margin-top: 0;
-    margin-left: 0;
-}
-
-.nav-username {
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    -unity-font-style: bold;
-    font-size: 50px;
-    color: rgb(0, 255, 0);
+    border-bottom-width: 2px;
+    border-bottom-color: rgba(0, 255, 0, 0.3);
 }
 
 .nav-menu-content {
     flex-grow: 1;
     width: 100%;
     height: 70%;
+    padding: 10px;
 }
 
 .nav-menu-row {
     flex-grow: 1;
     flex-direction: row;
+    margin-bottom: 5px;
 }
 
 .nav-button-container {
@@ -676,22 +755,6 @@
     height: 100%;
     justify-content: center;
     align-items: center;
-}
-
-.nav-button {
-    font-size: 40px;
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    color: rgb(0, 255, 0);
-    -unity-font-style: bold;
-    background-color: rgba(188, 188, 188, 0);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
-}
-
-.nav-button-active {
-    color: rgb(255, 172, 51);
 }
 
 .nav-spacer-left {
@@ -713,10 +776,178 @@
     font-size: 30px;
 }
 
+.footer-section {
+    flex-grow: 1;
+    height: 100%;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.footer-section.left {
+    width: 20%;
+}
+
+.footer-section.center {
+    width: 60%;
+    justify-content: center;
+}
+
+.footer-section.right {
+    width: 20%;
+}
+
+.footer-button {
+    height: 80%;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: rgba(12, 53, 17, 0.8);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(3, 255, 0);
+    border-right-color: rgb(3, 255, 0);
+    border-top-color: rgb(3, 255, 0);
+    border-bottom-color: rgb(3, 255, 0);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: rgb(0, 255, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 26px;
+    -unity-font-style: bold;
+    transition-duration: 0.3s;
+    transition-property: background-color, border-color, scale;
+}
+
+.footer-button:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    scale: 1.02;
+}
+
+.footer-button:active {
+    scale: 0.98;
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+/* Navigation Menu */
+.overlay-container {
+    flex-grow: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    opacity: 1;
+}
+
+.navigation-menu {
+    flex-grow: 1;
+    position: relative;
+    width: 25%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    border-right-width: 2px;
+    border-right-color: rgb(0, 255, 0);
+}
+
+.nav-menu-header {
+    flex-grow: 1;
+    width: 100%;
+    height: 30%;
+    border-bottom-width: 2px;
+    border-bottom-color: rgba(0, 255, 0, 0.3);
+}
+
+.nav-username-container {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.nav-username {
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: bold;
+    font-size: 50px;
+    color: rgb(0, 255, 0);
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.nav-menu-content {
+    flex-grow: 1;
+    width: 100%;
+    height: 70%;
+    padding: 10px;
+}
+
+.nav-menu-row {
+    flex-grow: 1;
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.nav-button-container {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-button {
+    width: 90%;
+    height: 80%;
+    font-size: 36px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    color: rgb(0, 255, 0);
+    -unity-font-style: bold;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgba(0, 255, 0, 0.3);
+    border-right-color: rgba(0, 255, 0, 0.3);
+    border-top-color: rgba(0, 255, 0, 0.3);
+    border-bottom-color: rgba(0, 255, 0, 0.3);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    transition-duration: 0.3s;
+    transition-property: background-color, border-color, scale;
+}
+
+.nav-button:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    scale: 1.02;
+}
+
+.nav-button-active {
+    color: rgb(255, 172, 51);
+    background-color: rgba(255, 172, 51, 0.1);
+    border-left-color: rgb(255, 172, 51);
+    border-right-color: rgb(255, 172, 51);
+    border-top-color: rgb(255, 172, 51);
+    border-bottom-color: rgb(255, 172, 51);
+    text-shadow: 0 0 8px rgba(255, 172, 51, 0.5);
+}
+
 .hide-menu-button {
     width: 75%;
     height: 100%;
-    background-color: rgba(188, 188, 188, 0);
+    background-color: rgba(0, 0, 0, 0);
     border-top-width: 0;
     border-right-width: 0;
     border-bottom-width: 0;

@@ -375,19 +375,61 @@ namespace _Scripts.Controllers.DeviceSelectionController
 
         #region Public Event Handlers (Called by EventManager)
 
-        /// <summary>
-        /// Maneja selección de dispositivo
-        /// </summary>
-        public async void HandleDeviceSelection(string deviceId)
+/// <summary>
+/// Maneja selección de dispositivo
+/// </summary>
+public async void HandleDeviceSelection(string deviceId)
+{
+    Debug.Log($"[DeviceSelectionOrchestrator] Device selected: {deviceId} in context: {CurrentContext}");
+    
+    // Disparar evento de selección
+    OnDeviceSelected?.Invoke(deviceId, CurrentContext);
+    
+    if (deviceId == "ARSCARA")
+    {
+        if (CurrentContext == IDeviceSelectionOps.LaunchContext.Operations)
         {
-            Debug.Log($"[DeviceSelectionOrchestrator] Device selected: {deviceId}");
+            Debug.Log("[DeviceSelectionOrchestrator] Navigating to ArScaraControlPanel UI (Operations context)");
             
-            // Disparar evento de selección
-            OnDeviceSelected?.Invoke(deviceId, CurrentContext);
+            // Disparar evento de dispositivo lanzado
+            OnDeviceLaunched?.Invoke(deviceId, CurrentContext);
             
-            // Intentar lanzar el dispositivo
-            await LaunchDeviceAsync(deviceId);
+            // Cerrar menú y ocultar DeviceSelection
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            // Mostrar la UI de ArScaraControlPanel
+            _mainUIController?.ShowUI("ArScaraControlPanel");
         }
+        else if (CurrentContext == IDeviceSelectionOps.LaunchContext.Training)
+        {
+            Debug.Log("[DeviceSelectionOrchestrator] Navigating to MedaraConcreteArScara UI (Training context)");
+            
+            // Disparar evento de dispositivo lanzado
+            OnDeviceLaunched?.Invoke(deviceId, CurrentContext);
+            
+            // Cerrar menú y ocultar DeviceSelection
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            // Mostrar la UI de MedaraConcreteArScara
+            _mainUIController?.ShowUI("MedaraConcreteArScara");
+        }
+        else
+        {
+            // Contexto no permitido
+            var errorMsg = $"Device {deviceId} cannot be launched in context {CurrentContext}. Please use Operations or Training context.";
+            Debug.LogError(errorMsg);
+            OnDeviceLaunchFailed?.Invoke(deviceId, errorMsg);
+            ShowLaunchMessage(errorMsg, true);
+        }
+    }
+    else
+    {
+        // Mantener la lógica original para otros dispositivos
+        await LaunchDeviceAsync(deviceId);
+    }
+}
 
         /// <summary>
         /// Maneja cambio de contexto
