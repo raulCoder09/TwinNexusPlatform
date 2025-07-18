@@ -8,9 +8,6 @@
             <ui:VisualElement name="TitlePanel" class="spare-header-panel" style="width: 20%;">
                 <ui:Label name="TitleLabel" text="ARSCARA Points" class="spare-header-label" />
             </ui:VisualElement>
-            <ui:VisualElement name="EnvironmentPanel" class="header-dropdown-panel" style="width: 30%; justify-content: center;">
-                <ui:DropdownField choices="Menu environment,Virtual  environment,Augmented reality environment,Hybrid environment,Real device environment" name="MenuEnvironmentDropdownField" class="environment-dropdown" />
-            </ui:VisualElement>
             <ui:VisualElement name="ArscaraPanel" class="header-dropdown-panel" style="width: 30%; justify-content: center;">
                 <ui:DropdownField choices="Menu ARSCARA,Control panel,Jog and teach,Points" name="MenuRobotARSCARADropdownField" class="arscara-dropdown" />
             </ui:VisualElement>

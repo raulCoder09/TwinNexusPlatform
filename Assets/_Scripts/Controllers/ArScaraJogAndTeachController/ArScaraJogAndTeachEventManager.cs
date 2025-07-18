@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using _Scripts.Controllers.EnvironmentController;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controllers.UiManagement;
+using Object = UnityEngine.Object;
 
 namespace _Scripts.Controllers.ArScaraJogAndTeachController
 {
@@ -61,6 +63,7 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
             
             _root.Q<DropdownField>("MenuRobotARSCARADropdownField")?.RegisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
+            _root.Q<DropdownField>("Views")?.RegisterCallback<ChangeEvent<string>>(OnViewsDropdownChanged);
 
             // Buscar el botón Dashboard para regresar
             var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
@@ -115,6 +118,8 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
                 _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
                 _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
                 _root.Q<DropdownField>("MenuRobotARSCARADropdownField")?.UnregisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
+                _root.Q<DropdownField>("Views")?.UnregisterCallback<ChangeEvent<string>>(OnViewsDropdownChanged);
+                
                 // Desregistrar botones Dashboard
                 var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
                 foreach (var dashboardButton in dashboardButtons)
@@ -425,6 +430,49 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
         public ArScaraJogAndTeachOrchestrator Orchestrator => _orchestrator;
 
         #endregion
+        
+        /// <summary>
+        /// Maneja cambios en el dropdown de vistas
+        /// </summary>
+        private async void OnViewsDropdownChanged(ChangeEvent<string> evt)
+        {
+            var selectedView = evt.newValue;
+    
+            // Skip si es la opción por defecto
+            if (selectedView == "Select view")
+                return;
+
+            await UIAnalyticsManager.Instance?.TrackButtonClick(
+                buttonName: "ViewsDropdown",
+                context: "camera_view_change",
+                additionalData: new Dictionary<string, object> { ["view"] = selectedView }
+            );
+
+            var cameraViewManager = Object.FindObjectOfType<CameraViewManager>();
+            if (cameraViewManager != null)
+            {
+                bool success = cameraViewManager.ChangeView(selectedView);
+                if (success)
+                {
+                    Debug.Log($"Camera view changed to: {selectedView}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Failed to change camera view to: {selectedView}");
+            
+                    // Revertir dropdown al valor anterior si falló
+                    var viewsDropdown = _root.Q<DropdownField>("Views");
+                    if (viewsDropdown != null)
+                    {
+                        viewsDropdown.SetValueWithoutNotify(cameraViewManager.GetCurrentView());
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning("CameraViewManager not available - cannot change view");
+            }
+        }
         /// <summary>
         /// Maneja cambios en el dropdown de ARSCARA
         /// </summary>

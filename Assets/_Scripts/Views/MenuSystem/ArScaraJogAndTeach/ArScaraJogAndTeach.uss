@@ -861,3 +861,49 @@
     border-bottom-width: 0;
     border-left-width: 0;
 }
+
+/* Clases para modo transparente (Virtual Environment) */
+.body-transparent {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    background-image: none !important;
+}
+
+.code-rain-transparent {
+    opacity: 0 !important;
+}
+
+.jog-controls-panel-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.jog-controls-top-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.jog-controls-middle-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.jog-controls-bottom-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.coordinates-panel-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.coordinates-section-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.radio-buttons-section-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.command-section-transparent {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.navigation-menu-transparent {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}

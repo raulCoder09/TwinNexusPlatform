@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.EnvironmentController;
 using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.ArScaraJogAndTeachController
@@ -201,6 +202,35 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
             {
                 arScaraDropdown.SetValueWithoutNotify("Jog and teach");
             }
+            
+            var environmentManager = EnvironmentManager.Instance;
+            if (environmentManager != null)
+            {
+                bool shouldBeTransparent = (environmentManager.CurrentEnvironment == EnvironmentController.EnvironmentType.Virtual);
+                SetUITransparency(shouldBeTransparent);
+                Debug.Log($"UI transparency applied on show: {shouldBeTransparent} (current env: {environmentManager.CurrentEnvironment})");
+        
+                UpdateViewsDropdownForEnvironment(environmentManager.CurrentEnvironment);
+            }
+            else
+            {
+                Debug.LogWarning("EnvironmentManager not found when showing UI");
+                SetUITransparency(false);
+        
+                // Forzar mostrar dropdown incluso sin EnvironmentManager
+                var viewsDropdown = _uiDocument?.rootVisualElement?.Q<DropdownField>("Views");
+                if (viewsDropdown != null)
+                {
+                    Debug.Log("Forcing views dropdown to show");
+                    viewsDropdown.style.display = DisplayStyle.Flex;
+                    viewsDropdown.style.visibility = Visibility.Visible;
+                    viewsDropdown.style.opacity = 1f;
+            
+                    var basicChoices = new List<string> { "Select view", "Default", "Top", "Front", "Back", "Left", "Right" };
+                    viewsDropdown.choices = basicChoices;
+                    viewsDropdown.SetValueWithoutNotify("Select view");
+                }
+            }
         }
 
         public void Hide()
@@ -221,6 +251,12 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
         {
             try
             {
+                        var environmentManager = EnvironmentManager.Instance;
+                        if (environmentManager != null)
+                        {
+                            environmentManager.OnEnvironmentLoaded -= OnEnvironmentChanged;
+                            Debug.Log("ArScaraJogAndTeach unsubscribed from EnvironmentManager events");
+                        }
                 // Limpiar managers
                 _eventManager?.Cleanup();
                 _uiManager = null;
@@ -591,6 +627,19 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
             }
 
             Debug.Log("AWS Settings dependencies search completed");
+            
+            var environmentManager = EnvironmentManager.Instance;
+            if (environmentManager != null)
+            {
+                environmentManager.OnEnvironmentLoaded += OnEnvironmentChanged;
+                Debug.Log("ArScaraJogAndTeach subscribed to EnvironmentManager events");
+            }
+            else
+            {
+                Debug.LogWarning("EnvironmentManager not found");
+            }
+
+            Debug.Log("ArScaraJogAndTeach dependencies search completed");
         }
 
         /// <summary>
@@ -780,5 +829,156 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
         public ArScaraJogAndTeachInfo.AwsConfiguration AwsConfig => _awsConfig;
 
         #endregion
+        
+        // AGREGAR ESTE NUEVO MÉTODO:
+        /// <summary>
+        /// Maneja cambios de ambiente desde EnvironmentManager
+        /// </summary>
+        private void OnEnvironmentChanged(EnvironmentController.EnvironmentType environmentType)
+        {
+            Debug.Log($"ArScaraJogAndTeach detected environment change: {environmentType}");
+    
+            // Solo aplicar transparencia si la UI está activa
+            if (IsActive)
+            {
+                bool shouldBeTransparent = (environmentType == EnvironmentController.EnvironmentType.Virtual);
+                SetUITransparency(shouldBeTransparent);
+                Debug.Log($"UI transparency set to: {shouldBeTransparent}");
+        
+                // Actualizar dropdown de vistas
+                UpdateViewsDropdownForEnvironment(environmentType);
+            }
+        }
+        // <summary>
+/// Ajusta la transparencia de la UI para ambiente virtual
+/// </summary>
+private void SetUITransparency(bool isVirtualEnvironment)
+{
+    if (_uiConfig?.Body == null)
+    {
+        Debug.LogWarning("UI Body is null - cannot set transparency");
+        return;
+    }
+
+    var root = _uiDocument?.rootVisualElement;
+    if (root == null)
+    {
+        Debug.LogWarning("Root visual element is null - cannot set transparency");
+        return;
+    }
+
+    Debug.Log($"Setting UI transparency - Virtual Environment: {isVirtualEnvironment}");
+
+    if (isVirtualEnvironment)
+    {
+        // Activar modo transparente
+        _uiConfig.Body.AddToClassList("body-transparent");
+        
+        // Aplicar transparencia a elementos específicos de Jog and Teach
+        var codeRain = root.Q<VisualElement>("CodeRain");
+        if (codeRain != null)
+        {
+            codeRain.AddToClassList("code-rain-transparent");
+            Debug.Log("CodeRain transparency applied");
+        }
+        
+        var jogControlsPanel = root.Q<VisualElement>("JogControlsPanel");
+        if (jogControlsPanel != null)
+        {
+            jogControlsPanel.AddToClassList("jog-controls-panel-transparent");
+            Debug.Log("JogControlsPanel transparency applied");
+        }
+        
+        var coordinatesPanel = root.Q<VisualElement>("CoordinatesPanel");
+        if (coordinatesPanel != null)
+        {
+            coordinatesPanel.AddToClassList("coordinates-panel-transparent");
+            Debug.Log("CoordinatesPanel transparency applied");
+        }
+        
+        var navigationMenu = root.Q<VisualElement>("NavigationMenu");
+        if (navigationMenu != null)
+        {
+            navigationMenu.AddToClassList("navigation-menu-transparent");
+            Debug.Log("NavigationMenu transparency applied");
+        }
+
+        Debug.Log("[ArScaraJogAndTeachOrchestrator] Virtual environment transparency activated");
+    }
+    else
+    {
+        // Desactivar modo transparente
+        _uiConfig.Body.RemoveFromClassList("body-transparent");
+        
+        var codeRain = root.Q<VisualElement>("CodeRain");
+        codeRain?.RemoveFromClassList("code-rain-transparent");
+        
+        var jogControlsPanel = root.Q<VisualElement>("JogControlsPanel");
+        jogControlsPanel?.RemoveFromClassList("jog-controls-panel-transparent");
+        
+        var coordinatesPanel = root.Q<VisualElement>("CoordinatesPanel");
+        coordinatesPanel?.RemoveFromClassList("coordinates-panel-transparent");
+        
+        var navigationMenu = root.Q<VisualElement>("NavigationMenu");
+        navigationMenu?.RemoveFromClassList("navigation-menu-transparent");
+
+        Debug.Log("[ArScaraJogAndTeachOrchestrator] Normal UI mode activated");
+    }
+
+    // Forzar actualización visual
+    root.MarkDirtyRepaint();
+}
+/// <summary>
+/// Actualiza las opciones del dropdown de vistas basado en el ambiente actual
+/// </summary>
+public void UpdateViewsDropdownForEnvironment(EnvironmentController.EnvironmentType environmentType)
+{
+    var viewsDropdown = _uiDocument?.rootVisualElement?.Q<DropdownField>("Views");
+    if (viewsDropdown == null)
+    {
+        Debug.LogWarning("Views dropdown not found");
+        return;
+    }
+
+    // Buscar CameraViewManager
+    var cameraViewManager = FindObjectOfType<CameraViewManager>();
+    if (cameraViewManager == null)
+    {
+        Debug.LogWarning("CameraViewManager not found - showing dropdown anyway");
+        
+        // MOSTRAR DROPDOWN INCLUSO SIN CAMERA MANAGER
+        viewsDropdown.style.display = DisplayStyle.Flex;
+        viewsDropdown.style.visibility = Visibility.Visible;
+        viewsDropdown.style.opacity = 1f;
+        
+        // Configurar opciones básicas
+        var basicChoices = new List<string> { "Select view", "Default", "Top", "Front", "Back", "Left", "Right" };
+        viewsDropdown.choices = basicChoices;
+        viewsDropdown.SetValueWithoutNotify("Select view");
+        
+        Debug.Log("Views dropdown shown with basic choices");
+        return;
+    }
+
+    // Obtener vistas disponibles para el ambiente actual
+    var availableViews = cameraViewManager.GetAvailableViews();
+    
+    // Construir lista de opciones para el dropdown
+    var dropdownChoices = new List<string> { "Select view" };
+    dropdownChoices.AddRange(availableViews);
+
+    // Actualizar dropdown
+    viewsDropdown.choices = dropdownChoices;
+    
+    // SIEMPRE MOSTRAR EL DROPDOWN
+    viewsDropdown.style.display = DisplayStyle.Flex;
+    viewsDropdown.style.visibility = Visibility.Visible;
+    viewsDropdown.style.opacity = 1f;
+    viewsDropdown.SetValueWithoutNotify("Select view");
+    
+    Debug.Log($"Views dropdown updated with {availableViews.Count} options for environment: {environmentType}");
+    Debug.Log($"Available views: {string.Join(", ", availableViews)}");
+}
+
     }
 }
