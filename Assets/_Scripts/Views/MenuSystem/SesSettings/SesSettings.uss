@@ -722,3 +722,15 @@
     border-bottom-width: 0;
     border-left-width: 0;
 }
+
+.status-success {
+    color: rgb(0, 255, 0);
+}
+
+.status-error {
+    color: rgb(255, 0, 0);
+}
+
+.status-warning {
+    color: rgb(255, 165, 0);
+}

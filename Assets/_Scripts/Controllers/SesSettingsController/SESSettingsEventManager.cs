@@ -1,14 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.SESSettingsController
 {
-    /// <summary>
-    /// Maneja todos los eventos UI de AWS Settings
-    /// Equivalente a DashboardEventManager pero para AWS Settings
-    /// </summary>
     public class SESSettingsEventManager
     {
         private SESSettingsUIManager _uiManager;
@@ -19,8 +16,6 @@ namespace _Scripts.Controllers.SESSettingsController
         // Referencias para poder desregistrar eventos
         private UIDocument _uiDocument;
         private VisualElement _root;
-
-        #region Constructor
 
         public SESSettingsEventManager(
             SESSettingsUIManager uiManager, 
@@ -34,60 +29,44 @@ namespace _Scripts.Controllers.SESSettingsController
             _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
         }
 
-        #endregion
-
-        #region Event Registration
-
-        /// <summary>
-        /// Registra todos los eventos de AWS Settings
-        /// </summary>
         public void RegisterEvents(UIDocument uiDocument)
         {
-            // Guardar referencias para desregistro posterior
             _uiDocument = uiDocument;
             _root = uiDocument.rootVisualElement;
 
-            // Eventos principales del menú
             _root.Q<Button>("MenuButton")?.RegisterCallback<ClickEvent>(OnMenuButtonClicked);
             _root.Q<Button>("HideMenuButton")?.RegisterCallback<ClickEvent>(OnHideMenuButtonClicked);
 
-            // Eventos de navegación principal (desde el menú lateral)
             _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
             _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
             _root.Q<Button>("ReportsButton")?.RegisterCallback<ClickEvent>(OnReportsButtonClicked);
-            _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked); 
+            _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked);
             _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
             _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
-            // Buscar el botón Dashboard para regresar
             var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
             foreach (var dashboardButton in dashboardButtons)
             {
                 dashboardButton.RegisterCallback<ClickEvent>(OnDashboardButtonClicked);
             }
 
-            // Eventos de paneles adicionales (futuros)
-            // TODO: Agregar cuando se implementen paneles específicos de AWS
-            // _root.Q<Button>("CredentialsButton")?.RegisterCallback<ClickEvent>(OnCredentialsButtonClicked);
-            // _root.Q<Button>("ServicesButton")?.RegisterCallback<ClickEvent>(OnServicesButtonClicked);
+            _root.Q<Button>("SaveSenderConfigButton")?.RegisterCallback<ClickEvent>(OnSaveSenderConfigButtonClicked);
+            _root.Q<Button>("CreateTemplateButton")?.RegisterCallback<ClickEvent>(OnCreateTemplateButtonClicked);
+            _root.Q<Button>("VerifyEmailButton")?.RegisterCallback<ClickEvent>(OnVerifyEmailButtonClicked);
+            _root.Q<Button>("TestConnectionButton")?.RegisterCallback<ClickEvent>(OnTestConnectionButtonClicked);
+            _root.Q<Button>("EnableDisableServiceButton")?.RegisterCallback<ClickEvent>(OnEnableDisableServiceButtonClicked);
 
-            // Evento de transición del menú de navegación
             var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
             navigationMenuPanel?.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
 
-            // Eventos de clic en el scrim para cerrar paneles
             var scrim = _root.Q<VisualElement>("Scrim");
             scrim?.RegisterCallback<ClickEvent>(OnScrimClicked);
 
-            // Registrar eventos de teclado
             RegisterKeyboardEvents(_root);
 
             Debug.Log("[SESSettingsEventManager] All events registered successfully");
         }
 
-        /// <summary>
-        /// Desregistra todos los eventos de AWS Settings
-        /// </summary>
         public void UnregisterEvents()
         {
             try
@@ -100,11 +79,9 @@ namespace _Scripts.Controllers.SESSettingsController
                     return;
                 }
 
-                // Eventos principales del menú
                 _root.Q<Button>("MenuButton")?.UnregisterCallback<ClickEvent>(OnMenuButtonClicked);
                 _root.Q<Button>("HideMenuButton")?.UnregisterCallback<ClickEvent>(OnHideMenuButtonClicked);
 
-                // Eventos de navegación principal
                 _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
                 _root.Q<Button>("TrainingButton")?.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
                 _root.Q<Button>("ReportsButton")?.UnregisterCallback<ClickEvent>(OnReportsButtonClicked);
@@ -112,22 +89,24 @@ namespace _Scripts.Controllers.SESSettingsController
                 _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
                 _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
 
-                // Desregistrar botones Dashboard
                 var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
                 foreach (var dashboardButton in dashboardButtons)
                 {
                     dashboardButton.UnregisterCallback<ClickEvent>(OnDashboardButtonClicked);
                 }
 
-                // Evento de transición del menú de navegación
+                _root.Q<Button>("SaveSenderConfigButton")?.UnregisterCallback<ClickEvent>(OnSaveSenderConfigButtonClicked);
+                _root.Q<Button>("CreateTemplateButton")?.UnregisterCallback<ClickEvent>(OnCreateTemplateButtonClicked);
+                _root.Q<Button>("VerifyEmailButton")?.UnregisterCallback<ClickEvent>(OnVerifyEmailButtonClicked);
+                _root.Q<Button>("TestConnectionButton")?.UnregisterCallback<ClickEvent>(OnTestConnectionButtonClicked);
+                _root.Q<Button>("EnableDisableServiceButton")?.UnregisterCallback<ClickEvent>(OnEnableDisableServiceButtonClicked);
+
                 var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
                 navigationMenuPanel?.UnregisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
 
-                // Eventos de clic en el scrim
                 var scrim = _root.Q<VisualElement>("Scrim");
                 scrim?.UnregisterCallback<ClickEvent>(OnScrimClicked);
 
-                // Desregistrar eventos de teclado
                 UnregisterKeyboardEvents(_root);
 
                 Debug.Log("[SESSettingsEventManager] All events unregistered successfully");
@@ -138,9 +117,6 @@ namespace _Scripts.Controllers.SESSettingsController
             }
         }
 
-        /// <summary>
-        /// Método Cleanup consistente con el patrón del sistema
-        /// </summary>
         public void Cleanup()
         {
             UnregisterEvents();
@@ -155,30 +131,18 @@ namespace _Scripts.Controllers.SESSettingsController
             Debug.Log("[SESSettingsEventManager] Event Manager cleaned up");
         }
 
-        #endregion
-
         #region Keyboard Events
 
-        /// <summary>
-        /// Registra eventos de teclado para AWS Settings
-        /// </summary>
         private void RegisterKeyboardEvents(VisualElement root)
         {
-            // Escape para cerrar paneles/menú
             root.RegisterCallback<KeyDownEvent>(OnGlobalKeyDown);
         }
 
-        /// <summary>
-        /// Desregistra eventos de teclado
-        /// </summary>
         private void UnregisterKeyboardEvents(VisualElement root)
         {
             root?.UnregisterCallback<KeyDownEvent>(OnGlobalKeyDown);
         }
 
-        /// <summary>
-        /// Maneja eventos globales de teclado
-        /// </summary>
         private async void OnGlobalKeyDown(KeyDownEvent evt)
         {
             switch (evt.keyCode)
@@ -199,12 +163,8 @@ namespace _Scripts.Controllers.SESSettingsController
             }
         }
 
-        /// <summary>
-        /// Maneja la tecla Escape
-        /// </summary>
         private async void HandleEscapeKey()
         {
-            // Cerrar panel actual o menú lateral
             if (_uiManager.CurrentActivePanel != ISESSettingsOps.PanelType.None)
             {
                 if (_uiManager.NavigationMenuOpen)
@@ -232,9 +192,6 @@ namespace _Scripts.Controllers.SESSettingsController
 
         #region Main Navigation Events
 
-        /// <summary>
-        /// Abre el menú lateral de navegación
-        /// </summary>
         private async void OnMenuButtonClicked(ClickEvent evt)
         {
             _uiManager.ShowNavigationMenu();
@@ -245,9 +202,6 @@ namespace _Scripts.Controllers.SESSettingsController
             );
         }
 
-        /// <summary>
-        /// Cierra el menú lateral de navegación
-        /// </summary>
         private async void OnHideMenuButtonClicked(ClickEvent evt)
         {
             _uiManager.HideNavigationMenu();
@@ -258,12 +212,8 @@ namespace _Scripts.Controllers.SESSettingsController
             );
         }
 
-        /// <summary>
-        /// Maneja clic en el scrim para cerrar paneles
-        /// </summary>
         private async void OnScrimClicked(ClickEvent evt)
         {
-            // Solo cerrar si el clic fue directamente en el scrim, no en sus hijos
             if (evt.target == evt.currentTarget)
             {
                 _uiManager.CloseCurrentPanel();
@@ -279,9 +229,6 @@ namespace _Scripts.Controllers.SESSettingsController
 
         #region Navigation Action Events
 
-        /// <summary>
-        /// Regresa al Dashboard
-        /// </summary>
         private async void OnDashboardButtonClicked(ClickEvent evt)
         {
             Debug.Log("Dashboard button clicked - returning to Dashboard");
@@ -293,9 +240,6 @@ namespace _Scripts.Controllers.SESSettingsController
             _orchestrator.HandleDashboardClick();
         }
 
-        /// <summary>
-        /// Inicia modo Operations
-        /// </summary>
         private async void OnOperationsButtonClicked(ClickEvent evt)
         {
             Debug.Log("Operations button clicked - executing navigation");
@@ -307,9 +251,6 @@ namespace _Scripts.Controllers.SESSettingsController
             _orchestrator.HandleOperationsClick();
         }
 
-        /// <summary>
-        /// Inicia modo Training
-        /// </summary>
         private async void OnTrainingButtonClicked(ClickEvent evt)
         {
             Debug.Log("Training button clicked - executing navigation");
@@ -321,9 +262,6 @@ namespace _Scripts.Controllers.SESSettingsController
             _orchestrator.HandleTrainingClick();
         }
 
-        /// <summary>
-        /// Abre Settings (esto sería recursivo, así que lo mantenemos en AWS Settings)
-        /// </summary>
         private async void OnSettingsButtonClicked(ClickEvent evt)
         {
             Debug.Log("Settings button clicked - already in AWS Settings");
@@ -332,14 +270,9 @@ namespace _Scripts.Controllers.SESSettingsController
                 menuItem: "SettingsButton",
                 context: "navigation_menu"
             );
-            
-            // Simplemente cerrar el menú ya que estamos en Settings
             _uiManager.HideNavigationMenu();
         }
 
-        /// <summary>
-        /// Abre Support Center
-        /// </summary>
         private async void OnSupportButtonClicked(ClickEvent evt)
         {
             Debug.Log("Support button clicked - executing navigation");
@@ -351,9 +284,6 @@ namespace _Scripts.Controllers.SESSettingsController
             _orchestrator.HandleSupportClick();
         }
 
-        /// <summary>
-        /// Ejecuta Logout
-        /// </summary>
         private async void OnLogoutButtonClicked(ClickEvent evt)
         {
             Debug.Log("Logout button clicked - executing logout");
@@ -365,9 +295,6 @@ namespace _Scripts.Controllers.SESSettingsController
             _orchestrator.HandleLogoutClick();
         }
         
-        /// <summary>
-        /// Abre Reports Center
-        /// </summary>
         private async void OnReportsButtonClicked(ClickEvent evt)
         {
             Debug.Log("Reports button clicked - executing navigation");
@@ -381,46 +308,55 @@ namespace _Scripts.Controllers.SESSettingsController
 
         #endregion
 
-        #region AWS Settings Specific Events (Futuros)
+        #region SES Settings Specific Events
 
-        /// <summary>
-        /// Maneja eventos específicos de AWS Settings cuando se implementen
-        /// </summary>
-        
-        // TODO: Implementar cuando se agregue contenido específico
-        // private async void OnCredentialsButtonClicked(ClickEvent evt) { ... }
-        // private async void OnTestConnectionButtonClicked(ClickEvent evt) { ... }
-        // private async void OnSaveConfigurationButtonClicked(ClickEvent evt) { ... }
+        private async void OnSaveSenderConfigButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Save Sender Config button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick("SaveSenderConfigButton", "SESSettings");
+            _orchestrator.SaveConfiguration();
+        }
+
+        private async void OnCreateTemplateButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Create Template button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick("CreateTemplateButton", "SESSettings");
+            _orchestrator.CreateNewTemplate();
+        }
+
+        private async void OnVerifyEmailButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Verify Email button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick("VerifyEmailButton", "SESSettings");
+            await _orchestrator.RequestEmailVerification();
+        }
+
+        private async void OnTestConnectionButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Test Connection button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick("TestConnectionButton", "SESSettings");
+            _orchestrator.TestConnection();
+        }
+
+        private async void OnEnableDisableServiceButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("Enable/Disable Service button clicked");
+            await UIAnalyticsManager.Instance?.TrackButtonClick("EnableDisableServiceButton", "SESSettings");
+            _orchestrator.ToggleService();
+        }
 
         #endregion
 
         #region Transition Events
 
-        /// <summary>
-        /// Maneja el final de la transición del menú de navegación
-        /// </summary>
         private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
         {
-            // Similar al patrón del Dashboard - notificar completion
             _onPanelTransitionComplete?.Invoke(_uiManager.CurrentActivePanel);
-            
-            // Si no hay paneles visibles, el UIManager ya maneja ocultar el container
         }
 
         #endregion
 
-        #region Public Properties
-
-        /// <summary>
-        /// UI Manager asociado
-        /// </summary>
         public SESSettingsUIManager UIManager => _uiManager;
-
-        /// <summary>
-        /// Orchestrator asociado
-        /// </summary>
         public SESSettingsOrchestrator Orchestrator => _orchestrator;
-
-        #endregion
     }
 }

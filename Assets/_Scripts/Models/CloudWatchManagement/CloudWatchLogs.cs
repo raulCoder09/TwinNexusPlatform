@@ -14,8 +14,8 @@ namespace _Scripts.Models.CloudWatchManagement
         [SerializeField] private string logStreamPrefix = "unity";
 
         private readonly AmazonCloudWatchLogsClient cloudWatchLogsClient;
-        private readonly string defaultLogGroup;
-        private string currentLogStreamName;
+        public string DefaultLogGroup { get; private set; }
+        public string CurrentLogStreamName { get; private set; }
         private string currentSessionId;
 
         public event Action<bool, string, string> OnLogSent;
@@ -23,7 +23,7 @@ namespace _Scripts.Models.CloudWatchManagement
         public CloudWatchLogs(AmazonCloudWatchLogsClient client, string defaultLogGroup, string username)
         {
             this.cloudWatchLogsClient = client ?? throw new ArgumentNullException(nameof(client));
-            this.defaultLogGroup = defaultLogGroup ?? throw new ArgumentNullException(nameof(defaultLogGroup));
+            this.DefaultLogGroup = defaultLogGroup ?? throw new ArgumentNullException(nameof(defaultLogGroup));
             InitializeLogStream(username);
         }
 
@@ -31,8 +31,8 @@ namespace _Scripts.Models.CloudWatchManagement
         {
             username = string.IsNullOrEmpty(username) ? "unknown" : username;
             var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
-            currentLogStreamName = $"{logStreamPrefix}-{username}-{timestamp}";
-            Debug.Log($"Log stream initialized: {currentLogStreamName}");
+            CurrentLogStreamName = $"{logStreamPrefix}-{username}-{timestamp}";
+            Debug.Log($"Log stream initialized: {CurrentLogStreamName}");
         }
 
         public async Task<bool> SendLogAsync(string message, string logLevel = null)
@@ -40,7 +40,7 @@ namespace _Scripts.Models.CloudWatchManagement
             try
             {
                 logLevel = logLevel ?? defaultLogLevel;
-                Debug.Log($"Sending log to CloudWatch: Group: {defaultLogGroup}, Stream: {currentLogStreamName}, Level: {logLevel}");
+                Debug.Log($"Sending log to CloudWatch: Group: {DefaultLogGroup}, Stream: {CurrentLogStreamName}, Level: {logLevel}");
 
                 await EnsureLogGroupAndStreamExist();
 
@@ -55,8 +55,8 @@ namespace _Scripts.Models.CloudWatchManagement
 
                 var request = new PutLogEventsRequest
                 {
-                    LogGroupName = defaultLogGroup,
-                    LogStreamName = currentLogStreamName,
+                    LogGroupName = DefaultLogGroup,
+                    LogStreamName = CurrentLogStreamName,
                     LogEvents = new List<InputLogEvent> { logEvent }
                 };
 
@@ -64,19 +64,19 @@ namespace _Scripts.Models.CloudWatchManagement
 
                 if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    Debug.Log($"Log sent successfully to {defaultLogGroup}");
-                    OnLogSent?.Invoke(true, "Log sent successfully", defaultLogGroup);
+                    Debug.Log($"Log sent successfully to {DefaultLogGroup}");
+                    OnLogSent?.Invoke(true, "Log sent successfully", DefaultLogGroup);
                     return true;
                 }
 
                 Debug.LogError($"Failed to send log: {response.HttpStatusCode}");
-                OnLogSent?.Invoke(false, $"Failed to send log: {response.HttpStatusCode}", defaultLogGroup);
+                OnLogSent?.Invoke(false, $"Failed to send log: {response.HttpStatusCode}", DefaultLogGroup);
                 return false;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"CloudWatch send log error: {ex.Message}");
-                OnLogSent?.Invoke(false, ex.Message, defaultLogGroup);
+                OnLogSent?.Invoke(false, ex.Message, DefaultLogGroup);
                 return false;
             }
         }
@@ -132,8 +132,8 @@ namespace _Scripts.Models.CloudWatchManagement
 
                 var request = new PutLogEventsRequest
                 {
-                    LogGroupName = defaultLogGroup,
-                    LogStreamName = currentLogStreamName,
+                    LogGroupName = DefaultLogGroup,
+                    LogStreamName = CurrentLogStreamName,
                     LogEvents = new List<InputLogEvent> { logEvent }
                 };
 
@@ -142,18 +142,18 @@ namespace _Scripts.Models.CloudWatchManagement
                 if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
                 {
                     Debug.Log($"App monitoring log sent: {eventType} for user {userId}");
-                    OnLogSent?.Invoke(true, $"Monitoring log sent: {eventType}", defaultLogGroup);
+                    OnLogSent?.Invoke(true, $"Monitoring log sent: {eventType}", DefaultLogGroup);
                     return true;
                 }
 
                 Debug.LogError($"Failed to send monitoring log: {response.HttpStatusCode}");
-                OnLogSent?.Invoke(false, $"Failed to send monitoring log: {response.HttpStatusCode}", defaultLogGroup);
+                OnLogSent?.Invoke(false, $"Failed to send monitoring log: {response.HttpStatusCode}", DefaultLogGroup);
                 return false;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"CloudWatch app monitoring log error: {ex.Message}");
-                OnLogSent?.Invoke(false, ex.Message, defaultLogGroup);
+                OnLogSent?.Invoke(false, ex.Message, DefaultLogGroup);
                 return false;
             }
         }
@@ -164,36 +164,36 @@ namespace _Scripts.Models.CloudWatchManagement
             {
                 var describeLogGroupsRequest = new DescribeLogGroupsRequest
                 {
-                    LogGroupNamePrefix = defaultLogGroup
+                    LogGroupNamePrefix = DefaultLogGroup
                 };
                 var logGroupsResponse = await cloudWatchLogsClient.DescribeLogGroupsAsync(describeLogGroupsRequest);
 
-                bool logGroupExists = logGroupsResponse.LogGroups.Any(lg => lg.LogGroupName == defaultLogGroup);
+                bool logGroupExists = logGroupsResponse.LogGroups.Any(lg => lg.LogGroupName == DefaultLogGroup);
                 if (!logGroupExists)
                 {
                     await cloudWatchLogsClient.CreateLogGroupAsync(new CreateLogGroupRequest
                     {
-                        LogGroupName = defaultLogGroup
+                        LogGroupName = DefaultLogGroup
                     });
-                    Debug.Log($"Created log group: {defaultLogGroup}");
+                    Debug.Log($"Created log group: {DefaultLogGroup}");
                 }
 
                 var describeLogStreamsRequest = new DescribeLogStreamsRequest
                 {
-                    LogGroupName = defaultLogGroup,
-                    LogStreamNamePrefix = currentLogStreamName
+                    LogGroupName = DefaultLogGroup,
+                    LogStreamNamePrefix = CurrentLogStreamName
                 };
                 var logStreamsResponse = await cloudWatchLogsClient.DescribeLogStreamsAsync(describeLogStreamsRequest);
 
-                bool logStreamExists = logStreamsResponse.LogStreams.Any(ls => ls.LogStreamName == currentLogStreamName);
+                bool logStreamExists = logStreamsResponse.LogStreams.Any(ls => ls.LogStreamName == CurrentLogStreamName);
                 if (!logStreamExists)
                 {
                     await cloudWatchLogsClient.CreateLogStreamAsync(new CreateLogStreamRequest
                     {
-                        LogGroupName = defaultLogGroup,
-                        LogStreamName = currentLogStreamName
+                        LogGroupName = DefaultLogGroup,
+                        LogStreamName = CurrentLogStreamName
                     });
-                    Debug.Log($"Created log stream: {currentLogStreamName}");
+                    Debug.Log($"Created log stream: {CurrentLogStreamName}");
                 }
 
                 return true;

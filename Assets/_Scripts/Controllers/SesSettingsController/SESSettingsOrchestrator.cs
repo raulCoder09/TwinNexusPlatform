@@ -1,10 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
 using _Scripts.Controllers.UiManagement;
+using _Scripts.Models.SESManagement;
 
 namespace _Scripts.Controllers.SESSettingsController
 {
@@ -58,6 +59,33 @@ namespace _Scripts.Controllers.SESSettingsController
         private UIDocument _uiDocument;
         private bool _isInitialized = false;
 
+        // Referencias a elementos UI del SenderConfigPanel
+        private TextField _senderEmailField;
+        private TextField _senderNameField;
+        private Button _saveSenderConfigButton;
+
+        // Referencias a elementos UI del TemplateManagementPanel
+        private VisualElement _templateList;
+        private Button _createTemplateButton;
+
+        // Referencias a elementos UI del QuotaPanel
+        private Label _quotaMax24HourLabel;
+        private Label _quotaSent24HourLabel;
+        private Label _quotaRateLabel;
+        private Label _quotaUsageLabel;
+
+        // Referencias a elementos UI del EmailVerificationPanel
+        private TextField _emailToVerifyField;
+        private Button _verifyEmailButton;
+        private VisualElement _verifiedEmailsList;
+
+        // Referencias a elementos UI del TestConnectionPanel
+        private Button _testConnectionButton;
+        private Button _enableDisableServiceButton;
+        private Label _testResultLabel;
+
+        private SESManager _sesManager;
+
         #endregion
 
         #region Unity Lifecycle
@@ -70,9 +98,11 @@ namespace _Scripts.Controllers.SESSettingsController
         private void Start()
         {
             // AWS Settings inicia OCULTO hasta que se navegue desde otra UI
-             HideUi();
-            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-            
+            HideUi();
+            if (_subpanelsAndSmokeMaskContainer != null)
+            {
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            }
             
             Debug.Log("[SESSettingsOrchestrator] Started - UI hidden until navigation");
         }
@@ -98,367 +128,121 @@ namespace _Scripts.Controllers.SESSettingsController
 
                 Debug.Log("Initializing SESSettingsOrchestrator...");
 
-                // Obtener componentes UI
-                Debug.Log("Step 1: Getting UIDocument component...");
+                // Obtener UIDocument
                 _uiDocument = GetComponent<UIDocument>();
                 if (_uiDocument == null)
                 {
                     Debug.LogError("UIDocument component not found!");
                     return false;
                 }
-                Debug.Log("UIDocument found successfully");
 
-                Debug.Log("Step 2: Getting root visual element...");
                 var root = _uiDocument.rootVisualElement;
                 if (root == null)
                 {
                     Debug.LogError("Root visual element is null!");
                     return false;
                 }
-                Debug.Log("Root visual element found successfully");
 
-                Debug.Log("Step 3: Getting SubpanelsAndSmokeMaskContainer...");
                 _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
                 if (_subpanelsAndSmokeMaskContainer == null)
                 {
                     Debug.LogError("SubpanelsAndSmokeMaskContainer not found in UI!");
                     return false;
                 }
-                Debug.Log("SubpanelsAndSmokeMaskContainer found successfully");
 
                 // Obtener referencias UI
-                Debug.Log("Step 4: Getting UI components...");
                 GetUiComponents(root);
-                Debug.Log("UI components obtained");
                 
                 // Inicializar managers
-                Debug.Log("Step 5: Creating SESSettingsUIManager...");
                 _uiManager = new SESSettingsUIManager(_uiConfig);
-                Debug.Log("SESSettingsUIManager created successfully");
-
-                Debug.Log("Step 6: Creating SESSettingsEventManager...");
                 _eventManager = new SESSettingsEventManager(_uiManager, OnReturnToDashboardHandler, OnPanelTransitionCompleteHandler, this);
-                Debug.Log("SESSettingsEventManager created successfully");
-
-                Debug.Log("Step 7: Registering events...");
                 _eventManager.RegisterEvents(_uiDocument);
-                Debug.Log("Events registered successfully");
 
-                Debug.Log("Step 8: Initializing panel system...");
                 _uiManager.InitializePanelSystem();
-                Debug.Log("Panel system initialized successfully");
                 
                 // Buscar dependencias
-                Debug.Log("Step 9: Finding dependencies...");
                 FindDependencies();
-                Debug.Log("Dependencies found");
                 
                 // Configurar estado inicial
-                Debug.Log("Step 10: Initializing AWS settings state...");
                 InitializeSESSettingsState();
-                Debug.Log("AWS settings state initialized");
+
+                // Inicializar SESManager
+                _sesManager = ServiceController.Instance?.SESManager;
+                if (_sesManager == null)
+                {
+                    Debug.LogError("SESManager not found!");
+                    return false;
+                }
+
+                // Suscribirse a eventos de SESManager
+                SubscribeToSESManagerEvents();
+
+                // Actualizar estados iniciales
+                UpdateUIStates();
 
                 _isInitialized = true;
                 Debug.Log("SESSettingsOrchestrator initialized successfully");
-                
                 OnControllerInitialized?.Invoke(this);
                 return true;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"SESSettingsOrchestrator initialization error: {ex.Message}");
-                Debug.LogError($"Stack trace: {ex.StackTrace}");
                 OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
                 return false;
             }
         }
 
-        public void Show()
+        private void SubscribeToSESManagerEvents()
         {
-            // SEGURIDAD: Verificar autenticación antes de mostrar
-            if (!ServiceController.Instance.IsCognitoAuthenticated)
+            if (_sesManager != null)
             {
-                Debug.LogError("Cannot show AWS Settings - user not authenticated");
-                OnControllerError?.Invoke(this, "Authentication required");
-                
-                // Redirigir a Welcome
-                _mainUIController?.ShowUI("Welcome");
-                return;
-            }
-
-            if (_uiConfig?.Body != null)
-            {
-                _uiConfig.Body.style.display = DisplayStyle.Flex;
-                
-                // Actualizar configuraciones AWS si es necesario
-                LoadAwsConfiguration();
-                
-                OnControllerShown?.Invoke(this);
-                Debug.Log("[SESSettingsOrchestrator] AWS Settings UI shown");
+                _sesManager.OnInitializationCompleted += OnSESInitializationCompleted;
+                _sesManager.OnQuotaUpdated += OnQuotaUpdated;
+                _sesManager.OnEmailVerificationRequested += OnEmailVerificationRequested;
+                _sesManager.OnEmailOperationCompleted += OnEmailOperationCompleted;
             }
         }
 
-        public void Hide()
-        {
-            if (_uiConfig?.Body != null)
-            {
-                _uiConfig.Body.style.display = DisplayStyle.None;
-                
-                // Cerrar cualquier panel abierto
-                _uiManager?.CloseCurrentPanel();
-                
-                OnControllerHidden?.Invoke(this);
-                Debug.Log("[SESSettingsOrchestrator] AWS Settings UI hidden");
-            }
-        }
-
-        public void Cleanup()
-        {
-            try
-            {
-                // Limpiar managers
-                _eventManager?.Cleanup();
-                _uiManager = null;
-                _eventManager = null;
-
-                // Limpiar referencias
-                _mainUIController = null;
-                _uiConfig = null;
-                _awsConfig = null;
-                _settingsState = null;
-                _uiDocument = null;
-                _subpanelsAndSmokeMaskContainer = null;
-
-                _isInitialized = false;
-                Debug.Log("[SESSettingsOrchestrator] Cleanup completed");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[SESSettingsOrchestrator] Cleanup error: {ex.Message}");
-            }
-        }
-
-        #endregion
-
-        #region ISESSettingsOps Implementation
-
-        public void NavigateToPanel(ISESSettingsOps.PanelType panelType)
-        {
-            if (!_isInitialized) Initialize();
-            if (_uiManager == null)
-            {
-                Debug.LogError("UI manager not initialized");
-                return;
-            }
-
-            _uiManager.ShowPanel(panelType);
-        }
-
-        public void CloseCurrentPanel()
-        {
-            _uiManager?.CloseCurrentPanel();
-        }
-
-        public void SwitchPanel(ISESSettingsOps.PanelType fromPanel, ISESSettingsOps.PanelType toPanel)
-        {
-            _uiManager?.SwitchPanel(fromPanel, toPanel);
-        }
-
-        public void OpenAwsConfiguration()
-        {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Opening AWS Configuration panel");
-        }
-
-        public void SaveConfiguration()
-        {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Saving AWS Configuration");
-        }
-
-        public void ResetConfiguration()
-        {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Resetting AWS Configuration");
-        }
-
-        public void TestConnection()
-        {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Testing AWS Connection");
-        }
-
-        public void ShowNavigationMenu()
-        {
-            _uiManager?.ShowNavigationMenu();
-            OnNavigationMenuOpened?.Invoke();
-        }
-
-        public void HideNavigationMenu()
-        {
-            _uiManager?.HideNavigationMenu();
-            OnNavigationMenuClosed?.Invoke();
-        }
-
-        public void ReturnToDashboard()
-        {
-            HandleDashboardClick();
-        }
-
-        #endregion
-
-        #region Public Event Handlers (Called by EventManager)
-
-        /// <summary>
-        /// Maneja clic en botón Dashboard
-        /// </summary>
-        public void HandleDashboardClick()
-        {
-            Debug.Log("Dashboard button clicked - returning to Dashboard");
-    
-            // Cerrar menú y ocultar AWS Settings
-            _uiManager?.HideNavigationMenu();
-            Hide();
-    
-            // Mostrar Dashboard
-            _mainUIController?.ShowUI("Dashboard");
-        }
-
-        /// <summary>
-        /// Maneja clic en botón Reports
-        /// </summary>
-        public void HandleReportsClick()
-        {
-            Debug.Log("Reports button clicked - opening Reports Center");
-    
-            // Cerrar menú y ocultar AWS Settings
-            _uiManager?.HideNavigationMenu();
-            Hide();
-    
-            // Mostrar reports controller
-            _mainUIController?.ShowUI("Reports");
-        }
-
-        /// <summary>
-        /// Maneja clic en botón Operations
-        /// </summary>
-        public void HandleOperationsClick()
-        {
-            var parameters = new Dictionary<string, object> {
-                ["context"] = "Operations", 
-                ["sourceController"] = "SESSettings"
-            };
-            
-            // Cerrar menú y ocultar AWS Settings
-            _uiManager?.HideNavigationMenu();
-            Hide();
-            
-            _mainUIController?.ShowUI("DeviceSelection", parameters);
-        }
-
-        /// <summary>
-        /// Maneja clic en botón Training
-        /// </summary>
-        public void HandleTrainingClick()
-        {
-            var parameters = new Dictionary<string, object> {
-                ["context"] = "Training",
-                ["sourceController"] = "SESSettings"
-            };
-            
-            // Cerrar menú y ocultar AWS Settings
-            _uiManager?.HideNavigationMenu();
-            Hide();
-            
-            _mainUIController?.ShowUI("DeviceSelection", parameters);
-        }
-
-        /// <summary>
-        /// Maneja clic en botón Support
-        /// </summary>
-        public void HandleSupportClick()
-        {
-            Debug.Log("Support button clicked - opening support center");
-    
-            // Cerrar menú y ocultar AWS Settings
-            _uiManager?.HideNavigationMenu();
-            Hide();
-    
-            // Mostrar support controller
-            _mainUIController?.ShowUI("Support");
-        }
-
-        /// <summary>
-        /// Maneja clic en botón Logout
-        /// </summary>
-        public void HandleLogoutClick()
-        {
-            Debug.Log("AWS Settings HandleLogoutClick() called");
-    
-            // Cerrar menú y ocultar AWS Settings
-            _uiManager?.HideNavigationMenu();
-            Hide();
-    
-            // Llamar a UIController para manejar logout
-            var uiController = UIController.Instance;
-            if (uiController != null)
-            {
-                Debug.Log("Calling UIController.RequestLogout()");
-                uiController.RequestLogout();
-            }
-            else
-            {
-                Debug.Log("UIController not found - doing direct logout");
-                ServiceController.Instance?.CognitoManager?.SignOut();
-            }
-        }
-
-        #endregion
-
-        #region Private Implementation Methods
-
-        /// <summary>
-        /// Obtiene componentes UI de AWS Settings
-        /// </summary>
         private void GetUiComponents(VisualElement root)
         {
-            Debug.Log("Getting AWS Settings UI components...");
-    
             // Contenedores principales
-            Debug.Log("Getting Body...");
             _uiConfig.Body = root.Q<VisualElement>("Body");
-            Debug.Log($"Body found: {_uiConfig.Body != null}");
-    
-            Debug.Log("Setting SubpanelsContainer...");
             _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
-            Debug.Log($"SubpanelsContainer set: {_uiConfig.SubpanelsContainer != null}");
-    
-            Debug.Log("Getting Scrim...");
             _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
-            Debug.Log($"Scrim found: {_uiConfig.Scrim != null}");
-    
-            Debug.Log("Getting MainContentArea...");
             _uiConfig.MainContentArea = root.Q<VisualElement>("Main");
-            Debug.Log($"MainContentArea found: {_uiConfig.MainContentArea != null}");
-    
-            Debug.Log("Getting HeaderArea...");
             _uiConfig.HeaderArea = root.Q<VisualElement>("Header");
-            Debug.Log($"HeaderArea found: {_uiConfig.HeaderArea != null}");
-    
-            Debug.Log("Getting FooterArea...");
             _uiConfig.FooterArea = root.Q<VisualElement>("Footer");
-            Debug.Log($"FooterArea found: {_uiConfig.FooterArea != null}");
 
-            // Configurar paneles
-            Debug.Log("Initializing panel configuration...");
+            // SenderConfigPanel
+            _senderEmailField = root.Q<TextField>("SenderEmailField");
+            _senderNameField = root.Q<TextField>("SenderNameField");
+            _saveSenderConfigButton = root.Q<Button>("SaveSenderConfigButton");
+
+            // TemplateManagementPanel
+            _templateList = root.Q<VisualElement>("TemplateList");
+            _createTemplateButton = root.Q<Button>("CreateTemplateButton");
+
+            // QuotaPanel
+            _quotaMax24HourLabel = root.Q<Label>("QuotaMax24Hour");
+            _quotaSent24HourLabel = root.Q<Label>("QuotaSent24Hour");
+            _quotaRateLabel = root.Q<Label>("QuotaRate");
+            _quotaUsageLabel = root.Q<Label>("QuotaUsage");
+
+            // EmailVerificationPanel
+            _emailToVerifyField = root.Q<TextField>("EmailToVerifyField");
+            _verifyEmailButton = root.Q<Button>("VerifyEmailButton");
+            _verifiedEmailsList = root.Q<VisualElement>("VerifiedEmailsList");
+
+            // TestConnectionPanel
+            _testConnectionButton = root.Q<Button>("TestConnectionButton");
+            _enableDisableServiceButton = root.Q<Button>("EnableDisableServiceButton");
+            _testResultLabel = root.Q<Label>("TestResult");
+
             InitializePanelConfiguration(root);
-    
             Debug.Log("AWS Settings UI components obtained successfully");
         }
 
-        /// <summary>
-        /// Inicializa la configuración de paneles
-        /// </summary>
         private void InitializePanelConfiguration(VisualElement root)
         {
             var panelsContainer = _subpanelsAndSmokeMaskContainer;
@@ -544,9 +328,350 @@ namespace _Scripts.Controllers.SESSettingsController
             }
         }
 
-        /// <summary>
-        /// Busca dependencias en la escena
-        /// </summary>
+        private void UpdateUIStates()
+        {
+            // Actualizar SenderConfigPanel
+            if (_sesManager != null)
+            {
+                _senderEmailField.value = _sesManager._senderEmail;
+                _senderNameField.value = _sesManager._senderName;
+            }
+
+            // Actualizar QuotaPanel
+            UpdateQuotaStatus();
+
+            // Actualizar VerifiedEmailsList
+            UpdateVerifiedEmailsList();
+        }
+
+        private async void UpdateQuotaStatus()
+        {
+            if (_sesManager != null)
+            {
+                var quota = await _sesManager.GetSendQuotaAsync();
+                _quotaMax24HourLabel.text = $"Max 24h Send: {quota.Max24HourSend}";
+                _quotaSent24HourLabel.text = $"Sent Last 24h: {quota.SentLast24Hours}";
+                _quotaRateLabel.text = $"Max Send Rate: {quota.MaxSendRate}/sec";
+                _quotaUsageLabel.text = $"Usage: {quota.UsagePercentage:F1}%";
+                ApplyQuotaStatusStyles(quota);
+            }
+        }
+        
+        private void ApplyQuotaStatusStyles(SESQuotaInfo quota)
+        {
+            _quotaUsageLabel.RemoveFromClassList("status-warning");
+            _quotaUsageLabel.RemoveFromClassList("status-error");
+            if (quota.IsNearLimit)
+            {
+                _quotaUsageLabel.AddToClassList(quota.UsagePercentage >= 90 ? "status-error" : "status-warning");
+            }
+        }
+
+        private async void UpdateVerifiedEmailsList()
+        {
+            if (_sesManager != null)
+            {
+                var verifiedEmails = await _sesManager.GetVerifiedEmailsAsync();
+                _verifiedEmailsList.Clear();
+                foreach (var email in verifiedEmails)
+                {
+                    var label = new Label($"{email} (Verified)");
+                    label.AddToClassList("recent-activity-item");
+                    _verifiedEmailsList.Add(label);
+                }
+            }
+        }
+
+        public void Show()
+        {
+            if (!ServiceController.Instance.IsCognitoAuthenticated)
+            {
+                Debug.LogError("Cannot show AWS Settings - user not authenticated");
+                OnControllerError?.Invoke(this, "Authentication required");
+                _mainUIController?.ShowUI("Welcome");
+                return;
+            }
+
+            if (_uiConfig?.Body != null)
+            {
+                _uiConfig.Body.style.display = DisplayStyle.Flex;
+                LoadAwsConfiguration();
+                UpdateUIStates();
+                OnControllerShown?.Invoke(this);
+                Debug.Log("[SESSettingsOrchestrator] AWS Settings UI shown");
+            }
+        }
+
+        public void Hide()
+        {
+            if (_uiConfig?.Body != null)
+            {
+                _uiConfig.Body.style.display = DisplayStyle.None;
+                
+                // Cerrar cualquier panel abierto
+                _uiManager?.CloseCurrentPanel();
+                
+                OnControllerHidden?.Invoke(this);
+                Debug.Log("[SESSettingsOrchestrator] AWS Settings UI hidden");
+            }
+        }
+
+        public void Cleanup()
+        {
+            try
+            {
+                // Desuscribirse de eventos de SESManager
+                if (_sesManager != null)
+                {
+                    _sesManager.OnInitializationCompleted -= OnSESInitializationCompleted;
+                    _sesManager.OnQuotaUpdated -= OnQuotaUpdated;
+                    _sesManager.OnEmailVerificationRequested -= OnEmailVerificationRequested;
+                    _sesManager.OnEmailOperationCompleted -= OnEmailOperationCompleted;
+                }
+
+                // Limpiar managers
+                _eventManager?.Cleanup();
+                _uiManager = null;
+                _eventManager = null;
+
+                // Limpiar referencias
+                _mainUIController = null;
+                _uiConfig = null;
+                _awsConfig = null;
+                _settingsState = null;
+                _uiDocument = null;
+                _subpanelsAndSmokeMaskContainer = null;
+
+                // Limpiar referencias UI
+                _senderEmailField = null;
+                _senderNameField = null;
+                _saveSenderConfigButton = null;
+                _templateList = null;
+                _createTemplateButton = null;
+                _quotaMax24HourLabel = null;
+                _quotaSent24HourLabel = null;
+                _quotaRateLabel = null;
+                _quotaUsageLabel = null;
+                _emailToVerifyField = null;
+                _verifyEmailButton = null;
+                _verifiedEmailsList = null;
+                _testConnectionButton = null;
+                _enableDisableServiceButton = null;
+                _testResultLabel = null;
+                _sesManager = null;
+
+                _isInitialized = false;
+                Debug.Log("[SESSettingsOrchestrator] Cleanup completed");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[SESSettingsOrchestrator] Cleanup error: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region ISESSettingsOps Implementation
+
+        public void NavigateToPanel(ISESSettingsOps.PanelType panelType)
+        {
+            if (!_isInitialized) Initialize();
+            if (_uiManager == null)
+            {
+                Debug.LogError("UI manager not initialized");
+                return;
+            }
+
+            _uiManager.ShowPanel(panelType);
+        }
+
+        public void CloseCurrentPanel()
+        {
+            _uiManager?.CloseCurrentPanel();
+        }
+
+        public void SwitchPanel(ISESSettingsOps.PanelType fromPanel, ISESSettingsOps.PanelType toPanel)
+        {
+            _uiManager?.SwitchPanel(fromPanel, toPanel);
+        }
+
+        public void OpenAwsConfiguration()
+        {
+            Debug.Log("Opening AWS Configuration panel");
+            // TODO: Implementar cuando se agregue contenido específico para el panel AwsCredentials
+        }
+
+        public async void SaveConfiguration()
+        {
+            await SaveConfigurationAsync();
+        }
+
+        public void ResetConfiguration()
+        {
+            if (_sesManager != null)
+            {
+                _senderEmailField.value = _sesManager._senderEmail;
+                _senderNameField.value = _sesManager._senderName;
+                _settingsState.HasUnsavedChanges = false;
+                _uiManager.UpdateCredentialsStatus(true, "Configuration reset");
+                Debug.Log("AWS Configuration reset to default");
+            }
+        }
+
+        public async void TestConnection()
+        {
+            await TestConnectionAsync();
+        }
+
+        public void ShowNavigationMenu()
+        {
+            _uiManager?.ShowNavigationMenu();
+            OnNavigationMenuOpened?.Invoke();
+        }
+
+        public void HideNavigationMenu()
+        {
+            _uiManager?.HideNavigationMenu();
+            OnNavigationMenuClosed?.Invoke();
+        }
+
+        public void ReturnToDashboard()
+        {
+            HandleDashboardClick();
+        }
+
+        public async Task RequestEmailVerification()
+        {
+            if (_sesManager != null && SESInfo.Validation.IsValidEmail(_emailToVerifyField.value))
+            {
+                var email = _emailToVerifyField.value;
+                var success = await _sesManager.RequestEmailVerificationAsync(email);
+                if (success)
+                {
+                    Debug.Log($"Verification requested for {email}");
+                    UpdateVerifiedEmailsList();
+                }
+                else
+                {
+                    Debug.LogError($"Failed to request verification for {email}");
+                }
+            }
+            else
+            {
+                Debug.LogError("Invalid email to verify");
+            }
+        }
+
+        public void CreateNewTemplate()
+        {
+            Debug.Log("Creating new email template (to be implemented)");
+            // TODO: Implementar lógica para abrir un modal o formulario para crear plantilla
+        }
+
+        public async void ToggleService()
+        {
+            Debug.Log("Toggling SES service state");
+            _awsConfig.ServiceStates["SES"] = !_awsConfig.ServiceStates.GetValueOrDefault("SES", false);
+            _uiManager.UpdateServiceStates(_awsConfig.ServiceStates);
+            if (_awsConfig.ServiceStates["SES"] && _sesManager != null)
+            {
+                await _sesManager.InitializeAsync();
+            }
+        }
+
+        #endregion
+
+        #region Public Event Handlers (Called by EventManager)
+
+        public void HandleDashboardClick()
+        {
+            Debug.Log("Dashboard button clicked - returning to Dashboard");
+    
+            // Cerrar menú y ocultar AWS Settings
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar Dashboard
+            _mainUIController?.ShowUI("Dashboard");
+        }
+
+        public void HandleReportsClick()
+        {
+            Debug.Log("Reports button clicked - opening Reports Center");
+    
+            // Cerrar menú y ocultar AWS Settings
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar reports controller
+            _mainUIController?.ShowUI("Reports");
+        }
+
+        public void HandleOperationsClick()
+        {
+            var parameters = new Dictionary<string, object> {
+                ["context"] = "Operations", 
+                ["sourceController"] = "SESSettings"
+            };
+            
+            // Cerrar menú y ocultar AWS Settings
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            _mainUIController?.ShowUI("DeviceSelection", parameters);
+        }
+
+        public void HandleTrainingClick()
+        {
+            var parameters = new Dictionary<string, object> {
+                ["context"] = "Training",
+                ["sourceController"] = "SESSettings"
+            };
+            
+            // Cerrar menú y ocultar AWS Settings
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            _mainUIController?.ShowUI("DeviceSelection", parameters);
+        }
+
+        public void HandleSupportClick()
+        {
+            Debug.Log("Support button clicked - opening support center");
+    
+            // Cerrar menú y ocultar AWS Settings
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Mostrar support controller
+            _mainUIController?.ShowUI("Support");
+        }
+
+        public void HandleLogoutClick()
+        {
+            Debug.Log("AWS Settings HandleLogoutClick() called");
+    
+            // Cerrar menú y ocultar AWS Settings
+            _uiManager?.HideNavigationMenu();
+            Hide();
+    
+            // Llamar a UIController para manejar logout
+            var uiController = UIController.Instance;
+            if (uiController != null)
+            {
+                Debug.Log("Calling UIController.RequestLogout()");
+                uiController.RequestLogout();
+            }
+            else
+            {
+                Debug.Log("UIController not found - doing direct logout");
+                ServiceController.Instance?.CognitoManager?.SignOut();
+            }
+        }
+
+        #endregion
+        
+
         private void FindDependencies()
         {
             // Buscar UIController principal
@@ -559,9 +684,6 @@ namespace _Scripts.Controllers.SESSettingsController
             Debug.Log("AWS Settings dependencies search completed");
         }
 
-        /// <summary>
-        /// Inicializa el estado de AWS Settings
-        /// </summary>
         private void InitializeSESSettingsState()
         {
             _settingsState.IsInitialized = true;
@@ -577,15 +699,9 @@ namespace _Scripts.Controllers.SESSettingsController
             Debug.Log("AWS Settings state initialized");
         }
 
-        /// <summary>
-        /// Carga la configuración AWS actual
-        /// </summary>
         private void LoadAwsConfiguration()
         {
-            // TODO: Cargar configuración desde ServiceController o almacenamiento
             Debug.Log("Loading AWS configuration...");
-            
-            // Por ahora, obtener configuración básica del ServiceController si está disponible
             var serviceController = ServiceController.Instance;
             if (serviceController != null)
             {
@@ -594,13 +710,8 @@ namespace _Scripts.Controllers.SESSettingsController
             }
         }
 
-        #endregion
-
         #region Event Handlers
 
-        /// <summary>
-        /// Maneja el final de transiciones de paneles
-        /// </summary>
         private void OnTransitionEndEvent(TransitionEndEvent evt)
         {
             if (!_uiManager.IsAnyPanelVisible())
@@ -610,140 +721,135 @@ namespace _Scripts.Controllers.SESSettingsController
             }
         }
 
-        /// <summary>
-        /// Maneja solicitudes de regreso al Dashboard
-        /// </summary>
         private void OnReturnToDashboardHandler()
         {
             OnReturnToDashboardRequested?.Invoke();
         }
 
-        /// <summary>
-        /// Maneja completado de transiciones de paneles
-        /// </summary>
         private void OnPanelTransitionCompleteHandler(ISESSettingsOps.PanelType panelType)
         {
             OnPanelTransitionComplete?.Invoke(panelType);
             Debug.Log($"Panel transition complete: {panelType}");
         }
 
+        private void OnSESInitializationCompleted(bool success, string message)
+        {
+            Debug.Log($"SES initialization: {message}");
+            UpdateUIStates();
+        }
+
+        private void OnQuotaUpdated(SESQuotaInfo quota)
+        {
+            UpdateQuotaStatus();
+        }
+
+        private void OnEmailVerificationRequested(string email, string result)
+        {
+            Debug.Log($"Email verification requested for {email}: {result}");
+            UpdateVerifiedEmailsList();
+        }
+
+        private void OnEmailOperationCompleted(SESOperationResult result)
+        {
+            Debug.Log($"Email operation completed: {result.Message}");
+        }
+
         #endregion
 
         #region Helper Methods
 
-        /// <summary>
-        /// Muestra la UI principal (equivalente al método original)
-        /// </summary>
         internal void ShowUi()
         {
             Show();
         }
 
-        /// <summary>
-        /// Oculta la UI principal (equivalente al método original)
-        /// </summary>
         internal void HideUi()
         {
             Hide();
         }
 
-        /// <summary>
-        /// Actualiza el estado de credenciales AWS
-        /// </summary>
         public void UpdateCredentialsStatus(bool isValid, string message = null)
         {
             _settingsState.HasValidCredentials = isValid;
-            
-            // Actualizar UI a través del UIManager
             _uiManager?.UpdateCredentialsStatus(isValid, message);
-            
-            // Notificar cambio de estado usando el método público
             _settingsState.TriggerCredentialsValidityChanged(isValid);
-            
             Debug.Log($"AWS credentials status updated: {isValid} - {message}");
         }
 
-        /// <summary>
-        /// Actualiza resultados de pruebas de conexión
-        /// </summary>
         public void UpdateConnectionTestResults(Dictionary<string, SESSettingsInfo.ConnectionTestResult> results)
         {
             _awsConfig.TestResults = results;
-            
-            // Actualizar UI a través del UIManager
             _uiManager?.UpdateConnectionTestResults(results);
-            
-            // Notificar resultados individualmente usando el método público
             foreach (var kvp in results)
             {
                 _settingsState.TriggerConnectionTestCompleted(kvp.Key, kvp.Value);
             }
-            
             Debug.Log($"Connection test results updated for {results.Count} services");
         }
 
-        /// <summary>
-        /// Actualiza configuración de servicios AWS
-        /// </summary>
         public void UpdateServiceConfiguration(string serviceName, Dictionary<string, object> config)
         {
             _awsConfig.ServiceConfigs[serviceName] = config;
             _awsConfig.ServiceStates[serviceName] = true;
-            
-            // Marcar como cambios no guardados
             _settingsState.HasUnsavedChanges = true;
-            
             Debug.Log($"Service configuration updated for {serviceName}");
         }
 
-        /// <summary>
-        /// Prueba la conexión a un servicio AWS específico
-        /// </summary>
-        public void TestServiceConnection(string serviceName)
+        private async Task SaveConfigurationAsync()
         {
-            // TODO: Implementar prueba real de conexión
-            _settingsState.IsTestingConnection = true;
-            
-            Debug.Log($"Testing connection to AWS service: {serviceName}");
-            
-            // Simular resultado de prueba (reemplazar con lógica real)
-            var testResult = new SESSettingsInfo.ConnectionTestResult
+            if (_sesManager != null)
             {
-                ServiceName = serviceName,
-                IsSuccessful = true, // Esto debería venir de una prueba real
-                Message = "Connection test completed successfully",
-                TestTime = DateTime.Now,
-                ResponseTime = TimeSpan.FromMilliseconds(150)
-            };
-            
-            _awsConfig.TestResults[serviceName] = testResult;
-            _settingsState.TriggerConnectionTestCompleted(serviceName, testResult);
-            _settingsState.IsTestingConnection = false;
+                var newSenderEmail = _senderEmailField.value;
+                var newSenderName = _senderNameField.value;
+
+                if (SESInfo.Validation.IsValidEmail(newSenderEmail) && !string.IsNullOrWhiteSpace(newSenderName))
+                {
+                    var success = await _sesManager.ReinitializeAsync(newSenderEmail, newSenderName);
+                    if (success)
+                    {
+                        Debug.Log("Sender configuration saved successfully");
+                        _settingsState.HasUnsavedChanges = false;
+                        _uiManager.UpdateCredentialsStatus(true, "Configuration saved");
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to save sender configuration");
+                        _uiManager.UpdateCredentialsStatus(false, "Failed to save configuration");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Invalid sender email or name");
+                    _uiManager.UpdateCredentialsStatus(false, "Invalid email or name");
+                }
+            }
         }
 
-        #endregion
+        private async Task TestConnectionAsync()
+        {
+            if (_sesManager != null)
+            {
+                _settingsState.IsTestingConnection = true;
+                _testResultLabel.text = "Result: Testing...";
+                var success = await _sesManager.SendTestEmailAsync();
+                _testResultLabel.text = $"Result: {(success ? "Success" : "Failed")}";
+                _testResultLabel.RemoveFromClassList("status-success");
+                _testResultLabel.RemoveFromClassList("status-error");
+                _testResultLabel.AddToClassList(success ? "status-success" : "status-error");
+                _settingsState.IsTestingConnection = false;
 
-        #region Public Properties
-
-        /// <summary>
-        /// UI Manager asociado
-        /// </summary>
-        public SESSettingsUIManager UIManager => _uiManager;
-
-        /// <summary>
-        /// Event Manager asociado
-        /// </summary>
-        public SESSettingsEventManager EventManager => _eventManager;
-
-        /// <summary>
-        /// Estado actual de AWS Settings
-        /// </summary>
-        public SESSettingsInfo.SESSettingsState SettingsState => _settingsState;
-
-        /// <summary>
-        /// Configuración AWS actual
-        /// </summary>
-        public SESSettingsInfo.AwsConfiguration AwsConfig => _awsConfig;
+                var testResult = new SESSettingsInfo.ConnectionTestResult
+                {
+                    ServiceName = "SES",
+                    IsSuccessful = success,
+                    Message = success ? "Connection test successful" : "Connection test failed",
+                    TestTime = DateTime.Now,
+                    ResponseTime = TimeSpan.FromMilliseconds(150) // Simulado, ajustar según respuesta real
+                };
+                _awsConfig.TestResults["SES"] = testResult;
+                _uiManager.UpdateConnectionTestResults(_awsConfig.TestResults);
+            }
+        }
 
         #endregion
     }

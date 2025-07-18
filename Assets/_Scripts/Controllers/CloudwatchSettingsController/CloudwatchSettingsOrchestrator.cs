@@ -1,27 +1,23 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
 using _Scripts.Controllers.UiManagement;
+using _Scripts.Models.CloudWatchManagement;
 
 namespace _Scripts.Controllers.CloudwatchSettingsController
 {
-    /// <summary>
-    /// Coordinador principal de AWS Settings - implementa ICloudwatchSettingsOps e IUIController
-    /// Equivalente a DashboardOrchestrator pero para configuraciones AWS
-    /// </summary>
     public class CloudwatchSettingsOrchestrator : MonoBehaviour, ICloudwatchSettingsOps, IUIController
     {
         #region IUIController Implementation
 
-        public bool RequiresAuthentication => true; // AWS Settings SÍ requiere autenticación
+        public bool RequiresAuthentication => true;
         public bool IsInitialized => _isInitialized;
         public bool IsActive => _uiConfig?.Body?.style.display == DisplayStyle.Flex;
         public string ControllerName => "CloudwatchSettingsController";
 
-        // Events from IUIController
         public event Action<IUIController> OnControllerInitialized;
         public event Action<IUIController> OnControllerShown;
         public event Action<IUIController> OnControllerHidden;
@@ -34,7 +30,6 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
         public bool IsNavigationMenuOpen => _uiManager?.NavigationMenuOpen ?? false;
         public ICloudwatchSettingsOps.PanelType CurrentActivePanel => _uiManager?.CurrentActivePanel ?? ICloudwatchSettingsOps.PanelType.None;
 
-        // Events from ICloudwatchSettingsOps
         public event Action OnNavigationMenuOpened;
         public event Action OnNavigationMenuClosed;
         public event Action<ICloudwatchSettingsOps.PanelType> OnPanelTransitionComplete;
@@ -51,12 +46,43 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
         private CloudwatchSettingsUIManager _uiManager;
         private CloudwatchSettingsEventManager _eventManager;
         
-        // Referencias a otros controladores
         private UIController _mainUIController;
         
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private UIDocument _uiDocument;
         private bool _isInitialized = false;
+
+        // Referencias a elementos UI del MetricsConfigPanel
+        private TextField _metricNameField;
+        private TextField _metricValueField;
+        private DropdownField _metricUnitField;
+        private Button _publishMetricButton;
+
+        // Referencias a elementos UI del AlarmsConfigPanel
+        private TextField _alarmNameField;
+        private TextField _alarmMetricNameField;
+        private TextField _thresholdField;
+        private DropdownField _comparisonTypeField;
+        private Button _createAlarmButton;
+
+        // Referencias a elementos UI del LogsConfigPanel
+        private TextField _logGroupField;
+        private TextField _logStreamField;
+        private TextField _logMessageField;
+        private Button _sendLogButton;
+
+        // Referencias a elementos UI del MetricsStatusPanel
+        private VisualElement _metricsList;
+        private Button _refreshMetricsButton;
+
+        // Referencias a elementos UI del TestPanel
+        private Button _testConnectionButton;
+        private Button _testAlarmButton;
+        private Button _testLogButton;
+        private Button _enableDisableServiceButton;
+        private Label _testResultLabel;
+
+        private CloudWatchManager _cloudWatchManager;
 
         #endregion
 
@@ -69,10 +95,11 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
         
         private void Start()
         {
-            // AWS Settings inicia OCULTO hasta que se navegue desde otra UI
-             HideUi();
-            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-            
+            Hide();
+            if (_subpanelsAndSmokeMaskContainer != null)
+            {
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            }
             
             Debug.Log("[CloudwatchSettingsOrchestrator] Started - UI hidden until navigation");
         }
@@ -84,7 +111,7 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
 
         #endregion
 
-        #region IUIController Lifecycle Methods
+
 
         public bool Initialize()
         {
@@ -98,90 +125,230 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
 
                 Debug.Log("Initializing CloudwatchSettingsOrchestrator...");
 
-                // Obtener componentes UI
-                Debug.Log("Step 1: Getting UIDocument component...");
                 _uiDocument = GetComponent<UIDocument>();
                 if (_uiDocument == null)
                 {
                     Debug.LogError("UIDocument component not found!");
                     return false;
                 }
-                Debug.Log("UIDocument found successfully");
 
-                Debug.Log("Step 2: Getting root visual element...");
                 var root = _uiDocument.rootVisualElement;
                 if (root == null)
                 {
                     Debug.LogError("Root visual element is null!");
                     return false;
                 }
-                Debug.Log("Root visual element found successfully");
 
-                Debug.Log("Step 3: Getting SubpanelsAndSmokeMaskContainer...");
                 _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
                 if (_subpanelsAndSmokeMaskContainer == null)
                 {
                     Debug.LogError("SubpanelsAndSmokeMaskContainer not found in UI!");
                     return false;
                 }
-                Debug.Log("SubpanelsAndSmokeMaskContainer found successfully");
 
-                // Obtener referencias UI
-                Debug.Log("Step 4: Getting UI components...");
                 GetUiComponents(root);
-                Debug.Log("UI components obtained");
                 
-                // Inicializar managers
-                Debug.Log("Step 5: Creating CloudwatchSettingsUIManager...");
                 _uiManager = new CloudwatchSettingsUIManager(_uiConfig);
-                Debug.Log("CloudwatchSettingsUIManager created successfully");
-
-                Debug.Log("Step 6: Creating CloudwatchSettingsEventManager...");
                 _eventManager = new CloudwatchSettingsEventManager(_uiManager, OnReturnToDashboardHandler, OnPanelTransitionCompleteHandler, this);
-                Debug.Log("CloudwatchSettingsEventManager created successfully");
-
-                Debug.Log("Step 7: Registering events...");
                 _eventManager.RegisterEvents(_uiDocument);
-                Debug.Log("Events registered successfully");
 
-                Debug.Log("Step 8: Initializing panel system...");
                 _uiManager.InitializePanelSystem();
-                Debug.Log("Panel system initialized successfully");
                 
-                // Buscar dependencias
-                Debug.Log("Step 9: Finding dependencies...");
                 FindDependencies();
-                Debug.Log("Dependencies found");
                 
-                // Configurar estado inicial
-                Debug.Log("Step 10: Initializing AWS settings state...");
                 InitializeCloudwatchSettingsState();
-                Debug.Log("AWS settings state initialized");
+
+                _cloudWatchManager = ServiceController.Instance?.CloudWatchManager;
+                if (_cloudWatchManager == null)
+                {
+                    Debug.LogError("CloudWatchManager not found!");
+                    return false;
+                }
+
+                SubscribeToCloudWatchManagerEvents();
+
+                UpdateUIStates();
 
                 _isInitialized = true;
                 Debug.Log("CloudwatchSettingsOrchestrator initialized successfully");
-                
                 OnControllerInitialized?.Invoke(this);
                 return true;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"CloudwatchSettingsOrchestrator initialization error: {ex.Message}");
-                Debug.LogError($"Stack trace: {ex.StackTrace}");
                 OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
                 return false;
             }
         }
 
+        private void SubscribeToCloudWatchManagerEvents()
+        {
+            if (_cloudWatchManager != null)
+            {
+                _cloudWatchManager.Metrics.OnMetricPublished += OnMetricPublished;
+                _cloudWatchManager.Metrics.OnMetricsListed += OnMetricsListed;
+                _cloudWatchManager.Alarms.OnAlarmCreated += OnAlarmCreated;
+                _cloudWatchManager.Logs.OnLogSent += OnLogSent;
+            }
+        }
+
+        private void GetUiComponents(VisualElement root)
+        {
+            _uiConfig.Body = root.Q<VisualElement>("Body");
+            _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
+            _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
+            _uiConfig.MainContentArea = root.Q<VisualElement>("Main");
+            _uiConfig.HeaderArea = root.Q<VisualElement>("Header");
+            _uiConfig.FooterArea = root.Q<VisualElement>("Footer");
+
+            // MetricsConfigPanel
+            _metricNameField = root.Q<TextField>("MetricNameField");
+            _metricValueField = root.Q<TextField>("MetricValueField");
+            _metricUnitField = root.Q<DropdownField>("MetricUnitField");
+            _publishMetricButton = root.Q<Button>("PublishMetricButton");
+
+            // AlarmsConfigPanel
+            _alarmNameField = root.Q<TextField>("AlarmNameField");
+            _alarmMetricNameField = root.Q<TextField>("MetricNameField", "AlarmsConfigContent");
+            _thresholdField = root.Q<TextField>("ThresholdField");
+            _comparisonTypeField = root.Q<DropdownField>("ComparisonTypeField");
+            _createAlarmButton = root.Q<Button>("CreateAlarmButton");
+
+            // LogsConfigPanel
+            _logGroupField = root.Q<TextField>("LogGroupField");
+            _logStreamField = root.Q<TextField>("LogStreamField");
+            _logMessageField = root.Q<TextField>("LogMessageField");
+            _sendLogButton = root.Q<Button>("SendLogButton");
+
+            // MetricsStatusPanel
+            _metricsList = root.Q<VisualElement>("MetricsList");
+            _refreshMetricsButton = root.Q<Button>("RefreshMetricsButton");
+
+            // TestPanel
+            _testConnectionButton = root.Q<Button>("TestConnectionButton");
+            _testAlarmButton = root.Q<Button>("TestAlarmButton");
+            _testLogButton = root.Q<Button>("TestLogButton");
+            _enableDisableServiceButton = root.Q<Button>("EnableDisableServiceButton");
+            _testResultLabel = root.Q<Label>("TestResult");
+
+            InitializePanelConfiguration(root);
+            Debug.Log("Cloudwatch Settings UI components obtained successfully");
+        }
+
+        private void InitializePanelConfiguration(VisualElement root)
+        {
+            var panelsContainer = _subpanelsAndSmokeMaskContainer;
+            
+            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.NavigationMenu] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
+                ShowClass = "NavigationMenuPanelInMainScreen",
+                HideClass = "NavigationMenuPanelOutMainScreen",
+                RequiresScrim = true,
+                AnimationDuration = 0.3f
+            };
+
+            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.AwsCredentials] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "AwsCredentialsPanelVisible",
+                HideClass = "AwsCredentialsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.ServiceConfig] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "ServiceConfigPanelVisible",
+                HideClass = "ServiceConfigPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.TestResults] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "TestResultsPanelVisible",
+                HideClass = "TestResultsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.SecuritySettings] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "SecuritySettingsPanelVisible",
+                HideClass = "SecuritySettingsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.RegionSettings] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "RegionSettingsPanelVisible",
+                HideClass = "RegionSettingsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.Help] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "HelpPanelVisible",
+                HideClass = "HelpPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            foreach (var kvp in _uiConfig.Panels)
+            {
+                var panelData = kvp.Value;
+                if (panelData.Panel != null)
+                {
+                    Debug.Log($"Registering callback for panel: {kvp.Key}");
+                    panelData.Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+                }
+                else
+                {
+                    Debug.Log($"Panel {kvp.Key} not found in UI - skipping callback registration");
+                }
+            }
+        }
+
+        private void UpdateUIStates()
+        {
+            if (_cloudWatchManager != null)
+            {
+                _logGroupField.value = _cloudWatchManager.Logs.DefaultLogGroup;
+                _logStreamField.value = _cloudWatchManager.Logs.CurrentLogStreamName;
+                UpdateMetricsList();
+            }
+        }
+
+        private async void UpdateMetricsList()
+        {
+            if (_cloudWatchManager != null)
+            {
+                var metrics = await _cloudWatchManager.ListMetrics();
+                _metricsList.Clear();
+                foreach (var metric in metrics)
+                {
+                    var label = new Label($"{metric.Name} (Namespace: {metric.Namespace})");
+                    label.AddToClassList("recent-activity-item");
+                    _metricsList.Add(label);
+                }
+            }
+        }
+
         public void Show()
         {
-            // SEGURIDAD: Verificar autenticación antes de mostrar
             if (!ServiceController.Instance.IsCognitoAuthenticated)
             {
-                Debug.LogError("Cannot show AWS Settings - user not authenticated");
+                Debug.LogError("Cannot show Cloudwatch Settings - user not authenticated");
                 OnControllerError?.Invoke(this, "Authentication required");
-                
-                // Redirigir a Welcome
                 _mainUIController?.ShowUI("Welcome");
                 return;
             }
@@ -189,12 +356,10 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.Flex;
-                
-                // Actualizar configuraciones AWS si es necesario
                 LoadAwsConfiguration();
-                
+                UpdateUIStates();
                 OnControllerShown?.Invoke(this);
-                Debug.Log("[CloudwatchSettingsOrchestrator] AWS Settings UI shown");
+                Debug.Log("[CloudwatchSettingsOrchestrator] Cloudwatch Settings UI shown");
             }
         }
 
@@ -203,31 +368,61 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.None;
-                
-                // Cerrar cualquier panel abierto
                 _uiManager?.CloseCurrentPanel();
-                
                 OnControllerHidden?.Invoke(this);
-                Debug.Log("[CloudwatchSettingsOrchestrator] AWS Settings UI hidden");
+                Debug.Log("[CloudwatchSettingsOrchestrator] Cloudwatch Settings UI hidden");
             }
+        }
+
+        internal void HideUi()
+        {
+            Hide();
         }
 
         public void Cleanup()
         {
             try
             {
-                // Limpiar managers
+                if (_cloudWatchManager != null)
+                {
+                    _cloudWatchManager.Metrics.OnMetricPublished -= OnMetricPublished;
+                    _cloudWatchManager.Metrics.OnMetricsListed -= OnMetricsListed;
+                    _cloudWatchManager.Alarms.OnAlarmCreated -= OnAlarmCreated;
+                    _cloudWatchManager.Logs.OnLogSent -= OnLogSent;
+                }
+
                 _eventManager?.Cleanup();
                 _uiManager = null;
                 _eventManager = null;
 
-                // Limpiar referencias
                 _mainUIController = null;
                 _uiConfig = null;
                 _awsConfig = null;
                 _settingsState = null;
                 _uiDocument = null;
                 _subpanelsAndSmokeMaskContainer = null;
+
+                _metricNameField = null;
+                _metricValueField = null;
+                _metricUnitField = null;
+                _publishMetricButton = null;
+                _alarmNameField = null;
+                _alarmMetricNameField = null;
+                _thresholdField = null;
+                _comparisonTypeField = null;
+                _createAlarmButton = null;
+                _logGroupField = null;
+                _logStreamField = null;
+                _logMessageField = null;
+                _sendLogButton = null;
+                _metricsList = null;
+                _refreshMetricsButton = null;
+                _testConnectionButton = null;
+                _testAlarmButton = null;
+                _testLogButton = null;
+                _enableDisableServiceButton = null;
+                _testResultLabel = null;
+                _cloudWatchManager = null;
 
                 _isInitialized = false;
                 Debug.Log("[CloudwatchSettingsOrchestrator] Cleanup completed");
@@ -237,8 +432,6 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
                 Debug.LogError($"[CloudwatchSettingsOrchestrator] Cleanup error: {ex.Message}");
             }
         }
-
-        #endregion
 
         #region ICloudwatchSettingsOps Implementation
 
@@ -266,26 +459,35 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
 
         public void OpenAwsConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
             Debug.Log("Opening AWS Configuration panel");
         }
 
-        public void SaveConfiguration()
+        public async void SaveConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Saving AWS Configuration");
+            await SaveConfigurationAsync();
         }
 
         public void ResetConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Resetting AWS Configuration");
+            if (_cloudWatchManager != null)
+            {
+                _metricNameField.value = "Enter metric name";
+                _metricValueField.value = "0.0";
+                _metricUnitField.value = "Count";
+                _alarmNameField.value = "Enter alarm name";
+                _alarmMetricNameField.value = "Enter metric name";
+                _thresholdField.value = "30.0";
+                _comparisonTypeField.value = "LessThanThreshold";
+                _logMessageField.value = "Enter log message";
+                _settingsState.HasUnsavedChanges = false;
+                _uiManager.UpdateCredentialsStatus(true, "Configuration reset");
+                Debug.Log("Cloudwatch Configuration reset to default");
+            }
         }
 
-        public void TestConnection()
+        public async void TestConnection()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Testing AWS Connection");
+            await TestConnectionAsync();
         }
 
         public void ShowNavigationMenu()
@@ -305,101 +507,205 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
             HandleDashboardClick();
         }
 
+        public async Task PublishMetric()
+        {
+            if (_cloudWatchManager != null)
+            {
+                var metricName = _metricNameField.value;
+                if (string.IsNullOrWhiteSpace(metricName) || metricName == "Enter metric name")
+                {
+                    Debug.LogError("Metric name cannot be empty");
+                    return;
+                }
+                if (double.TryParse(_metricValueField.value, out double value))
+                {
+                    var success = await _cloudWatchManager.PublishMetric(metricName, value);
+                    if (success)
+                    {
+                        Debug.Log($"Metric {metricName} published successfully");
+                        UpdateMetricsList();
+                    }
+                    else
+                    {
+                        Debug.LogError($"Failed to publish metric {metricName}");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Invalid metric value");
+                }
+            }
+        }
+
+        public async Task CreateAlarm()
+        {
+            if (_cloudWatchManager != null)
+            {
+                var alarmName = _alarmNameField.value;
+                var metricName = _alarmMetricNameField.value;
+                if (string.IsNullOrWhiteSpace(alarmName) || alarmName == "Enter alarm name" || 
+                    string.IsNullOrWhiteSpace(metricName) || metricName == "Enter metric name")
+                {
+                    Debug.LogError("Alarm name and metric name cannot be empty");
+                    return;
+                }
+                if (double.TryParse(_thresholdField.value, out double threshold))
+                {
+                    var comparisonType = _comparisonTypeField.value;
+                    var success = await _cloudWatchManager.CreateAlarm(alarmName, metricName, threshold, comparisonType);
+                    if (success)
+                    {
+                        Debug.Log($"Alarm {alarmName} created successfully");
+                    }
+                    else
+                    {
+                        Debug.LogError($"Failed to create alarm {alarmName}");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Invalid threshold value");
+                }
+            }
+        }
+
+        public async Task SendLog()
+        {
+            if (_cloudWatchManager != null)
+            {
+                var message = _logMessageField.value;
+                if (string.IsNullOrWhiteSpace(message) || message == "Enter log message")
+                {
+                    Debug.LogError("Log message cannot be empty");
+                    return;
+                }
+                var success = await _cloudWatchManager.SendLog(message);
+                if (success)
+                {
+                    Debug.Log("Log sent successfully");
+                }
+                else
+                {
+                    Debug.LogError("Failed to send log");
+                }
+            }
+        }
+
+        public async Task RefreshMetrics()
+        {
+            UpdateMetricsList();
+        }
+
+        public async Task TestAlarm()
+        {
+            if (_cloudWatchManager != null)
+            {
+                var success = await _cloudWatchManager.Alarms.CreateTestAlarmAsync("TestMetric");
+                if (success)
+                {
+                    Debug.Log("Test alarm created successfully");
+                    _testResultLabel.text = "Result: Test alarm created";
+                    _testResultLabel.RemoveFromClassList("status-error");
+                    _testResultLabel.AddToClassList("status-success");
+                }
+                else
+                {
+                    Debug.LogError("Failed to create test alarm");
+                    _testResultLabel.text = "Result: Test alarm failed";
+                    _testResultLabel.RemoveFromClassList("status-success");
+                    _testResultLabel.AddToClassList("status-error");
+                }
+            }
+        }
+
+        public async Task TestLog()
+        {
+            if (_cloudWatchManager != null)
+            {
+                var success = await _cloudWatchManager.Logs.SendTestLogAsync();
+                if (success)
+                {
+                    Debug.Log("Test log sent successfully");
+                    _testResultLabel.text = "Result: Test log sent";
+                    _testResultLabel.RemoveFromClassList("status-error");
+                    _testResultLabel.AddToClassList("status-success");
+                }
+                else
+                {
+                    Debug.LogError("Failed to send test log");
+                    _testResultLabel.text = "Result: Test log failed";
+                    _testResultLabel.RemoveFromClassList("status-success");
+                    _testResultLabel.AddToClassList("status-error");
+                }
+            }
+        }
+
+        public async void ToggleService()
+        {
+            Debug.Log("Toggling CloudWatch service state");
+            _awsConfig.ServiceStates["CloudWatch"] = !_awsConfig.ServiceStates.GetValueOrDefault("CloudWatch", false);
+            _uiManager.UpdateServiceStates(_awsConfig.ServiceStates);
+            if (_awsConfig.ServiceStates["CloudWatch"] && _cloudWatchManager != null)
+            {
+                await _cloudWatchManager.InitializeAsync(ServiceController.Instance.CognitoManager.CurrentAWSCredentials, ServiceController.Instance.CognitoManager.GetRegionEndpoint());
+            }
+        }
+
         #endregion
 
-        #region Public Event Handlers (Called by EventManager)
+        #region Public Event Handlers
 
-        /// <summary>
-        /// Maneja clic en botón Dashboard
-        /// </summary>
         public void HandleDashboardClick()
         {
             Debug.Log("Dashboard button clicked - returning to Dashboard");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar Dashboard
             _mainUIController?.ShowUI("Dashboard");
         }
 
-        /// <summary>
-        /// Maneja clic en botón Reports
-        /// </summary>
         public void HandleReportsClick()
         {
             Debug.Log("Reports button clicked - opening Reports Center");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar reports controller
             _mainUIController?.ShowUI("Reports");
         }
 
-        /// <summary>
-        /// Maneja clic en botón Operations
-        /// </summary>
         public void HandleOperationsClick()
         {
             var parameters = new Dictionary<string, object> {
                 ["context"] = "Operations", 
                 ["sourceController"] = "CloudwatchSettings"
             };
-            
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-            
             _mainUIController?.ShowUI("DeviceSelection", parameters);
         }
 
-        /// <summary>
-        /// Maneja clic en botón Training
-        /// </summary>
         public void HandleTrainingClick()
         {
             var parameters = new Dictionary<string, object> {
                 ["context"] = "Training",
                 ["sourceController"] = "CloudwatchSettings"
             };
-            
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-            
             _mainUIController?.ShowUI("DeviceSelection", parameters);
         }
 
-        /// <summary>
-        /// Maneja clic en botón Support
-        /// </summary>
         public void HandleSupportClick()
         {
             Debug.Log("Support button clicked - opening support center");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar support controller
             _mainUIController?.ShowUI("Support");
         }
 
-        /// <summary>
-        /// Maneja clic en botón Logout
-        /// </summary>
         public void HandleLogoutClick()
         {
-            Debug.Log("AWS Settings HandleLogoutClick() called");
-    
-            // Cerrar menú y ocultar AWS Settings
+            Debug.Log("Cloudwatch Settings HandleLogoutClick() called");
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Llamar a UIController para manejar logout
             var uiController = UIController.Instance;
             if (uiController != null)
             {
@@ -417,190 +723,39 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
 
         #region Private Implementation Methods
 
-        /// <summary>
-        /// Obtiene componentes UI de AWS Settings
-        /// </summary>
-        private void GetUiComponents(VisualElement root)
-        {
-            Debug.Log("Getting AWS Settings UI components...");
-    
-            // Contenedores principales
-            Debug.Log("Getting Body...");
-            _uiConfig.Body = root.Q<VisualElement>("Body");
-            Debug.Log($"Body found: {_uiConfig.Body != null}");
-    
-            Debug.Log("Setting SubpanelsContainer...");
-            _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
-            Debug.Log($"SubpanelsContainer set: {_uiConfig.SubpanelsContainer != null}");
-    
-            Debug.Log("Getting Scrim...");
-            _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
-            Debug.Log($"Scrim found: {_uiConfig.Scrim != null}");
-    
-            Debug.Log("Getting MainContentArea...");
-            _uiConfig.MainContentArea = root.Q<VisualElement>("Main");
-            Debug.Log($"MainContentArea found: {_uiConfig.MainContentArea != null}");
-    
-            Debug.Log("Getting HeaderArea...");
-            _uiConfig.HeaderArea = root.Q<VisualElement>("Header");
-            Debug.Log($"HeaderArea found: {_uiConfig.HeaderArea != null}");
-    
-            Debug.Log("Getting FooterArea...");
-            _uiConfig.FooterArea = root.Q<VisualElement>("Footer");
-            Debug.Log($"FooterArea found: {_uiConfig.FooterArea != null}");
-
-            // Configurar paneles
-            Debug.Log("Initializing panel configuration...");
-            InitializePanelConfiguration(root);
-    
-            Debug.Log("AWS Settings UI components obtained successfully");
-        }
-
-        /// <summary>
-        /// Inicializa la configuración de paneles
-        /// </summary>
-        private void InitializePanelConfiguration(VisualElement root)
-        {
-            var panelsContainer = _subpanelsAndSmokeMaskContainer;
-            
-            // Panel de menú de navegación (SÍ existe en UXML)
-            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.NavigationMenu] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
-                ShowClass = "NavigationMenuPanelInMainScreen",
-                HideClass = "NavigationMenuPanelOutMainScreen",
-                RequiresScrim = true,
-                AnimationDuration = 0.3f
-            };
-
-            // Paneles futuros específicos de AWS (NO existen en UXML actual)
-            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.AwsCredentials] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "AwsCredentialsPanelVisible",
-                HideClass = "AwsCredentialsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.ServiceConfig] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "ServiceConfigPanelVisible",
-                HideClass = "ServiceConfigPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.TestResults] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "TestResultsPanelVisible",
-                HideClass = "TestResultsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.SecuritySettings] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "SecuritySettingsPanelVisible",
-                HideClass = "SecuritySettingsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.RegionSettings] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "RegionSettingsPanelVisible",
-                HideClass = "RegionSettingsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ICloudwatchSettingsOps.PanelType.Help] = new CloudwatchSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "HelpPanelVisible",
-                HideClass = "HelpPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            // Registrar callbacks SOLO para paneles que existen
-            foreach (var kvp in _uiConfig.Panels)
-            {
-                var panelData = kvp.Value;
-                if (panelData.Panel != null)
-                {
-                    Debug.Log($"Registering callback for panel: {kvp.Key}");
-                    panelData.Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
-                }
-                else
-                {
-                    Debug.Log($"Panel {kvp.Key} not found in UI - skipping callback registration");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Busca dependencias en la escena
-        /// </summary>
         private void FindDependencies()
         {
-            // Buscar UIController principal
             _mainUIController = UIController.Instance;
             if (_mainUIController == null)
             {
                 Debug.LogWarning("UIController not found - will try to find it later");
             }
-
-            Debug.Log("AWS Settings dependencies search completed");
+            Debug.Log("Cloudwatch Settings dependencies search completed");
         }
 
-        /// <summary>
-        /// Inicializa el estado de AWS Settings
-        /// </summary>
         private void InitializeCloudwatchSettingsState()
         {
             _settingsState.IsInitialized = true;
             _settingsState.CurrentSection = "CloudwatchSettings";
             _settingsState.CurrentActivePanel = ICloudwatchSettingsOps.PanelType.None;
-            
-            // Inicializar configuración AWS básica
             _awsConfig.Region = "us-east-1";
             _awsConfig.ServiceStates = new Dictionary<string, bool>();
             _awsConfig.ServiceConfigs = new Dictionary<string, Dictionary<string, object>>();
             _awsConfig.TestResults = new Dictionary<string, CloudwatchSettingsInfo.ConnectionTestResult>();
-            
-            Debug.Log("AWS Settings state initialized");
+            Debug.Log("Cloudwatch Settings state initialized");
         }
 
-        /// <summary>
-        /// Carga la configuración AWS actual
-        /// </summary>
         private void LoadAwsConfiguration()
         {
-            // TODO: Cargar configuración desde ServiceController o almacenamiento
-            Debug.Log("Loading AWS configuration...");
-            
-            // Por ahora, obtener configuración básica del ServiceController si está disponible
+            Debug.Log("Loading Cloudwatch configuration...");
             var serviceController = ServiceController.Instance;
             if (serviceController != null)
             {
                 _settingsState.HasValidCredentials = serviceController.IsCognitoAuthenticated;
-                Debug.Log($"AWS configuration loaded - Valid credentials: {_settingsState.HasValidCredentials}");
+                Debug.Log($"Cloudwatch configuration loaded - Valid credentials: {_settingsState.HasValidCredentials}");
             }
         }
 
-        #endregion
-
-        #region Event Handlers
-
-        /// <summary>
-        /// Maneja el final de transiciones de paneles
-        /// </summary>
         private void OnTransitionEndEvent(TransitionEndEvent evt)
         {
             if (!_uiManager.IsAnyPanelVisible())
@@ -610,139 +765,93 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
             }
         }
 
-        /// <summary>
-        /// Maneja solicitudes de regreso al Dashboard
-        /// </summary>
         private void OnReturnToDashboardHandler()
         {
             OnReturnToDashboardRequested?.Invoke();
         }
 
-        /// <summary>
-        /// Maneja completado de transiciones de paneles
-        /// </summary>
         private void OnPanelTransitionCompleteHandler(ICloudwatchSettingsOps.PanelType panelType)
         {
             OnPanelTransitionComplete?.Invoke(panelType);
             Debug.Log($"Panel transition complete: {panelType}");
         }
 
-        #endregion
-
-        #region Helper Methods
-
-        /// <summary>
-        /// Muestra la UI principal (equivalente al método original)
-        /// </summary>
-        internal void ShowUi()
+        private void OnMetricPublished(bool success, string message, string metricName)
         {
-            Show();
+            Debug.Log($"Metric publication: {message}");
+            UpdateUIStates();
         }
 
-        /// <summary>
-        /// Oculta la UI principal (equivalente al método original)
-        /// </summary>
-        internal void HideUi()
+        private void OnMetricsListed(bool success, string message, List<MetricInfo> metrics)
         {
-            Hide();
+            Debug.Log($"Metrics listed: {message}");
+            UpdateMetricsList();
         }
 
-        /// <summary>
-        /// Actualiza el estado de credenciales AWS
-        /// </summary>
-        public void UpdateCredentialsStatus(bool isValid, string message = null)
+        private void OnAlarmCreated(bool success, string message, string alarmName)
         {
-            _settingsState.HasValidCredentials = isValid;
-            
-            // Actualizar UI a través del UIManager
-            _uiManager?.UpdateCredentialsStatus(isValid, message);
-            
-            // Notificar cambio de estado usando el método público
-            _settingsState.TriggerCredentialsValidityChanged(isValid);
-            
-            Debug.Log($"AWS credentials status updated: {isValid} - {message}");
+            Debug.Log($"Alarm creation: {message}");
         }
 
-        /// <summary>
-        /// Actualiza resultados de pruebas de conexión
-        /// </summary>
-        public void UpdateConnectionTestResults(Dictionary<string, CloudwatchSettingsInfo.ConnectionTestResult> results)
+        private void OnLogSent(bool success, string message, string logGroup)
         {
-            _awsConfig.TestResults = results;
-            
-            // Actualizar UI a través del UIManager
-            _uiManager?.UpdateConnectionTestResults(results);
-            
-            // Notificar resultados individualmente usando el método público
-            foreach (var kvp in results)
+            Debug.Log($"Log sent: {message}");
+        }
+
+        private async Task SaveConfigurationAsync()
+        {
+            if (_cloudWatchManager != null)
             {
-                _settingsState.TriggerConnectionTestCompleted(kvp.Key, kvp.Value);
+                var config = new Dictionary<string, object>
+                {
+                    ["MetricName"] = _metricNameField.value,
+                    ["MetricValue"] = _metricValueField.value,
+                    ["MetricUnit"] = _metricUnitField.value,
+                    ["AlarmName"] = _alarmNameField.value,
+                    ["AlarmMetricName"] = _alarmMetricNameField.value,
+                    ["Threshold"] = _thresholdField.value,
+                    ["ComparisonType"] = _comparisonTypeField.value
+                };
+                _awsConfig.ServiceConfigs["CloudWatch"] = config;
+                _settingsState.HasUnsavedChanges = false;
+                _uiManager.UpdateCredentialsStatus(true, "Configuration saved");
+                Debug.Log("Cloudwatch configuration saved");
             }
-            
-            Debug.Log($"Connection test results updated for {results.Count} services");
         }
 
-        /// <summary>
-        /// Actualiza configuración de servicios AWS
-        /// </summary>
-        public void UpdateServiceConfiguration(string serviceName, Dictionary<string, object> config)
+        private async Task TestConnectionAsync()
         {
-            _awsConfig.ServiceConfigs[serviceName] = config;
-            _awsConfig.ServiceStates[serviceName] = true;
-            
-            // Marcar como cambios no guardados
-            _settingsState.HasUnsavedChanges = true;
-            
-            Debug.Log($"Service configuration updated for {serviceName}");
-        }
-
-        /// <summary>
-        /// Prueba la conexión a un servicio AWS específico
-        /// </summary>
-        public void TestServiceConnection(string serviceName)
-        {
-            // TODO: Implementar prueba real de conexión
-            _settingsState.IsTestingConnection = true;
-            
-            Debug.Log($"Testing connection to AWS service: {serviceName}");
-            
-            // Simular resultado de prueba (reemplazar con lógica real)
-            var testResult = new CloudwatchSettingsInfo.ConnectionTestResult
+            if (_cloudWatchManager != null)
             {
-                ServiceName = serviceName,
-                IsSuccessful = true, // Esto debería venir de una prueba real
-                Message = "Connection test completed successfully",
-                TestTime = DateTime.Now,
-                ResponseTime = TimeSpan.FromMilliseconds(150)
-            };
-            
-            _awsConfig.TestResults[serviceName] = testResult;
-            _settingsState.TriggerConnectionTestCompleted(serviceName, testResult);
-            _settingsState.IsTestingConnection = false;
+                _settingsState.IsTestingConnection = true;
+                _testResultLabel.text = "Result: Testing...";
+                var success = await _cloudWatchManager.Metrics.PublishTestMetricAsync();
+                _testResultLabel.text = $"Result: {(success ? "Success" : "Failed")}";
+                _testResultLabel.RemoveFromClassList("status-success");
+                _testResultLabel.RemoveFromClassList("status-error");
+                _testResultLabel.AddToClassList(success ? "status-success" : "status-error");
+                _settingsState.IsTestingConnection = false;
+
+                var testResult = new CloudwatchSettingsInfo.ConnectionTestResult
+                {
+                    ServiceName = "CloudWatch",
+                    IsSuccessful = success,
+                    Message = success ? "Connection test successful" : "Connection test failed",
+                    TestTime = DateTime.Now,
+                    ResponseTime = TimeSpan.FromMilliseconds(150)
+                };
+                _awsConfig.TestResults["CloudWatch"] = testResult;
+                _uiManager.UpdateConnectionTestResults(_awsConfig.TestResults);
+            }
         }
 
         #endregion
 
         #region Public Properties
 
-        /// <summary>
-        /// UI Manager asociado
-        /// </summary>
         public CloudwatchSettingsUIManager UIManager => _uiManager;
-
-        /// <summary>
-        /// Event Manager asociado
-        /// </summary>
         public CloudwatchSettingsEventManager EventManager => _eventManager;
-
-        /// <summary>
-        /// Estado actual de AWS Settings
-        /// </summary>
         public CloudwatchSettingsInfo.CloudwatchSettingsState SettingsState => _settingsState;
-
-        /// <summary>
-        /// Configuración AWS actual
-        /// </summary>
         public CloudwatchSettingsInfo.AwsConfiguration AwsConfig => _awsConfig;
 
         #endregion
