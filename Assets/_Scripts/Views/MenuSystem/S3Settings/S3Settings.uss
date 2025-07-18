@@ -29,7 +29,6 @@
     translate: 0% 0;
 }
 
-
 #Body {
     flex-grow: 1;
     width: 100%;
@@ -50,6 +49,7 @@
     border-bottom-width: 0;
     border-left-width: 0;
 }
+
 .sergey-kotenev {
     position: absolute;
     width: 100%;
@@ -60,6 +60,7 @@
     opacity: 0.30;
     z-index: -1;
 }
+
 .code-rain {
     position: absolute;
     width: 100%;
@@ -390,6 +391,7 @@
     -unity-font-style: normal;
     font-size: 30px;
     white-space: normal;
+    -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
 }
 
@@ -397,6 +399,7 @@
     color: rgb(255, 255, 255);
     font-size: 35px;
     white-space: normal;
+    -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
 }
 
@@ -547,10 +550,6 @@
     flex-grow: 1;
     height: 20%;
     width: 100%;
-}
-
-.device-mode-container {
-    flex-grow: 1;
 }
 
 .device-mode-label {
@@ -721,4 +720,30 @@
     border-right-width: 0;
     border-bottom-width: 0;
     border-left-width: 0;
+}
+
+/* Status styles for TestResult label */
+.status-success {
+    color: rgb(0, 255, 0);
+    -unity-font-style: bold;
+    font-size: 30px;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.status-error {
+    color: rgb(255, 0, 0);
+    -unity-font-style: bold;
+    font-size: 30px;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* Error message style for UI feedback */
+.error-message {
+    color: rgb(255, 0, 0);
+    -unity-font-style: bold;
+    font-size: 25px;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
 }
