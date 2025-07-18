@@ -33,6 +33,23 @@ TagManager:
   - SESManager
   - Support
   - Reports
+  - AwsSettings
+  - SesSettings
+  - CloudwatchSettings
+  - IotCoreSettings
+  - S3Settings
+  - LambdaSettings
+  - MedaraAbstract
+  - MedaraDocuments
+  - MedaraInfographics
+  - MedaraInteractiveSimulator
+  - MedaraVideos
+  - MedaraConcreteArScara
+  - MedaraGraphicArScara
+  - ArScaraControlPanel
+  - ArScaraJogAndTeach
+  - ArScaraPoints
+  - EnvironmentManager
   layers:
   - Default
   - TransparentFX

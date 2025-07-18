@@ -1,0 +1,150 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/S3Settings/S3Settings.uss?fileID=7433441132597879392&amp;guid=1d4bacbfd22af43d8a3c66ebcd38b4ff&amp;type=3#S3Settings" />
+    <ui:VisualElement name="Body" class="body">
+        <ui:VisualElement name="Header" class="header">
+            <ui:VisualElement name="MenuPanel" class="menu-panel">
+                <ui:Button name="MenuButton" text="Menu" class="menu-button" />
+            </ui:VisualElement>
+            <ui:VisualElement name="TitlePanel" class="spare-header-panel" style="width: 75%; align-items: center; align-self: center; align-content: center;">
+                <ui:Label name="TitleLabel" text="S3 Settings" class="spare-header-label" style="-unity-font-definition: url(&quot;project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&amp;guid=289b75764e32a4b85b2ee0c973db7173&amp;type=3#VT323-Regular&quot;); font-size: 50px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Main" class="main">
+            <ui:VisualElement name="MainLeft" class="main-left">
+                <ui:VisualElement name="MainTopRow" class="main-top-row">
+                    <ui:VisualElement name="UploadFilePanel" class="widget-panel">
+                        <ui:VisualElement name="UploadFileHeader" class="widget-header">
+                            <ui:Label name="UploadFileTitle" text="Upload File" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="UploadFileContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:Label name="FileNameLabel" text="File Name:" class="recent-activity-item" />
+                            <ui:TextField name="FileNameField" value="Enter file name" class="device-mode-label" style="color: rgba(0, 0, 0, 0.39); width: 50%;" />
+                            <ui:Label name="ContentTypeLabel" text="Content Type:" class="recent-activity-item" />
+                            <ui:DropdownField name="ContentTypeField" value="application/octet-stream" choices="application/octet-stream,text/plain,image/jpeg,image/png" class="device-mode-label" style="color: rgba(0, 0, 0, 0.39); width: 50%;" />
+                            <ui:Button name="UploadFileButton" text="Upload File" class="device-nav-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="DownloadFilePanel" class="widget-panel">
+                        <ui:VisualElement name="DownloadFileHeader" class="widget-header">
+                            <ui:Label name="DownloadFileTitle" text="Download File" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="DownloadFileContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:Label name="FileKeyLabel" text="File Key:" class="recent-activity-item" />
+                            <ui:TextField name="FileKeyField" value="Enter file key" class="device-mode-label" style="width: 50%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Label name="LocalPathLabel" text="Local Path:" class="recent-activity-item" />
+                            <ui:TextField name="LocalPathField" value="Enter local path" class="device-mode-label" style="width: 50%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Button name="DownloadFileButton" text="Download File" class="device-nav-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="FileManagementPanel" class="widget-panel system-status-panel">
+                        <ui:VisualElement name="FileManagementHeader" class="widget-header">
+                            <ui:Label name="FileManagementTitle" text="File Management" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="FileManagementContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:Label name="ListPrefixLabel" text="List Prefix (optional):" class="recent-activity-item" />
+                            <ui:TextField name="ListPrefixField" value="Enter prefix" class="device-mode-label" style="width: 50%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Button name="ListFilesButton" text="List Files" class="device-nav-button" />
+                            <ui:Label name="DeleteFileKeyLabel" text="File Key to Delete:" class="recent-activity-item" />
+                            <ui:TextField name="DeleteFileKeyField" value="Enter file key" class="device-mode-label" style="width: 50%; color: rgba(0, 0, 0, 0.39);" />
+                            <ui:Button name="DeleteFileButton" text="Delete File" class="device-nav-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="MainBottomRow" class="main-bottom-row">
+                    <ui:VisualElement name="FileStatusPanel" class="widget-panel">
+                        <ui:VisualElement name="FileStatusHeader" class="widget-header">
+                            <ui:Label name="FileStatusTitle" text="File Status" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="FileStatusContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:VisualElement name="FilesList" class="recent-activity-content">
+                                <ui:Label name="File1" text="example.txt (Text File, 1.2 KB)" class="recent-activity-item" />
+                            </ui:VisualElement>
+                            <ui:Button name="RefreshFilesButton" text="Refresh Files" class="device-nav-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="TestPanel" class="widget-panel">
+                        <ui:VisualElement name="TestHeader" class="widget-header">
+                            <ui:Label name="TestTitle" text="Test S3 Connection" class="widget-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="TestContent" class="widget-content" style="align-items: center; justify-content: space-evenly;">
+                            <ui:Button name="TestConnectionButton" text="Test Connectivity" class="device-nav-button" />
+                            <ui:Button name="EnableDisableServiceButton" text="Enable/Disable Service" class="device-nav-button" />
+                            <ui:Label name="TestResult" text="Result: Not tested" class="recent-activity-item" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Footer" class="footer">
+            <ui:VisualElement name="SparePanel0" class="footer-panel">
+                <ui:Label name="SpareLabel0" class="footer-label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel1" class="footer-panel">
+                <ui:Label name="SpareLabel1" class="footer-label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel2" class="footer-panel">
+                <ui:Label name="SpareLabel2" class="footer-label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SparePanel3" class="footer-panel">
+                <ui:Label name="SpareLabel3" class="footer-label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" class="overlay-container">
+            <ui:VisualElement name="CodeRain" class="code-rain" />
+            <ui:VisualElement name="Scrim" class="ScrimTransparent" />
+            <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
+                <ui:VisualElement name="NavigationMenu" class="navigation-menu">
+                    <ui:VisualElement class="nav-menu-header">
+                        <ui:VisualElement class="nav-username-container">
+                            <ui:Label text="Main Menu" class="nav-username" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="nav-menu-content">
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Dashboard" class="nav-button nav-button-active" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement name="TrainingButton" class="nav-button-container">
+                                <ui:Button name="TrainingButton" text="Training" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Operations" name="OperationsButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Reports" name="ReportsButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Support" name="SupportButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Settings" name="SettingsButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="MainBottomRow" class="main-bottom-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Logout" name="LogoutButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-menu-row">
+                            <ui:VisualElement class="nav-spacer-left" />
+                            <ui:VisualElement class="nav-spacer-right">
+                                <ui:Label name="Label" class="nav-spacer-label" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="HideMenuButton" class="hide-menu-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
