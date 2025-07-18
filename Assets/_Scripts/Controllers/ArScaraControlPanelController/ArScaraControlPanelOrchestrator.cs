@@ -905,7 +905,7 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         /// <summary>
         /// Actualiza las opciones del dropdown de vistas basado en el ambiente actual
         /// </summary>
-        private void UpdateViewsDropdownForEnvironment(EnvironmentType environmentType)
+        internal void UpdateViewsDropdownForEnvironment(EnvironmentType environmentType)
         {
             var viewsDropdown = _uiDocument?.rootVisualElement?.Q<DropdownField>("Views");
             if (viewsDropdown == null)

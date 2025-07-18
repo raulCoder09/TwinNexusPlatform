@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Scripts.Controllers.ArScaraControlPanelController;
 using UnityEngine;
 
 namespace _Scripts.Controllers.EnvironmentController
@@ -141,9 +142,6 @@ namespace _Scripts.Controllers.EnvironmentController
             LogDebug($"Camera view configurations initialized: {_viewConfigurations.Count} views");
         }
 
-        /// <summary>
-        /// Busca referencias de cámaras en la escena
-        /// </summary>
         private void FindCameraReferences()
         {
             if (_virtualEnvironmentCamera == null)
@@ -154,12 +152,11 @@ namespace _Scripts.Controllers.EnvironmentController
                     _virtualEnvironmentCamera = cameraGO.GetComponent<Camera>();
                     LogDebug("Virtual environment camera found by tag");
                 }
-            }
-
-            if (_mainCamera == null)
-            {
-                _mainCamera = Camera.main;
-                LogDebug("Main camera reference set");
+                // AGREGAR ELSE PARA DEBUG:
+                else
+                {
+                    LogDebug("VirtualEnvironmentCamera not found - will search again later");
+                }
             }
         }
 
@@ -172,7 +169,11 @@ namespace _Scripts.Controllers.EnvironmentController
             if (environmentManager != null)
             {
                 environmentManager.OnEnvironmentLoaded += OnEnvironmentChanged;
-                LogDebug("Subscribed to environment events");
+                Debug.LogError("CameraViewManager subscribed to environment events"); // Temporal
+            }
+            else
+            {
+                Debug.LogError("CameraViewManager: EnvironmentManager not found!"); // Temporal
             }
         }
 
@@ -229,6 +230,8 @@ namespace _Scripts.Controllers.EnvironmentController
         public List<string> GetAvailableViews()
         {
             var availableViews = new List<string>();
+    
+            Debug.LogError($"GetAvailableViews called - configs: {_viewConfigurations.Count}, currentEnv: {_currentEnvironment}");
 
             foreach (var kvp in _viewConfigurations)
             {
@@ -237,7 +240,8 @@ namespace _Scripts.Controllers.EnvironmentController
                     availableViews.Add(kvp.Key);
                 }
             }
-
+    
+            Debug.LogError($"Available views found: {availableViews.Count}");
             return availableViews;
         }
 
@@ -321,16 +325,34 @@ namespace _Scripts.Controllers.EnvironmentController
         /// </summary>
         private void OnEnvironmentChanged(EnvironmentType environmentType)
         {
+            Debug.LogError($"CameraViewManager received environment change: {environmentType}"); // Temporal
+    
             _currentEnvironment = environmentType;
             LogDebug($"Environment changed to: {environmentType}");
 
-            // Cambiar a vista por defecto si la actual no está disponible
+            // Buscar cámara nuevamente cuando cambie a Virtual
+            if (environmentType == EnvironmentType.Virtual)
+            {
+                FindCameraReferences();
+            }
+            
             if (!IsViewAvailable(_currentView))
             {
                 ChangeView("Default");
                 LogDebug("Changed to default view due to environment compatibility");
             }
+            
+            var orchestrator = FindObjectOfType<ArScaraControlPanelOrchestrator>();
+            if (orchestrator != null && orchestrator.IsActive)
+            {
+                orchestrator.UpdateViewsDropdownForEnvironment(environmentType);
+            }
         }
+        
+        
+        
+        
+        
 
         #endregion
 
