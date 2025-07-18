@@ -29,7 +29,6 @@
     translate: 0% 0;
 }
 
-
 #Body {
     flex-grow: 1;
     width: 100%;
@@ -50,6 +49,7 @@
     border-bottom-width: 0;
     border-left-width: 0;
 }
+
 .sergey-kotenev {
     position: absolute;
     width: 100%;
@@ -60,6 +60,7 @@
     opacity: 0.30;
     z-index: -1;
 }
+
 .code-rain {
     position: absolute;
     width: 100%;
@@ -400,7 +401,7 @@
     -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
 }
 
-/* Main right panel - Device control */
+/* Device control panel */
 .device-control-panel {
     flex-grow: 1;
     width: 40%;
@@ -721,4 +722,19 @@
     border-right-width: 0;
     border-bottom-width: 0;
     border-left-width: 0;
+}
+
+/* Status styles for TestResult label */
+.status-success {
+    color: rgb(0, 255, 0);
+    -unity-font-style: bold;
+    font-size: 30px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+.status-error {
+    color: rgb(255, 0, 0);
+    -unity-font-style: bold;
+    font-size: 30px;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
 }

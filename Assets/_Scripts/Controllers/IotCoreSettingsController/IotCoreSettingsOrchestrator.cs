@@ -1,27 +1,23 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
 using _Scripts.Controllers.UiManagement;
+using _Scripts.Models.IoTCoreManagement;
 
 namespace _Scripts.Controllers.IotCoreSettingsController
 {
-    /// <summary>
-    /// Coordinador principal de AWS Settings - implementa IIotCoreSettingsOps e IUIController
-    /// Equivalente a DashboardOrchestrator pero para configuraciones AWS
-    /// </summary>
     public class IotCoreSettingsOrchestrator : MonoBehaviour, IIotCoreSettingsOps, IUIController
     {
         #region IUIController Implementation
 
-        public bool RequiresAuthentication => true; // AWS Settings SÍ requiere autenticación
+        public bool RequiresAuthentication => true;
         public bool IsInitialized => _isInitialized;
         public bool IsActive => _uiConfig?.Body?.style.display == DisplayStyle.Flex;
         public string ControllerName => "IotCoreSettingsController";
 
-        // Events from IUIController
         public event Action<IUIController> OnControllerInitialized;
         public event Action<IUIController> OnControllerShown;
         public event Action<IUIController> OnControllerHidden;
@@ -34,7 +30,6 @@ namespace _Scripts.Controllers.IotCoreSettingsController
         public bool IsNavigationMenuOpen => _uiManager?.NavigationMenuOpen ?? false;
         public IIotCoreSettingsOps.PanelType CurrentActivePanel => _uiManager?.CurrentActivePanel ?? IIotCoreSettingsOps.PanelType.None;
 
-        // Events from IIotCoreSettingsOps
         public event Action OnNavigationMenuOpened;
         public event Action OnNavigationMenuClosed;
         public event Action<IIotCoreSettingsOps.PanelType> OnPanelTransitionComplete;
@@ -51,12 +46,40 @@ namespace _Scripts.Controllers.IotCoreSettingsController
         private IotCoreSettingsUIManager _uiManager;
         private IotCoreSettingsEventManager _eventManager;
         
-        // Referencias a otros controladores
         private UIController _mainUIController;
         
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private UIDocument _uiDocument;
         private bool _isInitialized = false;
+
+        // Referencias a elementos UI del ThingsConfigPanel
+        private TextField _thingNameField;
+        private TextField _thingTypeField;
+        private Button _createThingButton;
+
+        // Referencias a elementos UI del PolicyConfigPanel
+        private TextField _policyNameField;
+        private TextField _policyDocumentField;
+        private Button _createPolicyButton;
+
+        // Referencias a elementos UI del CertificatesConfigPanel
+        private Button _createCertificateButton;
+        private TextField _certificateIdField;
+        private TextField _thingNameForCertificateField;
+        private Button _attachCertificateButton;
+        private TextField _policyNameForCertificateField;
+        private Button _attachPolicyButton;
+
+        // Referencias a elementos UI del ThingsStatusPanel
+        private VisualElement _thingsList;
+        private Button _refreshThingsButton;
+
+        // Referencias a elementos UI del TestPanel
+        private Button _testConnectivityButton;
+        private Button _enableDisableServiceButton;
+        private Label _testResultLabel;
+
+        private IoTCoreManager _iotCoreManager;
 
         #endregion
 
@@ -69,10 +92,11 @@ namespace _Scripts.Controllers.IotCoreSettingsController
         
         private void Start()
         {
-            // AWS Settings inicia OCULTO hasta que se navegue desde otra UI
-             HideUi();
-            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-            
+            HideUi();
+            if (_subpanelsAndSmokeMaskContainer != null)
+            {
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            }
             
             Debug.Log("[IotCoreSettingsOrchestrator] Started - UI hidden until navigation");
         }
@@ -83,8 +107,7 @@ namespace _Scripts.Controllers.IotCoreSettingsController
         }
 
         #endregion
-
-        #region IUIController Lifecycle Methods
+        
 
         public bool Initialize()
         {
@@ -98,90 +121,227 @@ namespace _Scripts.Controllers.IotCoreSettingsController
 
                 Debug.Log("Initializing IotCoreSettingsOrchestrator...");
 
-                // Obtener componentes UI
-                Debug.Log("Step 1: Getting UIDocument component...");
                 _uiDocument = GetComponent<UIDocument>();
                 if (_uiDocument == null)
                 {
                     Debug.LogError("UIDocument component not found!");
                     return false;
                 }
-                Debug.Log("UIDocument found successfully");
 
-                Debug.Log("Step 2: Getting root visual element...");
                 var root = _uiDocument.rootVisualElement;
                 if (root == null)
                 {
                     Debug.LogError("Root visual element is null!");
                     return false;
                 }
-                Debug.Log("Root visual element found successfully");
 
-                Debug.Log("Step 3: Getting SubpanelsAndSmokeMaskContainer...");
                 _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
                 if (_subpanelsAndSmokeMaskContainer == null)
                 {
                     Debug.LogError("SubpanelsAndSmokeMaskContainer not found in UI!");
                     return false;
                 }
-                Debug.Log("SubpanelsAndSmokeMaskContainer found successfully");
 
-                // Obtener referencias UI
-                Debug.Log("Step 4: Getting UI components...");
                 GetUiComponents(root);
-                Debug.Log("UI components obtained");
                 
-                // Inicializar managers
-                Debug.Log("Step 5: Creating IotCoreSettingsUIManager...");
                 _uiManager = new IotCoreSettingsUIManager(_uiConfig);
-                Debug.Log("IotCoreSettingsUIManager created successfully");
-
-                Debug.Log("Step 6: Creating IotCoreSettingsEventManager...");
                 _eventManager = new IotCoreSettingsEventManager(_uiManager, OnReturnToDashboardHandler, OnPanelTransitionCompleteHandler, this);
-                Debug.Log("IotCoreSettingsEventManager created successfully");
-
-                Debug.Log("Step 7: Registering events...");
                 _eventManager.RegisterEvents(_uiDocument);
-                Debug.Log("Events registered successfully");
 
-                Debug.Log("Step 8: Initializing panel system...");
                 _uiManager.InitializePanelSystem();
-                Debug.Log("Panel system initialized successfully");
                 
-                // Buscar dependencias
-                Debug.Log("Step 9: Finding dependencies...");
                 FindDependencies();
-                Debug.Log("Dependencies found");
                 
-                // Configurar estado inicial
-                Debug.Log("Step 10: Initializing AWS settings state...");
                 InitializeIotCoreSettingsState();
-                Debug.Log("AWS settings state initialized");
+
+                _iotCoreManager = ServiceController.Instance?.IoTCoreManager;
+                if (_iotCoreManager == null)
+                {
+                    Debug.LogError("IoTCoreManager not found!");
+                    return false;
+                }
+
+                SubscribeToIoTCoreManagerEvents();
+
+                UpdateUIStates();
 
                 _isInitialized = true;
                 Debug.Log("IotCoreSettingsOrchestrator initialized successfully");
-                
                 OnControllerInitialized?.Invoke(this);
                 return true;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"IotCoreSettingsOrchestrator initialization error: {ex.Message}");
-                Debug.LogError($"Stack trace: {ex.StackTrace}");
                 OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
                 return false;
             }
         }
 
+        private void SubscribeToIoTCoreManagerEvents()
+        {
+            if (_iotCoreManager != null)
+            {
+                _iotCoreManager.SubscribeToThingsListed(OnThingsListed);
+                _iotCoreManager.SubscribeToThingCreated(OnThingCreated);
+                _iotCoreManager.SubscribeToPolicyCreated(OnPolicyCreated);
+                _iotCoreManager.SubscribeToCertificateCreated(OnCertificateCreated);
+                _iotCoreManager.SubscribeToCertificateAttached(OnCertificateAttached);
+                _iotCoreManager.SubscribeToPolicyAttached(OnPolicyAttached);
+            }
+        }
+
+        private void GetUiComponents(VisualElement root)
+        {
+            _uiConfig.Body = root.Q<VisualElement>("Body");
+            _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
+            _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
+            _uiConfig.MainContentArea = root.Q<VisualElement>("Main");
+            _uiConfig.HeaderArea = root.Q<VisualElement>("Header");
+            _uiConfig.FooterArea = root.Q<VisualElement>("Footer");
+
+            // ThingsConfigPanel
+            _thingNameField = root.Q<TextField>("ThingNameField");
+            _thingTypeField = root.Q<TextField>("ThingTypeField");
+            _createThingButton = root.Q<Button>("CreateThingButton");
+
+            // PolicyConfigPanel
+            _policyNameField = root.Q<TextField>("PolicyNameField");
+            _policyDocumentField = root.Q<TextField>("PolicyDocumentField");
+            _createPolicyButton = root.Q<Button>("CreatePolicyButton");
+
+            // CertificatesConfigPanel
+            _createCertificateButton = root.Q<Button>("CreateCertificateButton");
+            _certificateIdField = root.Q<TextField>("CertificateIdField");
+            _thingNameForCertificateField = root.Q<TextField>("ThingNameForCertificateField");
+            _attachCertificateButton = root.Q<Button>("AttachCertificateButton");
+            _policyNameForCertificateField = root.Q<TextField>("PolicyNameForCertificateField");
+            _attachPolicyButton = root.Q<Button>("AttachPolicyButton");
+
+            // ThingsStatusPanel
+            _thingsList = root.Q<VisualElement>("ThingsList");
+            _refreshThingsButton = root.Q<Button>("RefreshThingsButton");
+
+            // TestPanel
+            _testConnectivityButton = root.Q<Button>("TestConnectivityButton");
+            _enableDisableServiceButton = root.Q<Button>("EnableDisableServiceButton");
+            _testResultLabel = root.Q<Label>("TestResult");
+
+            InitializePanelConfiguration(root);
+            Debug.Log("IoT Core Settings UI components obtained successfully");
+        }
+
+        private void InitializePanelConfiguration(VisualElement root)
+        {
+            var panelsContainer = _subpanelsAndSmokeMaskContainer;
+            
+            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.NavigationMenu] = new IotCoreSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
+                ShowClass = "NavigationMenuPanelInMainScreen",
+                HideClass = "NavigationMenuPanelOutMainScreen",
+                RequiresScrim = true,
+                AnimationDuration = 0.3f
+            };
+
+            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.AwsCredentials] = new IotCoreSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "AwsCredentialsPanelVisible",
+                HideClass = "AwsCredentialsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.ServiceConfig] = new IotCoreSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "ServiceConfigPanelVisible",
+                HideClass = "ServiceConfigPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.TestResults] = new IotCoreSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "TestResultsPanelVisible",
+                HideClass = "TestResultsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.SecuritySettings] = new IotCoreSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "SecuritySettingsPanelVisible",
+                HideClass = "SecuritySettingsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.RegionSettings] = new IotCoreSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "RegionSettingsPanelVisible",
+                HideClass = "RegionSettingsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.Help] = new IotCoreSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "HelpPanelVisible",
+                HideClass = "HelpPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            foreach (var kvp in _uiConfig.Panels)
+            {
+                var panelData = kvp.Value;
+                if (panelData.Panel != null)
+                {
+                    Debug.Log($"Registering callback for panel: {kvp.Key}");
+                    panelData.Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+                }
+                else
+                {
+                    Debug.Log($"Panel {kvp.Key} not found in UI - skipping callback registration");
+                }
+            }
+        }
+
+        private void UpdateUIStates()
+        {
+            if (_iotCoreManager != null)
+            {
+                UpdateThingsList();
+            }
+        }
+
+        private async void UpdateThingsList()
+        {
+            if (_iotCoreManager != null)
+            {
+                var things = await _iotCoreManager.ListThingsAsync();
+                _thingsList.Clear();
+                foreach (var thing in things)
+                {
+                    var label = new Label($"{thing.ThingName} (Type: {thing.ThingTypeName ?? "None"})");
+                    label.AddToClassList("recent-activity-item");
+                    _thingsList.Add(label);
+                }
+            }
+        }
+
         public void Show()
         {
-            // SEGURIDAD: Verificar autenticación antes de mostrar
             if (!ServiceController.Instance.IsCognitoAuthenticated)
             {
-                Debug.LogError("Cannot show AWS Settings - user not authenticated");
+                Debug.LogError("Cannot show IoT Core Settings - user not authenticated");
                 OnControllerError?.Invoke(this, "Authentication required");
-                
-                // Redirigir a Welcome
                 _mainUIController?.ShowUI("Welcome");
                 return;
             }
@@ -189,12 +349,10 @@ namespace _Scripts.Controllers.IotCoreSettingsController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.Flex;
-                
-                // Actualizar configuraciones AWS si es necesario
                 LoadAwsConfiguration();
-                
+                UpdateUIStates();
                 OnControllerShown?.Invoke(this);
-                Debug.Log("[IotCoreSettingsOrchestrator] AWS Settings UI shown");
+                Debug.Log("[IotCoreSettingsOrchestrator] IoT Core Settings UI shown");
             }
         }
 
@@ -203,31 +361,60 @@ namespace _Scripts.Controllers.IotCoreSettingsController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.None;
-                
-                // Cerrar cualquier panel abierto
                 _uiManager?.CloseCurrentPanel();
-                
                 OnControllerHidden?.Invoke(this);
-                Debug.Log("[IotCoreSettingsOrchestrator] AWS Settings UI hidden");
+                Debug.Log("[IotCoreSettingsOrchestrator] IoT Core Settings UI hidden");
             }
+        }
+
+        internal void HideUi()
+        {
+            Hide();
         }
 
         public void Cleanup()
         {
             try
             {
-                // Limpiar managers
+                if (_iotCoreManager != null)
+                {
+                    _iotCoreManager.UnsubscribeFromThingsListed(OnThingsListed);
+                    _iotCoreManager.UnsubscribeFromThingCreated(OnThingCreated);
+                    _iotCoreManager.UnsubscribeFromPolicyCreated(OnPolicyCreated);
+                    _iotCoreManager.UnsubscribeFromCertificateCreated(OnCertificateCreated);
+                    _iotCoreManager.UnsubscribeFromCertificateAttached(OnCertificateAttached);
+                    _iotCoreManager.UnsubscribeFromPolicyAttached(OnPolicyAttached);
+                }
+
                 _eventManager?.Cleanup();
                 _uiManager = null;
                 _eventManager = null;
 
-                // Limpiar referencias
                 _mainUIController = null;
                 _uiConfig = null;
                 _awsConfig = null;
                 _settingsState = null;
                 _uiDocument = null;
                 _subpanelsAndSmokeMaskContainer = null;
+
+                _thingNameField = null;
+                _thingTypeField = null;
+                _createThingButton = null;
+                _policyNameField = null;
+                _policyDocumentField = null;
+                _createPolicyButton = null;
+                _createCertificateButton = null;
+                _certificateIdField = null;
+                _thingNameForCertificateField = null;
+                _attachCertificateButton = null;
+                _policyNameForCertificateField = null;
+                _attachPolicyButton = null;
+                _thingsList = null;
+                _refreshThingsButton = null;
+                _testConnectivityButton = null;
+                _enableDisableServiceButton = null;
+                _testResultLabel = null;
+                _iotCoreManager = null;
 
                 _isInitialized = false;
                 Debug.Log("[IotCoreSettingsOrchestrator] Cleanup completed");
@@ -237,8 +424,6 @@ namespace _Scripts.Controllers.IotCoreSettingsController
                 Debug.LogError($"[IotCoreSettingsOrchestrator] Cleanup error: {ex.Message}");
             }
         }
-
-        #endregion
 
         #region IIotCoreSettingsOps Implementation
 
@@ -266,26 +451,34 @@ namespace _Scripts.Controllers.IotCoreSettingsController
 
         public void OpenAwsConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
             Debug.Log("Opening AWS Configuration panel");
         }
 
-        public void SaveConfiguration()
+        public async void SaveConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Saving AWS Configuration");
+            await SaveConfigurationAsync();
         }
 
         public void ResetConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Resetting AWS Configuration");
+            if (_iotCoreManager != null)
+            {
+                _thingNameField.value = "Unity-Test-Device";
+                _thingTypeField.value = "Enter thing type (optional)";
+                _policyNameField.value = "Unity-IoT-Policy";
+                _policyDocumentField.value = "Enter JSON policy document";
+                _certificateIdField.value = "Enter certificate ID";
+                _thingNameForCertificateField.value = "Enter thing name";
+                _policyNameForCertificateField.value = "Enter policy name";
+                _settingsState.HasUnsavedChanges = false;
+                _uiManager.UpdateCredentialsStatus(true, "Configuration reset");
+                Debug.Log("IoT Core Configuration reset to default");
+            }
         }
 
-        public void TestConnection()
+        public async Task TestConnection()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Testing AWS Connection");
+            await TestConnectionAsync();
         }
 
         public void ShowNavigationMenu()
@@ -305,106 +498,228 @@ namespace _Scripts.Controllers.IotCoreSettingsController
             HandleDashboardClick();
         }
 
+        public async Task CreateThing()
+        {
+            if (_iotCoreManager != null)
+            {
+                var thingName = _thingNameField.value;
+                var thingType = _thingTypeField.value;
+                if (string.IsNullOrWhiteSpace(thingName) || thingName == "Unity-Test-Device")
+                {
+                    Debug.LogError("Thing name cannot be empty");
+                    return;
+                }
+                if (thingType == "Enter thing type (optional)")
+                {
+                    thingType = null;
+                }
+                var success = await _iotCoreManager.CreateThingAsync(thingName, thingType);
+                if (success)
+                {
+                    Debug.Log($"Thing {thingName} created successfully");
+                    UpdateThingsList();
+                }
+                else
+                {
+                    Debug.LogError($"Failed to create Thing {thingName}");
+                }
+            }
+        }
+
+        public async Task CreatePolicy()
+        {
+            if (_iotCoreManager != null)
+            {
+                var policyName = _policyNameField.value;
+                var policyDocument = _policyDocumentField.value;
+                if (string.IsNullOrWhiteSpace(policyName) || policyName == "Unity-IoT-Policy")
+                {
+                    Debug.LogError("Policy name cannot be empty");
+                    return;
+                }
+                if (policyDocument == "Enter JSON policy document")
+                {
+                    policyDocument = null;
+                }
+                var success = await _iotCoreManager.CreatePolicyAsync(policyName, policyDocument);
+                if (success)
+                {
+                    Debug.Log($"Policy {policyName} created successfully");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to create policy {policyName}");
+                }
+            }
+        }
+
+        public async Task CreateCertificate()
+        {
+            if (_iotCoreManager != null)
+            {
+                var certificateData = await _iotCoreManager.CreateThingCertificateAsync();
+                if (certificateData != null)
+                {
+                    Debug.Log($"Certificate {certificateData.CertificateId.Substring(0, Math.Min(8, certificateData.CertificateId.Length))}... created successfully");
+                    _certificateIdField.value = certificateData.CertificateId;
+                }
+                else
+                {
+                    Debug.LogError("Failed to create certificate");
+                }
+            }
+        }
+
+        public async Task AttachCertificate()
+        {
+            if (_iotCoreManager != null)
+            {
+                var certificateId = _certificateIdField.value;
+                var thingName = _thingNameForCertificateField.value;
+                if (string.IsNullOrWhiteSpace(certificateId) || certificateId == "Enter certificate ID" ||
+                    string.IsNullOrWhiteSpace(thingName) || thingName == "Enter thing name")
+                {
+                    Debug.LogError("Certificate ID and Thing name cannot be empty");
+                    return;
+                }
+                var success = await _iotCoreManager.AttachCertificateToThingAsync(certificateId, thingName);
+                if (success)
+                {
+                    Debug.Log($"Certificate {certificateId.Substring(0, Math.Min(8, certificateId.Length))}... attached to {thingName}");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to attach certificate {certificateId}");
+                }
+            }
+        }
+
+        public async Task AttachPolicy()
+        {
+            if (_iotCoreManager != null)
+            {
+                var policyName = _policyNameForCertificateField.value;
+                var certificateId = _certificateIdField.value;
+                if (string.IsNullOrWhiteSpace(policyName) || policyName == "Enter policy name" ||
+                    string.IsNullOrWhiteSpace(certificateId) || certificateId == "Enter certificate ID")
+                {
+                    Debug.LogError("Policy name and certificate ID cannot be empty");
+                    return;
+                }
+                var success = await _iotCoreManager.AttachPolicyAsync(policyName, certificateId);
+                if (success)
+                {
+                    Debug.Log($"Policy {policyName} attached to certificate {certificateId.Substring(0, Math.Min(8, certificateId.Length))}...");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to attach policy {policyName}");
+                }
+            }
+        }
+
+        public async Task RefreshThings()
+        {
+            UpdateThingsList();
+        }
+
+        public async Task TestConnectionAsync()
+        {
+            if (_iotCoreManager != null)
+            {
+                _settingsState.IsTestingConnection = true;
+                _testResultLabel.text = "Result: Testing...";
+                var success = await _iotCoreManager.TestIoTConnectivityAsync();
+                _testResultLabel.text = $"Result: {(success ? "Success" : "Failed")}";
+                _testResultLabel.RemoveFromClassList("status-success");
+                _testResultLabel.RemoveFromClassList("status-error");
+                _testResultLabel.AddToClassList(success ? "status-success" : "status-error");
+                _settingsState.IsTestingConnection = false;
+
+                var testResult = new IotCoreSettingsInfo.ConnectionTestResult
+                {
+                    ServiceName = "IoTCore",
+                    IsSuccessful = success,
+                    Message = success ? "Connection test successful" : "Connection test failed",
+                    TestTime = DateTime.Now,
+                    ResponseTime = TimeSpan.FromMilliseconds(150)
+                };
+                _awsConfig.TestResults["IoTCore"] = testResult;
+                _uiManager.UpdateConnectionTestResults(_awsConfig.TestResults);
+            }
+        }
+
+        public async Task ToggleService()
+        {
+            Debug.Log("Toggling IoT Core service state");
+            _awsConfig.ServiceStates["IoTCore"] = !_awsConfig.ServiceStates.GetValueOrDefault("IoTCore", false);
+            _uiManager.UpdateServiceStates(_awsConfig.ServiceStates);
+            if (_awsConfig.ServiceStates["IoTCore"] && _iotCoreManager != null)
+            {
+                await _iotCoreManager.InitializeAsync(ServiceController.Instance.CognitoManager.CurrentAWSCredentials, ServiceController.Instance.CognitoManager.GetRegionEndpoint(), "156041417101");
+            }
+        }
+
         #endregion
 
-        #region Public Event Handlers (Called by EventManager)
+        #region Public Event Handlers
 
-        /// <summary>
-        /// Maneja clic en botón Dashboard
-        /// </summary>
-        public void HandleDashboardClick()
+        public async Task HandleDashboardClick()
         {
             Debug.Log("Dashboard button clicked - returning to Dashboard");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar Dashboard
-            _mainUIController?.ShowUI("Dashboard");
+            await Task.Run(() => _mainUIController?.ShowUI("Dashboard"));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Reports
-        /// </summary>
-        public void HandleReportsClick()
+        public async Task HandleReportsClick()
         {
             Debug.Log("Reports button clicked - opening Reports Center");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar reports controller
-            _mainUIController?.ShowUI("Reports");
+            await Task.Run(() => _mainUIController?.ShowUI("Reports"));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Operations
-        /// </summary>
-        public void HandleOperationsClick()
+        public async Task HandleOperationsClick()
         {
             var parameters = new Dictionary<string, object> {
                 ["context"] = "Operations", 
                 ["sourceController"] = "IotCoreSettings"
             };
-            
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-            
-            _mainUIController?.ShowUI("DeviceSelection", parameters);
+            await Task.Run(() => _mainUIController?.ShowUI("DeviceSelection", parameters));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Training
-        /// </summary>
-        public void HandleTrainingClick()
+        public async Task HandleTrainingClick()
         {
             var parameters = new Dictionary<string, object> {
                 ["context"] = "Training",
                 ["sourceController"] = "IotCoreSettings"
             };
-            
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-            
-            _mainUIController?.ShowUI("DeviceSelection", parameters);
+            await Task.Run(() => _mainUIController?.ShowUI("DeviceSelection", parameters));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Support
-        /// </summary>
-        public void HandleSupportClick()
+        public async Task HandleSupportClick()
         {
             Debug.Log("Support button clicked - opening support center");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar support controller
-            _mainUIController?.ShowUI("Support");
+            await Task.Run(() => _mainUIController?.ShowUI("Support"));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Logout
-        /// </summary>
-        public void HandleLogoutClick()
+        public async Task HandleLogoutClick()
         {
-            Debug.Log("AWS Settings HandleLogoutClick() called");
-    
-            // Cerrar menú y ocultar AWS Settings
+            Debug.Log("IoT Core Settings HandleLogoutClick() called");
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Llamar a UIController para manejar logout
             var uiController = UIController.Instance;
             if (uiController != null)
             {
                 Debug.Log("Calling UIController.RequestLogout()");
-                uiController.RequestLogout();
+                await Task.Run(() => uiController.RequestLogout());
             }
             else
             {
@@ -417,190 +732,39 @@ namespace _Scripts.Controllers.IotCoreSettingsController
 
         #region Private Implementation Methods
 
-        /// <summary>
-        /// Obtiene componentes UI de AWS Settings
-        /// </summary>
-        private void GetUiComponents(VisualElement root)
-        {
-            Debug.Log("Getting AWS Settings UI components...");
-    
-            // Contenedores principales
-            Debug.Log("Getting Body...");
-            _uiConfig.Body = root.Q<VisualElement>("Body");
-            Debug.Log($"Body found: {_uiConfig.Body != null}");
-    
-            Debug.Log("Setting SubpanelsContainer...");
-            _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
-            Debug.Log($"SubpanelsContainer set: {_uiConfig.SubpanelsContainer != null}");
-    
-            Debug.Log("Getting Scrim...");
-            _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
-            Debug.Log($"Scrim found: {_uiConfig.Scrim != null}");
-    
-            Debug.Log("Getting MainContentArea...");
-            _uiConfig.MainContentArea = root.Q<VisualElement>("Main");
-            Debug.Log($"MainContentArea found: {_uiConfig.MainContentArea != null}");
-    
-            Debug.Log("Getting HeaderArea...");
-            _uiConfig.HeaderArea = root.Q<VisualElement>("Header");
-            Debug.Log($"HeaderArea found: {_uiConfig.HeaderArea != null}");
-    
-            Debug.Log("Getting FooterArea...");
-            _uiConfig.FooterArea = root.Q<VisualElement>("Footer");
-            Debug.Log($"FooterArea found: {_uiConfig.FooterArea != null}");
-
-            // Configurar paneles
-            Debug.Log("Initializing panel configuration...");
-            InitializePanelConfiguration(root);
-    
-            Debug.Log("AWS Settings UI components obtained successfully");
-        }
-
-        /// <summary>
-        /// Inicializa la configuración de paneles
-        /// </summary>
-        private void InitializePanelConfiguration(VisualElement root)
-        {
-            var panelsContainer = _subpanelsAndSmokeMaskContainer;
-            
-            // Panel de menú de navegación (SÍ existe en UXML)
-            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.NavigationMenu] = new IotCoreSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
-                ShowClass = "NavigationMenuPanelInMainScreen",
-                HideClass = "NavigationMenuPanelOutMainScreen",
-                RequiresScrim = true,
-                AnimationDuration = 0.3f
-            };
-
-            // Paneles futuros específicos de AWS (NO existen en UXML actual)
-            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.AwsCredentials] = new IotCoreSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "AwsCredentialsPanelVisible",
-                HideClass = "AwsCredentialsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.ServiceConfig] = new IotCoreSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "ServiceConfigPanelVisible",
-                HideClass = "ServiceConfigPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.TestResults] = new IotCoreSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "TestResultsPanelVisible",
-                HideClass = "TestResultsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.SecuritySettings] = new IotCoreSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "SecuritySettingsPanelVisible",
-                HideClass = "SecuritySettingsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.RegionSettings] = new IotCoreSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "RegionSettingsPanelVisible",
-                HideClass = "RegionSettingsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[IIotCoreSettingsOps.PanelType.Help] = new IotCoreSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "HelpPanelVisible",
-                HideClass = "HelpPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            // Registrar callbacks SOLO para paneles que existen
-            foreach (var kvp in _uiConfig.Panels)
-            {
-                var panelData = kvp.Value;
-                if (panelData.Panel != null)
-                {
-                    Debug.Log($"Registering callback for panel: {kvp.Key}");
-                    panelData.Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
-                }
-                else
-                {
-                    Debug.Log($"Panel {kvp.Key} not found in UI - skipping callback registration");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Busca dependencias en la escena
-        /// </summary>
         private void FindDependencies()
         {
-            // Buscar UIController principal
             _mainUIController = UIController.Instance;
             if (_mainUIController == null)
             {
                 Debug.LogWarning("UIController not found - will try to find it later");
             }
-
-            Debug.Log("AWS Settings dependencies search completed");
+            Debug.Log("IoT Core Settings dependencies search completed");
         }
 
-        /// <summary>
-        /// Inicializa el estado de AWS Settings
-        /// </summary>
         private void InitializeIotCoreSettingsState()
         {
             _settingsState.IsInitialized = true;
             _settingsState.CurrentSection = "IotCoreSettings";
             _settingsState.CurrentActivePanel = IIotCoreSettingsOps.PanelType.None;
-            
-            // Inicializar configuración AWS básica
             _awsConfig.Region = "us-east-1";
             _awsConfig.ServiceStates = new Dictionary<string, bool>();
             _awsConfig.ServiceConfigs = new Dictionary<string, Dictionary<string, object>>();
             _awsConfig.TestResults = new Dictionary<string, IotCoreSettingsInfo.ConnectionTestResult>();
-            
-            Debug.Log("AWS Settings state initialized");
+            Debug.Log("IoT Core Settings state initialized");
         }
 
-        /// <summary>
-        /// Carga la configuración AWS actual
-        /// </summary>
         private void LoadAwsConfiguration()
         {
-            // TODO: Cargar configuración desde ServiceController o almacenamiento
-            Debug.Log("Loading AWS configuration...");
-            
-            // Por ahora, obtener configuración básica del ServiceController si está disponible
+            Debug.Log("Loading IoT Core configuration...");
             var serviceController = ServiceController.Instance;
             if (serviceController != null)
             {
                 _settingsState.HasValidCredentials = serviceController.IsCognitoAuthenticated;
-                Debug.Log($"AWS configuration loaded - Valid credentials: {_settingsState.HasValidCredentials}");
+                Debug.Log($"IoT Core configuration loaded - Valid credentials: {_settingsState.HasValidCredentials}");
             }
         }
 
-        #endregion
-
-        #region Event Handlers
-
-        /// <summary>
-        /// Maneja el final de transiciones de paneles
-        /// </summary>
         private void OnTransitionEndEvent(TransitionEndEvent evt)
         {
             if (!_uiManager.IsAnyPanelVisible())
@@ -610,139 +774,76 @@ namespace _Scripts.Controllers.IotCoreSettingsController
             }
         }
 
-        /// <summary>
-        /// Maneja solicitudes de regreso al Dashboard
-        /// </summary>
         private void OnReturnToDashboardHandler()
         {
             OnReturnToDashboardRequested?.Invoke();
         }
 
-        /// <summary>
-        /// Maneja completado de transiciones de paneles
-        /// </summary>
         private void OnPanelTransitionCompleteHandler(IIotCoreSettingsOps.PanelType panelType)
         {
             OnPanelTransitionComplete?.Invoke(panelType);
             Debug.Log($"Panel transition complete: {panelType}");
         }
 
-        #endregion
-
-        #region Helper Methods
-
-        /// <summary>
-        /// Muestra la UI principal (equivalente al método original)
-        /// </summary>
-        internal void ShowUi()
+        private void OnThingsListed(bool success, string message, List<IoTInfo.ThingInfo> things)
         {
-            Show();
+            Debug.Log($"Things listed: {message}");
+            UpdateThingsList();
         }
 
-        /// <summary>
-        /// Oculta la UI principal (equivalente al método original)
-        /// </summary>
-        internal void HideUi()
+        private void OnThingCreated(bool success, string message, string thingName)
         {
-            Hide();
+            Debug.Log($"Thing creation: {message}");
         }
 
-        /// <summary>
-        /// Actualiza el estado de credenciales AWS
-        /// </summary>
-        public void UpdateCredentialsStatus(bool isValid, string message = null)
+        private void OnPolicyCreated(bool success, string message, string policyName)
         {
-            _settingsState.HasValidCredentials = isValid;
-            
-            // Actualizar UI a través del UIManager
-            _uiManager?.UpdateCredentialsStatus(isValid, message);
-            
-            // Notificar cambio de estado usando el método público
-            _settingsState.TriggerCredentialsValidityChanged(isValid);
-            
-            Debug.Log($"AWS credentials status updated: {isValid} - {message}");
+            Debug.Log($"Policy creation: {message}");
         }
 
-        /// <summary>
-        /// Actualiza resultados de pruebas de conexión
-        /// </summary>
-        public void UpdateConnectionTestResults(Dictionary<string, IotCoreSettingsInfo.ConnectionTestResult> results)
+        private void OnCertificateCreated(bool success, string message, IoTInfo.CertificateData certificateData)
         {
-            _awsConfig.TestResults = results;
-            
-            // Actualizar UI a través del UIManager
-            _uiManager?.UpdateConnectionTestResults(results);
-            
-            // Notificar resultados individualmente usando el método público
-            foreach (var kvp in results)
+            Debug.Log($"Certificate creation: {message}");
+        }
+
+        private void OnCertificateAttached(bool success, string message, string thingName, string certificateId)
+        {
+            Debug.Log($"Certificate attachment: {message}");
+        }
+
+        private void OnPolicyAttached(bool success, string message, string policyName, string certificateId)
+        {
+            Debug.Log($"Policy attachment: {message}");
+        }
+
+        private async Task SaveConfigurationAsync()
+        {
+            if (_iotCoreManager != null)
             {
-                _settingsState.TriggerConnectionTestCompleted(kvp.Key, kvp.Value);
+                var config = new Dictionary<string, object>
+                {
+                    ["ThingName"] = _thingNameField.value,
+                    ["ThingType"] = _thingTypeField.value,
+                    ["PolicyName"] = _policyNameField.value,
+                    ["PolicyDocument"] = _policyDocumentField.value,
+                    ["CertificateId"] = _certificateIdField.value,
+                    ["ThingNameForCertificate"] = _thingNameForCertificateField.value,
+                    ["PolicyNameForCertificate"] = _policyNameForCertificateField.value
+                };
+                _awsConfig.ServiceConfigs["IoTCore"] = config;
+                _settingsState.HasUnsavedChanges = false;
+                _uiManager.UpdateCredentialsStatus(true, "Configuration saved");
+                Debug.Log("IoT Core configuration saved");
             }
-            
-            Debug.Log($"Connection test results updated for {results.Count} services");
-        }
-
-        /// <summary>
-        /// Actualiza configuración de servicios AWS
-        /// </summary>
-        public void UpdateServiceConfiguration(string serviceName, Dictionary<string, object> config)
-        {
-            _awsConfig.ServiceConfigs[serviceName] = config;
-            _awsConfig.ServiceStates[serviceName] = true;
-            
-            // Marcar como cambios no guardados
-            _settingsState.HasUnsavedChanges = true;
-            
-            Debug.Log($"Service configuration updated for {serviceName}");
-        }
-
-        /// <summary>
-        /// Prueba la conexión a un servicio AWS específico
-        /// </summary>
-        public void TestServiceConnection(string serviceName)
-        {
-            // TODO: Implementar prueba real de conexión
-            _settingsState.IsTestingConnection = true;
-            
-            Debug.Log($"Testing connection to AWS service: {serviceName}");
-            
-            // Simular resultado de prueba (reemplazar con lógica real)
-            var testResult = new IotCoreSettingsInfo.ConnectionTestResult
-            {
-                ServiceName = serviceName,
-                IsSuccessful = true, // Esto debería venir de una prueba real
-                Message = "Connection test completed successfully",
-                TestTime = DateTime.Now,
-                ResponseTime = TimeSpan.FromMilliseconds(150)
-            };
-            
-            _awsConfig.TestResults[serviceName] = testResult;
-            _settingsState.TriggerConnectionTestCompleted(serviceName, testResult);
-            _settingsState.IsTestingConnection = false;
         }
 
         #endregion
 
         #region Public Properties
 
-        /// <summary>
-        /// UI Manager asociado
-        /// </summary>
         public IotCoreSettingsUIManager UIManager => _uiManager;
-
-        /// <summary>
-        /// Event Manager asociado
-        /// </summary>
         public IotCoreSettingsEventManager EventManager => _eventManager;
-
-        /// <summary>
-        /// Estado actual de AWS Settings
-        /// </summary>
         public IotCoreSettingsInfo.IotCoreSettingsState SettingsState => _settingsState;
-
-        /// <summary>
-        /// Configuración AWS actual
-        /// </summary>
         public IotCoreSettingsInfo.AwsConfiguration AwsConfig => _awsConfig;
 
         #endregion

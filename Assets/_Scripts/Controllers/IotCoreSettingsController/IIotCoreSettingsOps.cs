@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace _Scripts.Controllers.IotCoreSettingsController
 {
@@ -17,7 +18,7 @@ namespace _Scripts.Controllers.IotCoreSettingsController
         void OpenAwsConfiguration();
         void SaveConfiguration();
         void ResetConfiguration();
-        void TestConnection();
+        Task TestConnection();
         void ShowNavigationMenu();
         void HideNavigationMenu();
         void ReturnToDashboard();
