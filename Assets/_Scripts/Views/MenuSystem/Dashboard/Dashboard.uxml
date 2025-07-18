@@ -74,13 +74,20 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="WidgetPanel3" class="widget-panel recent-activity-panel">
                         <ui:VisualElement class="widget-header">
-                            <ui:Label text="Recent activity" class="recent-activity-title" />
+                            <ui:Label text="AWS services status" class="recent-activity-title" />
                         </ui:VisualElement>
                         <ui:VisualElement class="recent-activity-content">
-                            <ui:Label text="ARSCARA simulation started ar 10:05 am" class="recent-activity-item" />
-                            <ui:Label text="ARSCARA monitoring stopped ar 9:45 am" class="recent-activity-item" />
-                            <ui:Label text="ARSCARA report generated ar 9:30 am" class="recent-activity-item" />
-                            <ui:Label text="[View full history]" class="recent-activity-link" />
+                            <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="main-scroll-view" style="width: 80%;">
+                                <ui:VisualElement class="device-row" />
+                                <ui:Label text="Cognito status: Inactive" name="CognitoStatusLabel" class="recent-activity-item" />
+                                <ui:Label text="Cloudwatch status: Inactive" name="CloudwatchStatusLabel" class="recent-activity-item" />
+                                <ui:Label text="SES status: Inactive" name="SESStatusLabel" class="recent-activity-item" />
+                                <ui:Label text="IoT core status: Inactive" name="IotCoreStatusLabel" class="recent-activity-link" />
+                                <ui:Label text="S3 status: Inactive" name="S3StatusLabel" class="recent-activity-link" />
+                                <ui:Label text="Lambda status: Inactive" name="LambdaStatusLabel" class="recent-activity-link" />
+                                <ui:Label text="EC2 status: Not available" name="EC2StatusLabel" class="recent-activity-link" />
+                                <ui:Label text="Aurora status: Not available" name="AuroraStatusLabel" class="recent-activity-link" />
+                            </ui:ScrollView>
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>

@@ -61,14 +61,22 @@ namespace _Scripts.Controllers.DashboardController
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private UIDocument _uiDocument;
         private bool _isInitialized = false;
-
-        // Referencias a Labels de IoT (del código original)
+        
         private Label _localIoTStatusLabel;
         private Label _localIoTModeLabel;
         private Label _vMIoTStatusLabel;
         private Label _vMIoTModeLabel;
         private Label _cloudIoTStatusLabel;
         private Label _cloudIoTModeLabel;
+        
+        private Label _cognitoStatusLabel;
+        private Label _cloudwatchStatusLabel;
+        private Label _sesStatusLabel;
+        private Label _iotCoreStatusLabel;
+        private Label _s3StatusLabel;
+        private Label _lambdaStatusLabel;
+        private Label _ec2StatusLabel;
+        private Label _auroraStatusLabel;
 
         #endregion
 
@@ -99,101 +107,87 @@ namespace _Scripts.Controllers.DashboardController
         #region IUIController Lifecycle Methods
 
         public bool Initialize()
-{
-    try
-    {
-        if (_isInitialized)
         {
-            Debug.Log("DashboardOrchestrator already initialized");
-            return true;
+            try
+            {
+                if (_isInitialized)
+                {
+                    Debug.Log("DashboardOrchestrator already initialized");
+                    return true;
+                }
+
+                Debug.Log("Initializing DashboardOrchestrator...");
+
+                // Obtener UIDocument y root
+                _uiDocument = GetComponent<UIDocument>();
+                if (_uiDocument == null)
+                {
+                    Debug.LogError("UIDocument component not found!");
+                    return false;
+                }
+
+                var root = _uiDocument.rootVisualElement;
+                if (root == null)
+                {
+                    Debug.LogError("Root visual element is null!");
+                    return false;
+                }
+
+                _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
+                if (_subpanelsAndSmokeMaskContainer == null)
+                {
+                    Debug.LogError("SubpanelsAndSmokeMaskContainer not found in UI!");
+                    return false;
+                }
+
+                // Obtener referencias UI, incluyendo las nuevas etiquetas
+                GetUiComponents(root);
+                
+                // Inicializar managers
+                _uiManager = new DashboardUIManager(_uiConfig);
+                _eventManager = new DashboardEventManager(_uiManager, OnLogoutRequestedHandler, OnPanelTransitionCompleteHandler, this);
+                _eventManager.RegisterEvents(_uiDocument);
+
+                // Inicializar paneles
+                _uiManager.InitializePanelSystem();
+
+                // Buscar dependencias
+                FindDependencies();
+
+                // Inicializar estado
+                InitializeDashboardState();
+
+                // Suscribirse a eventos de ServiceController
+                SubscribeToServiceControllerEvents();
+
+                _isInitialized = true;
+                Debug.Log("✅ DashboardOrchestrator initialized successfully");
+                OnControllerInitialized?.Invoke(this);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"DashboardOrchestrator initialization error: {ex.Message}");
+                OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
+                return false;
+            }
         }
-
-        Debug.Log("Initializing DashboardOrchestrator...");
-
-        // Obtener componentes UI - CON DEBUG
-        Debug.Log("Step 1: Getting UIDocument component...");
-        _uiDocument = GetComponent<UIDocument>();
-        if (_uiDocument == null)
+        
+        
+        
+        
+        private void SubscribeToServiceControllerEvents()
         {
-            Debug.LogError("UIDocument component not found!");
-            return false;
+            var serviceController = ServiceController.Instance;
+            if (serviceController != null)
+            {
+                serviceController.OnCognitoServiceReady += OnCognitoServiceReady;
+                serviceController.OnServiceError += OnServiceControllerError;
+                serviceController.OnAWSServicesInitialized += OnAWSServicesInitialized;
+                serviceController.OnServiceActivated += OnServiceActivated;
+                Debug.Log("Subscribed to ServiceController events");
+            }
         }
-        Debug.Log("✅ UIDocument found successfully");
-
-        Debug.Log("Step 2: Getting root visual element...");
-        var root = _uiDocument.rootVisualElement;
-        if (root == null)
-        {
-            Debug.LogError("Root visual element is null!");
-            return false;
-        }
-        Debug.Log("✅ Root visual element found successfully");
-
-        Debug.Log("Step 3: Getting SubpanelsAndSmokeMaskContainer...");
-        _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
-        if (_subpanelsAndSmokeMaskContainer == null)
-        {
-            Debug.LogError("SubpanelsAndSmokeMaskContainer not found in UI!");
-            return false;
-        }
-        Debug.Log("✅ SubpanelsAndSmokeMaskContainer found successfully");
-
-        // Obtener referencias UI - CON DEBUG
-        Debug.Log("Step 4: Getting UI components...");
-        GetUiComponents(root);
-        Debug.Log("✅ UI components obtained");
-        
-        // Inicializar managers - CON DEBUG
-        Debug.Log("Step 5: Creating DashboardUIManager...");
-        if (_uiConfig == null)
-        {
-            Debug.LogError("_uiConfig is null!");
-            return false;
-        }
-        _uiManager = new DashboardUIManager(_uiConfig);
-        Debug.Log("✅ DashboardUIManager created successfully");
-
-        Debug.Log("Step 6: Creating DashboardEventManager...");
-        _eventManager = new DashboardEventManager(_uiManager, OnLogoutRequestedHandler, OnPanelTransitionCompleteHandler, this);
-        Debug.Log("✅ DashboardEventManager created successfully");
-
-        Debug.Log("Step 7: Registering events...");
-        _eventManager.RegisterEvents(_uiDocument);
-        Debug.Log("✅ Events registered successfully");
-
-        Debug.Log("Step 8: Initializing panel system...");
-        _uiManager.InitializePanelSystem();
-        Debug.Log("✅ Panel system initialized successfully");
-        
-        // Buscar dependencias - CON DEBUG
-        Debug.Log("Step 9: Finding dependencies...");
-        FindDependencies();
-        Debug.Log("✅ Dependencies found");
-        
-        // Configurar estado inicial - CON DEBUG
-        Debug.Log("Step 10: Initializing dashboard state...");
-        InitializeDashboardState();
-        Debug.Log("✅ Dashboard state initialized");
-
-        _isInitialized = true;
-        Debug.Log("✅ DashboardOrchestrator initialized successfully");
-        
-        OnControllerInitialized?.Invoke(this);
-        return true;
-    }
-    catch (Exception ex)
-    {
-        Debug.LogError($"DashboardOrchestrator initialization error: {ex.Message}");
-        Debug.LogError($"Stack trace: {ex.StackTrace}");
-        OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
-        return false;
-    }
-}
-        
-        
-        
-        
-        
         
 
         public void Show()
@@ -212,10 +206,8 @@ namespace _Scripts.Controllers.DashboardController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.Flex;
-                
-                // Actualizar datos de usuario
                 UpdateUserData();
-                
+                UpdateServiceStatuses(); 
                 OnControllerShown?.Invoke(this);
                 Debug.Log("[DashboardOrchestrator] Dashboard UI shown");
             }
@@ -473,11 +465,80 @@ namespace _Scripts.Controllers.DashboardController
     
             Debug.Log($"IoT Labels found - Local: {_localIoTStatusLabel != null}, VM: {_vMIoTStatusLabel != null}, Cloud: {_cloudIoTStatusLabel != null}");
 
+            
             // Configurar paneles
             Debug.Log("Initializing panel configuration...");
+            _cognitoStatusLabel = root.Q<Label>("CognitoStatusLabel");
+            _cloudwatchStatusLabel = root.Q<Label>("CloudwatchStatusLabel");
+            _sesStatusLabel = root.Q<Label>("SESStatusLabel");
+            _iotCoreStatusLabel = root.Q<Label>("IotCoreStatusLabel");
+            _s3StatusLabel = root.Q<Label>("S3StatusLabel");
+            _lambdaStatusLabel = root.Q<Label>("LambdaStatusLabel");
+            _ec2StatusLabel = root.Q<Label>("EC2StatusLabel");
+            _auroraStatusLabel = root.Q<Label>("AuroraStatusLabel");
             InitializePanelConfiguration(root);
     
             Debug.Log("✅ Dashboard UI components obtained successfully");
+        }
+        
+        private void OnCognitoServiceReady()
+        {
+            Debug.Log("Cognito service ready - updating service statuses");
+            UpdateServiceStatuses();
+        }
+
+        private void OnAWSServicesInitialized()
+        {
+            Debug.Log("AWS services initialized - updating service statuses");
+            UpdateServiceStatuses();
+        }
+
+        private void OnServiceActivated(string serviceName)
+        {
+            Debug.Log($"Service {serviceName} activated - updating status");
+            UpdateServiceStatuses();
+        }
+
+        private void OnServiceControllerError(string serviceName, string error)
+        {
+            Debug.LogError($"ServiceController error in {serviceName}: {error}");
+            UpdateServiceStatuses(); // Actualizar para reflejar posibles errores
+        }
+        
+        private void UpdateServiceStatuses()
+        {
+            var serviceController = ServiceController.Instance;
+            if (serviceController == null) return;
+
+            // Actualizar cada etiqueta según el estado del servicio
+            UpdateServiceStatusLabel(_cognitoStatusLabel, "Cognito", serviceController.IsServiceAvailable("Cognito"));
+            UpdateServiceStatusLabel(_cloudwatchStatusLabel, "Cloudwatch", serviceController.IsServiceAvailable("CloudWatch"));
+            UpdateServiceStatusLabel(_sesStatusLabel, "SES", serviceController.IsServiceAvailable("SES"));
+            UpdateServiceStatusLabel(_iotCoreStatusLabel, "IoT Core", serviceController.IsServiceAvailable("IoT"));
+            UpdateServiceStatusLabel(_s3StatusLabel, "S3", serviceController.IsServiceAvailable("S3"));
+            UpdateServiceStatusLabel(_lambdaStatusLabel, "Lambda", serviceController.IsServiceAvailable("Lambda"));
+            UpdateServiceStatusLabel(_ec2StatusLabel, "EC2", false); // EC2 no está implementado
+            UpdateServiceStatusLabel(_auroraStatusLabel, "Aurora", false); // Aurora no está implementado
+        }
+
+        private void UpdateServiceStatusLabel(Label label, string serviceName, bool isAvailable)
+        {
+            if (label == null) return;
+
+            label.text = $"{serviceName} status: {(isAvailable ? "Active" : "Inactive")}";
+
+            // Actualizar clases USS para estilos
+            label.RemoveFromClassList("status-active");
+            label.RemoveFromClassList("status-inactive");
+
+            if (isAvailable)
+            {
+                label.AddToClassList("status-active");
+            }
+            else
+            {
+                label.AddToClassList("status-inactive");
+            }
         }
 
         /// <summary>

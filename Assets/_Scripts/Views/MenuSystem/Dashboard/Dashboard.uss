@@ -722,3 +722,11 @@
     border-bottom-width: 0;
     border-left-width: 0;
 }
+
+.status-active {
+    color: rgb(0, 255, 0); /* Verde para servicios activos */
+}
+
+.status-inactive {
+    color: rgb(255, 0, 0); /* Rojo para servicios inactivos */
+}
