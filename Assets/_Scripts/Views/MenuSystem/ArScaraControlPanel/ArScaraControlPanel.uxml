@@ -16,7 +16,8 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Main" class="main">
-            <ui:VisualElement name="LeftPanel" class="main-left-section">
+            <ui:VisualElement name="LeftPanel" class="main-left-section" style="width: 30%;">
+                <ui:VisualElement name="EmptySection1" class="empty-section-33" />
                 <ui:VisualElement name="MotorControlsSection" class="motor-controls-container">
                     <ui:VisualElement name="MotorControlsInner" class="motor-controls-inner">
                         <ui:VisualElement name="MotorRow1" class="motor-row-1">
@@ -29,37 +30,35 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="EmptySection1" class="empty-section-33" />
                 <ui:VisualElement name="EmptySection2" class="empty-section-33" />
             </ui:VisualElement>
-            <ui:VisualElement name="CenterPanel" class="main-center-section" />
-            <ui:VisualElement name="RightPanel" class="main-right-section">
-                <ui:VisualElement name="StatusPanel" class="status-panel-container">
+            <ui:VisualElement name="CenterPanel" class="main-center-section" style="width: 50%;" />
+            <ui:VisualElement name="RightPanel" class="main-right-section" style="width: 20%;">
+                <ui:VisualElement name="StatusPanel" class="status-panel-container" style="height: 30%;">
                     <ui:Label name="EmergencyStopLabel" text="Emergency stop: Off" class="status-emergency" />
                     <ui:Label name="SafeguardLabel" text="Safeguard: Off" class="status-safeguard" />
                     <ui:Label name="MotorsLabel" text="Motors: Off" class="status-motors" />
                     <ui:Label name="PowerLabel" text="Power: Low" class="status-power" />
                 </ui:VisualElement>
-                <ui:VisualElement name="EmptyMiddle" class="empty-section-20" />
-                <ui:VisualElement name="JointControlsPanel" class="joint-controls-container">
-                    <ui:Toggle name="J1Toggle" label="J1" class="joint-j1" />
-                    <ui:Toggle name="J2Toggle" label="J2" class="joint-j2" />
-                    <ui:Toggle name="J3Toggle" label="J3" class="joint-j3" />
-                    <ui:Toggle name="J4Toggle" label="J4" class="joint-j4" />
+                <ui:VisualElement name="EmptyMiddle" class="empty-section-20" style="height: 20%;" />
+                <ui:VisualElement name="JointControlsPanel" class="joint-controls-container" style="height: 50%; width: 100%; justify-content: space-evenly;">
+                    <ui:Button name="J1EnableDisable" text="Enable (J1)" class="footer-reset-button" style="height: 20%; width: 80%;" />
+                    <ui:Button name="J2EnableDisable" text="Enable (J2)" class="footer-reset-button" style="height: 20%; width: 80%;" />
+                    <ui:Button name="J3EnableDisable" text="Enable (J3)" class="footer-reset-button" style="height: 20%; width: 80%;" />
+                    <ui:Button name="J4EnableDisable" text="Enable (J4)" class="footer-reset-button" style="height: 20%; width: 80%;" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="Footer" class="footer" style="flex-direction: row;">
-            <ui:VisualElement name="FooterLeftSection" class="footer-left-section">
-                <ui:Button name="ResetButton" text="Reset" class="footer-reset-button" />
+        <ui:VisualElement name="Footer" class="footer" style="flex-direction: row; height: 10%; width: 100%;">
+            <ui:VisualElement name="FooterLeftSection" class="footer-left-section" style="width: 33%;">
                 <ui:Button name="HomeButton" text="Home" class="footer-home-button" />
             </ui:VisualElement>
-            <ui:VisualElement name="FooterCenterSection" class="footer-center-section">
-                <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="Views" class="views-dropdown" />
+            <ui:VisualElement name="FooterCenterSection" class="footer-center-section" style="width: 33%; align-items: center; justify-content: center;">
+                <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="Views" class="views-dropdown" style="width: 50%;" />
             </ui:VisualElement>
-            <ui:VisualElement name="FooterRightSection" class="footer-right-section">
-                <ui:Button name="FreeAllButton" text="Free all" class="footer-free-button" />
-                <ui:Button name="LockAllButton" text="Lock all" class="footer-lock-button" />
+            <ui:VisualElement name="FooterRightSection" class="footer-right-section" style="flex-direction: row; width: 33%; justify-content: flex-end; align-items: center;">
+                <ui:Button name="FreeAllButton" text="Free all" class="footer-free-button" style="width: 40%;" />
+                <ui:Button name="LockAllButton" text="Lock all" class="footer-lock-button" style="width: 40%;" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="SubpanelsAndSmokeMaskContainer" class="overlay-container">

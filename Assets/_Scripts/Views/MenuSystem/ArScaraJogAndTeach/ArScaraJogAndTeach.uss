@@ -136,7 +136,7 @@
 }
 
 /* Dropdown Styles */
-.environment-dropdown, .arscara-dropdown {
+.environment-dropdown, .arscara-dropdown, .mode-dropdown, .speed-dropdown, .command-dropdown, .destination-dropdown, .views-dropdown {
     width: 80%;
     height: 50%;
     background-color: rgba(0, 0, 0, 0.8);
@@ -159,7 +159,7 @@
     transition-property: border-color, background-color;
 }
 
-.environment-dropdown:hover, .arscara-dropdown:hover {
+.environment-dropdown:hover, .arscara-dropdown:hover, .mode-dropdown:hover, .speed-dropdown:hover, .command-dropdown:hover, .destination-dropdown:hover, .views-dropdown:hover {
     border-left-color: rgb(0, 255, 150);
     border-right-color: rgb(0, 255, 150);
     border-top-color: rgb(0, 255, 150);
@@ -258,36 +258,6 @@
     justify-content: center;
 }
 
-.mode-dropdown, .speed-dropdown {
-    height: 40%;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-left-color: rgb(0, 255, 0);
-    border-right-color: rgb(0, 255, 0);
-    border-top-color: rgb(0, 255, 0);
-    border-bottom-color: rgb(0, 255, 0);
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    color: rgb(12, 53, 17);
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    font-size: 30px;
-    transition-duration: 0.3s;
-    transition-property: border-color, background-color;
-}
-
-.mode-dropdown:hover, .speed-dropdown:hover {
-    border-left-color: rgb(0, 255, 150);
-    border-right-color: rgb(0, 255, 150);
-    border-top-color: rgb(0, 255, 150);
-    border-bottom-color: rgb(0, 255, 150);
-    background-color: rgba(0, 255, 0, 0.05);
-}
-
 /* Movement Controls Grid */
 .movement-controls-grid {
     flex-grow: 1;
@@ -349,7 +319,7 @@
     border-left-color: rgb(0, 255, 150);
     border-right-color: rgb(0, 255, 150);
     border-top-color: rgb(0, 255, 150);
-    border-bottom-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 0, 0.05);
     scale: 1.05;
 }
 
@@ -550,37 +520,6 @@
     justify-content: center;
 }
 
-.command-dropdown, .destination-dropdown {
-    width: 70%;
-    height: 40%;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-left-color: rgb(0, 255, 0);
-    border-right-color: rgb(0, 255, 0);
-    border-top-color: rgb(0, 255, 0);
-    border-bottom-color: rgb(0, 255, 0);
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    color: rgb(12, 53, 17);
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    font-size: 30px;
-    transition-duration: 0.3s;
-    transition-property: border-color, background-color;
-}
-
-.command-dropdown:hover, .destination-dropdown:hover {
-    border-left-color: rgb(0, 255, 150);
-    border-right-color: rgb(0, 255, 150);
-    border-top-color: rgb(0, 255, 150);
-    border-bottom-color: rgb(0, 255, 150);
-    background-color: rgba(0, 255, 0, 0.05);
-}
-
 /* Footer */
 .footer {
     flex-grow: 1;
@@ -692,37 +631,6 @@
 .footer-execute-button:active {
     scale: 0.98;
     background-color: rgba(0, 255, 0, 0.2);
-}
-
-.views-dropdown {
-    width: 25%;
-    height: 50%;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-left-color: rgb(0, 255, 0);
-    border-right-color: rgb(0, 255, 0);
-    border-top-color: rgb(0, 255, 0);
-    border-bottom-color: rgb(0, 255, 0);
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    color: rgb(12, 53, 17);
-    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    font-size: 30px;
-    transition-duration: 0.3s;
-    transition-property: border-color, background-color;
-}
-
-.views-dropdown:hover {
-    border-left-color: rgb(0, 255, 150);
-    border-right-color: rgb(0, 255, 150);
-    border-top-color: rgb(0, 255, 150);
-    border-bottom-color: rgb(0, 255, 150);
-    background-color: rgba(0, 255, 0, 0.05);
 }
 
 /* Navigation Menu */

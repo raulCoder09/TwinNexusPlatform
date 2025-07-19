@@ -8,10 +8,6 @@ using Object = UnityEngine.Object;
 
 namespace _Scripts.Controllers.ArScaraControlPanelController
 {
-    /// <summary>
-    /// Maneja todos los eventos UI de AWS Settings
-    /// Equivalente a DashboardEventManager pero para AWS Settings
-    /// </summary>
     public class ArScaraControlPanelEventManager
     {
         private ArScaraControlPanelUIManager _uiManager;
@@ -19,26 +15,33 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         private Action<IArScaraControlPanelOps.PanelType> _onPanelTransitionComplete;
         private ArScaraControlPanelOrchestrator _orchestrator;
 
-        // Referencias para poder desregistrar eventos
         private UIDocument _uiDocument;
         private VisualElement _root;
-        
         private CameraViewManager _cameraViewManager;
+        private Label _environmentMessageLabel;
+        private readonly List<Button> _buttons = new List<Button>();
+        private readonly List<DropdownField> _dropdowns = new List<DropdownField>();
+        private readonly Dictionary<string, bool> _jointButtonStates = new Dictionary<string, bool>
+        {
+            { "J1EnableDisable", true },
+            { "J2EnableDisable", true },
+            { "J3EnableDisable", true },
+            { "J4EnableDisable", true }
+        };
 
         #region Constructor
 
         public ArScaraControlPanelEventManager(
-            ArScaraControlPanelUIManager uiManager, 
-            Action onReturnToDashboard, 
-            Action<IArScaraControlPanelOps.PanelType> onPanelTransitionComplete, 
+            ArScaraControlPanelUIManager uiManager,
+            Action onReturnToDashboard,
+            Action<IArScaraControlPanelOps.PanelType> onPanelTransitionComplete,
             ArScaraControlPanelOrchestrator orchestrator)
         {
             _uiManager = uiManager ?? throw new ArgumentNullException(nameof(uiManager));
             _onReturnToDashboard = onReturnToDashboard ?? throw new ArgumentNullException(nameof(onReturnToDashboard));
             _onPanelTransitionComplete = onPanelTransitionComplete ?? throw new ArgumentNullException(nameof(onPanelTransitionComplete));
             _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
-    
-            // Buscar CameraViewManager en la escena
+
             _cameraViewManager = Object.FindObjectOfType<CameraViewManager>();
             if (_cameraViewManager == null)
             {
@@ -50,58 +53,231 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
 
         #region Event Registration
 
-        /// <summary>
-        /// Registra todos los eventos de AWS Settings
-        /// </summary>
         public void RegisterEvents(UIDocument uiDocument)
         {
-            // Guardar referencias para desregistro posterior
             _uiDocument = uiDocument;
             _root = uiDocument.rootVisualElement;
 
-            // Eventos principales del menú
-            _root.Q<Button>("MenuButton")?.RegisterCallback<ClickEvent>(OnMenuButtonClicked);
-            _root.Q<Button>("HideMenuButton")?.RegisterCallback<ClickEvent>(OnHideMenuButtonClicked);
-
-            // Eventos de navegación principal (desde el menú lateral)
-            _root.Q<Button>("OperationsButton")?.RegisterCallback<ClickEvent>(OnOperationsButtonClicked);
-            _root.Q<Button>("TrainingButton")?.RegisterCallback<ClickEvent>(OnTrainingButtonClicked);
-            _root.Q<Button>("ReportsButton")?.RegisterCallback<ClickEvent>(OnReportsButtonClicked);
-            _root.Q<Button>("SupportButton")?.RegisterCallback<ClickEvent>(OnSupportButtonClicked); 
-            _root.Q<Button>("SettingsButton")?.RegisterCallback<ClickEvent>(OnSettingsButtonClicked);
-            _root.Q<Button>("LogoutButton")?.RegisterCallback<ClickEvent>(OnLogoutButtonClicked);
-            _root.Q<DropdownField>("MenuRobotARSCARADropdownField")?.RegisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
-            _root.Q<DropdownField>("MenuEnvironmentDropdownField")?.RegisterCallback<ChangeEvent<string>>(OnEnvironmentDropdownChanged);
-            _root.Q<DropdownField>("Views")?.RegisterCallback<ChangeEvent<string>>(OnViewsDropdownChanged);
-            // Buscar el botón Dashboard para regresar
-            var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
-            foreach (var dashboardButton in dashboardButtons)
+            // Crear y añadir el mensaje en CenterPanel
+            var centerPanel = _root.Q<VisualElement>("CenterPanel");
+            _environmentMessageLabel = new Label("Select environment")
             {
-                dashboardButton.RegisterCallback<ClickEvent>(OnDashboardButtonClicked);
-            }
+                style =
+                {
+                    unityTextAlign = TextAnchor.MiddleCenter,
+                    fontSize = 40,
+                    color = new Color(0, 1, 0),
+                    unityFontDefinition = new StyleFontDefinition(new Font("Assets/_Fonts/References/VT323-Regular.ttf")),
+                    textShadow = new TextShadow { offset = new Vector2(0, 0), blurRadius = 8, color = new Color(0, 1, 0, 0.5f) }
+                }
+            };
+            centerPanel.Add(_environmentMessageLabel);
 
-            // Eventos de paneles adicionales (futuros)
-            // TODO: Agregar cuando se implementen paneles específicos de AWS
-            // _root.Q<Button>("CredentialsButton")?.RegisterCallback<ClickEvent>(OnCredentialsButtonClicked);
-            // _root.Q<Button>("ServicesButton")?.RegisterCallback<ClickEvent>(OnServicesButtonClicked);
-
-            // Evento de transición del menú de navegación
-            var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
-            navigationMenuPanel?.RegisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
-
-            // Eventos de clic en el scrim para cerrar paneles
-            var scrim = _root.Q<VisualElement>("Scrim");
-            scrim?.RegisterCallback<ClickEvent>(OnScrimClicked);
-
+            // Registrar botones
+            RegisterButtonEvents();
+            // Registrar dropdowns
+            RegisterDropdownEvents();
             // Registrar eventos de teclado
             RegisterKeyboardEvents(_root);
+            // Suscribirse a cambios de entorno
+            EnvironmentStateManager.OnEnvironmentChanged += UpdateUIState;
+
+            // Inicializar estado de la UI
+            UpdateUIState(EnvironmentStateManager.SelectedEnvironment);
 
             Debug.Log("[ArScaraControlPanelEventManager] All events registered successfully");
         }
 
-        /// <summary>
-        /// Desregistra todos los eventos de AWS Settings
-        /// </summary>
+        private void RegisterButtonEvents()
+        {
+            var buttonNames = new[]
+            {
+                "MenuButton", "HideMenuButton", "OperationsButton", "TrainingButton",
+                "ReportsButton", "SupportButton", "SettingsButton", "LogoutButton",
+                "MotorsOffButton", "MotorsOnButton", "PowerLowButton", "PowerHighButton",
+                "HomeButton", "FreeAllButton", "LockAllButton",
+                "J1EnableDisable", "J2EnableDisable", "J3EnableDisable", "J4EnableDisable"
+            };
+
+            foreach (var name in buttonNames)
+            {
+                var button = _root.Q<Button>(name);
+                if (button != null)
+                {
+                    _buttons.Add(button);
+                    if (name.StartsWith("J"))
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log($"{name} pulsado");
+                            ToggleJointButtonState(name, button);
+                        });
+                    }
+                    else if (name == "MenuButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("MenuButton pulsado");
+                            OnMenuButtonClicked(evt);
+                        });
+                    }
+                    else if (name == "HideMenuButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("HideMenuButton pulsado");
+                            OnHideMenuButtonClicked(evt);
+                        });
+                    }
+                    else if (name == "OperationsButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("OperationsButton pulsado");
+                            OnOperationsButtonClicked(evt);
+                        });
+                    }
+                    else if (name == "TrainingButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("TrainingButton pulsado");
+                            OnTrainingButtonClicked(evt);
+                        });
+                    }
+                    else if (name == "ReportsButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("ReportsButton pulsado");
+                            OnReportsButtonClicked(evt);
+                        });
+                    }
+                    else if (name == "SupportButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("SupportButton pulsado");
+                            OnSupportButtonClicked(evt);
+                        });
+                    }
+                    else if (name == "SettingsButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("SettingsButton pulsado");
+                            OnSettingsButtonClicked(evt);
+                        });
+                    }
+                    else if (name == "LogoutButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("LogoutButton pulsado");
+                            OnLogoutButtonClicked(evt);
+                        });
+                    }
+                    else if (name == "DashboardButton")
+                    {
+                        button.RegisterCallback<ClickEvent>(evt =>
+                        {
+                            Debug.Log("DashboardButton pulsado");
+                            OnDashboardButtonClicked(evt);
+                        });
+                    }
+                    else
+                    {
+                        button.RegisterCallback<ClickEvent>(evt => Debug.Log($"{name} pulsado"));
+                    }
+                }
+            }
+
+            var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
+            foreach (var dashboardButton in dashboardButtons)
+            {
+                _buttons.Add(dashboardButton);
+                dashboardButton.RegisterCallback<ClickEvent>(evt =>
+                {
+                    Debug.Log("DashboardButton pulsado");
+                    OnDashboardButtonClicked(evt);
+                });
+            }
+        }
+
+        private void RegisterDropdownEvents()
+        {
+            var dropdownNames = new[] { "MenuRobotARSCARADropdownField", "MenuEnvironmentDropdownField", "Views" };
+            foreach (var name in dropdownNames)
+            {
+                var dropdown = _root.Q<DropdownField>(name);
+                if (dropdown != null)
+                {
+                    _dropdowns.Add(dropdown);
+                    if (name == "MenuRobotARSCARADropdownField")
+                    {
+                        dropdown.RegisterCallback<ChangeEvent<string>>(evt =>
+                        {
+                            Debug.Log($"MenuRobotARSCARADropdownField cambió a {evt.newValue}");
+                            OnArScaraDropdownChanged(evt);
+                        });
+                    }
+                    else if (name == "MenuEnvironmentDropdownField")
+                    {
+                        dropdown.RegisterCallback<ChangeEvent<string>>(evt =>
+                        {
+                            Debug.Log($"MenuEnvironmentDropdownField cambió a {evt.newValue}");
+                            EnvironmentStateManager.SelectedEnvironment = evt.newValue;
+                            OnEnvironmentDropdownChanged(evt);
+                        });
+                    }
+                    else
+                    {
+                        dropdown.RegisterCallback<ChangeEvent<string>>(evt => Debug.Log($"{name} cambió a {evt.newValue}"));
+                    }
+                }
+            }
+        }
+
+        private void ToggleJointButtonState(string buttonName, Button button)
+        {
+            if (_jointButtonStates.ContainsKey(buttonName))
+            {
+                _jointButtonStates[buttonName] = !_jointButtonStates[buttonName];
+                bool isFree = _jointButtonStates[buttonName];
+                string jointId = buttonName.Substring(0, 2);
+                button.text = isFree ? $"Free ({jointId})" : $"Lock ({jointId})";
+                button.RemoveFromClassList(isFree ? "footer-lock-button" : "footer-reset-button");
+                button.AddToClassList(isFree ? "footer-reset-button" : "footer-lock-button");
+                Debug.Log($"{buttonName} cambió a {(isFree ? "Free" : "Lock")}");
+            }
+        }
+
+        private void UpdateUIState(string environment)
+        {
+            bool isValidEnvironment = EnvironmentStateManager.IsValidEnvironment;
+            _environmentMessageLabel.style.display = isValidEnvironment ? DisplayStyle.None : DisplayStyle.Flex;
+
+            foreach (var button in _buttons)
+            {
+                bool isNavigationButton = button.name is "MenuButton" or "HideMenuButton" or "DashboardButton" or
+                                         "OperationsButton" or "TrainingButton" or "ReportsButton" or
+                                         "SupportButton" or "SettingsButton" or "LogoutButton";
+                button.style.display = isNavigationButton || isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
+                button.SetEnabled(isNavigationButton || isValidEnvironment);
+            }
+
+            foreach (var dropdown in _dropdowns)
+            {
+                bool isNavigationDropdown = dropdown.name is "MenuRobotARSCARADropdownField" or "MenuEnvironmentDropdownField";
+                dropdown.style.display = isNavigationDropdown || isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
+                dropdown.SetEnabled(isNavigationDropdown || isValidEnvironment);
+            }
+        }
+
+        #endregion
+
+        #region Event Unregistration
+
         public void UnregisterEvents()
         {
             try
@@ -114,39 +290,39 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
                     return;
                 }
 
-                // Eventos principales del menú
-                _root.Q<Button>("MenuButton")?.UnregisterCallback<ClickEvent>(OnMenuButtonClicked);
-                _root.Q<Button>("HideMenuButton")?.UnregisterCallback<ClickEvent>(OnHideMenuButtonClicked);
-
-                // Eventos de navegación principal
-                _root.Q<Button>("OperationsButton")?.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
-                _root.Q<Button>("TrainingButton")?.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
-                _root.Q<Button>("ReportsButton")?.UnregisterCallback<ClickEvent>(OnReportsButtonClicked);
-                _root.Q<Button>("SupportButton")?.UnregisterCallback<ClickEvent>(OnSupportButtonClicked);
-                _root.Q<Button>("SettingsButton")?.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
-                _root.Q<Button>("LogoutButton")?.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
-
-                _root.Q<DropdownField>("MenuRobotARSCARADropdownField")?.UnregisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
-                _root.Q<DropdownField>("MenuEnvironmentDropdownField")?.UnregisterCallback<ChangeEvent<string>>(OnEnvironmentDropdownChanged);
-                _root.Q<DropdownField>("Views")?.UnregisterCallback<ChangeEvent<string>>(OnViewsDropdownChanged);
-
-                // Desregistrar botones Dashboard
-                var dashboardButtons = _root.Query<Button>().Where(btn => btn.text == "Dashboard").ToList();
-                foreach (var dashboardButton in dashboardButtons)
+                foreach (var button in _buttons)
                 {
-                    dashboardButton.UnregisterCallback<ClickEvent>(OnDashboardButtonClicked);
+                    button.UnregisterCallback<ClickEvent>(evt => Debug.Log($"{button.name} pulsado"));
+                    if (button.name == "MenuButton") button.UnregisterCallback<ClickEvent>(OnMenuButtonClicked);
+                    else if (button.name == "HideMenuButton") button.UnregisterCallback<ClickEvent>(OnHideMenuButtonClicked);
+                    else if (button.name == "OperationsButton") button.UnregisterCallback<ClickEvent>(OnOperationsButtonClicked);
+                    else if (button.name == "TrainingButton") button.UnregisterCallback<ClickEvent>(OnTrainingButtonClicked);
+                    else if (button.name == "ReportsButton") button.UnregisterCallback<ClickEvent>(OnReportsButtonClicked);
+                    else if (button.name == "SupportButton") button.UnregisterCallback<ClickEvent>(OnSupportButtonClicked);
+                    else if (button.name == "SettingsButton") button.UnregisterCallback<ClickEvent>(OnSettingsButtonClicked);
+                    else if (button.name == "LogoutButton") button.UnregisterCallback<ClickEvent>(OnLogoutButtonClicked);
+                    else if (button.name == "J1EnableDisable") button.UnregisterCallback<ClickEvent>(evt => ToggleJointButtonState("J1EnableDisable", evt.target as Button));
+                    else if (button.name == "J2EnableDisable") button.UnregisterCallback<ClickEvent>(evt => ToggleJointButtonState("J2EnableDisable", evt.target as Button));
+                    else if (button.name == "J3EnableDisable") button.UnregisterCallback<ClickEvent>(evt => ToggleJointButtonState("J3EnableDisable", evt.target as Button));
+                    else if (button.name == "J4EnableDisable") button.UnregisterCallback<ClickEvent>(evt => ToggleJointButtonState("J4EnableDisable", evt.target as Button));
+                    else if (button.text == "Dashboard") button.UnregisterCallback<ClickEvent>(OnDashboardButtonClicked);
                 }
 
-                // Evento de transición del menú de navegación
+                foreach (var dropdown in _dropdowns)
+                {
+                    if (dropdown.name == "MenuRobotARSCARADropdownField") dropdown.UnregisterCallback<ChangeEvent<string>>(OnArScaraDropdownChanged);
+                    else if (dropdown.name == "MenuEnvironmentDropdownField") dropdown.UnregisterCallback<ChangeEvent<string>>(OnEnvironmentDropdownChanged);
+                    else dropdown.UnregisterCallback<ChangeEvent<string>>(evt => Debug.Log($"{dropdown.name} cambió a {evt.newValue}"));
+                }
+
                 var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
                 navigationMenuPanel?.UnregisterCallback<TransitionEndEvent>(OnNavigationMenuTransitionComplete);
 
-                // Eventos de clic en el scrim
                 var scrim = _root.Q<VisualElement>("Scrim");
                 scrim?.UnregisterCallback<ClickEvent>(OnScrimClicked);
 
-                // Desregistrar eventos de teclado
                 UnregisterKeyboardEvents(_root);
+                EnvironmentStateManager.OnEnvironmentChanged -= UpdateUIState;
 
                 Debug.Log("[ArScaraControlPanelEventManager] All events unregistered successfully");
             }
@@ -156,13 +332,9 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             }
         }
 
-        /// <summary>
-        /// Método Cleanup consistente con el patrón del sistema
-        /// </summary>
         public void Cleanup()
         {
             UnregisterEvents();
-            
             _uiManager = null;
             _orchestrator = null;
             _uiDocument = null;
@@ -170,7 +342,7 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             _onReturnToDashboard = null;
             _onPanelTransitionComplete = null;
             _cameraViewManager = null;
-
+            _jointButtonStates.Clear();
             Debug.Log("[ArScaraControlPanelEventManager] Event Manager cleaned up");
         }
 
@@ -178,26 +350,16 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
 
         #region Keyboard Events
 
-        /// <summary>
-        /// Registra eventos de teclado para AWS Settings
-        /// </summary>
         private void RegisterKeyboardEvents(VisualElement root)
         {
-            // Escape para cerrar paneles/menú
             root.RegisterCallback<KeyDownEvent>(OnGlobalKeyDown);
         }
 
-        /// <summary>
-        /// Desregistra eventos de teclado
-        /// </summary>
         private void UnregisterKeyboardEvents(VisualElement root)
         {
             root?.UnregisterCallback<KeyDownEvent>(OnGlobalKeyDown);
         }
 
-        /// <summary>
-        /// Maneja eventos globales de teclado
-        /// </summary>
         private async void OnGlobalKeyDown(KeyDownEvent evt)
         {
             switch (evt.keyCode)
@@ -205,8 +367,7 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
                 case KeyCode.Escape:
                     HandleEscapeKey();
                     break;
-                    
-                case KeyCode.M when evt.ctrlKey: // Ctrl+M para toggle menú
+                case KeyCode.M when evt.ctrlKey:
                     _uiManager.ToggleNavigationMenu();
                     var action = _uiManager.NavigationMenuOpen ? "menu_opened" : "menu_closed";
                     await UIAnalyticsManager.Instance?.TrackMenuEvent(
@@ -218,12 +379,8 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             }
         }
 
-        /// <summary>
-        /// Maneja la tecla Escape
-        /// </summary>
         private async void HandleEscapeKey()
         {
-            // Cerrar panel actual o menú lateral
             if (_uiManager.CurrentActivePanel != IArScaraControlPanelOps.PanelType.None)
             {
                 if (_uiManager.NavigationMenuOpen)
@@ -251,9 +408,6 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
 
         #region Main Navigation Events
 
-        /// <summary>
-        /// Abre el menú lateral de navegación
-        /// </summary>
         private async void OnMenuButtonClicked(ClickEvent evt)
         {
             _uiManager.ShowNavigationMenu();
@@ -264,9 +418,6 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             );
         }
 
-        /// <summary>
-        /// Cierra el menú lateral de navegación
-        /// </summary>
         private async void OnHideMenuButtonClicked(ClickEvent evt)
         {
             _uiManager.HideNavigationMenu();
@@ -277,12 +428,8 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             );
         }
 
-        /// <summary>
-        /// Maneja clic en el scrim para cerrar paneles
-        /// </summary>
         private async void OnScrimClicked(ClickEvent evt)
         {
-            // Solo cerrar si el clic fue directamente en el scrim, no en sus hijos
             if (evt.target == evt.currentTarget)
             {
                 _uiManager.CloseCurrentPanel();
@@ -298,9 +445,6 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
 
         #region Navigation Action Events
 
-        /// <summary>
-        /// Regresa al Dashboard
-        /// </summary>
         private async void OnDashboardButtonClicked(ClickEvent evt)
         {
             Debug.Log("Dashboard button clicked - returning to Dashboard");
@@ -312,9 +456,6 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             _orchestrator.HandleDashboardClick();
         }
 
-        /// <summary>
-        /// Inicia modo Operations
-        /// </summary>
         private async void OnOperationsButtonClicked(ClickEvent evt)
         {
             Debug.Log("Operations button clicked - executing navigation");
@@ -326,23 +467,17 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             _orchestrator.HandleOperationsClick();
         }
 
-        /// <summary>
-        /// Inicia modo Training
-        /// </summary>
         private async void OnTrainingButtonClicked(ClickEvent evt)
         {
             Debug.Log("Training button clicked - executing navigation");
             await UIAnalyticsManager.Instance?.TrackMenuEvent(
                 action: "menu_item_clicked",
-                menuItem: "TrainingButton", 
+                menuItem: "TrainingButton",
                 context: "navigation_menu"
             );
             _orchestrator.HandleTrainingClick();
         }
 
-        /// <summary>
-        /// Abre Settings (esto sería recursivo, así que lo mantenemos en AWS Settings)
-        /// </summary>
         private async void OnSettingsButtonClicked(ClickEvent evt)
         {
             Debug.Log("Settings button clicked - already in AWS Settings");
@@ -351,14 +486,9 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
                 menuItem: "SettingsButton",
                 context: "navigation_menu"
             );
-            
-            // Simplemente cerrar el menú ya que estamos en Settings
             _uiManager.HideNavigationMenu();
         }
 
-        /// <summary>
-        /// Abre Support Center
-        /// </summary>
         private async void OnSupportButtonClicked(ClickEvent evt)
         {
             Debug.Log("Support button clicked - executing navigation");
@@ -370,9 +500,6 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             _orchestrator.HandleSupportClick();
         }
 
-        /// <summary>
-        /// Ejecuta Logout
-        /// </summary>
         private async void OnLogoutButtonClicked(ClickEvent evt)
         {
             Debug.Log("Logout button clicked - executing logout");
@@ -383,10 +510,7 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             );
             _orchestrator.HandleLogoutClick();
         }
-        
-        /// <summary>
-        /// Abre Reports Center
-        /// </summary>
+
         private async void OnReportsButtonClicked(ClickEvent evt)
         {
             Debug.Log("Reports button clicked - executing navigation");
@@ -400,105 +524,63 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
 
         #endregion
 
-        #region AWS Settings Specific Events (Futuros)
-
-        /// <summary>
-        /// Maneja eventos específicos de AWS Settings cuando se implementen
-        /// </summary>
-        
-        // TODO: Implementar cuando se agregue contenido específico
-        // private async void OnCredentialsButtonClicked(ClickEvent evt) { ... }
-        // private async void OnTestConnectionButtonClicked(ClickEvent evt) { ... }
-        // private async void OnSaveConfigurationButtonClicked(ClickEvent evt) { ... }
-
-        #endregion
-
         #region Transition Events
 
-        /// <summary>
-        /// Maneja el final de la transición del menú de navegación
-        /// </summary>
         private void OnNavigationMenuTransitionComplete(TransitionEndEvent evt)
         {
-            // Similar al patrón del Dashboard - notificar completion
             _onPanelTransitionComplete?.Invoke(_uiManager.CurrentActivePanel);
-            
-            // Si no hay paneles visibles, el UIManager ya maneja ocultar el container
         }
 
         #endregion
 
         #region Public Properties
 
-        /// <summary>
-        /// UI Manager asociado
-        /// </summary>
         public ArScaraControlPanelUIManager UIManager => _uiManager;
-
-        /// <summary>
-        /// Orchestrator asociado
-        /// </summary>
         public ArScaraControlPanelOrchestrator Orchestrator => _orchestrator;
 
         #endregion
-        /// <summary>
-        /// Maneja cambios en el dropdown de ARSCARA
-        /// </summary>
+
         private async void OnArScaraDropdownChanged(ChangeEvent<string> evt)
         {
             var selectedValue = evt.newValue;
-    
             await UIAnalyticsManager.Instance?.TrackButtonClick(
                 buttonName: "ArScaraDropdown",
                 context: "dropdown_navigation",
                 additionalData: new Dictionary<string, object> { ["selection"] = selectedValue }
             );
-    
+
             switch (selectedValue)
             {
                 case "Control panel":
-                    // Ya estamos en Control Panel, no hacer nada
                     break;
-            
                 case "Jog and teach":
                     Debug.Log("Navigating to ArScaraJogAndTeach");
                     _orchestrator.HandleArScaraJogAndTeachNavigation();
                     break;
-            
                 case "Points":
                     Debug.Log("Navigating to ArScaraPoints");
                     _orchestrator.HandleArScaraPointsNavigation();
                     break;
             }
         }
-        /// <summary>
-        /// Maneja cambios en el dropdown de Environment
-        /// </summary>
-        /// <summary>
-        /// Maneja cambios en el dropdown de Environment
-        /// </summary>
+
         private async void OnEnvironmentDropdownChanged(ChangeEvent<string> evt)
         {
             var selectedValue = evt.newValue;
-    
             await UIAnalyticsManager.Instance?.TrackButtonClick(
                 buttonName: "EnvironmentDropdown",
                 context: "environment_navigation",
                 additionalData: new Dictionary<string, object> { ["selection"] = selectedValue }
             );
-    
-            // Usar EnvironmentLoadingManager a través del singleton
+
             var environmentManager = EnvironmentManager.Instance;
             if (environmentManager != null)
             {
-                // Buscar EnvironmentLoadingManager en la escena a través del EnvironmentManager
                 var loadingManager = environmentManager.GetComponent<EnvironmentLoadingManager>();
                 if (loadingManager == null)
                 {
-                    // Si no está en el mismo GameObject, buscar en toda la escena
                     loadingManager = Object.FindObjectOfType<EnvironmentLoadingManager>();
                 }
-        
                 if (loadingManager != null)
                 {
                     loadingManager.HandleEnvironmentDropdownChange(selectedValue);
@@ -511,47 +593,6 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             else
             {
                 Debug.LogWarning("EnvironmentManager not found");
-            }
-        }
-        /// <summary>
-        /// Maneja cambios en el dropdown de vistas
-        /// </summary>
-        private async void OnViewsDropdownChanged(ChangeEvent<string> evt)
-        {
-            var selectedView = evt.newValue;
-    
-            // Skip si es la opción por defecto
-            if (selectedView == "Select view")
-                return;
-
-            await UIAnalyticsManager.Instance?.TrackButtonClick(
-                buttonName: "ViewsDropdown",
-                context: "camera_view_change",
-                additionalData: new Dictionary<string, object> { ["view"] = selectedView }
-            );
-
-            if (_cameraViewManager != null)
-            {
-                bool success = _cameraViewManager.ChangeView(selectedView);
-                if (success)
-                {
-                    Debug.Log($"Camera view changed to: {selectedView}");
-                }
-                else
-                {
-                    Debug.LogWarning($"Failed to change camera view to: {selectedView}");
-            
-                    // Revertir dropdown al valor anterior si falló
-                    var viewsDropdown = _root.Q<DropdownField>("Views");
-                    if (viewsDropdown != null)
-                    {
-                        viewsDropdown.SetValueWithoutNotify(_cameraViewManager.GetCurrentView());
-                    }
-                }
-            }
-            else
-            {
-                Debug.LogWarning("CameraViewManager not available - cannot change view");
             }
         }
     }
