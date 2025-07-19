@@ -5,7 +5,7 @@ using Amazon;
 using Amazon.Lambda;
 using UnityEngine;
 using _Scripts.Controller;
-using Amazon.Runtime; // Para acceder a ServiceController
+using Amazon.Runtime;
 
 namespace _Scripts.Models.LambdaManagement
 {
@@ -48,14 +48,12 @@ namespace _Scripts.Models.LambdaManagement
                 }
 
                 _executor = new LambdaExecutor(_lambdaClient);
-                _permissionChecker = new LambdaPermissionChecker(_defaultFunctionName);
-                // Inyectar el rol desde ServiceController
+                _permissionChecker = new LambdaPermissionChecker(_defaultFunctionName, _lambdaClient);
                 if (ServiceController.Instance != null && ServiceController.Instance.CognitoManager != null)
                 {
                     ((LambdaPermissionChecker)_permissionChecker).UserRole = ServiceController.Instance.GetUserRole();
                 }
 
-                // Forward event
                 _executor.OnExecutionComplete += (success, message, data) => OnExecutionComplete?.Invoke(success, message, data);
 
                 _isInitialized = true;
@@ -71,13 +69,13 @@ namespace _Scripts.Models.LambdaManagement
 
         public async Task<bool> ExecuteFunctionAsync(string functionName, object payload = null)
         {
-            if (!_isInitialized) await InitializeAsync(null, null); // Usar valores por defecto si no inicializado
+            if (!_isInitialized) await InitializeAsync(null, null);
             return await _executor.ExecuteFunctionAsync(functionName, payload);
         }
 
         public async Task<bool> ExecuteFunctionWithContextAsync(string functionName, object additionalPayload = null)
         {
-            if (!_isInitialized) await InitializeAsync(null, null); // Usar valores por defecto si no inicializado
+            if (!_isInitialized) await InitializeAsync(null, null);
             var userContext = new
             {
                 username = ServiceController.Instance?.GetUserInfo().username ?? "unknown",
@@ -88,16 +86,21 @@ namespace _Scripts.Models.LambdaManagement
             return await _executor.ExecuteFunctionAsync(functionName, userContext);
         }
 
+        public async Task<List<string>> GetAvailableFunctionsAsync()
+        {
+            if (!_isInitialized) await InitializeAsync(null, null);
+            return await _permissionChecker.GetAvailableFunctionsAsync();
+        }
+
         public List<string> GetAvailableFunctions()
         {
-            if (!_isInitialized) InitializeAsync(null, null); // Usar valores por defecto si no inicializado
-            return _permissionChecker.GetAvailableFunctions(); // Sin argumentos, usa UserRole inyectado
+            return GetAvailableFunctionsAsync().GetAwaiter().GetResult();
         }
 
         public async Task<bool> TestConnectivityAsync()
         {
-            if (!_isInitialized) await InitializeAsync(null, null); // Usar valores por defecto si no inicializado
-            return await _executor.ExecuteFunctionAsync(_defaultFunctionName, new { test = true, message = "Connectivity test" });
+            if (!_isInitialized) await InitializeAsync(null, null);
+            return await _executor.TestConnectivityAsync();
         }
 
         private void OnDestroy()

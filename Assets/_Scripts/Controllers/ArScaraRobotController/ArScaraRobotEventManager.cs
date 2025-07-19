@@ -1,6 +1,6 @@
 namespace _Scripts.Controllers.ArScaraRobotController
 {
-    public class ArScaraRobotManager
+    public class ArScaraRobotEventManager
     {
         
     }

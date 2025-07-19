@@ -6,9 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/S3SettingsController/S3SettingsEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/S3SettingsController/S3SettingsEventManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/S3SettingsController/S3SettingsOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/S3SettingsController/S3SettingsOrchestrator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/S3Settings/S3Settings.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/S3Settings/S3Settings.uss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_References/ReferenceImageLibrary.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_References/ReferenceImageLibrary.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/LambdaSettingsController/LambdaSettingsEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/LambdaSettingsController/LambdaSettingsEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/LambdaSettingsController/LambdaSettingsOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/LambdaSettingsController/LambdaSettingsOrchestrator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/ILambdaService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/ILambdaService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/LambdaExecutor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/LambdaExecutor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/LambdaManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/LambdaManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/LambdaPermissionChecker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/LambdaManagement/LambdaPermissionChecker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/LambdaSettings/LambdaSettings.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/LambdaSettings/LambdaSettings.uss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

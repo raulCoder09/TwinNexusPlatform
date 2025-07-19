@@ -1,27 +1,24 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
 using _Scripts.Controllers.UiManagement;
+using _Scripts.Models.LambdaManagement;
+using Newtonsoft.Json;
 
 namespace _Scripts.Controllers.LambdaSettingsController
 {
-    /// <summary>
-    /// Coordinador principal de AWS Settings - implementa ILambdaSettingsOps e IUIController
-    /// Equivalente a DashboardOrchestrator pero para configuraciones AWS
-    /// </summary>
     public class LambdaSettingsOrchestrator : MonoBehaviour, ILambdaSettingsOps, IUIController
     {
         #region IUIController Implementation
 
-        public bool RequiresAuthentication => true; // AWS Settings SÍ requiere autenticación
+        public bool RequiresAuthentication => true;
         public bool IsInitialized => _isInitialized;
         public bool IsActive => _uiConfig?.Body?.style.display == DisplayStyle.Flex;
         public string ControllerName => "LambdaSettingsController";
 
-        // Events from IUIController
         public event Action<IUIController> OnControllerInitialized;
         public event Action<IUIController> OnControllerShown;
         public event Action<IUIController> OnControllerHidden;
@@ -34,7 +31,6 @@ namespace _Scripts.Controllers.LambdaSettingsController
         public bool IsNavigationMenuOpen => _uiManager?.NavigationMenuOpen ?? false;
         public ILambdaSettingsOps.PanelType CurrentActivePanel => _uiManager?.CurrentActivePanel ?? ILambdaSettingsOps.PanelType.None;
 
-        // Events from ILambdaSettingsOps
         public event Action OnNavigationMenuOpened;
         public event Action OnNavigationMenuClosed;
         public event Action<ILambdaSettingsOps.PanelType> OnPanelTransitionComplete;
@@ -51,12 +47,30 @@ namespace _Scripts.Controllers.LambdaSettingsController
         private LambdaSettingsUIManager _uiManager;
         private LambdaSettingsEventManager _eventManager;
         
-        // Referencias a otros controladores
         private UIController _mainUIController;
         
         private VisualElement _subpanelsAndSmokeMaskContainer;
         private UIDocument _uiDocument;
         private bool _isInitialized = false;
+
+        private DropdownField _functionNameField;
+        private TextField _payloadField;
+        private Button _executeFunctionButton;
+
+        private DropdownField _functionNameContextField;
+        private TextField _additionalPayloadField;
+        private Button _executeWithContextButton;
+
+        private VisualElement _functionsList;
+        private Button _refreshFunctionsButton;
+
+        private Button _listFunctionsButton;
+
+        private Button _testConnectionButton;
+        private Button _enableDisableServiceButton;
+        private Label _testResultLabel;
+
+        private LambdaManager _lambdaManager;
 
         #endregion
 
@@ -69,10 +83,11 @@ namespace _Scripts.Controllers.LambdaSettingsController
         
         private void Start()
         {
-            // AWS Settings inicia OCULTO hasta que se navegue desde otra UI
-             HideUi();
-            _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
-            
+            HideUi();
+            if (_subpanelsAndSmokeMaskContainer != null)
+            {
+                _subpanelsAndSmokeMaskContainer.style.display = DisplayStyle.None;
+            }
             
             Debug.Log("[LambdaSettingsOrchestrator] Started - UI hidden until navigation");
         }
@@ -83,8 +98,7 @@ namespace _Scripts.Controllers.LambdaSettingsController
         }
 
         #endregion
-
-        #region IUIController Lifecycle Methods
+        
 
         public bool Initialize()
         {
@@ -98,90 +112,224 @@ namespace _Scripts.Controllers.LambdaSettingsController
 
                 Debug.Log("Initializing LambdaSettingsOrchestrator...");
 
-                // Obtener componentes UI
-                Debug.Log("Step 1: Getting UIDocument component...");
                 _uiDocument = GetComponent<UIDocument>();
                 if (_uiDocument == null)
                 {
                     Debug.LogError("UIDocument component not found!");
                     return false;
                 }
-                Debug.Log("UIDocument found successfully");
 
-                Debug.Log("Step 2: Getting root visual element...");
                 var root = _uiDocument.rootVisualElement;
                 if (root == null)
                 {
                     Debug.LogError("Root visual element is null!");
                     return false;
                 }
-                Debug.Log("Root visual element found successfully");
 
-                Debug.Log("Step 3: Getting SubpanelsAndSmokeMaskContainer...");
                 _subpanelsAndSmokeMaskContainer = root.Q<VisualElement>("SubpanelsAndSmokeMaskContainer");
                 if (_subpanelsAndSmokeMaskContainer == null)
                 {
                     Debug.LogError("SubpanelsAndSmokeMaskContainer not found in UI!");
                     return false;
                 }
-                Debug.Log("SubpanelsAndSmokeMaskContainer found successfully");
 
-                // Obtener referencias UI
-                Debug.Log("Step 4: Getting UI components...");
                 GetUiComponents(root);
-                Debug.Log("UI components obtained");
                 
-                // Inicializar managers
-                Debug.Log("Step 5: Creating LambdaSettingsUIManager...");
                 _uiManager = new LambdaSettingsUIManager(_uiConfig);
-                Debug.Log("LambdaSettingsUIManager created successfully");
-
-                Debug.Log("Step 6: Creating LambdaSettingsEventManager...");
                 _eventManager = new LambdaSettingsEventManager(_uiManager, OnReturnToDashboardHandler, OnPanelTransitionCompleteHandler, this);
-                Debug.Log("LambdaSettingsEventManager created successfully");
-
-                Debug.Log("Step 7: Registering events...");
                 _eventManager.RegisterEvents(_uiDocument);
-                Debug.Log("Events registered successfully");
 
-                Debug.Log("Step 8: Initializing panel system...");
                 _uiManager.InitializePanelSystem();
-                Debug.Log("Panel system initialized successfully");
                 
-                // Buscar dependencias
-                Debug.Log("Step 9: Finding dependencies...");
                 FindDependencies();
-                Debug.Log("Dependencies found");
                 
-                // Configurar estado inicial
-                Debug.Log("Step 10: Initializing AWS settings state...");
                 InitializeLambdaSettingsState();
-                Debug.Log("AWS settings state initialized");
+
+                _lambdaManager = ServiceController.Instance?.LambdaManager;
+                if (_lambdaManager == null)
+                {
+                    Debug.LogError("LambdaManager not found!");
+                    return false;
+                }
+
+                SubscribeToLambdaManagerEvents();
+
+                UpdateUIStates();
 
                 _isInitialized = true;
                 Debug.Log("LambdaSettingsOrchestrator initialized successfully");
-                
                 OnControllerInitialized?.Invoke(this);
                 return true;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"LambdaSettingsOrchestrator initialization error: {ex.Message}");
-                Debug.LogError($"Stack trace: {ex.StackTrace}");
                 OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
                 return false;
             }
         }
 
+        private void SubscribeToLambdaManagerEvents()
+        {
+            if (_lambdaManager != null)
+            {
+                _lambdaManager.OnExecutionComplete += OnExecutionCompleted;
+            }
+        }
+
+        private void GetUiComponents(VisualElement root)
+        {
+            _uiConfig.Body = root.Q<VisualElement>("Body");
+            _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
+            _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
+            _uiConfig.MainContentArea = root.Q<VisualElement>("Main");
+            _uiConfig.HeaderArea = root.Q<VisualElement>("Header");
+            _uiConfig.FooterArea = root.Q<VisualElement>("Footer");
+
+            _functionNameField = root.Q<DropdownField>("FunctionNameField");
+            _payloadField = root.Q<TextField>("PayloadField");
+            _executeFunctionButton = root.Q<Button>("ExecuteFunctionButton");
+
+            _functionNameContextField = root.Q<DropdownField>("FunctionNameContextField");
+            _additionalPayloadField = root.Q<TextField>("AdditionalPayloadField");
+            _executeWithContextButton = root.Q<Button>("ExecuteWithContextButton");
+
+            _functionsList = root.Q<VisualElement>("FunctionsList");
+            _refreshFunctionsButton = root.Q<Button>("RefreshFunctionsButton");
+
+            _listFunctionsButton = root.Q<Button>("ListFunctionsButton");
+
+            _testConnectionButton = root.Q<Button>("TestConnectionButton");
+            _enableDisableServiceButton = root.Q<Button>("EnableDisableServiceButton");
+            _testResultLabel = root.Q<Label>("TestResult");
+
+            InitializePanelConfiguration(root);
+            Debug.Log("Lambda Settings UI components obtained successfully");
+        }
+
+        private void InitializePanelConfiguration(VisualElement root)
+        {
+            var panelsContainer = _subpanelsAndSmokeMaskContainer;
+            
+            _uiConfig.Panels[ILambdaSettingsOps.PanelType.NavigationMenu] = new LambdaSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
+                ShowClass = "NavigationMenuPanelInMainScreen",
+                HideClass = "NavigationMenuPanelOutMainScreen",
+                RequiresScrim = true,
+                AnimationDuration = 0.3f
+            };
+
+            _uiConfig.Panels[ILambdaSettingsOps.PanelType.AwsCredentials] = new LambdaSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "AwsCredentialsPanelVisible",
+                HideClass = "AwsCredentialsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ILambdaSettingsOps.PanelType.ServiceConfig] = new LambdaSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "ServiceConfigPanelVisible",
+                HideClass = "ServiceConfigPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ILambdaSettingsOps.PanelType.TestResults] = new LambdaSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "TestResultsPanelVisible",
+                HideClass = "TestResultsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ILambdaSettingsOps.PanelType.SecuritySettings] = new LambdaSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "SecuritySettingsPanelVisible",
+                HideClass = "SecuritySettingsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ILambdaSettingsOps.PanelType.RegionSettings] = new LambdaSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "RegionSettingsPanelVisible",
+                HideClass = "RegionSettingsPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            _uiConfig.Panels[ILambdaSettingsOps.PanelType.Help] = new LambdaSettingsInfo.UIConfiguration.PanelData
+            {
+                Panel = null,
+                ShowClass = "HelpPanelVisible",
+                HideClass = "HelpPanelHidden",
+                IsModal = true,
+                RequiresScrim = true
+            };
+
+            foreach (var kvp in _uiConfig.Panels)
+            {
+                var panelData = kvp.Value;
+                if (panelData.Panel != null)
+                {
+                    Debug.Log($"Registering callback for panel: {kvp.Key}");
+                    panelData.Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
+                }
+                else
+                {
+                    Debug.Log($"Panel {kvp.Key} not found in UI - skipping callback registration");
+                }
+            }
+        }
+
+        private async void UpdateUIStates()
+        {
+            if (_lambdaManager != null)
+            {
+                await UpdateFunctionsList();
+            }
+        }
+
+        private async Task UpdateFunctionsList()
+        {
+            if (_lambdaManager != null)
+            {
+                var functions = await _lambdaManager.GetAvailableFunctionsAsync();
+                _functionsList.Clear();
+                foreach (var function in functions)
+                {
+                    var label = new Label(function);
+                    label.AddToClassList("recent-activity-item");
+                    _functionsList.Add(label);
+                }
+                UpdateFunctionDropdowns(functions);
+            }
+        }
+
+        private void UpdateFunctionDropdowns(List<string> functions)
+        {
+            _functionNameField.choices = functions;
+            _functionNameContextField.choices = functions;
+            if (functions.Count > 0)
+            {
+                _functionNameField.value = functions[0];
+                _functionNameContextField.value = functions[0];
+            }
+        }
+
         public void Show()
         {
-            // SEGURIDAD: Verificar autenticación antes de mostrar
             if (!ServiceController.Instance.IsCognitoAuthenticated)
             {
-                Debug.LogError("Cannot show AWS Settings - user not authenticated");
+                Debug.LogError("Cannot show Lambda Settings - user not authenticated");
                 OnControllerError?.Invoke(this, "Authentication required");
-                
-                // Redirigir a Welcome
                 _mainUIController?.ShowUI("Welcome");
                 return;
             }
@@ -189,12 +337,10 @@ namespace _Scripts.Controllers.LambdaSettingsController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.Flex;
-                
-                // Actualizar configuraciones AWS si es necesario
                 LoadAwsConfiguration();
-                
+                UpdateUIStates();
                 OnControllerShown?.Invoke(this);
-                Debug.Log("[LambdaSettingsOrchestrator] AWS Settings UI shown");
+                Debug.Log("[LambdaSettingsOrchestrator] Lambda Settings UI shown");
             }
         }
 
@@ -203,31 +349,50 @@ namespace _Scripts.Controllers.LambdaSettingsController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.None;
-                
-                // Cerrar cualquier panel abierto
                 _uiManager?.CloseCurrentPanel();
-                
                 OnControllerHidden?.Invoke(this);
-                Debug.Log("[LambdaSettingsOrchestrator] AWS Settings UI hidden");
+                Debug.Log("[LambdaSettingsOrchestrator] Lambda Settings UI hidden");
             }
+        }
+
+        internal void HideUi()
+        {
+            Hide();
         }
 
         public void Cleanup()
         {
             try
             {
-                // Limpiar managers
+                if (_lambdaManager != null)
+                {
+                    _lambdaManager.OnExecutionComplete -= OnExecutionCompleted;
+                }
+
                 _eventManager?.Cleanup();
                 _uiManager = null;
                 _eventManager = null;
 
-                // Limpiar referencias
                 _mainUIController = null;
                 _uiConfig = null;
                 _awsConfig = null;
                 _settingsState = null;
                 _uiDocument = null;
                 _subpanelsAndSmokeMaskContainer = null;
+
+                _functionNameField = null;
+                _payloadField = null;
+                _executeFunctionButton = null;
+                _functionNameContextField = null;
+                _additionalPayloadField = null;
+                _executeWithContextButton = null;
+                _functionsList = null;
+                _refreshFunctionsButton = null;
+                _listFunctionsButton = null;
+                _testConnectionButton = null;
+                _enableDisableServiceButton = null;
+                _testResultLabel = null;
+                _lambdaManager = null;
 
                 _isInitialized = false;
                 Debug.Log("[LambdaSettingsOrchestrator] Cleanup completed");
@@ -237,8 +402,6 @@ namespace _Scripts.Controllers.LambdaSettingsController
                 Debug.LogError($"[LambdaSettingsOrchestrator] Cleanup error: {ex.Message}");
             }
         }
-
-        #endregion
 
         #region ILambdaSettingsOps Implementation
 
@@ -266,26 +429,32 @@ namespace _Scripts.Controllers.LambdaSettingsController
 
         public void OpenAwsConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
             Debug.Log("Opening AWS Configuration panel");
+            // Future: Show a panel for configuring credentials or region
         }
 
-        public void SaveConfiguration()
+        public async void SaveConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Saving AWS Configuration");
+            await SaveConfigurationAsync();
         }
 
         public void ResetConfiguration()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Resetting AWS Configuration");
+            if (_lambdaManager != null)
+            {
+                _functionNameField.value = "test";
+                _payloadField.value = "{}";
+                _functionNameContextField.value = "test";
+                _additionalPayloadField.value = "{}";
+                _settingsState.HasUnsavedChanges = false;
+                UpdateCredentialsStatus(true, "Configuration reset");
+                Debug.Log("Lambda Configuration reset to default");
+            }
         }
 
-        public void TestConnection()
+        public async void TestConnection()
         {
-            // TODO: Implementar cuando se agregue contenido específico
-            Debug.Log("Testing AWS Connection");
+            await TestConnectionAsync();
         }
 
         public void ShowNavigationMenu()
@@ -305,106 +474,171 @@ namespace _Scripts.Controllers.LambdaSettingsController
             HandleDashboardClick();
         }
 
+        public async Task ExecuteFunction()
+        {
+            if (_lambdaManager != null)
+            {
+                var functionName = _functionNameField.value;
+                var payloadText = _payloadField.value;
+                if (string.IsNullOrWhiteSpace(functionName))
+                {
+                    Debug.LogError("Function name cannot be empty");
+                    ShowErrorMessage("Function name cannot be empty");
+                    return;
+                }
+                try
+                {
+                    var payload = JsonConvert.DeserializeObject(payloadText);
+                    var success = await _lambdaManager.ExecuteFunctionAsync(functionName, payload);
+                    if (success)
+                    {
+                        await UpdateFunctionsList();
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Debug.LogError($"Invalid JSON payload: {ex.Message}");
+                    ShowErrorMessage($"Invalid JSON payload: {ex.Message}");
+                }
+            }
+        }
+
+        public async Task ExecuteFunctionWithContext()
+        {
+            if (_lambdaManager != null)
+            {
+                var functionName = _functionNameContextField.value;
+                var additionalPayloadText = _additionalPayloadField.value;
+                if (string.IsNullOrWhiteSpace(functionName))
+                {
+                    Debug.LogError("Function name cannot be empty");
+                    ShowErrorMessage("Function name cannot be empty");
+                    return;
+                }
+                try
+                {
+                    var additionalPayload = JsonConvert.DeserializeObject(additionalPayloadText);
+                    var success = await _lambdaManager.ExecuteFunctionWithContextAsync(functionName, additionalPayload);
+                    if (success)
+                    {
+                        await UpdateFunctionsList();
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Debug.LogError($"Invalid JSON payload: {ex.Message}");
+                    ShowErrorMessage($"Invalid JSON payload: {ex.Message}");
+                }
+            }
+        }
+
+        public async Task ListFunctions()
+        {
+            if (_lambdaManager != null)
+            {
+                await UpdateFunctionsList();
+            }
+        }
+
+        public async Task TestConnectionAsync()
+        {
+            if (_lambdaManager != null)
+            {
+                _settingsState.IsTestingConnection = true;
+                _testResultLabel.text = "Result: Testing...";
+                var success = await _lambdaManager.TestConnectivityAsync();
+                _testResultLabel.text = $"Result: {(success ? "Success" : "Failed")}";
+                _testResultLabel.RemoveFromClassList("status-success");
+                _testResultLabel.RemoveFromClassList("status-error");
+                _testResultLabel.AddToClassList(success ? "status-success" : "status-error");
+                _settingsState.IsTestingConnection = false;
+
+                var testResult = new LambdaSettingsInfo.ConnectionTestResult
+                {
+                    ServiceName = "Lambda",
+                    IsSuccessful = success,
+                    Message = success ? "Connection test successful" : "Connection test failed",
+                    TestTime = DateTime.Now,
+                    ResponseTime = TimeSpan.FromMilliseconds(150)
+                };
+                _awsConfig.TestResults["Lambda"] = testResult;
+                _uiManager.UpdateConnectionTestResults(_awsConfig.TestResults);
+            }
+        }
+
+        public async Task ToggleService()
+        {
+            Debug.Log("Toggling Lambda service state");
+            _awsConfig.ServiceStates["Lambda"] = !_awsConfig.ServiceStates.GetValueOrDefault("Lambda", false);
+            _uiManager.UpdateServiceStates(_awsConfig.ServiceStates);
+            if (_awsConfig.ServiceStates["Lambda"] && _lambdaManager != null)
+            {
+                var success = await _lambdaManager.InitializeAsync(ServiceController.Instance.CognitoManager.CurrentAWSCredentials, 
+                                                                ServiceController.Instance.CognitoManager.GetRegionEndpoint());
+                UpdateCredentialsStatus(success, success ? "Lambda service initialized" : "Failed to initialize Lambda service");
+            }
+        }
+
         #endregion
 
-        #region Public Event Handlers (Called by EventManager)
+        #region Public Event Handlers
 
-        /// <summary>
-        /// Maneja clic en botón Dashboard
-        /// </summary>
-        public void HandleDashboardClick()
+        public async Task HandleDashboardClick()
         {
             Debug.Log("Dashboard button clicked - returning to Dashboard");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar Dashboard
-            _mainUIController?.ShowUI("Dashboard");
+            await Task.Run(() => _mainUIController?.ShowUI("Dashboard"));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Reports
-        /// </summary>
-        public void HandleReportsClick()
+        public async Task HandleReportsClick()
         {
             Debug.Log("Reports button clicked - opening Reports Center");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar reports controller
-            _mainUIController?.ShowUI("Reports");
+            await Task.Run(() => _mainUIController?.ShowUI("Reports"));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Operations
-        /// </summary>
-        public void HandleOperationsClick()
+        public async Task HandleOperationsClick()
         {
             var parameters = new Dictionary<string, object> {
                 ["context"] = "Operations", 
                 ["sourceController"] = "LambdaSettings"
             };
-            
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-            
-            _mainUIController?.ShowUI("DeviceSelection", parameters);
+            await Task.Run(() => _mainUIController?.ShowUI("DeviceSelection", parameters));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Training
-        /// </summary>
-        public void HandleTrainingClick()
+        public async Task HandleTrainingClick()
         {
             var parameters = new Dictionary<string, object> {
                 ["context"] = "Training",
                 ["sourceController"] = "LambdaSettings"
             };
-            
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-            
-            _mainUIController?.ShowUI("DeviceSelection", parameters);
+            await Task.Run(() => _mainUIController?.ShowUI("DeviceSelection", parameters));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Support
-        /// </summary>
-        public void HandleSupportClick()
+        public async Task HandleSupportClick()
         {
             Debug.Log("Support button clicked - opening support center");
-    
-            // Cerrar menú y ocultar AWS Settings
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar support controller
-            _mainUIController?.ShowUI("Support");
+            await Task.Run(() => _mainUIController?.ShowUI("Support"));
         }
 
-        /// <summary>
-        /// Maneja clic en botón Logout
-        /// </summary>
-        public void HandleLogoutClick()
+        public async Task HandleLogoutClick()
         {
-            Debug.Log("AWS Settings HandleLogoutClick() called");
-    
-            // Cerrar menú y ocultar AWS Settings
+            Debug.Log("Lambda Settings HandleLogoutClick() called");
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Llamar a UIController para manejar logout
             var uiController = UIController.Instance;
             if (uiController != null)
             {
                 Debug.Log("Calling UIController.RequestLogout()");
-                uiController.RequestLogout();
+                await Task.Run(() => uiController.RequestLogout());
             }
             else
             {
@@ -417,190 +651,47 @@ namespace _Scripts.Controllers.LambdaSettingsController
 
         #region Private Implementation Methods
 
-        /// <summary>
-        /// Obtiene componentes UI de AWS Settings
-        /// </summary>
-        private void GetUiComponents(VisualElement root)
-        {
-            Debug.Log("Getting AWS Settings UI components...");
-    
-            // Contenedores principales
-            Debug.Log("Getting Body...");
-            _uiConfig.Body = root.Q<VisualElement>("Body");
-            Debug.Log($"Body found: {_uiConfig.Body != null}");
-    
-            Debug.Log("Setting SubpanelsContainer...");
-            _uiConfig.SubpanelsContainer = _subpanelsAndSmokeMaskContainer;
-            Debug.Log($"SubpanelsContainer set: {_uiConfig.SubpanelsContainer != null}");
-    
-            Debug.Log("Getting Scrim...");
-            _uiConfig.Scrim = _subpanelsAndSmokeMaskContainer?.Q<VisualElement>("Scrim");
-            Debug.Log($"Scrim found: {_uiConfig.Scrim != null}");
-    
-            Debug.Log("Getting MainContentArea...");
-            _uiConfig.MainContentArea = root.Q<VisualElement>("Main");
-            Debug.Log($"MainContentArea found: {_uiConfig.MainContentArea != null}");
-    
-            Debug.Log("Getting HeaderArea...");
-            _uiConfig.HeaderArea = root.Q<VisualElement>("Header");
-            Debug.Log($"HeaderArea found: {_uiConfig.HeaderArea != null}");
-    
-            Debug.Log("Getting FooterArea...");
-            _uiConfig.FooterArea = root.Q<VisualElement>("Footer");
-            Debug.Log($"FooterArea found: {_uiConfig.FooterArea != null}");
-
-            // Configurar paneles
-            Debug.Log("Initializing panel configuration...");
-            InitializePanelConfiguration(root);
-    
-            Debug.Log("AWS Settings UI components obtained successfully");
-        }
-
-        /// <summary>
-        /// Inicializa la configuración de paneles
-        /// </summary>
-        private void InitializePanelConfiguration(VisualElement root)
-        {
-            var panelsContainer = _subpanelsAndSmokeMaskContainer;
-            
-            // Panel de menú de navegación (SÍ existe en UXML)
-            _uiConfig.Panels[ILambdaSettingsOps.PanelType.NavigationMenu] = new LambdaSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = panelsContainer?.Q<VisualElement>("NavigationMenuPanel"),
-                ShowClass = "NavigationMenuPanelInMainScreen",
-                HideClass = "NavigationMenuPanelOutMainScreen",
-                RequiresScrim = true,
-                AnimationDuration = 0.3f
-            };
-
-            // Paneles futuros específicos de AWS (NO existen en UXML actual)
-            _uiConfig.Panels[ILambdaSettingsOps.PanelType.AwsCredentials] = new LambdaSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "AwsCredentialsPanelVisible",
-                HideClass = "AwsCredentialsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ILambdaSettingsOps.PanelType.ServiceConfig] = new LambdaSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "ServiceConfigPanelVisible",
-                HideClass = "ServiceConfigPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ILambdaSettingsOps.PanelType.TestResults] = new LambdaSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "TestResultsPanelVisible",
-                HideClass = "TestResultsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ILambdaSettingsOps.PanelType.SecuritySettings] = new LambdaSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "SecuritySettingsPanelVisible",
-                HideClass = "SecuritySettingsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ILambdaSettingsOps.PanelType.RegionSettings] = new LambdaSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "RegionSettingsPanelVisible",
-                HideClass = "RegionSettingsPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            _uiConfig.Panels[ILambdaSettingsOps.PanelType.Help] = new LambdaSettingsInfo.UIConfiguration.PanelData
-            {
-                Panel = null, // Será null porque no existe en UXML
-                ShowClass = "HelpPanelVisible",
-                HideClass = "HelpPanelHidden",
-                IsModal = true,
-                RequiresScrim = true
-            };
-
-            // Registrar callbacks SOLO para paneles que existen
-            foreach (var kvp in _uiConfig.Panels)
-            {
-                var panelData = kvp.Value;
-                if (panelData.Panel != null)
-                {
-                    Debug.Log($"Registering callback for panel: {kvp.Key}");
-                    panelData.Panel.RegisterCallback<TransitionEndEvent>(OnTransitionEndEvent);
-                }
-                else
-                {
-                    Debug.Log($"Panel {kvp.Key} not found in UI - skipping callback registration");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Busca dependencias en la escena
-        /// </summary>
         private void FindDependencies()
         {
-            // Buscar UIController principal
             _mainUIController = UIController.Instance;
             if (_mainUIController == null)
             {
                 Debug.LogWarning("UIController not found - will try to find it later");
             }
-
-            Debug.Log("AWS Settings dependencies search completed");
+            Debug.Log("Lambda Settings dependencies search completed");
         }
 
-        /// <summary>
-        /// Inicializa el estado de AWS Settings
-        /// </summary>
         private void InitializeLambdaSettingsState()
         {
             _settingsState.IsInitialized = true;
             _settingsState.CurrentSection = "LambdaSettings";
             _settingsState.CurrentActivePanel = ILambdaSettingsOps.PanelType.None;
-            
-            // Inicializar configuración AWS básica
             _awsConfig.Region = "us-east-1";
             _awsConfig.ServiceStates = new Dictionary<string, bool>();
             _awsConfig.ServiceConfigs = new Dictionary<string, Dictionary<string, object>>();
             _awsConfig.TestResults = new Dictionary<string, LambdaSettingsInfo.ConnectionTestResult>();
-            
-            Debug.Log("AWS Settings state initialized");
+            Debug.Log("Lambda Settings state initialized");
         }
 
-        /// <summary>
-        /// Carga la configuración AWS actual
-        /// </summary>
         private void LoadAwsConfiguration()
         {
-            // TODO: Cargar configuración desde ServiceController o almacenamiento
-            Debug.Log("Loading AWS configuration...");
-            
-            // Por ahora, obtener configuración básica del ServiceController si está disponible
+            Debug.Log("Loading Lambda configuration...");
             var serviceController = ServiceController.Instance;
             if (serviceController != null)
             {
                 _settingsState.HasValidCredentials = serviceController.IsCognitoAuthenticated;
-                Debug.Log($"AWS configuration loaded - Valid credentials: {_settingsState.HasValidCredentials}");
+                Debug.Log($"Lambda configuration loaded - Valid credentials: {_settingsState.HasValidCredentials}");
             }
         }
 
-        #endregion
+        private void UpdateCredentialsStatus(bool isValid, string message = null)
+        {
+            _settingsState.HasValidCredentials = isValid;
+            _uiManager?.UpdateCredentialsStatus(isValid, message);
+            _settingsState.TriggerCredentialsValidityChanged(isValid);
+            Debug.Log($"Lambda credentials status updated: {isValid} - {message}");
+        }
 
-        #region Event Handlers
-
-        /// <summary>
-        /// Maneja el final de transiciones de paneles
-        /// </summary>
         private void OnTransitionEndEvent(TransitionEndEvent evt)
         {
             if (!_uiManager.IsAnyPanelVisible())
@@ -610,139 +701,61 @@ namespace _Scripts.Controllers.LambdaSettingsController
             }
         }
 
-        /// <summary>
-        /// Maneja solicitudes de regreso al Dashboard
-        /// </summary>
         private void OnReturnToDashboardHandler()
         {
             OnReturnToDashboardRequested?.Invoke();
         }
 
-        /// <summary>
-        /// Maneja completado de transiciones de paneles
-        /// </summary>
         private void OnPanelTransitionCompleteHandler(ILambdaSettingsOps.PanelType panelType)
         {
             OnPanelTransitionComplete?.Invoke(panelType);
             Debug.Log($"Panel transition complete: {panelType}");
         }
 
-        #endregion
-
-        #region Helper Methods
-
-        /// <summary>
-        /// Muestra la UI principal (equivalente al método original)
-        /// </summary>
-        internal void ShowUi()
+        private void OnExecutionCompleted(bool success, string message, object data)
         {
-            Show();
+            Debug.Log($"Lambda execution completed: {message}");
+            ShowErrorMessage(success ? $"Execution successful: {data?.ToString()}" : message);
         }
 
-        /// <summary>
-        /// Oculta la UI principal (equivalente al método original)
-        /// </summary>
-        internal void HideUi()
+        private void ShowErrorMessage(string message)
         {
-            Hide();
-        }
-
-        /// <summary>
-        /// Actualiza el estado de credenciales AWS
-        /// </summary>
-        public void UpdateCredentialsStatus(bool isValid, string message = null)
-        {
-            _settingsState.HasValidCredentials = isValid;
-            
-            // Actualizar UI a través del UIManager
-            _uiManager?.UpdateCredentialsStatus(isValid, message);
-            
-            // Notificar cambio de estado usando el método público
-            _settingsState.TriggerCredentialsValidityChanged(isValid);
-            
-            Debug.Log($"AWS credentials status updated: {isValid} - {message}");
-        }
-
-        /// <summary>
-        /// Actualiza resultados de pruebas de conexión
-        /// </summary>
-        public void UpdateConnectionTestResults(Dictionary<string, LambdaSettingsInfo.ConnectionTestResult> results)
-        {
-            _awsConfig.TestResults = results;
-            
-            // Actualizar UI a través del UIManager
-            _uiManager?.UpdateConnectionTestResults(results);
-            
-            // Notificar resultados individualmente usando el método público
-            foreach (var kvp in results)
+            var existingLabel = _functionsList.Q<Label>("ErrorMessage");
+            if (existingLabel != null)
             {
-                _settingsState.TriggerConnectionTestCompleted(kvp.Key, kvp.Value);
+                _functionsList.Remove(existingLabel);
             }
-            
-            Debug.Log($"Connection test results updated for {results.Count} services");
+            var errorLabel = new Label(message);
+            errorLabel.name = "ErrorMessage";
+            errorLabel.AddToClassList("error-message");
+            _functionsList.Add(errorLabel);
         }
 
-        /// <summary>
-        /// Actualiza configuración de servicios AWS
-        /// </summary>
-        public void UpdateServiceConfiguration(string serviceName, Dictionary<string, object> config)
+        private async Task SaveConfigurationAsync()
         {
-            _awsConfig.ServiceConfigs[serviceName] = config;
-            _awsConfig.ServiceStates[serviceName] = true;
-            
-            // Marcar como cambios no guardados
-            _settingsState.HasUnsavedChanges = true;
-            
-            Debug.Log($"Service configuration updated for {serviceName}");
-        }
-
-        /// <summary>
-        /// Prueba la conexión a un servicio AWS específico
-        /// </summary>
-        public void TestServiceConnection(string serviceName)
-        {
-            // TODO: Implementar prueba real de conexión
-            _settingsState.IsTestingConnection = true;
-            
-            Debug.Log($"Testing connection to AWS service: {serviceName}");
-            
-            // Simular resultado de prueba (reemplazar con lógica real)
-            var testResult = new LambdaSettingsInfo.ConnectionTestResult
+            if (_lambdaManager != null)
             {
-                ServiceName = serviceName,
-                IsSuccessful = true, // Esto debería venir de una prueba real
-                Message = "Connection test completed successfully",
-                TestTime = DateTime.Now,
-                ResponseTime = TimeSpan.FromMilliseconds(150)
-            };
-            
-            _awsConfig.TestResults[serviceName] = testResult;
-            _settingsState.TriggerConnectionTestCompleted(serviceName, testResult);
-            _settingsState.IsTestingConnection = false;
+                var config = new Dictionary<string, object>
+                {
+                    ["FunctionName"] = _functionNameField.value,
+                    ["Payload"] = _payloadField.value,
+                    ["FunctionNameContext"] = _functionNameContextField.value,
+                    ["AdditionalPayload"] = _additionalPayloadField.value
+                };
+                _awsConfig.ServiceConfigs["Lambda"] = config;
+                _settingsState.HasUnsavedChanges = false;
+                UpdateCredentialsStatus(true, "Configuration saved");
+                Debug.Log("Lambda configuration saved");
+            }
         }
 
         #endregion
 
         #region Public Properties
 
-        /// <summary>
-        /// UI Manager asociado
-        /// </summary>
         public LambdaSettingsUIManager UIManager => _uiManager;
-
-        /// <summary>
-        /// Event Manager asociado
-        /// </summary>
         public LambdaSettingsEventManager EventManager => _eventManager;
-
-        /// <summary>
-        /// Estado actual de AWS Settings
-        /// </summary>
         public LambdaSettingsInfo.LambdaSettingsState SettingsState => _settingsState;
-
-        /// <summary>
-        /// Configuración AWS actual
-        /// </summary>
         public LambdaSettingsInfo.AwsConfiguration AwsConfig => _awsConfig;
 
         #endregion
