@@ -218,12 +218,8 @@ namespace _Scripts.Controllers.DashboardController
             if (_uiConfig?.Body != null)
             {
                 _uiConfig.Body.style.display = DisplayStyle.None;
-                
-                // Cerrar cualquier panel abierto
                 _uiManager?.CloseCurrentPanel();
-                
                 OnControllerHidden?.Invoke(this);
-                Debug.Log("[DashboardOrchestrator] Dashboard UI hidden");
             }
         }
 
@@ -247,7 +243,6 @@ namespace _Scripts.Controllers.DashboardController
                 _subpanelsAndSmokeMaskContainer = null;
 
                 _isInitialized = false;
-                Debug.Log("[DashboardOrchestrator] Cleanup completed");
             }
             catch (Exception ex)
             {
@@ -360,9 +355,6 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         public void HandleSettingsClick()
         {
-            Debug.Log("Settings button clicked - opening settings");
-            
-            // Cerrar menú y ocultar dashboard
             _uiManager?.HideNavigationMenu();
             Hide();
             
@@ -373,7 +365,6 @@ namespace _Scripts.Controllers.DashboardController
             }
             else
             {
-                // Fallback: usar UIController
                 _mainUIController?.ShowUI("Settings");
             }
         }
@@ -383,13 +374,8 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         public void HandleSupportClick()
         {
-            Debug.Log("Support button clicked - opening support center");
-    
-            // Cerrar menú y ocultar dashboard
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // Mostrar support controller
             _mainUIController?.ShowUI("Support");
         }
         /// <summary>
@@ -397,28 +383,17 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         public void HandleLogoutClick()
         {
-            Debug.Log("🔴 Dashboard HandleLogoutClick() called");
-    
-            // Cerrar menú y ocultar dashboard
             _uiManager?.HideNavigationMenu();
             Hide();
-    
-            // ✅ CAMBIO: Llamar a UIController en lugar de hacer logout directo
             var uiController = UIController.Instance;
             if (uiController != null)
             {
-                Debug.Log("🔴 Calling UIController.HandleUserLogout()");
-                // Necesitamos hacer público el método o crear un método público
-                uiController.RequestLogout(); // Nuevo método público
+                uiController.RequestLogout();
             }
             else
             {
-                Debug.Log("🔴 UIController not found - doing direct logout");
-                // Fallback al método anterior
                 ServiceController.Instance?.CognitoManager?.SignOut();
             }
-    
-            // Notificar evento
             OnLogoutRequested?.Invoke();
         }
 

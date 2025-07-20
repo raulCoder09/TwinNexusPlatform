@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.UiManagement;
 using _Scripts.Models.LambdaManagement;
 using Newtonsoft.Json;
@@ -71,6 +72,7 @@ namespace _Scripts.Controllers.LambdaSettingsController
         private Label _testResultLabel;
 
         private LambdaManager _lambdaManager;
+        private SettingsOrchestrator _settingsOrchestrator;
 
         #endregion
 
@@ -373,6 +375,7 @@ namespace _Scripts.Controllers.LambdaSettingsController
                 _uiManager = null;
                 _eventManager = null;
 
+                _settingsOrchestrator = null;
                 _mainUIController = null;
                 _uiConfig = null;
                 _awsConfig = null;
@@ -646,6 +649,22 @@ namespace _Scripts.Controllers.LambdaSettingsController
                 ServiceController.Instance?.CognitoManager?.SignOut();
             }
         }
+        public void HandleSettingsClick()
+        {
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            // Mostrar settings controller
+            if (_settingsOrchestrator != null)
+            {
+                _settingsOrchestrator.ShowUi();
+            }
+            else
+            {
+                // Fallback: usar UIController
+                _mainUIController?.ShowUI("Settings");
+            }
+        }
 
         #endregion
 
@@ -659,6 +678,7 @@ namespace _Scripts.Controllers.LambdaSettingsController
                 Debug.LogWarning("UIController not found - will try to find it later");
             }
             Debug.Log("Lambda Settings dependencies search completed");
+            _settingsOrchestrator = FindObjectOfType<SettingsOrchestrator>();
         }
 
         private void InitializeLambdaSettingsState()

@@ -320,7 +320,6 @@ namespace _Scripts.Controllers.DashboardController
         /// </summary>
         private async void OnSettingsButtonClicked(ClickEvent evt)
         {
-            Debug.Log("Settings button clicked - executing navigation");
             await UIAnalyticsManager.Instance?.TrackMenuEvent(
                 action: "menu_item_clicked",
                 menuItem: "SettingsButton",

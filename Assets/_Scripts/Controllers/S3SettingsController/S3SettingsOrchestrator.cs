@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.UiManagement;
 using _Scripts.Models.S3Management;
 
@@ -78,6 +79,7 @@ namespace _Scripts.Controllers.S3SettingsController
         private Label _testResultLabel;
 
         private S3Manager _s3Manager;
+        private SettingsOrchestrator _settingsOrchestrator;
 
         #endregion
 
@@ -390,7 +392,7 @@ namespace _Scripts.Controllers.S3SettingsController
                 _settingsState = null;
                 _uiDocument = null;
                 _subpanelsAndSmokeMaskContainer = null;
-
+                _settingsOrchestrator = null;
                 _fileNameField = null;
                 _contentTypeField = null;
                 _uploadFileButton = null;
@@ -669,6 +671,28 @@ namespace _Scripts.Controllers.S3SettingsController
             {
                 Debug.Log("UIController not found - doing direct logout");
                 ServiceController.Instance?.CognitoManager?.SignOut();
+            }
+        }
+        /// <summary>
+        /// Maneja clic en botón Settings
+        /// </summary>
+        public void HandleSettingsClick()
+        {
+            Debug.Log("Settings button clicked - opening settings");
+            
+            // Cerrar menú y ocultar dashboard
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            // Mostrar settings controller
+            if (_settingsOrchestrator != null)
+            {
+                _settingsOrchestrator.ShowUi();
+            }
+            else
+            {
+                // Fallback: usar UIController
+                _mainUIController?.ShowUI("Settings");
             }
         }
 

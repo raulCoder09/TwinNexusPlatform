@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.UiManagement;
 using _Scripts.Models.CloudWatchManagement;
 
@@ -83,6 +84,7 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
         private Label _testResultLabel;
 
         private CloudWatchManager _cloudWatchManager;
+        private SettingsOrchestrator _settingsOrchestrator;
 
         #endregion
 
@@ -395,6 +397,7 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
                 _uiManager = null;
                 _eventManager = null;
 
+                _settingsOrchestrator = null;
                 _mainUIController = null;
                 _uiConfig = null;
                 _awsConfig = null;
@@ -719,6 +722,24 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
             }
         }
 
+        /// <summary>
+        /// Maneja clic en botón Settings
+        /// </summary>
+        public void HandleSettingsClick()
+        {
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            // Mostrar settings controller
+            if (_settingsOrchestrator != null)
+            {
+                _settingsOrchestrator.ShowUi();
+            }
+            else
+            {
+                _mainUIController?.ShowUI("Settings");
+            }
+        }
         #endregion
 
         #region Private Implementation Methods
@@ -730,7 +751,7 @@ namespace _Scripts.Controllers.CloudwatchSettingsController
             {
                 Debug.LogWarning("UIController not found - will try to find it later");
             }
-            Debug.Log("Cloudwatch Settings dependencies search completed");
+            _settingsOrchestrator = FindObjectOfType<SettingsOrchestrator>();
         }
 
         private void InitializeCloudwatchSettingsState()

@@ -1894,7 +1894,7 @@ MonoBehaviour:
   _environmentConfigs:
   - environmentType: 1
     environmentName: Virtual Environment
-    environmentPrefab: {fileID: 6418777021491892331, guid: c0f55aa25607d4b25ab0896690ec24c8,
+    environmentPrefab: {fileID: 8828649784974939132, guid: c0f55aa25607d4b25ab0896690ec24c8,
       type: 3}
     requiresTransparentUI: 1
     uiOpacity: 0.8

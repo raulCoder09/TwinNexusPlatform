@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.UiManagement;
 using _Scripts.Models.IoTCoreManagement;
 
@@ -80,7 +81,7 @@ namespace _Scripts.Controllers.IotCoreSettingsController
         private Label _testResultLabel;
 
         private IoTCoreManager _iotCoreManager;
-
+        private SettingsOrchestrator _settingsOrchestrator;
         #endregion
 
         #region Unity Lifecycle
@@ -355,6 +356,29 @@ namespace _Scripts.Controllers.IotCoreSettingsController
                 Debug.Log("[IotCoreSettingsOrchestrator] IoT Core Settings UI shown");
             }
         }
+        
+        /// <summary>
+        /// Maneja clic en botón Settings
+        /// </summary>
+        public void HandleSettingsClick()
+        {
+            Debug.Log("Settings button clicked - opening settings");
+            
+            // Cerrar menú y ocultar dashboard
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            // Mostrar settings controller
+            if (_settingsOrchestrator != null)
+            {
+                _settingsOrchestrator.ShowUi();
+            }
+            else
+            {
+                // Fallback: usar UIController
+                _mainUIController?.ShowUI("Settings");
+            }
+        }
 
         public void Hide()
         {
@@ -396,7 +420,7 @@ namespace _Scripts.Controllers.IotCoreSettingsController
                 _settingsState = null;
                 _uiDocument = null;
                 _subpanelsAndSmokeMaskContainer = null;
-
+                _settingsOrchestrator = null;
                 _thingNameField = null;
                 _thingTypeField = null;
                 _createThingButton = null;
@@ -740,6 +764,7 @@ namespace _Scripts.Controllers.IotCoreSettingsController
                 Debug.LogWarning("UIController not found - will try to find it later");
             }
             Debug.Log("IoT Core Settings dependencies search completed");
+            _settingsOrchestrator = FindObjectOfType<SettingsOrchestrator>();
         }
 
         private void InitializeIotCoreSettingsState()

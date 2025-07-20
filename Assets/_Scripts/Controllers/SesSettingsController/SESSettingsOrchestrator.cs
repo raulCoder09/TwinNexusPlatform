@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.UiManagement;
 using _Scripts.Models.SESManagement;
 
@@ -85,6 +86,7 @@ namespace _Scripts.Controllers.SESSettingsController
         private Label _testResultLabel;
 
         private SESManager _sesManager;
+        private SettingsOrchestrator _settingsOrchestrator;
 
         #endregion
 
@@ -441,7 +443,7 @@ namespace _Scripts.Controllers.SESSettingsController
                 _settingsState = null;
                 _uiDocument = null;
                 _subpanelsAndSmokeMaskContainer = null;
-
+                _settingsOrchestrator = null;
                 // Limpiar referencias UI
                 _senderEmailField = null;
                 _senderNameField = null;
@@ -668,6 +670,21 @@ namespace _Scripts.Controllers.SESSettingsController
                 ServiceController.Instance?.CognitoManager?.SignOut();
             }
         }
+        public void HandleSettingsClick()
+        {
+            _uiManager?.HideNavigationMenu();
+            Hide();
+            
+            // Mostrar settings controller
+            if (_settingsOrchestrator != null)
+            {
+                _settingsOrchestrator.ShowUi();
+            }
+            else
+            {
+                _mainUIController?.ShowUI("Settings");
+            }
+        }
 
         #endregion
         
@@ -680,8 +697,7 @@ namespace _Scripts.Controllers.SESSettingsController
             {
                 Debug.LogWarning("UIController not found - will try to find it later");
             }
-
-            Debug.Log("AWS Settings dependencies search completed");
+            _settingsOrchestrator = FindObjectOfType<SettingsOrchestrator>();
         }
 
         private void InitializeSESSettingsState()

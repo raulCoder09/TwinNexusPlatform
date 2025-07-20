@@ -270,13 +270,12 @@ namespace _Scripts.Controllers.S3SettingsController
 
         private async void OnSettingsButtonClicked(ClickEvent evt)
         {
-            Debug.Log("Settings button clicked - already in S3 Settings");
             await UIAnalyticsManager.Instance?.TrackMenuEvent(
                 action: "menu_item_clicked",
                 menuItem: "SettingsButton",
                 context: "navigation_menu"
             );
-            _uiManager.HideNavigationMenu();
+            _orchestrator.HandleSettingsClick();
         }
 
         private async void OnSupportButtonClicked(ClickEvent evt)
