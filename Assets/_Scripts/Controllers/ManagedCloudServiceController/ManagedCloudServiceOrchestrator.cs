@@ -815,22 +815,65 @@ private async Task<bool> EnsureMQTTSystemInitialized()
     }
 }
 
-        /// <summary>
-        /// Configura los elementos UI del dashboard MQTT
-        /// </summary>
         private void SetupMQTTUI()
         {
             // Configurar valores iniciales
             if (_topicField != null)
                 _topicField.value = "tnp/TNPSGA52/test";
-    
+
             if (_messageField != null)
                 _messageField.value = "{\"message\": \"Hello from Unity!\", \"timestamp\": \"\"}";
+
+            // NUEVO: Limpiar elementos estáticos del data stream
+            ClearStaticDataStreamElements();
 
             // Estado inicial
             UpdateConnectionUI(false);
             UpdateMetricsUI();
         }
+        
+        /// <summary>
+        /// Limpia elementos estáticos del data stream
+        /// </summary>
+        private void ClearStaticDataStreamElements()
+        {
+            if (_dataStreamScroll == null) return;
+
+            Debug.Log("Clearing static data stream elements...");
+
+            // Buscar y remover elementos estáticos específicos
+            var dataItem1 = _dataStreamScroll.Q<VisualElement>("DataItem1");
+            var dataItem2 = _dataStreamScroll.Q<VisualElement>("DataItem2");
+            var dataItem3 = _dataStreamScroll.Q<VisualElement>("DataItem3");
+
+            if (dataItem1 != null)
+            {
+                dataItem1.RemoveFromHierarchy();
+                Debug.Log("Removed DataItem1");
+            }
+
+            if (dataItem2 != null)
+            {
+                dataItem2.RemoveFromHierarchy();
+                Debug.Log("Removed DataItem2");
+            }
+
+            if (dataItem3 != null)
+            {
+                dataItem3.RemoveFromHierarchy();
+                Debug.Log("Removed DataItem3");
+            }
+
+            // También limpiar cualquier otro elemento hijo que pueda estar
+            while (_dataStreamScroll.contentContainer.childCount > 0)
+            {
+                _dataStreamScroll.contentContainer.RemoveAt(0);
+            }
+
+            Debug.Log($"Data stream cleared - child count: {_dataStreamScroll.contentContainer.childCount}");
+        }
+        
+        
         
         /// <summary>
 /// Maneja clic en Connect
@@ -1119,6 +1162,9 @@ private void AddMessageToDataStream(string topic, string message)
 {
     if (_dataStreamScroll == null) return;
 
+    Debug.Log($"Adding message to data stream - Topic: {topic}, Message: {message}");
+
+    // Crear nuevo elemento de datos
     var dataItem = new VisualElement();
     dataItem.AddToClassList("data-item");
 
@@ -1128,20 +1174,22 @@ private void AddMessageToDataStream(string topic, string message)
     var payloadLabel = new Label(message);
     payloadLabel.AddToClassList("data-payload");
     
-    var timestampLabel = new Label("Now");
+    var timestampLabel = new Label($"{DateTime.Now:HH:mm:ss}");
     timestampLabel.AddToClassList("data-timestamp");
 
     dataItem.Add(topicLabel);
     dataItem.Add(payloadLabel);
     dataItem.Add(timestampLabel);
 
-    // Insertar al principio
-    _dataStreamScroll.Insert(0, dataItem);
+    // Insertar al principio del contenedor
+    _dataStreamScroll.contentContainer.Insert(0, dataItem);
+
+    Debug.Log($"Data stream now has {_dataStreamScroll.contentContainer.childCount} messages");
 
     // Limitar a 10 mensajes
-    while (_dataStreamScroll.childCount > 10)
+    while (_dataStreamScroll.contentContainer.childCount > 10)
     {
-        _dataStreamScroll.RemoveAt(_dataStreamScroll.childCount - 1);
+        _dataStreamScroll.contentContainer.RemoveAt(_dataStreamScroll.contentContainer.childCount - 1);
     }
 }
 

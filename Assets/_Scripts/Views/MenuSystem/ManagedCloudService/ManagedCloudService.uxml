@@ -109,21 +109,7 @@
                             <ui:Label text="📡 Real-time MQTT Data Stream" class="panel-title" />
                         </ui:VisualElement>
                         <ui:ScrollView name="DataStreamScroll" enabled="true" class="data-stream-scroll">
-                            <ui:VisualElement name="DataItem1" class="data-item">
-                                <ui:Label text="tnp/TNPSGA52/test" class="data-topic" />
-                                <ui:Label name="TestData" text="{&quot;message&quot;: &quot;Hello from Unity MQTT!&quot;, &quot;timestamp&quot;: &quot;2025-01-20T15:23:45Z&quot;}" class="data-payload" />
-                                <ui:Label text="2s ago" class="data-timestamp" />
-                            </ui:VisualElement>
-                            <ui:VisualElement name="DataItem2" class="data-item">
-                                <ui:Label text="tnp/TNPSGA52/status" class="data-topic" />
-                                <ui:Label name="StatusData" text="{&quot;status&quot;: &quot;online&quot;, &quot;clientId&quot;: &quot;TNPSGA52&quot;}" class="data-payload" />
-                                <ui:Label text="8s ago" class="data-timestamp" />
-                            </ui:VisualElement>
-                            <ui:VisualElement name="DataItem3" class="data-item">
-                                <ui:Label text="tnp/TNPSGA52/device" class="data-topic" />
-                                <ui:Label name="DeviceData" text="{&quot;model&quot;: &quot;Unity Device&quot;, &quot;os&quot;: &quot;Windows&quot;, &quot;memory&quot;: 16384}" class="data-payload" />
-                                <ui:Label text="15s ago" class="data-timestamp" />
-                            </ui:VisualElement>
+
                         </ui:ScrollView>
                     </ui:VisualElement>
                 </ui:VisualElement>
