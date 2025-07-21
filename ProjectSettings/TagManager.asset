@@ -54,6 +54,7 @@ TagManager:
   - EdgeLocalBroker
   - CloudInfrastructureBroker
   - ManagedCloudService
+  - MqttManager
   layers:
   - Default
   - TransparentFX

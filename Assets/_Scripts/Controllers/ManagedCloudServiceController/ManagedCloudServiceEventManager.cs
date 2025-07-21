@@ -70,6 +70,13 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
             _root.Q<Button>("CloseUserProfileButton")?.RegisterCallback<ClickEvent>(OnCloseUserProfilePanelClicked);
             _root.Q<Button>("CloseQuickActionsButton")?.RegisterCallback<ClickEvent>(OnCloseQuickActionsPanelClicked);
             _root.Q<Button>("CloseStatusOverlayButton")?.RegisterCallback<ClickEvent>(OnCloseStatusOverlayPanelClicked);
+            
+            // Eventos del dashboard MQTT
+            _root.Q<Button>("ConnectButton")?.RegisterCallback<ClickEvent>(OnConnectMqttButtonClicked);
+            _root.Q<Button>("DisconnectButton")?.RegisterCallback<ClickEvent>(OnDisconnectMqttButtonClicked);
+            _root.Q<Button>("PublishTestButton")?.RegisterCallback<ClickEvent>(OnPublishTestMqttButtonClicked);
+            _root.Q<Button>("SubscribeButton")?.RegisterCallback<ClickEvent>(OnSubscribeMqttButtonClicked);
+            Debug.Log("[ManagedCloudServiceEventManager] MQTT dashboard events registered");
 
             // Evento de transición del menú de navegación
             var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
@@ -123,6 +130,12 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
                 _root.Q<Button>("CloseUserProfileButton")?.UnregisterCallback<ClickEvent>(OnCloseUserProfilePanelClicked);
                 _root.Q<Button>("CloseQuickActionsButton")?.UnregisterCallback<ClickEvent>(OnCloseQuickActionsPanelClicked);
                 _root.Q<Button>("CloseStatusOverlayButton")?.UnregisterCallback<ClickEvent>(OnCloseStatusOverlayPanelClicked);
+                
+                // Eventos del dashboard MQTT
+                _root.Q<Button>("ConnectButton")?.UnregisterCallback<ClickEvent>(OnConnectMqttButtonClicked);
+                _root.Q<Button>("DisconnectButton")?.UnregisterCallback<ClickEvent>(OnDisconnectMqttButtonClicked);
+                _root.Q<Button>("PublishTestButton")?.UnregisterCallback<ClickEvent>(OnPublishTestMqttButtonClicked);
+                _root.Q<Button>("SubscribeButton")?.UnregisterCallback<ClickEvent>(OnSubscribeMqttButtonClicked);
 
                 // Evento de transición del menú de navegación
                 var navigationMenuPanel = _root.Q<VisualElement>("NavigationMenuPanel");
@@ -479,6 +492,46 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
         /// Orchestrator asociado
         /// </summary>
         public ManagedCloudServiceOrchestrator Orchestrator => _orchestrator;
+
+        #endregion
+        
+        #region MQTT Dashboard Events
+
+        /// <summary>
+        /// Maneja clic en Connect MQTT
+        /// </summary>
+        private void OnConnectMqttButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("MQTT Connect button clicked - delegating to orchestrator");
+            _orchestrator?.OnConnectButtonClicked(evt);
+        }
+
+        /// <summary>
+        /// Maneja clic en Disconnect MQTT
+        /// </summary>
+        private void OnDisconnectMqttButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("MQTT Disconnect button clicked - delegating to orchestrator");
+            _orchestrator?.OnDisconnectButtonClicked(evt);
+        }
+
+        /// <summary>
+        /// Maneja clic en Publish Test MQTT
+        /// </summary>
+        private void OnPublishTestMqttButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("MQTT Publish Test button clicked - delegating to orchestrator");
+            _orchestrator?.OnPublishTestButtonClicked(evt);
+        }
+
+        /// <summary>
+        /// Maneja clic en Subscribe MQTT
+        /// </summary>
+        private void OnSubscribeMqttButtonClicked(ClickEvent evt)
+        {
+            Debug.Log("MQTT Subscribe button clicked - delegating to orchestrator");
+            _orchestrator?.OnSubscribeButtonClicked(evt);
+        }
 
         #endregion
     }

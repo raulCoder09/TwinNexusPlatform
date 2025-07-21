@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
 using _Scripts.Controllers.ServiceManagement;
 using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.UiManagement;
+using _Scripts.Models.MQTTManagement;
 
 namespace _Scripts.Controllers.ManagedCloudServiceController
 {
@@ -78,6 +80,35 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
         private Label _lambdaStatusLabel;
         private Label _ec2StatusLabel;
         private Label _auroraStatusLabel;
+        
+        // Referencias MQTT/IoT
+        private MqttManager _mqttManager;
+        private AwsMqttTesting _awsMqttTesting;
+
+// Referencias a elementos del dashboard
+        private Button _connectButton;
+        private Button _disconnectButton;
+        private Button _publishTestButton;
+        private Button _subscribeButton;
+        private TextField _topicField;
+        private TextField _messageField;
+        private DropdownField _qosDropdown;
+        private ScrollView _dataStreamScroll;
+
+// Labels de métricas
+        private Label _publishedCountLabel;
+        private Label _receivedCountLabel;
+        private Label _topicsCountLabel;
+        private Label _connectionTimeLabel;
+        private Label _connectionStatusLabel;
+        private Label _brokerEndpointLabel;
+        private Label _clientIdLabel;
+        private Label _securityStatusLabel;
+
+// Contadores para métricas
+        private int _publishedMessages = 0;
+        private int _receivedMessages = 0;
+        private DateTime _connectionStartTime;
 
         #endregion
 
@@ -157,6 +188,7 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
 
                 // Inicializar estado
                 InitializeManagedCloudServiceState();
+                InitializeMQTTSystem();
 
                 // Suscribirse a eventos de ServiceController
                 SubscribeToServiceControllerEvents();
@@ -243,7 +275,17 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
                 _uiDocument = null;
                 _subpanelsAndSmokeMaskContainer = null;
 
+                // Limpiar MQTT
+                if (_mqttManager != null)
+                {
+                    _mqttManager.UnsubscribeFromConnected(OnMqttConnected);
+                    _mqttManager.UnsubscribeFromDisconnected(OnMqttDisconnected);
+                    _mqttManager.UnsubscribeFromMessageReceived(OnMqttMessageReceived);
+                }
+
+
                 _isInitialized = false;
+                
             }
             catch (Exception ex)
             {
@@ -452,6 +494,31 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
             _lambdaStatusLabel = root.Q<Label>("LambdaStatusLabel");
             _ec2StatusLabel = root.Q<Label>("EC2StatusLabel");
             _auroraStatusLabel = root.Q<Label>("AuroraStatusLabel");
+            
+            
+            // Referencias a elementos del dashboard MQTT
+            Debug.Log("Getting MQTT Dashboard elements...");
+            _connectButton = root.Q<Button>("ConnectButton");
+            _disconnectButton = root.Q<Button>("DisconnectButton");
+            _publishTestButton = root.Q<Button>("PublishTestButton");
+            _subscribeButton = root.Q<Button>("SubscribeButton");
+            _topicField = root.Q<TextField>("TopicField");
+            _messageField = root.Q<TextField>("MessageField");
+            _qosDropdown = root.Q<DropdownField>("QoSDropdown");
+            _dataStreamScroll = root.Q<ScrollView>("DataStreamScroll");
+
+// Labels de métricas
+            _publishedCountLabel = root.Q<Label>("PublishedCount");
+            _receivedCountLabel = root.Q<Label>("ReceivedCount");
+            _topicsCountLabel = root.Q<Label>("TopicsCount");
+            _connectionTimeLabel = root.Q<Label>("ConnectionTime");
+            _connectionStatusLabel = root.Q<Label>("ConnectionStatus");
+            _brokerEndpointLabel = root.Q<Label>("BrokerEndpoint");
+            _clientIdLabel = root.Q<Label>("ClientIdLabel");
+            _securityStatusLabel = root.Q<Label>("SecurityStatus");
+
+            Debug.Log($"MQTT Dashboard elements found - Connect: {_connectButton != null}, Publish: {_publishTestButton != null}");
+            
             InitializePanelConfiguration(root);
     
             Debug.Log("✅ ManagedCloudService UI components obtained successfully");
@@ -625,6 +692,458 @@ private void InitializePanelConfiguration(VisualElement root)
             
             Debug.Log("ManagedCloudService state initialized");
         }
+        
+        /// <summary>
+        /// Inicializa el sistema MQTT usando ServiceController (VERSIÓN MEJORADA)
+        /// </summary>
+        private void InitializeMQTTSystem()
+        {
+            try
+            {
+                Debug.Log("Starting MQTT system initialization...");
+        
+                var serviceController = ServiceController.Instance;
+                if (serviceController != null)
+                {
+                    _mqttManager = serviceController.MqttManager;
+                    _awsMqttTesting = serviceController.AwsMqttTesting;
+                }
+
+                // NUEVO: No fallar si no están listos aún
+                if (_mqttManager == null)
+                {
+                    Debug.LogWarning("MqttManager not ready yet - will initialize on demand");
+                }
+                else
+                {
+                    // Si está disponible, suscribirse a eventos
+                    _mqttManager.SubscribeToConnected(OnMqttConnected);
+                    _mqttManager.SubscribeToDisconnected(OnMqttDisconnected);
+                    _mqttManager.SubscribeToMessageReceived(OnMqttMessageReceived);
+                    Debug.Log("MQTT system initialized successfully");
+                }
+
+                // Configurar elementos UI independientemente
+                SetupMQTTUI();
+        
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error initializing MQTT system: {ex.Message}");
+            }
+        }
+        /// <summary>
+/// Asegura que el sistema MQTT esté inicializado antes de usar
+/// </summary>
+private async Task<bool> EnsureMQTTSystemInitialized()
+{
+    try
+    {
+        // Si ya están inicializados, return true
+        if (_mqttManager != null && _awsMqttTesting != null)
+        {
+            Debug.Log("MQTT components already initialized");
+            return true;
+        }
+
+        Debug.Log("MQTT components not ready - attempting to initialize...");
+
+        // Verificar que ServiceController esté listo
+        var serviceController = ServiceController.Instance;
+        if (serviceController == null)
+        {
+            Debug.LogError("ServiceController instance not available");
+            return false;
+        }
+
+        // Verificar autenticación
+        if (!serviceController.IsCognitoAuthenticated)
+        {
+            Debug.LogError("Cannot initialize MQTT - user not authenticated");
+            return false;
+        }
+
+        // Esperar a que MQTT esté disponible en ServiceController
+        int attempts = 0;
+        const int maxAttempts = 50; // 5 segundos máximo
+        
+        while (!serviceController.IsServiceAvailable("mqtt") && attempts < maxAttempts)
+        {
+            await Task.Delay(100);
+            attempts++;
+            
+            if (attempts % 10 == 0) // Log cada segundo
+            {
+                Debug.Log($"Waiting for MQTT service... Attempt {attempts}/{maxAttempts}");
+            }
+        }
+
+        if (attempts >= maxAttempts)
+        {
+            Debug.LogError("Timeout waiting for MQTT service to become available");
+            return false;
+        }
+
+        // Obtener referencias del ServiceController
+        _mqttManager = serviceController.MqttManager;
+        _awsMqttTesting = serviceController.AwsMqttTesting;
+
+        // Verificar que se obtuvieron correctamente
+        if (_mqttManager == null)
+        {
+            Debug.LogError("Failed to get MqttManager from ServiceController");
+            return false;
+        }
+
+        if (_awsMqttTesting == null)
+        {
+            Debug.LogWarning("AwsMqttTesting not available, but MqttManager is ready");
+        }
+
+        // Suscribirse a eventos MQTT si no estaba ya suscrito
+        _mqttManager.SubscribeToConnected(OnMqttConnected);
+        _mqttManager.SubscribeToDisconnected(OnMqttDisconnected);
+        _mqttManager.SubscribeToMessageReceived(OnMqttMessageReceived);
+
+        Debug.Log(" MQTT system initialized successfully from ServiceController");
+        return true;
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error ensuring MQTT system initialization: {ex.Message}");
+        return false;
+    }
+}
+
+        /// <summary>
+        /// Configura los elementos UI del dashboard MQTT
+        /// </summary>
+        private void SetupMQTTUI()
+        {
+            // Configurar valores iniciales
+            if (_topicField != null)
+                _topicField.value = "tnp/TNPSGA52/test";
+    
+            if (_messageField != null)
+                _messageField.value = "{\"message\": \"Hello from Unity!\", \"timestamp\": \"\"}";
+
+            // Estado inicial
+            UpdateConnectionUI(false);
+            UpdateMetricsUI();
+        }
+        
+        /// <summary>
+/// Maneja clic en Connect
+/// </summary>
+internal async void OnConnectButtonClicked(ClickEvent evt)
+{
+    try
+    {
+        Debug.Log("Connect button clicked");
+        
+        // NUEVO: Asegurar que MQTT esté inicializado
+        bool mqttReady = await EnsureMQTTSystemInitialized();
+        if (!mqttReady)
+        {
+            Debug.LogError("Failed to initialize MQTT system");
+            return;
+        }
+
+        // Verificar de nuevo que tenemos las referencias
+        if (_mqttManager == null)
+        {
+            Debug.LogError("MQTT components still not available after initialization attempt");
+            return;
+        }
+
+        Debug.Log("MQTT components ready - attempting connection...");
+
+        // Usar la configuración de AwsMqttTesting para conectar
+        var connected = await _mqttManager.ConnectAsync(
+            "aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com",
+            8883,
+            "TNPSGA52",
+            "",
+            "",
+            true,
+            "resources/certificates",
+            "aws-iot-core.pfx",
+            "5859"
+        );
+
+        if (connected)
+        {
+            _connectionStartTime = DateTime.Now;
+            Debug.Log("✅ MQTT connection successful");
+        }
+        else
+        {
+            Debug.LogError("❌ MQTT connection failed");
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error connecting MQTT: {ex.Message}");
+    }
+}
+
+        internal async void OnDisconnectButtonClicked(ClickEvent evt)
+        {
+            try
+            {
+                Debug.Log("Disconnect button clicked");
+        
+                // Asegurar que MQTT esté inicializado
+                bool mqttReady = await EnsureMQTTSystemInitialized();
+                if (!mqttReady)
+                {
+                    Debug.LogWarning("MQTT not initialized for disconnect");
+                    return;
+                }
+        
+                if (_mqttManager != null)
+                {
+                    await _mqttManager.DisconnectAsync();
+                    Debug.Log("Disconnect command sent");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error disconnecting MQTT: {ex.Message}");
+            }
+        }
+
+/// <summary>
+/// Maneja clic en Publish Test
+/// </summary>
+internal async void OnPublishTestButtonClicked(ClickEvent evt)
+{
+    try
+    {
+        Debug.Log("Publish Test button clicked");
+        
+        bool mqttReady = await EnsureMQTTSystemInitialized();
+        if (!mqttReady)
+        {
+            Debug.LogWarning("MQTT not initialized for publish");
+            return;
+        }
+
+        if (_mqttManager == null || !_mqttManager.IsConnected())
+        {
+            Debug.LogWarning("MQTT not connected");
+            return;
+        }
+
+        string topic = _topicField?.value ?? "tnp/TNPSGA52/test";
+        string message = _messageField?.value ?? "{\"message\": \"Hello from Unity!\"}";
+        
+        // Agregar timestamp si no existe
+        if (message.Contains("\"timestamp\": \"\""))
+        {
+            message = message.Replace("\"timestamp\": \"\"", 
+                $"\"timestamp\": \"{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ss.fffZ}\"");
+        }
+
+        var qosLevel = _qosDropdown?.index switch
+        {
+            0 => MqttInfo.QoSLevel.AtMostOnce,
+            2 => MqttInfo.QoSLevel.ExactlyOnce,
+            _ => MqttInfo.QoSLevel.AtLeastOnce
+        };
+
+        bool published = await _mqttManager.PublishAsync(topic, message, qosLevel);
+        
+        if (published)
+        {
+            _publishedMessages++;
+            UpdateMetricsUI();
+            Debug.Log($"Message published to {topic}");
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error publishing message: {ex.Message}");
+    }
+}
+
+/// <summary>
+/// Maneja clic en Subscribe
+/// </summary>
+internal async void OnSubscribeButtonClicked(ClickEvent evt)
+{
+    try
+    {
+        Debug.Log("Subscribe button clicked");
+        
+        // Asegurar que MQTT esté inicializado
+        bool mqttReady = await EnsureMQTTSystemInitialized();
+        if (!mqttReady)
+        {
+            Debug.LogWarning("MQTT not initialized for subscribe");
+            return;
+        }
+        
+        if (_mqttManager == null || !_mqttManager.IsConnected())
+        {
+            Debug.LogWarning("MQTT not connected");
+            return;
+        }
+
+        string topic = _topicField?.value ?? "tnp/TNPSGA52/test";
+        
+        var qosLevel = _qosDropdown?.index switch
+        {
+            0 => MqttInfo.QoSLevel.AtMostOnce,
+            2 => MqttInfo.QoSLevel.ExactlyOnce,
+            _ => MqttInfo.QoSLevel.AtLeastOnce
+        };
+
+        bool subscribed = await _mqttManager.SubscribeAsync(topic, qosLevel, null);
+        
+        if (subscribed)
+        {
+            UpdateMetricsUI();
+            Debug.Log($"✅ Subscribed to {topic}");
+        }
+        else
+        {
+            Debug.LogError("❌ Failed to subscribe");
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error subscribing: {ex.Message}");
+    }
+}
+
+/// <summary>
+/// Maneja evento de conexión MQTT
+/// </summary>
+private void OnMqttConnected()
+{
+    Debug.Log("MQTT Connected event received");
+    UpdateConnectionUI(true);
+    UpdateIoTStatus(
+        ManagedCloudServiceInfo.ConnectionStatus.Disconnected,
+        ManagedCloudServiceInfo.ConnectionStatus.Disconnected,
+        ManagedCloudServiceInfo.ConnectionStatus.Connected
+    );
+}
+
+/// <summary>
+/// Maneja evento de desconexión MQTT
+/// </summary>
+private void OnMqttDisconnected(string reason)
+{
+    Debug.Log($"MQTT Disconnected: {reason}");
+    UpdateConnectionUI(false);
+    UpdateIoTStatus(
+        ManagedCloudServiceInfo.ConnectionStatus.Disconnected,
+        ManagedCloudServiceInfo.ConnectionStatus.Disconnected,
+        ManagedCloudServiceInfo.ConnectionStatus.Disconnected
+    );
+}
+
+/// <summary>
+/// Maneja mensajes MQTT recibidos
+/// </summary>
+private void OnMqttMessageReceived(string topic, string message)
+{
+    Debug.Log($"MQTT Message received on {topic}: {message}");
+    _receivedMessages++;
+    UpdateMetricsUI();
+    AddMessageToDataStream(topic, message);
+}
+/// <summary>
+/// Actualiza UI de conexión
+/// </summary>
+private void UpdateConnectionUI(bool isConnected)
+{
+    if (_connectionStatusLabel != null)
+    {
+        _connectionStatusLabel.text = isConnected 
+            ? "🟢 Connected via TLS 1.2" 
+            : "🔴 Disconnected";
+    }
+
+    if (_securityStatusLabel != null)
+    {
+        _securityStatusLabel.text = isConnected 
+            ? "🔒 SSL/TLS Secured" 
+            : "🔓 Not Connected";
+    }
+
+    // Habilitar/deshabilitar botones
+    if (_connectButton != null)
+        _connectButton.SetEnabled(!isConnected);
+    
+    if (_disconnectButton != null)
+        _disconnectButton.SetEnabled(isConnected);
+    
+    if (_publishTestButton != null)
+        _publishTestButton.SetEnabled(isConnected);
+    
+    if (_subscribeButton != null)
+        _subscribeButton.SetEnabled(isConnected);
+}
+
+/// <summary>
+/// Actualiza métricas UI
+/// </summary>
+private void UpdateMetricsUI()
+{
+    if (_publishedCountLabel != null)
+        _publishedCountLabel.text = _publishedMessages.ToString();
+    
+    if (_receivedCountLabel != null)
+        _receivedCountLabel.text = _receivedMessages.ToString();
+    
+    if (_topicsCountLabel != null && _mqttManager != null)
+    {
+        var status = _mqttManager.GetConnectionStatus();
+        _topicsCountLabel.text = status.subscribedTopics?.Count.ToString() ?? "0";
+    }
+    
+    if (_connectionTimeLabel != null && _mqttManager?.IsConnected() == true)
+    {
+        var elapsed = DateTime.Now - _connectionStartTime;
+        _connectionTimeLabel.text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
+    }
+}
+
+/// <summary>
+/// Agrega mensaje al stream de datos
+/// </summary>
+private void AddMessageToDataStream(string topic, string message)
+{
+    if (_dataStreamScroll == null) return;
+
+    var dataItem = new VisualElement();
+    dataItem.AddToClassList("data-item");
+
+    var topicLabel = new Label(topic);
+    topicLabel.AddToClassList("data-topic");
+    
+    var payloadLabel = new Label(message);
+    payloadLabel.AddToClassList("data-payload");
+    
+    var timestampLabel = new Label("Now");
+    timestampLabel.AddToClassList("data-timestamp");
+
+    dataItem.Add(topicLabel);
+    dataItem.Add(payloadLabel);
+    dataItem.Add(timestampLabel);
+
+    // Insertar al principio
+    _dataStreamScroll.Insert(0, dataItem);
+
+    // Limitar a 10 mensajes
+    while (_dataStreamScroll.childCount > 10)
+    {
+        _dataStreamScroll.RemoveAt(_dataStreamScroll.childCount - 1);
+    }
+}
 
         /// <summary>
         /// Actualiza datos del usuario autenticado
