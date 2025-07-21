@@ -111,6 +111,9 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
         private DateTime _connectionStartTime;
 
         #endregion
+        
+        private readonly Queue<(string topic, string message)> _messageQueue = new Queue<(string, string)>();
+        private readonly object _queueLock = new object();
 
         #region Unity Lifecycle
 
@@ -204,6 +207,32 @@ namespace _Scripts.Controllers.ManagedCloudServiceController
                 OnControllerError?.Invoke(this, $"Initialization failed: {ex.Message}");
                 return false;
             }
+        }
+        
+        /// <summary>
+        /// Procesa mensajes MQTT en el hilo principal
+        /// </summary>
+        private void Update()
+        {
+            // Procesar mensajes MQTT en el hilo principal
+            lock (_queueLock)
+            {
+                while (_messageQueue.Count > 0)
+                {
+                    var (topic, message) = _messageQueue.Dequeue();
+                    ProcessMqttMessageOnMainThread(topic, message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Procesa mensaje MQTT en el hilo principal
+        /// </summary>
+        private void ProcessMqttMessageOnMainThread(string topic, string message)
+        {
+            _receivedMessages++;
+            UpdateMetricsUI();
+            AddMessageToDataStream(topic, message);
         }
         
         
@@ -1088,16 +1117,17 @@ private void OnMqttDisconnected(string reason)
     );
 }
 
-/// <summary>
-/// Maneja mensajes MQTT recibidos
-/// </summary>
 private void OnMqttMessageReceived(string topic, string message)
 {
     Debug.Log($"MQTT Message received on {topic}: {message}");
-    _receivedMessages++;
-    UpdateMetricsUI();
-    AddMessageToDataStream(topic, message);
+
+    lock (_queueLock)
+    {
+        _messageQueue.Enqueue((topic, message));
+    }
 }
+
+
 /// <summary>
 /// Actualiza UI de conexión
 /// </summary>
