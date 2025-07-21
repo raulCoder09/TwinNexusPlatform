@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
-using _Scripts.Models.CognitoManagement;
-using _Scripts.Models.SESManagement;
 using _Scripts.Models.CloudWatchManagement;
+using _Scripts.Models.CognitoManagement;
 using _Scripts.Models.IoTCoreManagement;
-using _Scripts.Models.S3Management;
 using _Scripts.Models.LambdaManagement;
+using _Scripts.Models.S3Management;
+using _Scripts.Models.SESManagement;
 using Amazon;
+using UnityEngine;
 
-namespace _Scripts.Controller
+namespace _Scripts.Controllers.ServiceManagement
 {
     /// <summary>
     /// Coordinador central de todos los servicios AWS

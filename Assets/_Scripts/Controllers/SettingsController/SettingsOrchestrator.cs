@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.ServiceManagement;
 using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.SettingsController
@@ -290,19 +291,19 @@ namespace _Scripts.Controllers.SettingsController
         /// </summary>
         public void HandleConfigurationClick(ISettingsOps.ConfigurationType configurationType)
         {
-            Debug.Log($"[SettingsOrchestrator] Configuration clicked: {configurationType}");
-
-            // Resaltar configuración seleccionada
             var configName = configurationType.ToString();
             _uiManager?.HighlightSelectedConfiguration(configName);
-
-            // Disparar evento
             OnConfigurationOpened?.Invoke(configurationType);
-
-            // Mostrar mensaje específico para cada configuración
+            
+            if (configurationType == ISettingsOps.ConfigurationType.IoT)
+            {
+                ShowIoTConfigurationMessage();
+                StartCoroutine(NavigateToIoTSettingsAfterPopup());
+                return; 
+            }
+            
             ShowConfigurationMessage(configurationType);
-
-            // Si es AwsServices, navegar a AWS Settings después de que el pop-up se cierre
+            
             if (configurationType == ISettingsOps.ConfigurationType.AwsServices)
             {
                 StartCoroutine(NavigateToAwsSettingsAfterPopup());
@@ -403,6 +404,45 @@ namespace _Scripts.Controllers.SettingsController
 
             // Navegar a Welcome
             _mainUIController?.ShowUI("Welcome");
+        }
+        /// <summary>
+        /// Muestra mensaje específico para configuración IoT
+        /// </summary>
+        private void ShowIoTConfigurationMessage()
+        {
+            var message = "🔧 Ingresando a configuración de IoT\n\n" +
+                          "Configuración de dispositivos IoT, conexiones MQTT, brokers locales y servicios en la nube.\n\n" +
+                          "• Edge/Local Broker\n" +
+                          "• Cloud Infrastructure Broker\n" +
+                          "• Managed Cloud Service";
+
+            // Crear overlay para mensaje
+            var overlay = CreateConfigurationMessageOverlay(message);
+            _uiConfig.Body.Add(overlay);
+
+            // Auto-hide después de 2.5 segundos
+            StartCoroutine(HideConfigurationMessageCoroutine(overlay, 2.5f));
+
+            Debug.Log("[SettingsOrchestrator] IoT configuration message shown");
+        }
+        
+        /// <summary>
+        /// Navega a IotSettings después del popup
+        /// </summary>
+        private IEnumerator NavigateToIoTSettingsAfterPopup()
+        {
+            // Esperar el tiempo del pop-up (2.5 segundos)
+            yield return new WaitForSeconds(2.5f);
+
+            // Cerrar menú si está abierto
+            _uiManager?.HideNavigationMenu();
+
+            // Ocultar Settings
+            Hide();
+
+            // Navegar a IotSettings
+            _mainUIController?.ShowUI("IotSettings");
+            Debug.Log("[SettingsOrchestrator] Navigated to IotSettings after popup");
         }
 
         #endregion

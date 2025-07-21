@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using _Scripts.Controller;
+using _Scripts.Controllers.ServiceManagement;
 using _Scripts.Controllers.UiManagement;
 
 namespace _Scripts.Controllers.DeviceSelectionController
