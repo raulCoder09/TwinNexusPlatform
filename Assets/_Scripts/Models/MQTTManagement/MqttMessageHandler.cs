@@ -19,15 +19,38 @@ namespace _Scripts.Models.MQTTManagement
             _connectionHandler = connectionHandler ?? throw new ArgumentNullException(nameof(connectionHandler));
             _eventManager = eventManager ?? throw new ArgumentNullException(nameof(eventManager));
 
-            // Configurar el manejador de mensajes recibidos
-            IMqttClient client = _connectionHandler.GetClient();
-            if (client != null)
+            // CORREGIDO: Suscribirse al evento de conexión para configurar el callback de mensajes
+            _eventManager.SubscribeToConnected(() => {
+                ConfigureMessageHandler();
+            });
+        }
+        
+        /// <summary>
+        /// Configura el manejador de mensajes después de la conexión
+        /// </summary>
+        private void ConfigureMessageHandler()
+        {
+            try
             {
-                client.ApplicationMessageReceivedAsync += e =>
+                IMqttClient client = _connectionHandler.GetClient();
+                if (client != null)
                 {
-                    ProcessMqttMessage(e);
-                    return Task.CompletedTask;
-                };
+                    LogDebug("Configuring message handler for connected client");
+                    client.ApplicationMessageReceivedAsync += e =>
+                    {
+                        ProcessMqttMessage(e);
+                        return Task.CompletedTask;
+                    };
+                    LogDebug("Message handler configured successfully");
+                }
+                else
+                {
+                    LogError("Cannot configure message handler - client is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error configuring message handler: {ex.Message}");
             }
         }
 

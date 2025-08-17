@@ -183,92 +183,109 @@ namespace _Scripts.Controllers.EnvironmentController
         /// Carga un ambiente específico
         /// </summary>
         public async Task<bool> LoadEnvironment(EnvironmentType environmentType)
+{
+    try
+    {
+        if (!_isInitialized)
         {
-            try
+            LogError("EnvironmentManager not initialized");
+            return false;
+        }
+
+        if (_environmentState.IsTransitioning)
+        {
+            LogWarning("Cannot load environment - transition already in progress");
+            return false;
+        }
+
+        if (_environmentState.CurrentEnvironment == environmentType)
+        {
+            LogDebug($"Environment {environmentType} already loaded");
+            return true;
+        }
+
+        LogDebug($"Starting load of environment: {environmentType}");
+        
+        // Marcar como en transición
+        _environmentState.IsTransitioning = true;
+        _environmentState.TriggerTransitionStateChanged(true);
+
+        // Obtener configuración
+        if (!_configLookup.TryGetValue(environmentType, out var config))
+        {
+            LogError($"No configuration found for environment: {environmentType}");
+            _environmentState.IsTransitioning = false;
+            _environmentState.TriggerTransitionStateChanged(false);
+            return false;
+        }
+
+        // Reportar progreso inicial
+        OnEnvironmentLoadProgress?.Invoke(environmentType, 0f);
+
+        // Descargar ambiente actual si existe
+        if (_environmentState.CurrentEnvironment != EnvironmentType.None)
+        {
+            LogDebug("Unloading current environment...");
+            UnloadCurrentEnvironment();
+            OnEnvironmentLoadProgress?.Invoke(environmentType, 0.3f);
+        }
+
+        // Delay para transición suave
+        await Task.Delay(Mathf.RoundToInt(_transitionDelay * 1000));
+        OnEnvironmentLoadProgress?.Invoke(environmentType, 0.5f);
+
+        // Instanciar nuevo ambiente solo si es Virtual
+        GameObject environmentInstance = null;
+        if (environmentType == EnvironmentType.Virtual)
+        {
+            LogDebug($"Instantiating environment prefab: {config.environmentName}");
+            environmentInstance = Instantiate(config.environmentPrefab);
+            environmentInstance.name = $"{config.environmentName}_Instance";
+        }
+        else
+        {
+            LogDebug($"Non-virtual environment ({environmentType}) selected - no prefab instantiated");
+            // Asegurarse de que CurrentEnvironmentInstance esté limpio
+            if (_environmentState.CurrentEnvironmentInstance != null)
             {
-                if (!_isInitialized)
-                {
-                    LogError("EnvironmentManager not initialized");
-                    return false;
-                }
-
-                if (_environmentState.IsTransitioning)
-                {
-                    LogWarning("Cannot load environment - transition already in progress");
-                    return false;
-                }
-
-                if (_environmentState.CurrentEnvironment == environmentType)
-                {
-                    LogDebug($"Environment {environmentType} already loaded");
-                    return true;
-                }
-
-                LogDebug($"Starting load of environment: {environmentType}");
-                
-                // Marcar como en transición
-                _environmentState.IsTransitioning = true;
-                _environmentState.TriggerTransitionStateChanged(true);
-
-                // Obtener configuración
-                if (!_configLookup.TryGetValue(environmentType, out var config))
-                {
-                    LogError($"No configuration found for environment: {environmentType}");
-                    return false;
-                }
-
-                // Reportar progreso inicial
-                OnEnvironmentLoadProgress?.Invoke(environmentType, 0f);
-
-                // Descargar ambiente actual si existe
-                if (_environmentState.CurrentEnvironment != EnvironmentType.None)
-                {
-                    LogDebug("Unloading current environment...");
-                    UnloadCurrentEnvironment();
-                    OnEnvironmentLoadProgress?.Invoke(environmentType, 0.3f);
-                }
-
-                // Delay para transición suave
-                await Task.Delay(Mathf.RoundToInt(_transitionDelay * 1000));
-                OnEnvironmentLoadProgress?.Invoke(environmentType, 0.5f);
-
-                // Instanciar nuevo ambiente
-                LogDebug($"Instantiating environment prefab: {config.environmentName}");
-                var environmentInstance = Instantiate(config.environmentPrefab);
-                environmentInstance.name = $"{config.environmentName}_Instance";
-                
-                OnEnvironmentLoadProgress?.Invoke(environmentType, 0.8f);
-
-                // Actualizar estado
-                _environmentState.CurrentEnvironmentInstance = environmentInstance;
-                _environmentState.CurrentEnvironment = environmentType;
-                _environmentState.LastTransitionTime = DateTime.Now;
-
-                OnEnvironmentLoadProgress?.Invoke(environmentType, 1f);
-
-                // Finalizar transición
-                _environmentState.IsTransitioning = false;
-                _environmentState.TriggerTransitionStateChanged(false);
-                _environmentState.TriggerEnvironmentChanged(environmentType);
-
-                // Disparar evento público
-                OnEnvironmentLoaded?.Invoke(environmentType);
-
-                LogDebug($"Environment {environmentType} loaded successfully");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error loading environment {environmentType}: {ex.Message}");
-                
-                // Limpiar estado en caso de error
-                _environmentState.IsTransitioning = false;
-                _environmentState.TriggerTransitionStateChanged(false);
-                
-                OnEnvironmentError?.Invoke($"Failed to load {environmentType}: {ex.Message}");
-                return false;
+                LogDebug($"Destroying existing prefab for non-virtual environment: {_environmentState.CurrentEnvironmentInstance.name}");
+                Destroy(_environmentState.CurrentEnvironmentInstance);
+                _environmentState.CurrentEnvironmentInstance = null;
             }
         }
+        
+        OnEnvironmentLoadProgress?.Invoke(environmentType, 0.8f);
+
+        // Actualizar estado
+        _environmentState.CurrentEnvironmentInstance = environmentInstance;
+        _environmentState.CurrentEnvironment = environmentType;
+        _environmentState.LastTransitionTime = DateTime.Now;
+
+        OnEnvironmentLoadProgress?.Invoke(environmentType, 1f);
+
+        // Finalizar transición
+        _environmentState.IsTransitioning = false;
+        _environmentState.TriggerTransitionStateChanged(false);
+        _environmentState.TriggerEnvironmentChanged(environmentType);
+
+        // Disparar evento público
+        OnEnvironmentLoaded?.Invoke(environmentType);
+
+        LogDebug($"Environment {environmentType} loaded successfully");
+        return true;
+    }
+    catch (Exception ex)
+    {
+        LogError($"Error loading environment {environmentType}: {ex.Message}");
+        
+        // Limpiar estado en caso de error
+        _environmentState.IsTransitioning = false;
+        _environmentState.TriggerTransitionStateChanged(false);
+        
+        OnEnvironmentError?.Invoke($"Failed to load {environmentType}: {ex.Message}");
+        return false;
+    }
+}
 
         /// <summary>
         /// Descarga el ambiente actual
@@ -289,8 +306,13 @@ namespace _Scripts.Controllers.EnvironmentController
                 // Destruir instancia si existe
                 if (_environmentState.CurrentEnvironmentInstance != null)
                 {
+                    LogDebug($"Destroying environment prefab: {_environmentState.CurrentEnvironmentInstance.name}");
                     Destroy(_environmentState.CurrentEnvironmentInstance);
                     _environmentState.CurrentEnvironmentInstance = null;
+                }
+                else
+                {
+                    LogDebug("No environment prefab instance to destroy");
                 }
 
                 // Actualizar estado

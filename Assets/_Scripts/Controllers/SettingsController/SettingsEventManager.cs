@@ -90,8 +90,6 @@ namespace _Scripts.Controllers.SettingsController
         {
             // Configuraciones principales (del UXML actual)
             _root.Q<Button>("IoTButton")?.RegisterCallback<ClickEvent>(OnConfigurationButtonClicked);
-
-            // Configuraciones futuras que se pueden agregar
             _root.Q<Button>("UserConfigButton")?.RegisterCallback<ClickEvent>(OnConfigurationButtonClicked);
             _root.Q<Button>("CognitoConfigButton")?.RegisterCallback<ClickEvent>(OnConfigurationButtonClicked);
             _root.Q<Button>("SystemConfigButton")?.RegisterCallback<ClickEvent>(OnConfigurationButtonClicked);
@@ -405,6 +403,7 @@ namespace _Scripts.Controllers.SettingsController
             // Mapeo de nombres de botones a configuration types
             return button.name switch
             {
+                
                 "IoTButton" => ISettingsOps.ConfigurationType.IoT,
                 "UserConfigButton" => ISettingsOps.ConfigurationType.User,
                 "CognitoConfigButton" => ISettingsOps.ConfigurationType.Cognito,

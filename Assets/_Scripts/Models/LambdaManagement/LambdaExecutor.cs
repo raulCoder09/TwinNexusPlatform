@@ -6,6 +6,7 @@ using Amazon.Lambda.Model;
 using Newtonsoft.Json;
 using UnityEngine;
 using _Scripts.Controller;
+using _Scripts.Controllers.ServiceManagement;
 
 namespace _Scripts.Models.LambdaManagement
 {

@@ -1,0 +1,482 @@
+/* Estilos de transición existentes */
+.NavigationMenuPanelOutMainScreen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+    translate: -100% 0;
+    transition-duration: 1s;
+    transition-timing-function: ease-in-cubic;
+}
+.code-rain {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url("project://database/Assets/_Images/Backgrounds/ekaterina-novitskaya-gLroHoWh_as-unsplash.jpg");
+    background-size: 100% 100%;
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: -1;
+}
+.NavigationMenuPanelInMainScreen {
+    translate: 0% 0;
+}
+
+.ScrimTransparent {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition-duration: 1s;
+}
+
+.ScrimOpaque {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.78);
+}
+
+/* Estados activos para menú lateral */
+.navigation-menu-button-active {
+    color: rgb(255, 172, 51) !important;
+}
+
+/* Body principal */
+#Body {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-self: stretch;
+    align-content: stretch;
+    background-color: rgb(0, 0, 0);
+    background-image: url("project://database/Assets/_Images/Backgrounds/scanlines2.jpg?fileID=2800000&guid=db31ce936e2104caba450d7ddc5ce66f&type=3#scanlines2");
+    background-size: 100% 4px;
+    background-repeat: repeat-y;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+/* Header */
+#Header {
+    flex-grow: 1;
+    width: 100%;
+    height: 10%;
+    flex-direction: row;
+}
+
+#MenuPanel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    align-items: center;
+}
+
+#MenuButton {
+    height: 100%;
+    width: 50%;
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    translate: 0 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-left-color: rgb(3, 255, 0);
+    border-right-color: rgb(3, 255, 0);
+    border-top-color: rgb(3, 255, 0);
+    border-bottom-color: rgb(3, 255, 0);
+    color: rgb(4, 201, 0);
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+}
+
+#TitlePanel {
+    flex-grow: 1;
+    width: 50%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.selected-mode-ui-name {
+    color: rgb(3, 255, 0);
+    font-size: 40px;
+    -unity-text-align: upper-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: bold;
+}
+
+#UsernamePanel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    -unity-text-align: upper-left;
+    justify-content: center;
+}
+
+#Username {
+    -unity-font-style: bold;
+    -unity-text-outline-color: rgba(0, 0, 0, 0);
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    font-size: 30px;
+}
+
+#LogoutPanel {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    justify-content: center;
+}
+
+#Logout {
+    color: rgb(255, 255, 255);
+    -unity-text-align: upper-center;
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+}
+
+/* Main */
+#Main {
+    flex-grow: 1;
+    width: 100%;
+    height: 80%;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+/* Configuration Grid */
+.config-grid {
+    width: 90%;
+    height: 90%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+.config-row {
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 30%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Configuration Buttons */
+.config-button {
+    flex-grow: 1;
+    width: 30%;
+    height: 90%;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-top-width: 3px;
+    border-right-width: 3px;
+    border-bottom-width: 3px;
+    border-left-width: 3px;
+    border-left-color: rgb(0, 255, 0);
+    border-right-color: rgb(0, 255, 0);
+    border-top-color: rgb(0, 255, 0);
+    border-bottom-color: rgb(0, 255, 0);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    transition-duration: 0.3s;
+    transition-property: background-color, border-color, scale;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.config-button:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-left-color: rgb(0, 255, 100);
+    border-right-color: rgb(0, 255, 100);
+    border-top-color: rgb(0, 255, 100);
+    border-bottom-color: rgb(0, 255, 100);
+    scale: 1.05;
+}
+
+.config-button:active {
+    scale: 0.95;
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+/* Configuration Button States */
+.config-button.config-available {
+    opacity: 1;
+}
+
+.config-button.config-unavailable {
+    opacity: 0.5;
+    border-left-color: rgb(128, 128, 128);
+    border-right-color: rgb(128, 128, 128);
+    border-top-color: rgb(128, 128, 128);
+    border-bottom-color: rgb(128, 128, 128);
+}
+
+.config-button.config-selected {
+    background-color: rgba(0, 255, 0, 0.2);
+    border-left-color: rgb(0, 255, 150);
+    border-right-color: rgb(0, 255, 150);
+    border-top-color: rgb(0, 255, 150);
+    border-bottom-color: rgb(0, 255, 150);
+    scale: 1.02;
+}
+
+/* Configuration Button Types */
+.config-button.config-primary {
+    /* Para configuraciones básicas accesibles a todos */
+}
+
+.config-button.config-admin {
+    /* Para configuraciones que requieren permisos de admin */
+    border-left-color: rgb(255, 150, 0);
+    border-right-color: rgb(255, 150, 0);
+    border-top-color: rgb(255, 150, 0);
+    border-bottom-color: rgb(255, 150, 0);
+}
+
+.config-button.config-admin:hover {
+    border-left-color: rgb(255, 200, 0);
+    border-right-color: rgb(255, 200, 0);
+    border-top-color: rgb(255, 200, 0);
+    border-bottom-color: rgb(255, 200, 0);
+    background-color: rgba(255, 150, 0, 0.1);
+}
+
+/* Configuration Button Content */
+.config-icon-container {
+    flex-grow: 1;
+    width: 100%;
+    height: 60%;
+    justify-content: center;
+    align-items: center;
+}
+
+.config-icon {
+    font-size: 60px;
+    color: rgb(0, 255, 0);
+    -unity-text-align: middle-center;
+}
+
+.config-admin .config-icon {
+    color: rgb(255, 150, 0);
+}
+
+.config-label-container {
+    flex-grow: 1;
+    width: 100%;
+    height: 40%;
+    justify-content: center;
+    align-items: center;
+}
+
+.config-title {
+    color: rgb(0, 255, 0);
+    font-size: 24px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    margin-bottom: 5px;
+}
+
+.config-admin .config-title {
+    color: rgb(255, 150, 0);
+}
+
+.config-description {
+    color: rgb(200, 200, 200);
+    font-size: 16px;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    white-space: normal;
+}
+
+.config-spacer {
+    flex-grow: 1;
+    width: 30%;
+    height: 90%;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* Footer */
+#Footer {
+    flex-grow: 1;
+    width: 100%;
+    height: 10%;
+    flex-direction: row;
+}
+
+#SparePanel0, #SparePanel1, #SparePanel2, #SparePanel3 {
+    flex-grow: 1;
+    width: 25%;
+    height: 100%;
+    justify-content: center;
+}
+
+#SparePanel0 #SpareLabel0,
+#SparePanel1 #SpareLabel1,
+#SparePanel2 #SpareLabel2,
+#SparePanel3 #SpareLabel3 {
+    color: rgb(255, 255, 255);
+    font-size: 20px;
+    -unity-text-align: upper-center;
+}
+
+/* Subpanels Container */
+#SubpanelsAndSmokeMaskContainer {
+    flex-grow: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    opacity: 1;
+}
+
+/* Navigation Menu */
+#NavigationMenu {
+    flex-grow: 1;
+    position: relative;
+    width: 25%;
+    height: 100%;
+    translate: 0% 0;
+    background-color: rgb(0, 0, 0);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Navigation Menu Header */
+.nav-header {
+    flex-grow: 1;
+    width: 100%;
+    height: 30%;
+}
+
+.nav-username-container {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 25%;
+    margin-top: 0;
+    margin-left: 0;
+}
+
+.nav-username-label {
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: bold;
+    font-size: 50px;
+    color: rgb(0, 255, 0);
+}
+
+/* Navigation Menu Body */
+.nav-body {
+    flex-grow: 1;
+    width: 100%;
+    height: 70%;
+}
+
+.nav-row {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.nav-button-container {
+    flex-grow: 1;
+    width: 80%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-button {
+    -unity-font-definition: url("project://database/Assets/_Fonts/References/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
+    -unity-font-style: bold;
+    font-size: 40px;
+    color: rgb(0, 255, 0);
+    background-color: rgba(188, 188, 188, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.nav-spacer-container {
+    flex-grow: 1;
+    width: 20%;
+    height: 100%;
+}
+
+.nav-spacer {
+    flex-grow: 1;
+    width: 50%;
+    height: 50%;
+}
+
+.nav-label-container {
+    flex-grow: 1;
+    width: 80%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-label {
+    -unity-font-style: bold;
+    font-size: 30px;
+}
+
+/* Settings Button específico */
+#SettingsButton {
+    border-left-color: rgba(149, 149, 149, 0);
+    border-right-color: rgba(149, 149, 149, 0);
+    border-top-color: rgba(149, 149, 149, 0);
+    border-bottom-color: rgba(149, 149, 149, 0);
+}
+
+/* Hide Menu Button */
+#HideMenuButton {
+    width: 75%;
+    height: 100%;
+    background-color: rgba(188, 188, 188, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}

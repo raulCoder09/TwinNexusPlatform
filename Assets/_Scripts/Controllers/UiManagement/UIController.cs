@@ -12,10 +12,13 @@ using _Scripts.Controllers.CloudwatchSettingsController;
 using _Scripts.Controllers.DashboardController;
 using _Scripts.Controllers.DeviceSelectionController;
 using _Scripts.Controllers.IotCoreSettingsController;
+using _Scripts.Controllers.IotSettingsController;
 using _Scripts.Controllers.LambdaSettingsController;
+using _Scripts.Controllers.ManagedCloudServiceController;
 using _Scripts.Controllers.MedaraConcreteArScaraController;
 using _Scripts.Controllers.ReportsController;
 using _Scripts.Controllers.S3SettingsController;
+using _Scripts.Controllers.ServiceManagement;
 using _Scripts.Controllers.SESSettingsController;
 using _Scripts.Controllers.SettingsController;
 using _Scripts.Controllers.WelcomeController;
@@ -89,6 +92,8 @@ namespace _Scripts.Controllers.UiManagement
         [SerializeField] private string _arScaraJogAndTeachSceneTag = "ArScaraJogAndTeach";
         [SerializeField] private string _arScaraPointsSceneTag = "ArScaraPoints";
         [SerializeField] private string _medaraConcreteArScaraSceneTag = "MedaraConcreteArScara";
+        [SerializeField] private string _iotSettingsSceneTag = "IotSettings";
+        [SerializeField] private string _managedCloudServiceSceneTag = "ManagedCloudService";
         #endregion
 
         
@@ -123,8 +128,9 @@ namespace _Scripts.Controllers.UiManagement
         private MedaraConcreteArScaraOrchestrator _medaraConcreteArScaraController;
         private ArScaraJogAndTeachOrchestrator _arScaraJogAndTeachController;
         private ArScaraPointsOrchestrator _arScaraPointsController;
+        private IotSettingsOrchestrator _iotSettingsController;
 
-
+        private ManagedCloudServiceOrchestrator _managedCloudServiceController;
         // Lista de controladores que requieren autenticación
         private readonly HashSet<string> _authenticatedControllers = new HashSet<string>();
         private readonly HashSet<string> _publicControllers = new HashSet<string>();
@@ -274,6 +280,7 @@ namespace _Scripts.Controllers.UiManagement
             
     LogDebug("Discovering UI controllers...");
     
+    
     _arScaraPointsController = FindUIController<ArScaraPointsOrchestrator>(_arScaraPointsSceneTag);
     if (_arScaraPointsController != null)
     {
@@ -383,6 +390,18 @@ namespace _Scripts.Controllers.UiManagement
         RegisterUIController("AwsSettings", _awsSettingsController, requiresAuth: true);
         LogDebug("AwsSettingsController discovered and registered");
     }
+    _iotSettingsController = FindUIController<IotSettingsOrchestrator>(_iotSettingsSceneTag);
+    if (_iotSettingsController != null)
+    {
+        RegisterUIController("IotSettings", _iotSettingsController, requiresAuth: true);
+        LogDebug("IotSettingsController discovered and registered");
+    }
+        _managedCloudServiceController = FindUIController<ManagedCloudServiceOrchestrator>(_managedCloudServiceSceneTag);
+        if (_managedCloudServiceController != null)
+        {
+            RegisterUIController("ManagedCloudService", _managedCloudServiceController, requiresAuth: true);
+            LogDebug("ManagedCloudServiceController discovered and registered");
+        }
 
     LogDebug($"Discovery completed. Found {_uiControllers.Count} UI controllers");
 }

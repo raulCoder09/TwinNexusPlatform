@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
-using _Scripts.Models.CognitoManagement;
-using _Scripts.Models.SESManagement;
 using _Scripts.Models.CloudWatchManagement;
+using _Scripts.Models.CognitoManagement;
 using _Scripts.Models.IoTCoreManagement;
-using _Scripts.Models.S3Management;
 using _Scripts.Models.LambdaManagement;
+using _Scripts.Models.MQTTManagement;
+using _Scripts.Models.S3Management;
+using _Scripts.Models.SESManagement;
 using Amazon;
+using UnityEngine;
 
-namespace _Scripts.Controller
+namespace _Scripts.Controllers.ServiceManagement
 {
     /// <summary>
     /// Coordinador central de todos los servicios AWS
@@ -78,6 +79,11 @@ namespace _Scripts.Controller
         private S3Manager _s3Manager;
         private LambdaManager _lambdaManager;
         
+        #region MQTT Management
+        private MqttManager _mqttManager;
+        private AwsMqttTesting _awsMqttTesting;
+        #endregion
+        
         // Control de creación de servicios
         private bool _cognitoManagerCreatedByUs = false;
         
@@ -89,7 +95,8 @@ namespace _Scripts.Controller
             "IoTCoreManager",
             "S3Manager",
             "LambdaManager",
-            "EC2Manager"
+            "EC2Manager",
+            "MqttManager"
         };
 
         #endregion
@@ -739,6 +746,8 @@ namespace _Scripts.Controller
             
             // CAMBIO: Ahora SÍ inicializamos servicios AWS
             InitializeAWSServices();
+
+            InitializeServices();
             
             _awsServicesInitialized = true;
             OnAWSServicesInitialized?.Invoke();
@@ -790,6 +799,11 @@ namespace _Scripts.Controller
                 LogError($"Error initializing AWS services: {ex.Message}");
                 OnServiceError?.Invoke("AWSServices", ex.Message);
             }
+        }
+
+        private async void InitializeServices()
+        {
+            await InitializeMqttManager();
         }
 
         /// <summary>
@@ -1215,6 +1229,9 @@ namespace _Scripts.Controller
                 case "lambda":
                 case "lambdamanager":
                     return _awsServicesInitialized && _lambdaManager != null;
+                case "mqtt":
+                case "mqttmanager":
+                    return _awsServicesInitialized && _mqttManager != null;
                     
                 default:
                     return false;
@@ -1248,6 +1265,7 @@ namespace _Scripts.Controller
             if (_awsServicesInitialized && _iotCoreManager != null) services.Add("IoTCoreManager");
             if (_awsServicesInitialized && _s3Manager != null) services.Add("S3Manager");
             if (_awsServicesInitialized && _lambdaManager != null) services.Add("LambdaManager");
+            if (_awsServicesInitialized && _mqttManager != null) services.Add("MqttManager");
             
             return services;
         }
@@ -1329,6 +1347,58 @@ namespace _Scripts.Controller
         }
 
         #endregion
+        
+        /// <summary>
+        /// Inicializa MqttManager con las credenciales de Cognito
+        /// </summary>
+        private async Task InitializeMqttManager()
+        {
+            try
+            {
+                LogDebug("Initializing MqttManager...");
+        
+                // Buscar o crear MqttManager
+                _mqttManager = MqttManager.Instance;
+                if (_mqttManager == null)
+                {
+                    LogDebug("Creating new MqttManager...");
+                    var mqttGO = new GameObject("MqttManager");
+                    mqttGO.transform.SetParent(this.transform);
+                    _mqttManager = mqttGO.AddComponent<MqttManager>();
+                }
+
+                // Buscar o crear AwsMqttTesting
+                _awsMqttTesting = FindObjectOfType<AwsMqttTesting>();
+                if (_awsMqttTesting == null)
+                {
+                    LogDebug("Creating AwsMqttTesting component...");
+                    var testingGO = new GameObject("AwsMqttTesting");
+                    testingGO.transform.SetParent(this.transform);
+                    _awsMqttTesting = testingGO.AddComponent<AwsMqttTesting>();
+                }
+
+                // Forzar inicialización del MqttManager
+                _mqttManager.Initialize();
+        
+                LogDebug("MqttManager initialized successfully");
+                OnServiceActivated?.Invoke("MqttManager");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error initializing MqttManager: {ex.Message}");
+                OnServiceError?.Invoke("MqttManager", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Obtiene la instancia de MqttManager gestionada por ServiceController
+        /// </summary>
+        public MqttManager MqttManager => _mqttManager;
+
+        /// <summary>
+        /// Obtiene la instancia de AwsMqttTesting gestionada por ServiceController
+        /// </summary>
+        public AwsMqttTesting AwsMqttTesting => _awsMqttTesting;
     }
 
     #region Supporting Classes

@@ -50,6 +50,11 @@ TagManager:
   - ArScaraJogAndTeach
   - ArScaraPoints
   - EnvironmentManager
+  - IotSettings
+  - EdgeLocalBroker
+  - CloudInfrastructureBroker
+  - ManagedCloudService
+  - MqttManager
   layers:
   - Default
   - TransparentFX

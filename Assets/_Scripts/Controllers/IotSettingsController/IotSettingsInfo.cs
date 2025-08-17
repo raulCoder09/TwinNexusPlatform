@@ -1,0 +1,119 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine.UIElements;
+
+namespace _Scripts.Controllers.IotSettingsController
+{
+    /// <summary>
+    /// Clases de configuración e información para el sistema IotSettings
+    /// Equivalente a WelcomeInfo pero para IotSettings
+    /// </summary>
+    [System.Serializable]
+    public class IotSettingsInfo
+    {
+        /// <summary>
+        /// Configuración de la UI del IotSettings
+        /// </summary>
+        public class UIConfiguration
+        {
+            // Contenedores principales
+            public VisualElement Body { get; set; }
+            public VisualElement SubpanelsContainer { get; set; }
+            public VisualElement Scrim { get; set; }
+            
+            // Paneles configurables
+            public Dictionary<IIotSettingsOps.PanelType, PanelData> Panels { get; set; } 
+                = new Dictionary<IIotSettingsOps.PanelType, PanelData>();
+            
+            // Referencias específicas del IotSettings
+            public VisualElement NavigationMenuPanel { get; set; }
+            public VisualElement MainContentArea { get; set; }
+            public VisualElement StatusBar { get; set; }
+            
+            /// <summary>
+            /// Configuración individual de cada panel
+            /// </summary>
+            [System.Serializable]
+            public class PanelData
+            {
+                public VisualElement Panel { get; set; }
+                public string ShowClass { get; set; }
+                public string HideClass { get; set; }
+                
+                // Propiedades específicas para diferentes tipos de panel
+                public bool IsModal { get; set; } = false;
+                public bool RequiresScrim { get; set; } = true;
+                public float AnimationDuration { get; set; } = 0.3f;
+            }
+        }
+
+        /// <summary>
+        /// Datos del usuario actual en el IotSettings
+        /// </summary>
+        public class UserData
+        {
+            public string Username { get; set; }
+            public string UserGroup { get; set; }
+            public string UserRole { get; set; }
+            public bool IsAuthenticated { get; set; }
+            public DateTime LastLoginTime { get; set; }
+            
+            // Estados específicos del IotSettings
+            public string CurrentMode { get; set; } // "Operations", "Training", etc.
+            public string SelectedModeUIName { get; set; }
+        }
+
+        /// <summary>
+        /// Estado del IotSettings
+        /// </summary>
+        public class IotSettingsState
+        {
+            public bool IsInitialized { get; set; }
+            public bool IsNavigationMenuOpen { get; set; }
+            public IIotSettingsOps.PanelType CurrentActivePanel { get; set; } = IIotSettingsOps.PanelType.None;
+            public string CurrentSection { get; set; } = "IotSettings";
+            
+            // Estados de conexión IoT
+            public ConnectionStatus LocalIoTStatus { get; set; } = ConnectionStatus.Disconnected;
+            public ConnectionStatus VMIoTStatus { get; set; } = ConnectionStatus.Disconnected;
+            public ConnectionStatus CloudIoTStatus { get; set; } = ConnectionStatus.Disconnected;
+            
+            // Eventos de estado
+            public event Action<IIotSettingsOps.PanelType> OnPanelChanged;
+            public event Action<bool> OnNavigationMenuToggled;
+            public event Action<ConnectionStatus, ConnectionStatus, ConnectionStatus> OnIoTStatusChanged;
+        }
+
+        /// <summary>
+        /// Estados de conexión para IoT
+        /// </summary>
+        public enum ConnectionStatus
+        {
+            Disconnected,
+            Connecting,
+            Connected,
+            Error,
+            Unknown
+        }
+
+        /// <summary>
+        /// Configuración de navegación del IotSettings
+        /// </summary>
+        public class NavigationConfig
+        {
+            public List<NavigationItem> MenuItems { get; set; } = new List<NavigationItem>();
+            public List<NavigationItem> QuickActions { get; set; } = new List<NavigationItem>();
+            
+            public class NavigationItem
+            {
+                public string Name { get; set; }
+                public string DisplayName { get; set; }
+                public string IconClass { get; set; }
+                public bool IsEnabled { get; set; } = true;
+                public bool RequiresPermission { get; set; } = false;
+                public string RequiredRole { get; set; }
+                public Action OnClick { get; set; }
+            }
+        }
+    }
+}

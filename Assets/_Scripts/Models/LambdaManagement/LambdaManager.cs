@@ -5,6 +5,7 @@ using Amazon;
 using Amazon.Lambda;
 using UnityEngine;
 using _Scripts.Controller;
+using _Scripts.Controllers.ServiceManagement;
 using Amazon.Runtime;
 
 namespace _Scripts.Models.LambdaManagement

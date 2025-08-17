@@ -1,0 +1,178 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/Views/MenuSystem/ManagedCloudService/ManagedCloudService.uss?fileID=7433441132597879392&amp;guid=ba91ce5e687734e01a181a75ff68ff43&amp;type=3#ManagedCloudService" />
+    <ui:VisualElement name="Body">
+        <ui:VisualElement name="Header" style="height: 5%;">
+            <ui:VisualElement name="MenuPanel">
+                <ui:Button name="MenuButton" text="Menu" />
+            </ui:VisualElement>
+            <ui:VisualElement name="TitlePanel">
+                <ui:Label name="Title" text="Managed Cloud Service" class="selected-mode-ui-name" />
+            </ui:VisualElement>
+            <ui:VisualElement name="UsernamePanel">
+                <ui:Label name="Username" />
+            </ui:VisualElement>
+            <ui:VisualElement name="LogoutPanel">
+                <ui:Label name="Logout" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Main" style="height: 95%;">
+            <ui:VisualElement name="MQTTDashboard" class="mqtt-dashboard-container">
+                <ui:VisualElement class="dashboard-row dashboard-row-tall" style="height: 40%;">
+                    <ui:VisualElement name="ConnectionStatusPanel" class="connection-panel">
+                        <ui:VisualElement class="panel-header">
+                            <ui:Label text="🔗 AWS IoT Core Connection" class="panel-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="connection-details">
+                            <ui:VisualElement class="endpoint-info">
+                                <ui:Label text="Endpoint:" class="info-label" />
+                                <ui:Label name="BrokerEndpoint" text="aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com" class="endpoint-address" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="connection-status">
+                                <ui:Label name="ConnectionStatus" text="🟢 Connected via TLS 1.2" class="status-connected" />
+                                <ui:Label name="ClientIdLabel" text="Client ID: TNPSGA52" class="client-info" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="certificate-info">
+                                <ui:Label text="Certificate: aws-iot-core.pfx" class="cert-label" />
+                                <ui:Label name="SecurityStatus" text="🔒 SSL/TLS Secured" class="security-status" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="MQTTMetricsPanel" class="metrics-panel">
+                        <ui:VisualElement class="panel-header">
+                            <ui:Label text="📊 MQTT Metrics" class="panel-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="metrics-grid">
+                            <ui:VisualElement class="metric-box">
+                                <ui:Label text="Messages Published" class="metric-label" />
+                                <ui:Label name="PublishedCount" text="1,247" class="metric-value" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="metric-box">
+                                <ui:Label text="Messages Received" class="metric-label" />
+                                <ui:Label name="ReceivedCount" text="892" class="metric-value" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="metric-box">
+                                <ui:Label text="Active Topics" class="metric-label" />
+                                <ui:Label name="TopicsCount" text="3" class="metric-value" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="metric-box">
+                                <ui:Label text="Connection Time" class="metric-label" />
+                                <ui:Label name="ConnectionTime" text="02:34:17" class="metric-value" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="dashboard-row" style="height: 60%;">
+                    <ui:VisualElement name="MQTTControlsPanel" class="controls-panel">
+                        <ui:VisualElement class="panel-header">
+                            <ui:Label text="🎛️ MQTT Controls" class="panel-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="controls-grid" style="justify-content: space-evenly;">
+                            <ui:Button name="ConnectButton" class="mqtt-button connect-button" style="height: 50%;">
+                                <ui:Label text="🔗" class="button-icon" />
+                                <ui:Label text="Connect" class="button-label" />
+                            </ui:Button>
+                            <ui:Button name="DisconnectButton" class="mqtt-button disconnect-button" style="height: 50%;">
+                                <ui:Label text="⛔" class="button-icon" />
+                                <ui:Label text="Disconnect" class="button-label" />
+                            </ui:Button>
+                            <ui:Button name="PublishTestButton" class="mqtt-button publish-button" style="height: 50%;">
+                                <ui:Label text="📤" class="button-icon" />
+                                <ui:Label text="Publish Test" class="button-label" />
+                            </ui:Button>
+                            <ui:Button name="SubscribeButton" class="mqtt-button subscribe-button" style="height: 50%;">
+                                <ui:Label text="📥" class="button-icon" />
+                                <ui:Label text="Subscribe" class="button-label" />
+                            </ui:Button>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="TopicConfigPanel" class="topic-panel">
+                        <ui:VisualElement class="panel-header">
+                            <ui:Label text="📋 Topic Configuration" class="panel-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="topic-config">
+                            <ui:VisualElement class="input-group">
+                                <ui:Label text="Primary Topic:" class="input-label" />
+                                <ui:TextField name="TopicField" value="tnp/TNPSGA52/test" class="topic-field" style="color: rgb(0, 0, 0);" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="input-group">
+                                <ui:Label text="QoS Level:" class="input-label" />
+                                <ui:DropdownField name="QoSDropdown" choices="0 - At Most Once,1 - At Least Once,2 - Exactly Once" index="1" class="qos-dropdown" style="color: rgb(0, 0, 0);" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="input-group">
+                                <ui:Label text="Test Message:" class="input-label" />
+                                <ui:TextField name="MessageField" value="{&quot;message&quot;: &quot;Hello from Unity!&quot;, &quot;timestamp&quot;: &quot;&quot;}" multiline="true" class="message-field" style="color: rgb(0, 0, 0);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="RealtimeDataPanel" class="data-stream-panel">
+                        <ui:VisualElement class="panel-header">
+                            <ui:Label text="📡 Real-time MQTT Data Stream" class="panel-title" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="DataStreamScroll" enabled="true" class="data-stream-scroll">
+
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="SubpanelsAndSmokeMaskContainer">
+            <ui:VisualElement name="CodeRain" class="code-rain" />
+            <ui:VisualElement name="Scrim" class="ScrimTransparent" />
+            <ui:VisualElement name="NavigationMenuPanel" class="NavigationMenuPanelOutMainScreen">
+                <ui:VisualElement name="NavigationMenu">
+                    <ui:VisualElement class="nav-header">
+                        <ui:VisualElement class="nav-username-container">
+                            <ui:Label text="Main Menu" class="nav-username-label" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="nav-body">
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Dashboard" name="DashboardButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement name="TrainingButton" class="nav-button-container">
+                                <ui:Button name="TrainingButton" text="Training" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Operations" name="OperationsButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Reports" name="ReportsButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Support" name="SupportButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Settings" name="SettingsButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-button-container">
+                                <ui:Button text="Logout" name="LogoutButton" class="nav-button" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="nav-row">
+                            <ui:VisualElement class="nav-spacer-container">
+                                <ui:VisualElement class="nav-spacer" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="nav-label-container">
+                                <ui:Label name="Label" class="nav-label" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="HideMenuButton" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

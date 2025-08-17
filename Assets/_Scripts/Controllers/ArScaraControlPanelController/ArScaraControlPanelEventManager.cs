@@ -19,6 +19,9 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         private VisualElement _root;
         private CameraViewManager _cameraViewManager;
         private Label _environmentMessageLabel;
+        private VisualElement _leftPanel;
+        private VisualElement _rightPanel;
+        
         private readonly List<Button> _buttons = new List<Button>();
         private readonly List<DropdownField> _dropdowns = new List<DropdownField>();
         private readonly Dictionary<string, bool> _jointButtonStates = new Dictionary<string, bool>
@@ -57,8 +60,12 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
         {
             _uiDocument = uiDocument;
             _root = uiDocument.rootVisualElement;
-
-            // Crear y añadir el mensaje en CenterPanel
+            _leftPanel = _root.Q<VisualElement>("LeftPanel");
+            _rightPanel = _root.Q<VisualElement>("RightPanel");
+            if (_leftPanel == null || _rightPanel == null)
+            {
+                Debug.LogWarning("[ArScaraControlPanelEventManager] LeftPanel or RightPanel not found in UI");
+            }
             var centerPanel = _root.Q<VisualElement>("CenterPanel");
             _environmentMessageLabel = new Label("Select environment")
             {
@@ -260,8 +267,8 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
             foreach (var button in _buttons)
             {
                 bool isNavigationButton = button.name is "MenuButton" or "HideMenuButton" or "DashboardButton" or
-                                         "OperationsButton" or "TrainingButton" or "ReportsButton" or
-                                         "SupportButton" or "SettingsButton" or "LogoutButton";
+                    "OperationsButton" or "TrainingButton" or "ReportsButton" or
+                    "SupportButton" or "SettingsButton" or "LogoutButton";
                 button.style.display = isNavigationButton || isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
                 button.SetEnabled(isNavigationButton || isValidEnvironment);
             }
@@ -271,6 +278,16 @@ namespace _Scripts.Controllers.ArScaraControlPanelController
                 bool isNavigationDropdown = dropdown.name is "MenuRobotARSCARADropdownField" or "MenuEnvironmentDropdownField";
                 dropdown.style.display = isNavigationDropdown || isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
                 dropdown.SetEnabled(isNavigationDropdown || isValidEnvironment);
+            }
+
+            // Controlar visibilidad de LeftPanel y RightPanel
+            if (_leftPanel != null)
+            {
+                _leftPanel.style.display = isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+            if (_rightPanel != null)
+            {
+                _rightPanel.style.display = isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
             }
         }
 
