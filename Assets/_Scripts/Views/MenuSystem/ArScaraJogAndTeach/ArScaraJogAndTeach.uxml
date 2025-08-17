@@ -16,7 +16,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="Main" class="main">
-            <ui:VisualElement name="JogControlsPanel" class="jog-controls-panel">
+            <ui:VisualElement name="LeftPanel" class="jog-controls-panel">
                 <ui:VisualElement name="JogControlsTop" class="jog-controls-top" style="height: 15%;">
                     <ui:VisualElement name="ModeSpeedRow" class="mode-speed-row">
                         <ui:VisualElement name="ModeContainer" class="mode-dropdown-container">
@@ -79,7 +79,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="CenterPanel" class="center-panel" />
-            <ui:VisualElement name="CoordinatesPanel" class="coordinates-panel" style="align-items: flex-end;">
+            <ui:VisualElement name="RightPanel" class="coordinates-panel" style="align-items: flex-end;">
                 <ui:VisualElement name="CoordinatesSection" class="coordinates-section" style="height: 15%;">
                     <ui:VisualElement name="CoordinatesDisplay" class="coordinates-display">
                         <ui:VisualElement name="XCoordinate" class="coordinate-container">

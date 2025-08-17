@@ -6,8 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ManagedCloudServiceController/ManagedCloudServiceOrchestrator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ManagedCloudServiceController/ManagedCloudServiceOrchestrator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttMessageHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/MQTTManagement/MqttMessageHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ArScaraControlPanelController/ArScaraControlPanelEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ArScaraControlPanelController/ArScaraControlPanelEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ArScaraJogAndTeachController/ArScaraJogAndTeachEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ArScaraJogAndTeachController/ArScaraJogAndTeachEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ArScaraPointsController/ArScaraPointsEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/ArScaraPointsController/ArScaraPointsEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/EnvironmentController/EnvironmentLoadingManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/EnvironmentController/EnvironmentLoadingManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Controllers/EnvironmentController/EnvironmentManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Controllers/EnvironmentController/EnvironmentManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/ArScaraJogAndTeach/ArScaraJogAndTeach.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Views/MenuSystem/ArScaraJogAndTeach/ArScaraJogAndTeach.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.probuilder/Settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.probuilder/Settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,23 +53,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Attach to Unity Editor.Attach to Unity Editor.executor": "Debug",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "XThreadsFramesViewSplitterKey": "0.39784947",
-    "git-widget-placeholder": "feature/mqtt",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "configurable.group.tools",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Attach to Unity Editor.Attach to Unity Editor.executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.39784947&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/mqtt&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.tools&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="$USER_HOME$/Apks/twin nexus platform.app/Contents/MacOS/TwinNexusPlatform" />
@@ -74,7 +83,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.2.0b8/Unity.app/Contents/MacOS/Unity" />
+      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.2.0f1/Unity.app/Contents/MacOS/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath $PROJECT_DIR$ -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -85,7 +94,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.2.0b8/Unity.app/Contents/MacOS/Unity" />
+      <option name="EXE_PATH" value="/Applications/Unity/Hub/Editor/6000.2.0f1/Unity.app/Contents/MacOS/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath $PROJECT_DIR$ -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -208,6 +217,11 @@
       <workItem from="1752811472102" duration="2639000" />
       <workItem from="1753039085613" duration="229000" />
       <workItem from="1753039369855" duration="24741000" />
+      <workItem from="1753164701205" duration="959000" />
+      <workItem from="1753168966941" duration="1698000" />
+      <workItem from="1755092076402" duration="4000" />
+      <workItem from="1755123912478" duration="10142000" />
+      <workItem from="1755214512794" duration="2410000" />
     </task>
     <servers />
   </component>

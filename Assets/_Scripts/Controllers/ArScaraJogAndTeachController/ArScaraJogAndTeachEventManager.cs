@@ -18,6 +18,14 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
         private UIDocument _uiDocument;
         private VisualElement _root;
         private Label _environmentMessageLabel;
+
+        private VisualElement _leftPanel;
+        private VisualElement _rightPanel;
+        private VisualElement _footer;
+            
+            
+            
+            
         private readonly List<Button> _buttons = new List<Button>();
         private readonly List<DropdownField> _dropdowns = new List<DropdownField>();
         private readonly List<TextField> _textFields = new List<TextField>();
@@ -45,7 +53,13 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
         {
             _uiDocument = uiDocument;
             _root = uiDocument.rootVisualElement;
-
+            _footer=_root.Q<VisualElement>("Footer");
+            _leftPanel = _root.Q<VisualElement>("LeftPanel");
+            _rightPanel = _root.Q<VisualElement>("RightPanel");
+            if (_leftPanel == null || _rightPanel == null)
+            {
+                Debug.LogWarning("[ArScaraJogAndTeachEventManager] LeftPanel or RightPanel not found in UI");
+            }
             // Crear y añadir el mensaje en CenterPanel
             var centerPanel = _root.Q<VisualElement>("CenterPanel");
             _environmentMessageLabel = new Label("Select environment")
@@ -285,6 +299,20 @@ namespace _Scripts.Controllers.ArScaraJogAndTeachController
             {
                 radio.style.display = isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
                 radio.SetEnabled(isValidEnvironment);
+            }
+            
+            if (_leftPanel != null)
+            {
+                _leftPanel.style.display = isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+            if (_rightPanel != null)
+            {
+                _rightPanel.style.display = isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+
+            if (_footer!=null)
+            {
+             _footer.style.display = isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;   
             }
         }
 

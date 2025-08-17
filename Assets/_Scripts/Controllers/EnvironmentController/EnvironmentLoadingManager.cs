@@ -211,13 +211,13 @@ namespace _Scripts.Controllers.EnvironmentController
         {
             try
             {
+                LogDebug($"RULOMORALES HandleEnvironmentDropdownChange called with: {environmentName}");
                 var environmentType = ParseEnvironmentName(environmentName);
+                LogDebug($"Parsed environment type: {environmentType}");
                 if (environmentType == EnvironmentType.None)
                 {
-                    LogWarning($"Unknown environment name: {environmentName}");
-                    return;
+                    LogDebug("Environment type is None (Menu environment)");
                 }
-
                 await LoadEnvironmentWithUI(environmentType);
             }
             catch (Exception ex)

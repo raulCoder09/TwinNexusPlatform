@@ -16,6 +16,8 @@ namespace _Scripts.Controllers.ArScaraPointsController
 
         private UIDocument _uiDocument;
         private VisualElement _root;
+
+        private VisualElement _aRSCARAPointsContainer;
         private readonly List<Button> _buttons = new List<Button>();
         private readonly List<DropdownField> _dropdowns = new List<DropdownField>();
         private readonly List<TextField> _textFields = new List<TextField>();
@@ -43,6 +45,7 @@ namespace _Scripts.Controllers.ArScaraPointsController
         {
             _uiDocument = uiDocument;
             _root = uiDocument.rootVisualElement;
+            _aRSCARAPointsContainer=_root.Q<VisualElement>("ARSCARAPointsContainer");
 
             // Registrar botones
             RegisterButtonEvents();
@@ -247,6 +250,11 @@ namespace _Scripts.Controllers.ArScaraPointsController
             {
                 pointItem.style.display = isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;
                 pointItem.SetEnabled(isValidEnvironment);
+            }
+            
+            if (_aRSCARAPointsContainer!=null)
+            {
+                _aRSCARAPointsContainer.style.display = isValidEnvironment ? DisplayStyle.Flex : DisplayStyle.None;   
             }
         }
 
