@@ -4,57 +4,8 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - JogAndTeach
-  - ControlPanel
-  - GameManager
-  - VirtualEnvironment
-  - AugmentedRealityEnvironment
-  - HybridEnvironment
-  - RealDeviceEnvironment
-  - VirtualEnvironmentCamera
-  - Dashboard
-  - DeviceSelection
-  - Concrete
-  - Graphic
-  - Abstract
-  - Videos
-  - Documents
-  - Infographics
-  - ArscaraTraining
-  - Welcome
-  - Settings
-  - IoT
-  - LocalIoT
-  - CloudIoT
-  - VMIoT
-  - CognitoManager
-  - LambdaManager
-  - S3Manager
-  - SESManager
-  - Support
-  - Reports
-  - AwsSettings
-  - SesSettings
-  - CloudwatchSettings
-  - IotCoreSettings
-  - S3Settings
-  - LambdaSettings
-  - MedaraAbstract
-  - MedaraDocuments
-  - MedaraInfographics
-  - MedaraInteractiveSimulator
-  - MedaraVideos
-  - MedaraConcreteArScara
-  - MedaraGraphicArScara
-  - ArScaraControlPanel
-  - ArScaraJogAndTeach
-  - ArScaraPoints
-  - EnvironmentManager
-  - IotSettings
-  - EdgeLocalBroker
-  - CloudInfrastructureBroker
-  - ManagedCloudService
-  - MqttManager
+  - welcomeUi
+  - arScaraUi
   layers:
   - Default
   - TransparentFX

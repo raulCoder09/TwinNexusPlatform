@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="ed368021-f4a3-4f30-8d1b-bd5af65802d9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scenes/Main.unity.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scenes/Main.unity.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_ScriptableObjects.meta" beforeDir="false" />
@@ -716,229 +712,44 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DpaMonitoringSettings">
-    <option name="firstShow" value="false" />
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9384495d2a482ac7341d67ca84e16d267d16c62458a9d67a92b119199a9/System.Threading.Tasks.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Controllers/AwsSettingsController/AwsSettingsInfo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Controllers/AwsSettingsController/AwsSettingsUIManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Controllers/CloudwatchSettingsController/CloudwatchSettingsInfo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Controllers/UiManagement/IUIController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/_Scripts/Testing/AwsMqttTesting.cs" root0="FORCE_HIGHLIGHTING" />
-  </component>
-  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 8
-}</component>
-  <component name="ProjectId" id="2vWjHSmbaUydnvD7jTM1huo69El" />
-  <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="1" id="Add" />
-  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="31QHOl30rwWKL9sP6z0tcFfGcmN" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Attach to Unity Editor.Attach to Unity Editor.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.39784947&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/refactor&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.tools&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "feature/refactor",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
-    <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="$USER_HOME$/Apks/twin nexus platform.app/Contents/MacOS/TwinNexusPlatform" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Apks/twin nexus platform.app/Contents/MacOS" />
-      <option name="PASS_PARENT_ENVS" value="1" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="ENV_FILE_PATHS" value="" />
-      <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
-      <option name="MIXED_MODE_DEBUG" value="0" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.0f1\Editor\Unity.exe" />
-      <option name="PROGRAM_PARAMETERS" value="-projectPath $PROJECT_DIR$ -debugCodeOptimization" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="PASS_PARENT_ENVS" value="1" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="ENV_FILE_PATHS" value="" />
-      <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
-      <option name="MIXED_MODE_DEBUG" value="0" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.0f1\Editor\Unity.exe" />
-      <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath $PROJECT_DIR$ -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="PASS_PARENT_ENVS" value="1" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="ENV_FILE_PATHS" value="" />
-      <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
-      <option name="MIXED_MODE_DEBUG" value="0" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Attach to Unity Editor &amp; Play" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="UNITY_ATTACH_AND_PLAY" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
-      <option name="allowRunningInParallel" value="false" />
-      <option name="listenPortForConnections" value="false" />
-      <option name="pid" />
-      <option name="projectPathOnTarget" />
-      <option name="runtimes">
-        <list />
-      </option>
-      <option name="selectedOptions">
-        <list />
-      </option>
-      <option name="useMixedMode" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
-      <option name="allowRunningInParallel" value="false" />
-      <option name="listenPortForConnections" value="false" />
-      <option name="pid" />
-      <option name="projectPathOnTarget" />
-      <option name="runtimes">
-        <list />
-      </option>
-      <option name="selectedOptions">
-        <list />
-      </option>
-      <option name="useMixedMode" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Attach to Device" type="UnityDevicePlayer" factoryName="UnityAttachToDevicePlayer">
-      <method v="2" />
-    </configuration>
-  </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="" />
-      <created>1744267637088</created>
+      <changelist id="ed368021-f4a3-4f30-8d1b-bd5af65802d9" name="Changes" comment="" />
+      <created>1755449348212</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1744267637088</updated>
-      <workItem from="1744267639516" duration="23281000" />
-      <workItem from="1745773345960" duration="106000" />
-      <workItem from="1745773480662" duration="1279000" />
-      <workItem from="1745808703885" duration="2846000" />
-      <workItem from="1745879767837" duration="19732000" />
-      <workItem from="1745952229238" duration="4952000" />
-      <workItem from="1746036463713" duration="15450000" />
-      <workItem from="1746058011287" duration="9187000" />
-      <workItem from="1746252646873" duration="5716000" />
-      <workItem from="1746672023607" duration="26868000" />
-      <workItem from="1746743468015" duration="2187000" />
-      <workItem from="1746750221224" duration="635000" />
-      <workItem from="1746858008680" duration="18413000" />
-      <workItem from="1747038064260" duration="9895000" />
-      <workItem from="1747063909209" duration="12132000" />
-      <workItem from="1747119701048" duration="3342000" />
-      <workItem from="1747155317941" duration="8966000" />
-      <workItem from="1747556007853" duration="4228000" />
-      <workItem from="1747889709635" duration="20048000" />
-      <workItem from="1747993237537" duration="9726000" />
-      <workItem from="1748328260626" duration="5298000" />
-      <workItem from="1748949837263" duration="2592000" />
-      <workItem from="1748962008582" duration="19039000" />
-      <workItem from="1749656678755" duration="16645000" />
-      <workItem from="1749697406005" duration="8157000" />
-      <workItem from="1749862768701" duration="888000" />
-      <workItem from="1749875483021" duration="1217000" />
-      <workItem from="1749913964698" duration="18616000" />
-      <workItem from="1750004474413" duration="403000" />
-      <workItem from="1750005081736" duration="3283000" />
-      <workItem from="1750011476370" duration="10094000" />
-      <workItem from="1750024783518" duration="32863000" />
-      <workItem from="1750104807430" duration="1250000" />
-      <workItem from="1750180146101" duration="5635000" />
-      <workItem from="1750189303049" duration="5553000" />
-      <workItem from="1750195559343" duration="2045000" />
-      <workItem from="1750210239796" duration="14939000" />
-      <workItem from="1750231275905" duration="3794000" />
-      <workItem from="1750267936619" duration="5310000" />
-      <workItem from="1750276277669" duration="19949000" />
-      <workItem from="1750354912219" duration="18145000" />
-      <workItem from="1750451301427" duration="2331000" />
-      <workItem from="1750710569628" duration="31914000" />
-      <workItem from="1750832083557" duration="87035000" />
-      <workItem from="1751021029184" duration="2459000" />
-      <workItem from="1751068018308" duration="394000" />
-      <workItem from="1751068675095" duration="19666000" />
-      <workItem from="1751094031601" duration="23881000" />
-      <workItem from="1751150456509" duration="6212000" />
-      <workItem from="1751187264937" duration="10700000" />
-      <workItem from="1751199300207" duration="134000" />
-      <workItem from="1751199468184" duration="29618000" />
-      <workItem from="1751274694091" duration="8162000" />
-      <workItem from="1751286533751" duration="1555000" />
-      <workItem from="1751288587977" duration="23954000" />
-      <workItem from="1751315867884" duration="5031000" />
-      <workItem from="1751362739065" duration="8306000" />
-      <workItem from="1751371109853" duration="3541000" />
-      <workItem from="1751400047446" duration="7999000" />
-      <workItem from="1751502411530" duration="23677000" />
-      <workItem from="1751714088561" duration="9051000" />
-      <workItem from="1752015138358" duration="9023000" />
-      <workItem from="1752083409172" duration="429000" />
-      <workItem from="1752086803334" duration="7568000" />
-      <workItem from="1752151921624" duration="505000" />
-      <workItem from="1752152519264" duration="3165000" />
-      <workItem from="1752228389616" duration="18336000" />
-      <workItem from="1752258233953" duration="5283000" />
-      <workItem from="1752265012836" duration="8489000" />
-      <workItem from="1752588755227" duration="6873000" />
-      <workItem from="1752675222249" duration="15186000" />
-      <workItem from="1752764335650" duration="9902000" />
-      <workItem from="1752783551449" duration="15793000" />
-      <workItem from="1752811472102" duration="2639000" />
-      <workItem from="1753039085613" duration="229000" />
-      <workItem from="1753039369855" duration="24741000" />
-      <workItem from="1753164701205" duration="959000" />
-      <workItem from="1753168966941" duration="1698000" />
-      <workItem from="1755092076402" duration="4000" />
-      <workItem from="1755123912478" duration="10142000" />
-      <workItem from="1755214512794" duration="2410000" />
-      <workItem from="1755449527098" duration="7248000" />
-      <workItem from="1755465263627" duration="3788000" />
-      <workItem from="1755540932869" duration="13366000" />
-      <workItem from="1755612018394" duration="6808000" />
+      <updated>1755449348212</updated>
+      <workItem from="1755449349520" duration="174000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
-  <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityProjectDiscoverer">
-    <option name="hasUnityReference" value="true" />
-    <option name="unityProject" value="true" />
     <option name="unityProjectFolder" value="true" />
   </component>
-  <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
