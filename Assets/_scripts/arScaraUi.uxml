@@ -13,7 +13,7 @@
         <ui:VisualElement name="leftPanel" class="leftPanel">
             <ui:VisualElement name="powerMotorsPanel" class="miniPanel">
                 <ui:VisualElement name="headerPowerMotorsPanel" class="headerMiniPanel columnOrientationItems">
-                    <ui:Label text="Motors main controls" class="nameMiniPanel" />
+                    <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
                 <ui:VisualElement name="bodyPowerMotorsPanel" class="bodyMiniPanel rowOrientationItems">
                     <ui:Button name="motorsOffButton" text="Off" class="generalButton" />
@@ -26,7 +26,7 @@
             </ui:VisualElement>
             <ui:VisualElement name="viewsAndHomePanel" class="miniPanel">
                 <ui:VisualElement name="nameHomeAndViewPanel" class="headerMiniPanel columnOrientationItems">
-                    <ui:Label text="Home and views" class="nameMiniPanel" />
+                    <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
                 <ui:VisualElement name="nameHomeAndViewPanel" class="bodyMiniPanel columnOrientationItems">
                     <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="Views" class="dropdownOptions" />
@@ -41,7 +41,7 @@
         <ui:VisualElement name="rightPanel" class="rightPanel">
             <ui:VisualElement name="statusPanel" class="miniPanel">
                 <ui:VisualElement name="headerStatusPanel" class="headerMiniPanel columnOrientationItems">
-                    <ui:Label text="Status" class="nameMiniPanel" />
+                    <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
                 <ui:VisualElement name="bodyStatusPanel" class="bodyMiniPanel columnOrientationItems">
                     <ui:Label name="EmergencyStopLabel" text="Emergency stop: Off" class="textMiniPanelLabel" />
@@ -54,7 +54,7 @@
             </ui:VisualElement>
             <ui:VisualElement name="JointControlsPanel" class="miniPanel">
                 <ui:VisualElement name="nameStatusPanel" class="headerMiniPanel">
-                    <ui:Label text="Free and lock joints" class="nameMiniPanel" />
+                    <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
                 <ui:VisualElement name="toggleControls" class="bodyMiniPanel columnOrientationItems">
                     <ui:Toggle name="j1" label="J1" class="textMiniPanelLabel" />
@@ -145,9 +145,77 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="pointsPanel" class="arScaraPanelsOut">
+    <ui:VisualElement name="pointsPanel" class="arScaraPanelsIn">
         <ui:VisualElement name="leftPanel" class="leftPanel" />
-        <ui:VisualElement name="centerPanel" class="centerPanel" />
+        <ui:VisualElement name="centerPanel" class="centerPanel">
+            <ui:VisualElement class="">
+                <ui:Label name="ARSCARAPointsTitle" text="Robot Points Management" class="" />
+            </ui:VisualElement>
+            <ui:VisualElement class="">
+                <ui:VisualElement class="">
+                    <ui:VisualElement class="">
+                        <ui:Label name="pointDetailsTitle" text="Point Details" class="" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="rowOrientationItems" style="flex-grow: 1; width: 100%; justify-content: center; align-items: center; align-self: center; align-content: center;">
+                        <ui:VisualElement name="pointNumber" enabled="true" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="pointNumberLabel" class="">
+                                <ui:Label name="pointNumberLabelText" text="Number" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="pointName" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="PointNameLabel" class="">
+                                <ui:Label name="pointNameLabelText" text="Name" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="xCoordinate" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="xCoordinateLabel" class="">
+                                <ui:Label name="xCoordinateLabelText" text="X (mm)" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="yCoordinate" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="yCoordinateLabel" class="">
+                                <ui:Label name="YCoordinateLabelText" text="Y (mm)" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="zCoordinate" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="zCoordinateLabel" class="">
+                                <ui:Label name="zCoordinateLabelText" text="Z (mm)" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="uCoordinate" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="uCoordinateLabel" class="">
+                                <ui:Label name="uCoordinateLabelText" text="U (deg)" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:ScrollView style="width: 100%;">
+                        <ui:VisualElement class="rowOrientationItems" style="width: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                            <ui:VisualElement name="pointNumberColumn0" enabled="true" class="" style="width: 16.6%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                                <ui:Label name="PointNumberLabel0" text="0" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="pointNameColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                                <ui:TextField name="pointNameField0" placeholder-text="Enter point name" class="inputFields" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="xCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center; align-self: center;">
+                                <ui:TextField name="xCoordinateField0" placeholder-text="0.00" class="inputFields" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="yCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center;">
+                                <ui:TextField name="YCoordinateField" placeholder-text="0.00" class="inputFields" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="zCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center;">
+                                <ui:TextField name="zCoordinateField0" placeholder-text="0.00" class="inputFields" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="uCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center;">
+                                <ui:TextField name="uCoordinateField0" placeholder-text="0.00" class="inputFields" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:ScrollView>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="PointsStatusMessage" class="">
+                <ui:Label name="StatusLabel" class="" />
+            </ui:VisualElement>
+        </ui:VisualElement>
         <ui:VisualElement name="rightPanel" class="rightPanel" />
     </ui:VisualElement>
 </ui:UXML>
