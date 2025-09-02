@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/_scripts/Styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
+    <Style src="project://database/Assets/_Scripts/Styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
     <ui:VisualElement name="body" class="body">
         <ui:VisualElement name="header" class="header" />
         <ui:VisualElement name="main" class="main" />
@@ -31,8 +31,9 @@
                 <ui:VisualElement name="nameHomeAndViewPanel" class="bodyMiniPanel columnOrientationItems">
                     <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="Views" class="dropdownOptions" />
                 </ui:VisualElement>
-                <ui:VisualElement name="nameHomeAndViewPanel" class="footerMiniPanel columnOrientationItems">
-                    <ui:Button name="HomeButton" text="Home" class="generalButton" />
+                <ui:VisualElement name="nameHomeAndViewPanel" class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="homeButton" text="Home" class="generalButton" />
+                    <ui:Button name="resetButton" text="Reset" class="generalButton" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
@@ -68,66 +69,78 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="jogAndTeachPanel" class="arScaraPanelsIn">
-        <ui:VisualElement name="leftPanel" class="leftPanel" >
-            <ui:VisualElement name="" class="miniPanel">
-                <ui:VisualElement name="" class="headerMiniPanel ">
-                    <ui:Label text="header" class="nameMiniPanel" />
+    <ui:VisualElement name="jogAndTeachPanel" class="arScaraPanelsOut">
+        <ui:VisualElement name="leftPanel" class="leftPanel">
+            <ui:VisualElement class="miniPanel">
+                <ui:VisualElement class="headerMiniPanel ">
+                    <ui:Label text="Select jogging mode" class="nameMiniPanel" />
                 </ui:VisualElement>
-                <ui:VisualElement name="" class="bodyMiniPanel ">
-                    <ui:DropdownField choices="Speed,Low,Medium,High" name="SpeedDropdown" class="dropdownOptions"/>
+                <ui:VisualElement class="bodyMiniPanel ">
+                    <ui:DropdownField choices="Mode,World,Joint" name="modeDropdown" class="dropdownOptions" />
+                    <ui:DropdownField choices="Speed,Low,High" name="speedDropdown" class="dropdownOptions hideItem" />
                 </ui:VisualElement>
-                <ui:VisualElement name="" class="footerMiniPanel rowOrientationItems">
-                    <ui:Button name="PlusXButton" text="+X" class="generalButton" />
-                    <ui:Button name="MinusXButton" text="-X" class="generalButton" />
+                <ui:VisualElement class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="PlusXButton" text="+X" class="generalButton hideItem" />
+                    <ui:Button name="MinusXButton" text="-X" class="generalButton hideItem" />
+                    <ui:Button name="PlusJ1Button" text="+J1" class="generalButton hideItem" />
+                    <ui:Button name="MinusJ1Button" text="-J1" class="generalButton hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="" class="miniPanel">
-                <ui:VisualElement name="" class="headerMiniPanel rowOrientationItems">
-                    <ui:Button name="PlusYButton" text="+Y" class="generalButton"/>
-                    <ui:Button name="MinusYButton" text="-Y" class="generalButton" />
+            <ui:VisualElement class="miniPanel">
+                <ui:VisualElement class="headerMiniPanel rowOrientationItems">
+                    <ui:Button name="PlusYButton" text="+Y" class="generalButton hideItem" />
+                    <ui:Button name="MinusYButton" text="-Y" class="generalButton hideItem" />
+                    <ui:Button name="PlusJ2Button" text="+J2" class="generalButton hideItem" />
+                    <ui:Button name="MinusJ2Button" text="-J2" class="generalButton hideItem" />
                 </ui:VisualElement>
-                <ui:VisualElement name="" class="bodyMiniPanel rowOrientationItems">
-                    <ui:Button name="PlusZButton" text="+Z" class="generalButton" />
-                    <ui:Button name="MinusZButton" text="-Z" class="generalButton" />
+                <ui:VisualElement class="bodyMiniPanel rowOrientationItems">
+                    <ui:Button name="PlusZButton" text="+Z" class="generalButton hideItem" />
+                    <ui:Button name="MinusZButton" text="-Z" class="generalButton hideItem" />
+                    <ui:Button name="PlusJ3Button" text="+J3" class="generalButton hideItem" />
+                    <ui:Button name="MinusJ3Button" text="-J3" class="generalButton hideItem" />
                 </ui:VisualElement>
-                <ui:VisualElement name="" class="footerMiniPanel rowOrientationItems">
-                    <ui:Button name="PlusUButton" text="+U" class="generalButton" />
-                    <ui:Button name="MinusUButton" text="-U" class="generalButton" />
+                <ui:VisualElement class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="PlusUButton" text="+U" class="generalButton hideItem" />
+                    <ui:Button name="MinusUButton" text="-U" class="generalButton hideItem" />
+                    <ui:Button name="PlusJ4Button" text="+J4" class="generalButton hideItem" />
+                    <ui:Button name="MinusJ4Button" text="-J4" class="generalButton hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="centerPanel" class="centerPanel" >
-        </ui:VisualElement>
-        <ui:VisualElement name="rightPanel" class="rightPanel" >
-            <ui:VisualElement name="" class="miniPanel">
-                <ui:VisualElement name="" class="headerMiniPanel ">
-                    <ui:Label text="header" class="nameMiniPanel" />
+        <ui:VisualElement name="centerPanel" class="centerPanel" />
+        <ui:VisualElement name="rightPanel" class="rightPanel">
+            <ui:VisualElement class="miniPanel">
+                <ui:VisualElement class="headerMiniPanel ">
+                    <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
-                <ui:VisualElement name="" class="bodyMiniPanel columnOrientationItems ">
-                    <ui:Label name="XLabel" text="X = 00.00 mm" class="textMiniPanelLabel" />
-                    <ui:Label name="YLabel" text="Y = 00.00 mm" class="textMiniPanelLabel" />
-                    <ui:Label name="ZLabel" text="Z = 00.00 mm" class="textMiniPanelLabel" />
-                    <ui:Label name="ULabel" text="U = 00.00 deg" class="textMiniPanelLabel" />
+                <ui:VisualElement class="bodyMiniPanel columnOrientationItems ">
+                    <ui:Label name="XLabel" text="X = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="YLabel" text="Y = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="ZLabel" text="Z = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="ULabel" text="U = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="j1Label" text="J1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="j2Label" text="J2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="j3Label" text="J3 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="j4Label" text="J4 = 00.00 deg" class="textMiniPanelLabel hideItem" />
                 </ui:VisualElement>
-                <ui:VisualElement name="" class="footerMiniPanel rowOrientationItems">
-                    <ui:Button name="TeachButton" text="Teach" class="generalButton" />
-                    <ui:Button name="EditButton" text="Edit" class="generalButton" />
+                <ui:VisualElement class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="TeachButton" text="Teach" class="generalButton hideItem" />
+                    <ui:Button name="EditButton" text="Edit" class="generalButton hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="" class="miniPanel">
-                <ui:VisualElement name="" class="headerMiniPanel ">
-                    <ui:Label text="header" class="nameMiniPanel" />
+            <ui:VisualElement class="miniPanel">
+                <ui:VisualElement class="headerMiniPanel ">
+                    <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
-                <ui:VisualElement name="" class="bodyMiniPanel columnOrientationItems">
-                    <ui:RadioButton name="continuousMove" label="Continuous" class="textMiniPanelLabel" />
-                    <ui:RadioButton name="longMove" label="Long" class="textMiniPanelLabel" />
-                    <ui:RadioButton name="mediumMove" label="Medium" class="textMiniPanelLabel" />
-                    <ui:RadioButton name="shortMove" label="Short" class="textMiniPanelLabel" />
+                <ui:VisualElement class="bodyMiniPanel columnOrientationItems">
+                    <ui:RadioButton name="continuousMove" label="Continuous" class="textMiniPanelLabel hideItem" />
+                    <ui:RadioButton name="longMove" label="Long" class="textMiniPanelLabel hideItem" />
+                    <ui:RadioButton name="mediumMove" label="Medium" class="textMiniPanelLabel hideItem" />
+                    <ui:RadioButton name="shortMove" label="Short" class="textMiniPanelLabel hideItem" />
                 </ui:VisualElement>
-                <ui:VisualElement name="" class="footerMiniPanel ">
-                    <ui:DropdownField choices="Command,Go" name="CommandDropdown" class="command-dropdown" />
-                    <ui:DropdownField choices="Destination,P0-Home" name="DestinationDropdown" class="destination-dropdown" />
+                <ui:VisualElement class="footerMiniPanel">
+                    <ui:DropdownField choices="Command,Go, Move, Arc" name="CommandDropdown" class="dropdownOptions hideItem" />
+                    <ui:DropdownField choices="Destination,P0-Home" name="DestinationDropdown" class="dropdownOptions hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

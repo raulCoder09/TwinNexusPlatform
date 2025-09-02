@@ -187,7 +187,7 @@
 }
 .dropdownOptions{
     width: 60%;
-    height: 15%;
+    height: 40px;
     font-size: 20px;
     -unity-font-style: bold;
 }
@@ -278,6 +278,12 @@
 }
 .rowOrientationItems{
     flex-direction: row;
+}
+.showItem{
+    display: flex;
+}
+.hideItem{
+    display: none;
 }
 .nameMiniPanel{
     -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
