@@ -145,17 +145,14 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="pointsPanel" class="arScaraPanelsIn">
+    <ui:VisualElement name="pointsPanel" class="arScaraPanelsOut">
         <ui:VisualElement name="leftPanel" class="leftPanel" />
         <ui:VisualElement name="centerPanel" class="centerPanel">
-            <ui:VisualElement class="">
-                <ui:Label name="ARSCARAPointsTitle" text="Robot Points Management" class="" />
+            <ui:VisualElement class="headerSubpanel">
+                <ui:Label name="ARSCARAPointsTitle" text="Robot Points Management" class="nameMiniPanel" />
             </ui:VisualElement>
-            <ui:VisualElement class="">
+            <ui:VisualElement class="bodySubpanel">
                 <ui:VisualElement class="">
-                    <ui:VisualElement class="">
-                        <ui:Label name="pointDetailsTitle" text="Point Details" class="" />
-                    </ui:VisualElement>
                     <ui:VisualElement class="rowOrientationItems" style="flex-grow: 1; width: 100%; justify-content: center; align-items: center; align-self: center; align-content: center;">
                         <ui:VisualElement name="pointNumber" enabled="true" class="" style="width: 16.6%;">
                             <ui:VisualElement name="pointNumberLabel" class="">
@@ -194,7 +191,7 @@
                                 <ui:Label name="PointNumberLabel0" text="0" class="textMiniPanelLabel" />
                             </ui:VisualElement>
                             <ui:VisualElement name="pointNameColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-self: center; align-content: center;">
-                                <ui:TextField name="pointNameField0" placeholder-text="Enter point name" class="inputFields" />
+                                <ui:TextField name="pointNameField0" placeholder-text="Point name" class="inputFields" />
                             </ui:VisualElement>
                             <ui:VisualElement name="xCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center; align-self: center;">
                                 <ui:TextField name="xCoordinateField0" placeholder-text="0.00" class="inputFields" />
@@ -212,8 +209,11 @@
                     </ui:ScrollView>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="PointsStatusMessage" class="">
-                <ui:Label name="StatusLabel" class="" />
+            <ui:VisualElement class="footerSubpanel rowOrientationItems">
+                <ui:DropdownField choices="P1,P2,P3" class="dropdownOptions" />
+                <ui:Button text="Delete" class="generalButton"/>
+                <ui:Button text="Save" class="generalButton"/>
+                <ui:Button text="Restore" class="generalButton"/>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="rightPanel" class="rightPanel" />

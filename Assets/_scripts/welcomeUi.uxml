@@ -18,7 +18,6 @@
             </ui:VisualElement>
             <ui:VisualElement name="buttonsPanel" class="buttonsPanel">
                 <ui:Button text="Exit" name="exitButton" class="generalButton" />
-                <ui:Button text="Cognito" name="settingsCognitoParametersButton" class="generalButton" />
                 <ui:Button text="Launch" name="launchButton" class="generalButton" />
             </ui:VisualElement>
         </ui:VisualElement>
