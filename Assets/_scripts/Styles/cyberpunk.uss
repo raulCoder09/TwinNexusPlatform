@@ -183,8 +183,8 @@
     -unity-font-style: bold;
 }
 .dropdownOptions{
-    width: 200px;
-    height: 40px;
+    width: 250px;
+    height: 50px;
     font-size: 20px;
     -unity-font-style: bold;
 }
