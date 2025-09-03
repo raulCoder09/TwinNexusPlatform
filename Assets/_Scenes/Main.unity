@@ -129,13 +129,14 @@ GameObject:
   m_Component:
   - component: {fileID: 548123521}
   - component: {fileID: 548123522}
+  - component: {fileID: 548123523}
   m_Layer: 0
   m_Name: welcomeUi
   m_TagString: welcomeUi
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &548123521
 Transform:
   m_ObjectHideFlags: 0
@@ -175,6 +176,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &548123523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548123520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f4e2eb2968202c4aa4663fd941ff59c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WelcomeUiController
 --- !u!1 &841921418
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,7 +204,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &841921419
 Transform:
   m_ObjectHideFlags: 0

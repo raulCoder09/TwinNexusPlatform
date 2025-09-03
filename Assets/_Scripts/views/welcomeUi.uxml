@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/_scripts/Styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
+    <Style src="project://database/Assets/_Scripts/views/styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
     <ui:VisualElement name="body" class="body">
         <ui:VisualElement name="header" class="header">
             <ui:VisualElement name="usernamePanel">
@@ -26,7 +26,7 @@
             <ui:Label name="mainMessageLabel" />
         </ui:VisualElement>
         <ui:VisualElement name="slidingPanels" class="slidingPanels">
-            <ui:VisualElement name="scrim" class="scrim scrimTransparent"  />
+            <ui:VisualElement name="scrim" class="scrim scrimTransparent" />
             <ui:VisualElement name="loginPanel" class="subpanels subpanelPanelOut">
                 <ui:VisualElement name="headerLogin" class="headerSubpanel">
                     <ui:VisualElement name="titleLoginPanel" class="tittleSubpanel">
@@ -34,11 +34,12 @@
                     </ui:VisualElement>
                     <ui:Label name="loginMessageLabel" />
                 </ui:VisualElement>
-                <ui:VisualElement name="inputLoginPanel" class="bodySubpanel">
+                <ui:VisualElement name="bodyLoginPanel" class="bodySubpanel centerItemsCompletely">
                     <ui:TextField name="usernameLoginField" placeholder-text="Username or Email" class="inputFields" />
                     <ui:TextField name="passwordLoginField" password="true" placeholder-text="Password" hide-placeholder-on-focus="false" class="inputFields" />
                 </ui:VisualElement>
-                <ui:VisualElement name="buttonLoginPanel" class="footerSubpanel">
+                <ui:VisualElement name="footerLoginPanel" class="footerSubpanel rowOrientationItems">
+                    <ui:Button text="Cancel" name="cancelLoginButton" class="generalButton" />
                     <ui:Button text="Register" name="registerLoginButton" class="generalButton" />
                     <ui:Button text="Recover" name="recoverPasswordLoginButton" class="generalButton" />
                     <ui:Button text="Login" name="loginButton" class="generalButton" />
@@ -51,16 +52,17 @@
                     </ui:VisualElement>
                     <ui:Label name="registerMessageLabel" />
                 </ui:VisualElement>
-                <ui:VisualElement name="inputRegisterPanel" class="bodySubpanel">
+                <ui:VisualElement name="bodyRegisterPanel" class="bodySubpanel centerItemsCompletely">
                     <ui:TextField name="usernameRegisterField" placeholder-text="Username" class="inputFields" />
                     <ui:TextField name="emailRegisterField" placeholder-text="Email" hide-placeholder-on-focus="false" class="inputFields" />
                     <ui:TextField name="phoneRegisterField" placeholder-text="Phone Number (Optional)" hide-placeholder-on-focus="false" class="inputFields" />
                     <ui:TextField name="passwordRegisterField" placeholder-text="Password" password="true" class="inputFields" />
                     <ui:TextField name="repeatPasswordRegisterField" placeholder-text="Repeat password" password="true" class="inputFields" />
                 </ui:VisualElement>
-                <ui:VisualElement name="buttonRegisterPanel" class="footerSubpanel">
-                    <ui:Button text="Back" name="BackToLoginPanelFromRegisterButton" class="generalButton" />
-                    <ui:Button text="Register and Login" name="RegisterAndLoginButton" class="generalButton" />
+                <ui:VisualElement name="footerRegisterPanel" class="footerSubpanel rowOrientationItems">
+                    <ui:Button text="Back" name="backToLoginPanelFromRegisterButton" class="generalButton" />
+                    <ui:Button text="Register" name="registerAndLoginButton" class="generalButton" />
+                    <ui:Button text="Cancel" name="cancelRegisterButton" class="generalButton" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="recoverPasswordPanel" class="subpanels subpanelPanelOut">
@@ -70,12 +72,13 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:Label name="recoverMessageLabel" />
-                <ui:VisualElement name="inputRecoverPasswordPanel" class="bodySubpanel">
+                <ui:VisualElement name="bodyRecoverPasswordPanel" class="bodySubpanel centerItemsCompletely">
                     <ui:TextField name="emailRecoverField" placeholder-text="Email to recover" class="inputFields" />
                 </ui:VisualElement>
-                <ui:VisualElement name="buttonRecoverPasswordPanel" class="footerSubpanel">
+                <ui:VisualElement name="footerRecoverPasswordPanel" class="footerSubpanel rowOrientationItems">
                     <ui:Button text="Back" name="backToLoginPanelFromRecoverPasswordButton" class="generalButton" />
                     <ui:Button text="Recover" name="recoverPasswordButton" class="generalButton" />
+                    <ui:Button text="Cancel" name="cancelPasswordButton" class="generalButton" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="emailVerificationPanel" class="subpanels subpanelPanelOut">
@@ -95,24 +98,6 @@
                     <ui:Button text="Back" name="backToLoginFromVerificationButton" class="generalButton" />
                     <ui:Button text="Resend" name="resendVerificationCodeButton" class="generalButton" />
                     <ui:Button text="Verify" name="verifyEmailButton" class="generalButton" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="settingsCognitoParametersPanel" class="subpanels subpanelPanelOut">
-                <ui:VisualElement name="headerSettingsCognitoParameters" class="headerSubpanel">
-                    <ui:VisualElement name="titleSettingsCognitoParametersPanel">
-                        <ui:Label text="Settings Cognito Parameters" name="titleEmailVerification" class="tittleSubpanel" />
-                    </ui:VisualElement>
-                    <ui:Label name="settingsCognitoMessageLabel" />
-                </ui:VisualElement>
-                <ui:VisualElement name="instructionsSettingsCognitoParametersPanel" class="bodySubpanel">
-                    <ui:Label name="settingsCognitoParametersInstructions" text="Please enter the data required by Cognito" class="instructions" />
-                    <ui:TextField name="userPoolIdField" placeholder-text="Enter User Pool Id" class="inputFields" />
-                    <ui:TextField name="clientIdField" placeholder-text="Enter Client Id" class="inputFields" />
-                    <ui:TextField name="identityPoolIdField" placeholder-text="Enter Identity Pool Id" class="inputFields" />
-                    <ui:DropdownField name="aAwsRegionDropdownField" choices="AWS Region" class="dropdownOptions" />
-                </ui:VisualElement>
-                <ui:VisualElement name="buttonSettingsCognitoParametersPanel" class="footerSubpanel">
-                    <ui:Button text="Save" name="saveButton" class="generalButton" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
