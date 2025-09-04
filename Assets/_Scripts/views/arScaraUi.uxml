@@ -1,15 +1,15 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/_Scripts/views/Styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
+    <Style src="project://database/Assets/_Scripts/views/styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
     <ui:VisualElement name="body" class="body">
         <ui:VisualElement name="header" class="header rowOrientationItems">
             <ui:VisualElement style="flex-grow: 1; width: 33.3%; align-items: center; justify-content: center; align-self: center; align-content: center; height: 100%;">
-                <ui:Button text="Menu" class="generalButton" />
+                <ui:Button text="Menu" name="showMenuButton" class="generalButton" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; width: 33.3%; align-items: center; justify-content: center; align-self: center; align-content: center; height: 100%;">
-                <ui:DropdownField choices="Enviroment,Virtual,Augmented,Hybrid, Real" class="dropdownOptions" />
+                <ui:DropdownField name="enviromentMenu" choices="Enviroment,Virtual,Augmented,Hybrid, Real" class="dropdownOptions" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; width: 33.3%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
-                <ui:DropdownField choices="Control panel, Jog and teach, Points" class="dropdownOptions" />
+                <ui:DropdownField name="arscaraMenu" choices="ARSCARA menu,Control panel,Jog and teach,Points" class="dropdownOptions" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="main" class="main" />
@@ -17,7 +17,7 @@
     </ui:VisualElement>
     <ui:VisualElement name="slidingPanels" class="slidingPanels" style="display: flex;">
         <ui:VisualElement name="scrim" class="scrim scrimTransparent" />
-        <ui:VisualElement name="NavigationMenuPanel" style="width: 100%; height: 100%; position: absolute; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
+        <ui:VisualElement name="navigationMenuPanel" class="mainMenuPanelPanelOut" style="width: 100%; height: 100%; position: absolute; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
             <ui:VisualElement name="NavigationMenu" class="navigation-menu" style="width: 30%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
                 <ui:VisualElement name="NavHeader" class="nav-menu-header" style="width: 100%; height: 30%; align-items: center; justify-content: center; align-self: center; align-content: center;">
                     <ui:Label name="NavUsernameLabel" text="Main Menu" class="tittleSubpanel" />
@@ -32,7 +32,7 @@
                     <ui:Button name="LogoutButton" text="Logout" class="generalButton" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Button name="HideMenuButton" class="hide-menu-button" style="width: 70%; height: 100%; background-color: rgba(188, 188, 188, 0); -unity-background-image-tint-color: rgba(255, 255, 255, 0); border-left-color: rgba(149, 149, 149, 0); border-right-color: rgba(149, 149, 149, 0); border-top-color: rgba(149, 149, 149, 0); border-bottom-color: rgba(149, 149, 149, 0);" />
+            <ui:Button name="hideMenuButton" class="hide-menu-button" style="width: 70%; height: 100%; background-color: rgba(188, 188, 188, 0); -unity-background-image-tint-color: rgba(255, 255, 255, 0); border-left-color: rgba(149, 149, 149, 0); border-right-color: rgba(149, 149, 149, 0); border-top-color: rgba(149, 149, 149, 0); border-bottom-color: rgba(149, 149, 149, 0);" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="controlPanel" class="arScaraPanelsOut">

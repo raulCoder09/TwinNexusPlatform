@@ -198,6 +198,7 @@ GameObject:
   m_Component:
   - component: {fileID: 841921419}
   - component: {fileID: 841921420}
+  - component: {fileID: 841921421}
   m_Layer: 0
   m_Name: arScaraUi
   m_TagString: arScaraUi
@@ -244,6 +245,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &841921421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841921418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc932fe9e673ad649b404c76b04af636, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArScaraUiController
 --- !u!1 &1237052906
 GameObject:
   m_ObjectHideFlags: 0
