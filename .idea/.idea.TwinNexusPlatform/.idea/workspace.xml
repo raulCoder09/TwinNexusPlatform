@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controller/WelcomeUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controller/WelcomeUiController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/views/welcomeUi.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/views/welcomeUi.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controller/ArScaraUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controller/ArScaraUiController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/views/arScaraUi.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/views/arScaraUi.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/views/styles/cyberpunk.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/views/styles/cyberpunk.uss" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +20,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/348ed09ed1634d388253e20b5aab3fcf223400/0e/251267d9/EventCallbackFunctor`1.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
@@ -105,13 +109,15 @@
       <option name="useMixedMode" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="23072">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" />
+      <option name="pid" value="23072" />
       <option name="projectPathOnTarget" />
       <option name="runtimes">
-        <list />
+        <list>
+          <MonoRuntime />
+        </list>
       </option>
       <option name="selectedOptions">
         <list />
@@ -219,6 +225,9 @@
       <workItem from="1756879646932" duration="14557000" />
       <workItem from="1756956967351" duration="6155000" />
       <workItem from="1756975028892" duration="326000" />
+      <workItem from="1756976695445" duration="13894000" />
+      <workItem from="1757019855705" duration="9104000" />
+      <workItem from="1757029071238" duration="483000" />
     </task>
     <servers />
   </component>

@@ -12,12 +12,14 @@
                 <ui:DropdownField name="arscaraMenu" choices="ARSCARA menu,Control panel,Jog and teach,Points" class="dropdownOptions" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="main" class="main" />
+        <ui:VisualElement name="main" class="main" style="align-items: center; justify-content: center; align-self: center; align-content: center;">
+            <ui:Label name="warningMessages" text="Select a work environment" class="appSubtitle" />
+        </ui:VisualElement>
         <ui:VisualElement name="footer" class="footer" />
     </ui:VisualElement>
     <ui:VisualElement name="slidingPanels" class="slidingPanels" style="display: flex;">
         <ui:VisualElement name="scrim" class="scrim scrimTransparent" />
-        <ui:VisualElement name="navigationMenuPanel" class="mainMenuPanelPanelOut" style="width: 100%; height: 100%; position: absolute; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
+        <ui:VisualElement name="navigationMenuPanel" class="mainMenuPanelOut" style="width: 100%; height: 100%; position: absolute; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
             <ui:VisualElement name="NavigationMenu" class="navigation-menu" style="width: 30%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
                 <ui:VisualElement name="NavHeader" class="nav-menu-header" style="width: 100%; height: 30%; align-items: center; justify-content: center; align-self: center; align-content: center;">
                     <ui:Label name="NavUsernameLabel" text="Main Menu" class="tittleSubpanel" />
@@ -55,7 +57,7 @@
                     <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
                 <ui:VisualElement name="nameHomeAndViewPanel" class="bodyMiniPanel columnOrientationItems">
-                    <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="Views" class="dropdownOptions" />
+                    <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="views" class="dropdownOptions" />
                 </ui:VisualElement>
                 <ui:VisualElement name="nameHomeAndViewPanel" class="footerMiniPanel rowOrientationItems">
                     <ui:Button name="homeButton" text="Home" class="generalButton" />
