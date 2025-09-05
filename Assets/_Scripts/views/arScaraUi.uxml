@@ -108,30 +108,30 @@
                     <ui:DropdownField choices="Speed,Low,High" name="speedDropdown" class="dropdownOptions hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="footerMiniPanel rowOrientationItems">
-                    <ui:Button name="PlusXButton" text="+X" class="generalButton hideItem" />
-                    <ui:Button name="MinusXButton" text="-X" class="generalButton hideItem" />
-                    <ui:Button name="PlusJ1Button" text="+J1" class="generalButton hideItem" />
-                    <ui:Button name="MinusJ1Button" text="-J1" class="generalButton hideItem" />
+                    <ui:Button name="plusXButton" text="+X" class="generalButton hideItem" />
+                    <ui:Button name="minusXButton" text="-X" class="generalButton hideItem" />
+                    <ui:Button name="plusJ1Button" text="+J1" class="generalButton hideItem" />
+                    <ui:Button name="minusJ1Button" text="-J1" class="generalButton hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="miniPanel">
                 <ui:VisualElement class="headerMiniPanel rowOrientationItems">
-                    <ui:Button name="PlusYButton" text="+Y" class="generalButton hideItem" />
-                    <ui:Button name="MinusYButton" text="-Y" class="generalButton hideItem" />
-                    <ui:Button name="PlusJ2Button" text="+J2" class="generalButton hideItem" />
-                    <ui:Button name="MinusJ2Button" text="-J2" class="generalButton hideItem" />
+                    <ui:Button name="plusYButton" text="+Y" class="generalButton hideItem" />
+                    <ui:Button name="minusYButton" text="-Y" class="generalButton hideItem" />
+                    <ui:Button name="plusJ2Button" text="+J2" class="generalButton hideItem" />
+                    <ui:Button name="minusJ2Button" text="-J2" class="generalButton hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="bodyMiniPanel rowOrientationItems">
-                    <ui:Button name="PlusZButton" text="+Z" class="generalButton hideItem" />
-                    <ui:Button name="MinusZButton" text="-Z" class="generalButton hideItem" />
-                    <ui:Button name="PlusJ3Button" text="+J3" class="generalButton hideItem" />
-                    <ui:Button name="MinusJ3Button" text="-J3" class="generalButton hideItem" />
+                    <ui:Button name="plusZButton" text="+Z" class="generalButton hideItem" />
+                    <ui:Button name="minusZButton" text="-Z" class="generalButton hideItem" />
+                    <ui:Button name="plusJ3Button" text="+J3" class="generalButton hideItem" />
+                    <ui:Button name="minusJ3Button" text="-J3" class="generalButton hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="footerMiniPanel rowOrientationItems">
-                    <ui:Button name="PlusUButton" text="+U" class="generalButton hideItem" />
-                    <ui:Button name="MinusUButton" text="-U" class="generalButton hideItem" />
-                    <ui:Button name="PlusJ4Button" text="+J4" class="generalButton hideItem" />
-                    <ui:Button name="MinusJ4Button" text="-J4" class="generalButton hideItem" />
+                    <ui:Button name="plusUButton" text="+U" class="generalButton hideItem" />
+                    <ui:Button name="minusUButton" text="-U" class="generalButton hideItem" />
+                    <ui:Button name="plusJ4Button" text="+J4" class="generalButton hideItem" />
+                    <ui:Button name="minusJ4Button" text="-J4" class="generalButton hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
@@ -142,10 +142,10 @@
                     <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
                 <ui:VisualElement class="bodyMiniPanel columnOrientationItems ">
-                    <ui:Label name="XLabel" text="X = 00.00 mm" class="textMiniPanelLabel hideItem" />
-                    <ui:Label name="YLabel" text="Y = 00.00 mm" class="textMiniPanelLabel hideItem" />
-                    <ui:Label name="ZLabel" text="Z = 00.00 mm" class="textMiniPanelLabel hideItem" />
-                    <ui:Label name="ULabel" text="U = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="xLabel" text="X = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="yLabel" text="Y = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="zLabel" text="Z = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="uLabel" text="U = 00.00 deg" class="textMiniPanelLabel hideItem" />
                     <ui:Label name="j1Label" text="J1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
                     <ui:Label name="j2Label" text="J2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
                     <ui:Label name="j3Label" text="J3 = 00.00 deg" class="textMiniPanelLabel hideItem" />
@@ -238,7 +238,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="footerSubpanel rowOrientationItems">
-                <ui:DropdownField choices="P1,P2,P3" class="dropdownOptions" />
+                <ui:DropdownField name="pointsDropdown" choices="Point,P1,P2,P3" class="dropdownOptions" />
                 <ui:Button text="Delete" class="generalButton" />
                 <ui:Button text="Save" class="generalButton" />
                 <ui:Button text="Restore" class="generalButton" />

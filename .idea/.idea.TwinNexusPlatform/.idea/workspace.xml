@@ -8,7 +8,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controller/ArScaraUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controller/ArScaraUiController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/views/arScaraUi.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/views/arScaraUi.uxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/views/styles/cyberpunk.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/views/styles/cyberpunk.uss" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,15 +108,13 @@
       <option name="useMixedMode" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="23072">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="23072" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="runtimes">
-        <list>
-          <MonoRuntime />
-        </list>
+        <list />
       </option>
       <option name="selectedOptions">
         <list />
@@ -228,6 +225,7 @@
       <workItem from="1756976695445" duration="13894000" />
       <workItem from="1757019855705" duration="9104000" />
       <workItem from="1757029071238" duration="483000" />
+      <workItem from="1757048967227" duration="10090000" />
     </task>
     <servers />
   </component>
