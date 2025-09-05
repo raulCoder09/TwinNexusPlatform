@@ -136,7 +136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &548123521
 Transform:
   m_ObjectHideFlags: 0
@@ -205,7 +205,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &841921419
 Transform:
   m_ObjectHideFlags: 0
@@ -257,6 +257,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc932fe9e673ad649b404c76b04af636, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArScaraUiController
+  virtualEnvironment: {fileID: 1868964288248272101, guid: 55590f4fa6dfa0744a15eef8db049531,
+    type: 3}
+  augmentedEnvironment: {fileID: 3433801948239648047, guid: 8fb897f3ed3573a45a96c92bfe4eb2cc,
+    type: 3}
+  hybridEnvironment: {fileID: 6135597731827560740, guid: 8a5e74e86e6d436458163b2153eba2ae,
+    type: 3}
+  realEnvironment: {fileID: 72585816444042619, guid: 90a57c2fc9ad9414aad54dd7ba823879,
+    type: 3}
 --- !u!1 &1237052906
 GameObject:
   m_ObjectHideFlags: 0

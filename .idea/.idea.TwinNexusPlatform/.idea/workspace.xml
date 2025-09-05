@@ -8,6 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controller/ArScaraUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controller/ArScaraUiController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/views/arScaraUi.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/views/arScaraUi.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/views/styles/cyberpunk.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/views/styles/cyberpunk.uss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,6 +228,8 @@
       <workItem from="1757019855705" duration="9104000" />
       <workItem from="1757029071238" duration="483000" />
       <workItem from="1757048967227" duration="10090000" />
+      <workItem from="1757074223613" duration="24000" />
+      <workItem from="1757074347862" duration="3214000" />
     </task>
     <servers />
   </component>

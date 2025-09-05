@@ -4,6 +4,10 @@ using UnityEngine.UIElements;
 
 public class ArScaraUiController : MonoBehaviour
 {
+    [SerializeField] private GameObject virtualEnvironment;
+    [SerializeField] private GameObject augmentedEnvironment;
+    [SerializeField] private GameObject hybridEnvironment;
+    [SerializeField] private GameObject realEnvironment;
     private UIDocument _uiDocument;
     private VisualElement _root;
 
@@ -20,10 +24,10 @@ public class ArScaraUiController : MonoBehaviour
                 _root.Q<VisualElement>("slidingPanels").style.display = DisplayStyle.None;
         });
         
-        _root.Q<DropdownField>("enviromentMenu")?.RegisterValueChangedCallback(evt =>
+        _root.Q<DropdownField>("environmentMenu")?.RegisterValueChangedCallback(evt =>
         {
             
-            EnviromentMenu(evt.newValue);
+            environmentMenu(evt.newValue);
         });
         
         _root.Q<DropdownField>("arscaraMenu")?.RegisterValueChangedCallback(evt =>
@@ -290,29 +294,59 @@ public class ArScaraUiController : MonoBehaviour
     
 
 
-    private void EnviromentMenu(string enviroment)
+    private void environmentMenu(string environment)
     {
-        switch (enviroment)
+        switch (environment)
         {
             case "Virtual":
                 _root.Q<DropdownField>("arscaraMenu").SetEnabled(true);
                 _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
+                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundOpaque");
+                _root.Q<VisualElement>("body").AddToClassList("backgroundTransparent");
+                Instantiate(virtualEnvironment);
+                Destroy(GameObject.FindWithTag("augmentedEnvironment")); 
+                Destroy(GameObject.FindWithTag("hybridEnvironment"));
+                Destroy(GameObject.FindWithTag("realEnvironment"));
                 break;
             case "Augmented":
                 _root.Q<DropdownField>("arscaraMenu").SetEnabled(true);
                 _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
+                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundOpaque");
+                _root.Q<VisualElement>("body").AddToClassList("backgroundTransparent");
+                Instantiate(augmentedEnvironment);
+                Destroy(GameObject.FindWithTag("virtualEnvironment")); 
+                Destroy(GameObject.FindWithTag("hybridEnvironment"));
+                Destroy(GameObject.FindWithTag("realEnvironment"));
                 break;
             case "Hybrid":
                 _root.Q<DropdownField>("arscaraMenu").SetEnabled(true);
                 _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
+                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundOpaque");
+                _root.Q<VisualElement>("body").AddToClassList("backgroundTransparent");
+                Instantiate(hybridEnvironment);
+                Destroy(GameObject.FindWithTag("virtualEnvironment")); 
+                Destroy(GameObject.FindWithTag("augmentedEnvironment"));
+                Destroy(GameObject.FindWithTag("realEnvironment"));
                 break;
             case "Real":
                 _root.Q<DropdownField>("arscaraMenu").SetEnabled(true);
                 _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
+                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundOpaque");
+                _root.Q<VisualElement>("body").AddToClassList("backgroundTransparent");
+                Instantiate(realEnvironment);
+                Destroy(GameObject.FindWithTag("virtualEnvironment")); 
+                Destroy(GameObject.FindWithTag("augmentedEnvironment"));
+                Destroy(GameObject.FindWithTag("hybridEnvironment"));
                 break;
             default:
                 _root.Q<DropdownField>("arscaraMenu").SetEnabled(false);
                 _root.Q<Label>("warningMessages").text = "Select a work environment";
+                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundTransparent");
+                _root.Q<VisualElement>("body").AddToClassList("backgroundOpaque");
+                Destroy(GameObject.FindWithTag("virtualEnvironment")); 
+                Destroy(GameObject.FindWithTag("augmentedEnvironment")); 
+                Destroy(GameObject.FindWithTag("hybridEnvironment"));
+                Destroy(GameObject.FindWithTag("realEnvironment"));
                 break;
         }
     }
@@ -350,7 +384,7 @@ public class ArScaraUiController : MonoBehaviour
                 break;
             default:
                 _root.Q<Label>("warningMessages").style.display = DisplayStyle.Flex;
-                if (value=="Enviroment")
+                if (value=="environment")
                 {
                     _root.Q<Label>("warningMessages").text = "Select a work environment";
                 }
@@ -372,7 +406,7 @@ public class ArScaraUiController : MonoBehaviour
     private void Start()
     {
         _root.Q<VisualElement>("slidingPanels").style.display = DisplayStyle.None;
-        _root.Q<DropdownField>("enviromentMenu").value = "Enviroment";
+        _root.Q<DropdownField>("environmentMenu").value = "environment";
         _root.Q<DropdownField>("arscaraMenu").value = "ARSCARA menu";
         _root.Q<DropdownField>("views").value = "Select view";
         _root.Q<DropdownField>("modeDropdown").value = "Mode";
@@ -386,7 +420,7 @@ public class ArScaraUiController : MonoBehaviour
     private void ShowMainMenu(ClickEvent evt)
     {
         ShowPanel("navigationMenuPanel","mainMenuPanel");
-        _root.Q<DropdownField>("enviromentMenu").value = "Enviroment";
+        _root.Q<DropdownField>("environmentMenu").value = "environment";
         _root.Q<DropdownField>("arscaraMenu").value = "ARSCARA menu";
         _root.Q<Label>("warningMessages").text = "Select a work environment";
         _root.Q<VisualElement>("controlPanel").RemoveFromClassList("arScaraPanelsIn");

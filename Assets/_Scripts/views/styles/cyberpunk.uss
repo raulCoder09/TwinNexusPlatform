@@ -217,3 +217,13 @@
     -unity-text-align: upper-center;
     color: rgb(0,255,40); font-size: 50px; white-space: normal;
 }
+
+
+.backgroundTransparent{
+    background-color: rgba(0,0,0,0);
+}
+.backgroundOpaque{
+    background-color: rgba(0,0,0,255);
+
+}
+
