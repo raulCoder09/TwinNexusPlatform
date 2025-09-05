@@ -1,478 +1,361 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class ArScaraUiController : MonoBehaviour
 {
+    [Header("Environment Prefabs")]
     [SerializeField] private GameObject virtualEnvironment;
     [SerializeField] private GameObject augmentedEnvironment;
     [SerializeField] private GameObject hybridEnvironment;
     [SerializeField] private GameObject realEnvironment;
-    private UIDocument _uiDocument;
+
+    private enum EnvType { None, Virtual, Augmented, Hybrid, Real }
+    private enum ModeType { None, World, Joint }
+    private enum ArPanel { None, Control, JogTeach, Points }
+
+    private static class Uss
+    {
+        public const string Show = "showItem";
+        public const string Hide = "hideItem";
+
+        public const string ScrimOpaque = "scrimOpaque";
+        public const string ScrimTransparent = "scrimTransparent";
+
+        public const string BgOpaque = "backgroundOpaque";
+        public const string BgTransparent = "backgroundTransparent";
+
+        public const string MainMenuBase = "mainMenuPanel";
+        public const string PanelIn = "In";
+        public const string PanelOut = "Out";
+    }
+
+    private static class Id
+    {
+        public const string Body = "body";
+        public const string SlidingPanels = "slidingPanels";
+        public const string Scrim = "scrim";
+        public const string NavPanel = "navigationMenuPanel";
+
+        public const string ShowMenu = "showMenuButton";
+        public const string HideMenu = "hideMenuButton";
+
+        public const string Warning = "warningMessages";
+
+        public const string EnvMenu = "environmentMenu";
+        public const string ArMenu = "arscaraMenu";
+        public const string Views = "views";
+        public const string Mode = "modeDropdown";
+        public const string Speed = "speedDropdown";
+        public const string Command = "CommandDropdown";
+        public const string Destination = "DestinationDropdown";
+        public const string Points = "pointsDropdown";
+
+        public const string ControlPanel = "controlPanel";
+        public const string JogTeachPanel = "jogAndTeachPanel";
+        public const string PointsPanel = "pointsPanel";
+
+        // Botones cartesianos
+        public const string BpX = "plusXButton";    public const string BmX = "minusXButton";
+        public const string BpY = "plusYButton";    public const string BmY = "minusYButton";
+        public const string BpZ = "plusZButton";    public const string BmZ = "minusZButton";
+        public const string BpU = "plusUButton";    public const string BmU = "minusUButton";
+
+        // Botones juntas
+        public const string BpJ1 = "plusJ1Button";  public const string BmJ1 = "minusJ1Button";
+        public const string BpJ2 = "plusJ2Button";  public const string BmJ2 = "minusJ2Button";
+        public const string BpJ3 = "plusJ3Button";  public const string BmJ3 = "minusJ3Button";
+        public const string BpJ4 = "plusJ4Button";  public const string BmJ4 = "minusJ4Button";
+
+        // Labels cartesianos
+        public const string LX = "xLabel"; public const string LY = "yLabel";
+        public const string LZ = "zLabel"; public const string LU = "uLabel";
+        // Labels juntas
+        public const string LJ1 = "j1Label"; public const string LJ2 = "j2Label";
+        public const string LJ3 = "j3Label"; public const string LJ4 = "j4Label";
+
+        public const string Teach = "TeachButton";
+        public const string Edit = "EditButton";
+
+        public const string MoveCont = "continuousMove";
+        public const string MoveLong = "longMove";
+        public const string MoveMed  = "mediumMove";
+        public const string MoveShort= "shortMove";
+    }
+
+    // UI cache
+    private UIDocument _doc;
     private VisualElement _root;
+    private VisualElement _body, _slidingPanels, _scrim, _navPanel;
+    private Label _warning;
+    private DropdownField _envMenu, _arMenu, _views, _mode, _speed, _command, _destination, _points;
+    private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
+
+    // Groups
+    private readonly List<VisualElement> _worldButtons = new();
+    private readonly List<VisualElement> _jointButtons = new();
+    private readonly List<VisualElement> _worldLabels  = new();
+    private readonly List<VisualElement> _jointLabels  = new();
+    private readonly List<VisualElement> _moveRadios   = new();
+    private readonly List<VisualElement> _teachEdit    = new();
+    private readonly List<VisualElement> _commanding   = new();
+
+    // Environments
+    private readonly Dictionary<EnvType, GameObject> _envPrefabs = new();
+    private GameObject _currentEnv;
 
     private void Awake()
     {
-        _uiDocument = GetComponent<UIDocument>();
-        _root = _uiDocument.rootVisualElement;
-        _root.Q<Button>("showMenuButton")?.RegisterCallback<ClickEvent>(ShowMainMenu);
-        _root.Q<Button>("hideMenuButton")?.RegisterCallback<ClickEvent>(HideMainMenu);
-        
-        _root.Q<VisualElement>("navigationMenuPanel")?.RegisterCallback<TransitionEndEvent>(evt =>
+        _doc = GetComponent<UIDocument>();
+        _root = _doc.rootVisualElement;
+
+        // Prefabs
+        _envPrefabs[EnvType.Virtual] = virtualEnvironment;
+        _envPrefabs[EnvType.Augmented] = augmentedEnvironment;
+        _envPrefabs[EnvType.Hybrid] = hybridEnvironment;
+        _envPrefabs[EnvType.Real] = realEnvironment;
+
+        // Cache nodes
+        _body = Q<VisualElement>(Id.Body);
+        _slidingPanels = Q<VisualElement>(Id.SlidingPanels);
+        _scrim = Q<VisualElement>(Id.Scrim);
+        _navPanel = Q<VisualElement>(Id.NavPanel);
+
+        _warning = Q<Label>(Id.Warning);
+
+        _envMenu = Q<DropdownField>(Id.EnvMenu);
+        _arMenu = Q<DropdownField>(Id.ArMenu);
+        _views = Q<DropdownField>(Id.Views);
+        _mode = Q<DropdownField>(Id.Mode);
+        _speed = Q<DropdownField>(Id.Speed);
+        _command = Q<DropdownField>(Id.Command);
+        _destination = Q<DropdownField>(Id.Destination);
+        _points = Q<DropdownField>(Id.Points);
+
+        _controlPanel = Q<VisualElement>(Id.ControlPanel);
+        _jogTeachPanel = Q<VisualElement>(Id.JogTeachPanel);
+        _pointsPanel = Q<VisualElement>(Id.PointsPanel);
+
+        // Events
+        Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ => ShowPanelSliding(_navPanel));
+        Q<Button>(Id.HideMenu)?.RegisterCallback<ClickEvent>(_ => HidePanelSliding(_navPanel));
+
+        _navPanel?.RegisterCallback<TransitionEndEvent>(_ =>
         {
-            if (_root.Q<VisualElement>("navigationMenuPanel").ClassListContains("mainMenuPanelOut"))
-                _root.Q<VisualElement>("slidingPanels").style.display = DisplayStyle.None;
+            if (_navPanel.ClassListContains(Uss.MainMenuBase + Uss.PanelOut))
+                _slidingPanels.style.display = DisplayStyle.None;
         });
-        
-        _root.Q<DropdownField>("environmentMenu")?.RegisterValueChangedCallback(evt =>
-        {
-            
-            environmentMenu(evt.newValue);
-        });
-        
-        _root.Q<DropdownField>("arscaraMenu")?.RegisterValueChangedCallback(evt =>
-        {
 
-            ArscaraMenu(evt.newValue);
-        });
-        _root.Q<DropdownField>("modeDropdown")?.RegisterValueChangedCallback(ModeSelected);
-        _root.Q<DropdownField>("speedDropdown")?.RegisterValueChangedCallback(SpeedSelected);
-    }
+        _envMenu?.RegisterValueChangedCallback(e => OnEnvironmentChanged(ParseEnv(e.newValue)));
+        _arMenu?.RegisterValueChangedCallback(e => OnArMenuChanged(ParseArPanel(e.newValue)));
+        _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
+        _speed?.RegisterValueChangedCallback(_ => { /* hook futuro */ });
 
-    private void SpeedSelected(ChangeEvent<string> evt)
-    {
-    }
-
-    private void ModeSelected(ChangeEvent<string> evt)
-    {
-        switch (evt.newValue)
-        {
-            case "World":
-                _root.Q<DropdownField>("speedDropdown")?.RemoveFromClassList("hideItem");
-                _root.Q<DropdownField>("speedDropdown")?.AddToClassList("showItem");
-                _root.Q<Button>("plusXButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("plusXButton")?.AddToClassList("showItem");
-                _root.Q<Button>("minusXButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("minusXButton")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("plusYButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("plusYButton")?.AddToClassList("showItem");
-                _root.Q<Button>("minusYButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("minusYButton")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("plusZButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("plusZButton")?.AddToClassList("showItem");
-                _root.Q<Button>("minusZButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("minusZButton")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("plusUButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("plusUButton")?.AddToClassList("showItem");
-                _root.Q<Button>("minusUButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("minusUButton")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("plusJ1Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusJ1Button")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusJ1Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusJ1Button")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusJ2Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusJ2Button")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusJ2Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusJ2Button")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusJ3Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusJ3Button")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusJ3Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusJ3Button")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusJ4Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusJ4Button")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusJ4Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusJ4Button")?.AddToClassList("hideItem");
-                
-                _root.Q<Label>("xLabel")?.RemoveFromClassList("hideItem");
-                _root.Q<Label>("xLabel")?.AddToClassList("showItem");
-                _root.Q<Label>("yLabel")?.RemoveFromClassList("hideItem");
-                _root.Q<Label>("yLabel")?.AddToClassList("showItem");
-                _root.Q<Label>("zLabel")?.RemoveFromClassList("hideItem");
-                _root.Q<Label>("zLabel")?.AddToClassList("showItem");
-                _root.Q<Label>("uLabel")?.RemoveFromClassList("hideItem");
-                _root.Q<Label>("uLabel")?.AddToClassList("showItem");
-                
-                _root.Q<Label>("j1Label")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("j1Label")?.AddToClassList("hideItem");
-                _root.Q<Label>("j2Label")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("j2Label")?.AddToClassList("hideItem");
-                _root.Q<Label>("j3Label")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("j3Label")?.AddToClassList("hideItem");
-                _root.Q<Label>("j4Label")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("j4Label")?.AddToClassList("hideItem");
-                
-                _root.Q<RadioButton>("continuousMove")?.RemoveFromClassList("hideItem");
-                _root.Q<RadioButton>("continuousMove")?.AddToClassList("showItem");
-                _root.Q<RadioButton>("longMove")?.RemoveFromClassList("hideItem");
-                _root.Q<RadioButton>("longMove")?.AddToClassList("showItem");
-                _root.Q<RadioButton>("mediumMove")?.RemoveFromClassList("hideItem");
-                _root.Q<RadioButton>("mediumMove")?.AddToClassList("showItem");
-                _root.Q<RadioButton>("shortMove")?.RemoveFromClassList("hideItem");
-                _root.Q<RadioButton>("shortMove")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("TeachButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("TeachButton")?.AddToClassList("showItem");
-                _root.Q<Button>("EditButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("EditButton")?.AddToClassList("showItem");
-                
-                _root.Q<DropdownField>("CommandDropdown")?.RemoveFromClassList("hideItem");
-                _root.Q<DropdownField>("CommandDropdown")?.AddToClassList("showItem");
-                _root.Q<DropdownField>("DestinationDropdown")?.RemoveFromClassList("hideItem");
-                _root.Q<DropdownField>("DestinationDropdown")?.AddToClassList("showItem");
-                break;
-            case "Joint":
-                _root.Q<DropdownField>("speedDropdown")?.RemoveFromClassList("hideItem");
-                _root.Q<DropdownField>("speedDropdown")?.AddToClassList("showItem");
-                _root.Q<Button>("plusJ1Button")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("plusJ1Button")?.AddToClassList("showItem");
-                _root.Q<Button>("minusJ1Button")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("minusJ1Button")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("plusJ2Button")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("plusJ2Button")?.AddToClassList("showItem");
-                _root.Q<Button>("minusJ2Button")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("minusJ2Button")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("plusJ3Button")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("plusJ3Button")?.AddToClassList("showItem");
-                _root.Q<Button>("minusJ3Button")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("minusJ3Button")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("plusJ4Button")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("plusJ4Button")?.AddToClassList("showItem");
-                _root.Q<Button>("minusJ4Button")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("minusJ4Button")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("plusXButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusXButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusXButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusXButton")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusYButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusYButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusYButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusYButton")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusZButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusZButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusZButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusZButton")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusUButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusUButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusUButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusUButton")?.AddToClassList("hideItem");
-                
-                _root.Q<Label>("xLabel")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("xLabel")?.AddToClassList("hideItem");
-                _root.Q<Label>("yLabel")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("yLabel")?.AddToClassList("hideItem");
-                _root.Q<Label>("zLabel")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("zLabel")?.AddToClassList("hideItem");
-                _root.Q<Label>("uLabel")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("uLabel")?.AddToClassList("hideItem");
-                
-                _root.Q<Label>("j1Label")?.RemoveFromClassList("hideItem");
-                _root.Q<Label>("j1Label")?.AddToClassList("showItem");
-                _root.Q<Label>("j2Label")?.RemoveFromClassList("hideItem");
-                _root.Q<Label>("j2Label")?.AddToClassList("showItem");
-                _root.Q<Label>("j3Label")?.RemoveFromClassList("hideItem");
-                _root.Q<Label>("j3Label")?.AddToClassList("showItem");
-                _root.Q<Label>("j4Label")?.RemoveFromClassList("hideItem");
-                _root.Q<Label>("j4Label")?.AddToClassList("showItem");
-                
-                _root.Q<RadioButton>("continuousMove")?.RemoveFromClassList("hideItem");
-                _root.Q<RadioButton>("continuousMove")?.AddToClassList("showItem");
-                _root.Q<RadioButton>("longMove")?.RemoveFromClassList("hideItem");
-                _root.Q<RadioButton>("longMove")?.AddToClassList("showItem");
-                _root.Q<RadioButton>("mediumMove")?.RemoveFromClassList("hideItem");
-                _root.Q<RadioButton>("mediumMove")?.AddToClassList("showItem");
-                _root.Q<RadioButton>("shortMove")?.RemoveFromClassList("hideItem");
-                _root.Q<RadioButton>("shortMove")?.AddToClassList("showItem");
-                
-                _root.Q<Button>("TeachButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("TeachButton")?.AddToClassList("showItem");
-                _root.Q<Button>("EditButton")?.RemoveFromClassList("hideItem");
-                _root.Q<Button>("EditButton")?.AddToClassList("showItem");
-                
-                _root.Q<DropdownField>("CommandDropdown")?.RemoveFromClassList("hideItem");
-                _root.Q<DropdownField>("CommandDropdown")?.AddToClassList("showItem");
-                _root.Q<DropdownField>("DestinationDropdown")?.RemoveFromClassList("hideItem");
-                _root.Q<DropdownField>("DestinationDropdown")?.AddToClassList("showItem");
-                break;
-            default:
-                _root.Q<DropdownField>("speedDropdown")?.RemoveFromClassList("showItem");
-                _root.Q<DropdownField>("speedDropdown")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusXButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusXButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusXButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusXButton")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusYButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusYButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusYButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusYButton")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusZButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusZButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusZButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusZButton")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusUButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusUButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusUButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusUButton")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusJ1Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusJ1Button")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusJ1Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusJ1Button")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusJ2Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusJ2Button")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusJ2Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusJ2Button")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusJ3Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusJ3Button")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusJ3Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusJ3Button")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("plusJ4Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("plusJ4Button")?.AddToClassList("hideItem");
-                _root.Q<Button>("minusJ4Button")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("minusJ4Button")?.AddToClassList("hideItem");
-                
-                _root.Q<Label>("xLabel")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("xLabel")?.AddToClassList("hideItem");
-                _root.Q<Label>("yLabel")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("yLabel")?.AddToClassList("hideItem");
-                _root.Q<Label>("zLabel")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("zLabel")?.AddToClassList("hideItem");
-                _root.Q<Label>("uLabel")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("uLabel")?.AddToClassList("hideItem");
-                
-                _root.Q<Label>("j1Label")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("j1Label")?.AddToClassList("hideItem");
-                _root.Q<Label>("j2Label")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("j2Label")?.AddToClassList("hideItem");
-                _root.Q<Label>("j3Label")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("j3Label")?.AddToClassList("hideItem");
-                _root.Q<Label>("j4Label")?.RemoveFromClassList("showItem");
-                _root.Q<Label>("j4Label")?.AddToClassList("hideItem");
-                
-                _root.Q<RadioButton>("continuousMove")?.RemoveFromClassList("showItem");
-                _root.Q<RadioButton>("continuousMove")?.AddToClassList("hideItem");
-                _root.Q<RadioButton>("longMove")?.RemoveFromClassList("showItem");
-                _root.Q<RadioButton>("longMove")?.AddToClassList("hideItem");
-                _root.Q<RadioButton>("mediumMove")?.RemoveFromClassList("showItem");
-                _root.Q<RadioButton>("mediumMove")?.AddToClassList("hideItem");
-                _root.Q<RadioButton>("shortMove")?.RemoveFromClassList("showItem");
-                _root.Q<RadioButton>("shortMove")?.AddToClassList("hideItem");
-                
-                _root.Q<Button>("TeachButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("TeachButton")?.AddToClassList("hideItem");
-                _root.Q<Button>("EditButton")?.RemoveFromClassList("showItem");
-                _root.Q<Button>("EditButton")?.AddToClassList("hideItem");
-                
-                _root.Q<DropdownField>("CommandDropdown")?.RemoveFromClassList("showItem");
-                _root.Q<DropdownField>("CommandDropdown")?.AddToClassList("hideItem");
-                _root.Q<DropdownField>("DestinationDropdown")?.RemoveFromClassList("showItem");
-                _root.Q<DropdownField>("DestinationDropdown")?.AddToClassList("hideItem");
-                break; 
-        }
-    }
-    
-    
-
-
-    private void environmentMenu(string environment)
-    {
-        switch (environment)
-        {
-            case "Virtual":
-                _root.Q<DropdownField>("arscaraMenu").SetEnabled(true);
-                _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
-                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundOpaque");
-                _root.Q<VisualElement>("body").AddToClassList("backgroundTransparent");
-                Instantiate(virtualEnvironment);
-                Destroy(GameObject.FindWithTag("augmentedEnvironment")); 
-                Destroy(GameObject.FindWithTag("hybridEnvironment"));
-                Destroy(GameObject.FindWithTag("realEnvironment"));
-                break;
-            case "Augmented":
-                _root.Q<DropdownField>("arscaraMenu").SetEnabled(true);
-                _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
-                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundOpaque");
-                _root.Q<VisualElement>("body").AddToClassList("backgroundTransparent");
-                Instantiate(augmentedEnvironment);
-                Destroy(GameObject.FindWithTag("virtualEnvironment")); 
-                Destroy(GameObject.FindWithTag("hybridEnvironment"));
-                Destroy(GameObject.FindWithTag("realEnvironment"));
-                break;
-            case "Hybrid":
-                _root.Q<DropdownField>("arscaraMenu").SetEnabled(true);
-                _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
-                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundOpaque");
-                _root.Q<VisualElement>("body").AddToClassList("backgroundTransparent");
-                Instantiate(hybridEnvironment);
-                Destroy(GameObject.FindWithTag("virtualEnvironment")); 
-                Destroy(GameObject.FindWithTag("augmentedEnvironment"));
-                Destroy(GameObject.FindWithTag("realEnvironment"));
-                break;
-            case "Real":
-                _root.Q<DropdownField>("arscaraMenu").SetEnabled(true);
-                _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
-                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundOpaque");
-                _root.Q<VisualElement>("body").AddToClassList("backgroundTransparent");
-                Instantiate(realEnvironment);
-                Destroy(GameObject.FindWithTag("virtualEnvironment")); 
-                Destroy(GameObject.FindWithTag("augmentedEnvironment"));
-                Destroy(GameObject.FindWithTag("hybridEnvironment"));
-                break;
-            default:
-                _root.Q<DropdownField>("arscaraMenu").SetEnabled(false);
-                _root.Q<Label>("warningMessages").text = "Select a work environment";
-                _root.Q<VisualElement>("body").RemoveFromClassList("backgroundTransparent");
-                _root.Q<VisualElement>("body").AddToClassList("backgroundOpaque");
-                Destroy(GameObject.FindWithTag("virtualEnvironment")); 
-                Destroy(GameObject.FindWithTag("augmentedEnvironment")); 
-                Destroy(GameObject.FindWithTag("hybridEnvironment"));
-                Destroy(GameObject.FindWithTag("realEnvironment"));
-                break;
-        }
-    }
-
-    private void ArscaraMenu(string value)
-    {
-        switch (value)
-        {
-            case "Control panel":
-                _root.Q<Label>("warningMessages").style.display = DisplayStyle.None;
-                _root.Q<VisualElement>("controlPanel").RemoveFromClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("controlPanel").AddToClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("jogAndTeachPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("jogAndTeachPanel").AddToClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("pointsPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("pointsPanel").AddToClassList("arScaraPanelsOut");
-                break;
-            case "Jog and teach":
-                _root.Q<Label>("warningMessages").style.display = DisplayStyle.None;
-                _root.Q<VisualElement>("controlPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("controlPanel").AddToClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("jogAndTeachPanel").RemoveFromClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("jogAndTeachPanel").AddToClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("pointsPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("pointsPanel").AddToClassList("arScaraPanelsOut");
-                break;
-            case "Points":
-                _root.Q<Label>("warningMessages").style.display = DisplayStyle.None;
-                _root.Q<VisualElement>("controlPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("controlPanel").AddToClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("jogAndTeachPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("jogAndTeachPanel").AddToClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("pointsPanel").RemoveFromClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("pointsPanel").AddToClassList("arScaraPanelsIn");
-                break;
-            default:
-                _root.Q<Label>("warningMessages").style.display = DisplayStyle.Flex;
-                if (value=="environment")
-                {
-                    _root.Q<Label>("warningMessages").text = "Select a work environment";
-                }
-                else
-                {
-                    _root.Q<Label>("warningMessages").text = "Select ARSCARA robot interface";
-                }
-                
-                _root.Q<VisualElement>("controlPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("controlPanel").AddToClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("jogAndTeachPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("jogAndTeachPanel").AddToClassList("arScaraPanelsOut");
-                _root.Q<VisualElement>("pointsPanel").RemoveFromClassList("arScaraPanelsIn");
-                _root.Q<VisualElement>("pointsPanel").AddToClassList("arScaraPanelsOut");
-                break;
-        }
+        BuildGroups();
     }
 
     private void Start()
     {
-        _root.Q<VisualElement>("slidingPanels").style.display = DisplayStyle.None;
-        _root.Q<DropdownField>("environmentMenu").value = "environment";
-        _root.Q<DropdownField>("arscaraMenu").value = "ARSCARA menu";
-        _root.Q<DropdownField>("views").value = "Select view";
-        _root.Q<DropdownField>("modeDropdown").value = "Mode";
-        _root.Q<DropdownField>("speedDropdown").value = "Speed";
-        _root.Q<DropdownField>("CommandDropdown").value = "Command";
-        _root.Q<DropdownField>("DestinationDropdown").value = "Destination";
-        _root.Q<Label>("warningMessages").text = "Select a work environment";
-        _root.Q<DropdownField>("pointsDropdown").value = "Points";
+        // Estado inicial seguro
+        _slidingPanels.style.display = DisplayStyle.None;
+
+        SetValue(_envMenu, "environment");
+        SetValue(_arMenu, "ARSCARA menu");
+        SetValue(_views, "Select view");
+        SetValue(_mode, "Mode");
+        SetValue(_speed, "Speed");
+        SetValue(_command, "Command");
+        SetValue(_destination, "Destination");
+        SetValue(_points, "Point"); // en tu UXML es "Point" (no "Points")
+
+        _warning.text = "Select a work environment";
+        _arMenu?.SetEnabled(false);
+
+        ShowOnlyArPanel(ArPanel.None);
+        SetBodyOpaque(true);
+        ApplyModeUi(ModeType.None);
     }
 
-    private void ShowMainMenu(ClickEvent evt)
+    // ---------- UI helpers ----------
+    private T Q<T>(string name) where T : VisualElement => _root.Q<T>(name);
+
+    private static void SetValue(DropdownField df, string v) { if (df != null) df.value = v; }
+
+    private static void SetVisible(VisualElement ve, bool on)
     {
-        ShowPanel("navigationMenuPanel","mainMenuPanel");
-        _root.Q<DropdownField>("environmentMenu").value = "environment";
-        _root.Q<DropdownField>("arscaraMenu").value = "ARSCARA menu";
-        _root.Q<Label>("warningMessages").text = "Select a work environment";
-        _root.Q<VisualElement>("controlPanel").RemoveFromClassList("arScaraPanelsIn");
-        _root.Q<VisualElement>("controlPanel").AddToClassList("arScaraPanelsOut");
-        _root.Q<VisualElement>("jogAndTeachPanel").RemoveFromClassList("arScaraPanelsIn");
-        _root.Q<VisualElement>("jogAndTeachPanel").AddToClassList("arScaraPanelsOut");
-        _root.Q<VisualElement>("pointsPanel").RemoveFromClassList("arScaraPanelsIn");
-        _root.Q<VisualElement>("pointsPanel").AddToClassList("arScaraPanelsOut");
+        if (ve == null) return;
+        if (on) { ve.RemoveFromClassList(Uss.Hide); ve.AddToClassList(Uss.Show); }
+        else    { ve.RemoveFromClassList(Uss.Show); ve.AddToClassList(Uss.Hide); }
+    }
+    private static void SetVisible(IEnumerable<VisualElement> list, bool on)
+    {
+        foreach (var ve in list) SetVisible(ve, on);
     }
 
-    private void HideMainMenu(ClickEvent evt)
+    private void SetBodyOpaque(bool opaque)
     {
-        HidePanel("navigationMenuPanel","mainMenuPanel");
+        if (_body == null) return;
+        _body.RemoveFromClassList(opaque ? "backgroundTransparent" : "backgroundOpaque");
+        _body.AddToClassList(opaque ? "backgroundOpaque" : "backgroundTransparent");
     }
-    
-    private void EnableSlidingPanels()
+
+    private void ShowPanelSliding(VisualElement panel)
     {
-        _root.Q<VisualElement>("slidingPanels").style.display = DisplayStyle.Flex;
+        if (panel == null) return;
+        _slidingPanels.style.display = DisplayStyle.Flex;
+        _scrim?.RemoveFromClassList(Uss.ScrimTransparent);
+        _scrim?.AddToClassList(Uss.ScrimOpaque);
+        panel.RemoveFromClassList(Uss.MainMenuBase + Uss.PanelOut);
+        panel.AddToClassList(Uss.MainMenuBase + Uss.PanelIn);
     }
-    
-    private void ScrimMakeTransparent()
+
+    private void HidePanelSliding(VisualElement panel)
     {
-        _root.Q<VisualElement>("scrim").RemoveFromClassList("scrimOpaque");
-        _root.Q<VisualElement>("scrim").AddToClassList("scrimTransparent");
+        if (panel == null) return;
+        panel.RemoveFromClassList(Uss.MainMenuBase + Uss.PanelIn);
+        panel.AddToClassList(Uss.MainMenuBase + Uss.PanelOut);
+        _slidingPanels.style.display = DisplayStyle.Flex; // se oculta en TransitionEnd
+        _scrim?.RemoveFromClassList(Uss.ScrimOpaque);
+        _scrim?.AddToClassList(Uss.ScrimTransparent);
     }
-    private void ScrimMakeOpaque()
+
+    private void ShowOnlyArPanel(ArPanel which)
     {
-        _root.Q<VisualElement>("scrim").RemoveFromClassList("scrimTransparent");
-        _root.Q<VisualElement>("scrim").AddToClassList("scrimOpaque");
+        SetArPanel(_controlPanel, which == ArPanel.Control);
+        SetArPanel(_jogTeachPanel, which == ArPanel.JogTeach);
+        SetArPanel(_pointsPanel, which == ArPanel.Points);
     }
-    
-    private void ShowPanel(string panelName,string position)
+
+    private static void SetArPanel(VisualElement panel, bool visible)
     {
-        if (panelName=="navigationMenuPanel")
+        if (panel == null) return;
+        var add = visible ? "arScaraPanelsIn" : "arScaraPanelsOut";
+        var rem = visible ? "arScaraPanelsOut" : "arScaraPanelsIn";
+        panel.RemoveFromClassList(rem);
+        panel.AddToClassList(add);
+    }
+
+    // ---------- Grouping ----------
+    private void BuildGroups()
+    {
+        // World buttons
+        Add(_worldButtons, Q<Button>(Id.BpX), Q<Button>(Id.BmX), Q<Button>(Id.BpY), Q<Button>(Id.BmY),
+                           Q<Button>(Id.BpZ), Q<Button>(Id.BmZ), Q<Button>(Id.BpU), Q<Button>(Id.BmU));
+        // Joint buttons
+        Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2),
+                           Q<Button>(Id.BpJ3), Q<Button>(Id.BmJ3), Q<Button>(Id.BpJ4), Q<Button>(Id.BmJ4));
+        // Labels
+        Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY), Q<Label>(Id.LZ), Q<Label>(Id.LU));
+        Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2), Q<Label>(Id.LJ3), Q<Label>(Id.LJ4));
+        // Radios
+        Add(_moveRadios, Q<RadioButton>(Id.MoveCont), Q<RadioButton>(Id.MoveLong),
+                         Q<RadioButton>(Id.MoveMed),  Q<RadioButton>(Id.MoveShort));
+        // Teach/Edit
+        Add(_teachEdit, Q<Button>(Id.Teach), Q<Button>(Id.Edit));
+        // Commanding
+        Add(_commanding, _command, _destination);
+    }
+
+    private static void Add(List<VisualElement> list, params VisualElement[] items)
+    {
+        foreach (var it in items) if (it != null) list.Add(it);
+    }
+
+    // ---------- State application ----------
+    private void ApplyModeUi(ModeType mode)
+    {
+        bool common = mode is ModeType.World or ModeType.Joint;
+        SetVisible(_speed, common);
+        SetVisible(_moveRadios, common);
+        SetVisible(_teachEdit, common);
+        SetVisible(_commanding, common);
+
+        SetVisible(_worldButtons, mode == ModeType.World);
+        SetVisible(_worldLabels,  mode == ModeType.World);
+
+        SetVisible(_jointButtons, mode == ModeType.Joint);
+        SetVisible(_jointLabels,  mode == ModeType.Joint);
+
+        if (mode == ModeType.None)
         {
-            EnableSlidingPanels();
-            ScrimMakeOpaque();
+            SetVisible(_worldButtons, false);
+            SetVisible(_jointButtons, false);
+            SetVisible(_worldLabels,  false);
+            SetVisible(_jointLabels,  false);
         }
-        _root.Q<VisualElement>(panelName).RemoveFromClassList(position+"Out");
-        _root.Q<VisualElement>(panelName).AddToClassList(position+"In");
     }
-    
-    private void HidePanel(string panelName,string position)
+
+    private void OnEnvironmentChanged(EnvType env)
     {
-        _root.Q<VisualElement>(panelName).RemoveFromClassList(position+"In");
-        _root.Q<VisualElement>(panelName).AddToClassList(position+"Out");
-        if (panelName=="navigationMenuPanel")
+        bool none = env == EnvType.None;
+        _arMenu?.SetEnabled(!none);
+        _warning.text = none ? "Select a work environment" : "Select ARSCARA robot interface";
+        SetBodyOpaque(none);
+        SpawnEnvironment(env);
+    }
+
+    private void OnArMenuChanged(ArPanel panel)
+    {
+        if (panel == ArPanel.None)
         {
-            EnableSlidingPanels();
-            ScrimMakeTransparent();
+            _warning.style.display = DisplayStyle.Flex;
+            _warning.text = _envMenu?.value == "environment"
+                ? "Select a work environment"
+                : "Select ARSCARA robot interface";
+            ShowOnlyArPanel(ArPanel.None);
+            return;
         }
 
+        _warning.style.display = DisplayStyle.None;
+        ShowOnlyArPanel(panel);
     }
-    
+
+    // ---------- Environments ----------
+    private void SpawnEnvironment(EnvType env)
+    {
+        if (_currentEnv != null) { Destroy(_currentEnv); _currentEnv = null; }
+        if (env == EnvType.None) return;
+
+        if (_envPrefabs.TryGetValue(env, out var prefab) && prefab != null)
+            _currentEnv = Instantiate(prefab);
+        else
+            Debug.LogWarning($"Prefab not set for environment {env}");
+    }
+
+    // ---------- Parsers (robustos) ----------
+    private static EnvType ParseEnv(string raw)
+    {
+        var s = (raw ?? "").Trim(); // protege " Real"
+        return s switch
+        {
+            "Virtual"   => EnvType.Virtual,
+            "Augmented" => EnvType.Augmented,
+            "Hybrid"    => EnvType.Hybrid,
+            "Real"      => EnvType.Real,
+            _           => EnvType.None
+        };
+    }
+
+    private static ModeType ParseMode(string raw)
+    {
+        var s = (raw ?? "").Trim();
+        return s switch
+        {
+            "World" => ModeType.World,
+            "Joint" => ModeType.Joint,
+            _       => ModeType.None
+        };
+    }
+
+    private static ArPanel ParseArPanel(string raw)
+    {
+        var s = (raw ?? "").Trim();
+        return s switch
+        {
+            "Control panel" => ArPanel.Control,
+            "Jog and teach" => ArPanel.JogTeach,
+            "Points"        => ArPanel.Points,
+            _               => ArPanel.None
+        };
+    }
 }
