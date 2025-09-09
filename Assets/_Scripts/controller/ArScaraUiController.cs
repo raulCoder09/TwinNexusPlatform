@@ -1,6 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.Management;
 
 public class ArScaraUiController : MonoBehaviour
 {
@@ -12,7 +15,9 @@ public class ArScaraUiController : MonoBehaviour
 
     private enum EnvType { None, Virtual, Augmented, Hybrid, Real }
     private enum ModeType { None, World, Joint }
-    private enum ArPanel { None, Control, JogTeach, Points }
+    private enum ArScaraPanel { None, Control, JogTeach, Points }
+
+    private EnvType _currentEnvType = EnvType.None;
 
     private static class Uss
     {
@@ -43,7 +48,7 @@ public class ArScaraUiController : MonoBehaviour
         public const string Warning = "warningMessages";
 
         public const string EnvMenu = "environmentMenu";
-        public const string ArMenu = "arscaraMenu";
+        public const string ArScaraMenu = "arscaraMenu";
         public const string Views = "views";
         public const string Mode = "modeDropdown";
         public const string Speed = "speedDropdown";
@@ -55,22 +60,19 @@ public class ArScaraUiController : MonoBehaviour
         public const string JogTeachPanel = "jogAndTeachPanel";
         public const string PointsPanel = "pointsPanel";
 
-        // Botones cartesianos
         public const string BpX = "plusXButton";    public const string BmX = "minusXButton";
         public const string BpY = "plusYButton";    public const string BmY = "minusYButton";
         public const string BpZ = "plusZButton";    public const string BmZ = "minusZButton";
         public const string BpU = "plusUButton";    public const string BmU = "minusUButton";
 
-        // Botones juntas
         public const string BpJ1 = "plusJ1Button";  public const string BmJ1 = "minusJ1Button";
         public const string BpJ2 = "plusJ2Button";  public const string BmJ2 = "minusJ2Button";
         public const string BpJ3 = "plusJ3Button";  public const string BmJ3 = "minusJ3Button";
         public const string BpJ4 = "plusJ4Button";  public const string BmJ4 = "minusJ4Button";
 
-        // Labels cartesianos
         public const string LX = "xLabel"; public const string LY = "yLabel";
         public const string LZ = "zLabel"; public const string LU = "uLabel";
-        // Labels juntas
+
         public const string LJ1 = "j1Label"; public const string LJ2 = "j2Label";
         public const string LJ3 = "j3Label"; public const string LJ4 = "j4Label";
 
@@ -83,15 +85,13 @@ public class ArScaraUiController : MonoBehaviour
         public const string MoveShort= "shortMove";
     }
 
-    // UI cache
     private UIDocument _doc;
     private VisualElement _root;
     private VisualElement _body, _slidingPanels, _scrim, _navPanel;
     private Label _warning;
-    private DropdownField _envMenu, _arMenu, _views, _mode, _speed, _command, _destination, _points;
+    private DropdownField _envMenu, _arScaraMenu, _views, _mode, _speed, _command, _destination, _points;
     private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
 
-    // Groups
     private readonly List<VisualElement> _worldButtons = new();
     private readonly List<VisualElement> _jointButtons = new();
     private readonly List<VisualElement> _worldLabels  = new();
@@ -100,7 +100,6 @@ public class ArScaraUiController : MonoBehaviour
     private readonly List<VisualElement> _teachEdit    = new();
     private readonly List<VisualElement> _commanding   = new();
 
-    // Environments
     private readonly Dictionary<EnvType, GameObject> _envPrefabs = new();
     private GameObject _currentEnv;
 
@@ -109,13 +108,11 @@ public class ArScaraUiController : MonoBehaviour
         _doc = GetComponent<UIDocument>();
         _root = _doc.rootVisualElement;
 
-        // Prefabs
-        _envPrefabs[EnvType.Virtual] = virtualEnvironment;
+        _envPrefabs[EnvType.Virtual]   = virtualEnvironment;
         _envPrefabs[EnvType.Augmented] = augmentedEnvironment;
-        _envPrefabs[EnvType.Hybrid] = hybridEnvironment;
-        _envPrefabs[EnvType.Real] = realEnvironment;
+        _envPrefabs[EnvType.Hybrid]    = hybridEnvironment;
+        _envPrefabs[EnvType.Real]      = realEnvironment;
 
-        // Cache nodes
         _body = Q<VisualElement>(Id.Body);
         _slidingPanels = Q<VisualElement>(Id.SlidingPanels);
         _scrim = Q<VisualElement>(Id.Scrim);
@@ -124,7 +121,7 @@ public class ArScaraUiController : MonoBehaviour
         _warning = Q<Label>(Id.Warning);
 
         _envMenu = Q<DropdownField>(Id.EnvMenu);
-        _arMenu = Q<DropdownField>(Id.ArMenu);
+        _arScaraMenu = Q<DropdownField>(Id.ArScaraMenu);
         _views = Q<DropdownField>(Id.Views);
         _mode = Q<DropdownField>(Id.Mode);
         _speed = Q<DropdownField>(Id.Speed);
@@ -136,8 +133,20 @@ public class ArScaraUiController : MonoBehaviour
         _jogTeachPanel = Q<VisualElement>(Id.JogTeachPanel);
         _pointsPanel = Q<VisualElement>(Id.PointsPanel);
 
-        // Events
-        Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ => ShowPanelSliding(_navPanel));
+        Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ =>
+        {
+            SetValue(_envMenu, "environment");
+            
+            SetValue(_arScaraMenu, "ARSCARA menu");
+
+            ShowOnlyArScaraPanel(ArScaraPanel.None);
+
+            _warning.style.display = DisplayStyle.Flex;
+            _warning.text = "Select a work environment";
+
+            ShowPanelSliding(_navPanel);
+        });
+
         Q<Button>(Id.HideMenu)?.RegisterCallback<ClickEvent>(_ => HidePanelSliding(_navPanel));
 
         _navPanel?.RegisterCallback<TransitionEndEvent>(_ =>
@@ -147,7 +156,7 @@ public class ArScaraUiController : MonoBehaviour
         });
 
         _envMenu?.RegisterValueChangedCallback(e => OnEnvironmentChanged(ParseEnv(e.newValue)));
-        _arMenu?.RegisterValueChangedCallback(e => OnArMenuChanged(ParseArPanel(e.newValue)));
+        _arScaraMenu?.RegisterValueChangedCallback(e => OnArScaraMenuChanged(ParseArScaraPanel(e.newValue)));
         _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
         _speed?.RegisterValueChangedCallback(_ => { /* hook futuro */ });
 
@@ -156,27 +165,25 @@ public class ArScaraUiController : MonoBehaviour
 
     private void Start()
     {
-        // Estado inicial seguro
         _slidingPanels.style.display = DisplayStyle.None;
 
         SetValue(_envMenu, "environment");
-        SetValue(_arMenu, "ARSCARA menu");
+        SetValue(_arScaraMenu, "ARSCARA menu");
         SetValue(_views, "Select view");
         SetValue(_mode, "Mode");
         SetValue(_speed, "Speed");
         SetValue(_command, "Command");
         SetValue(_destination, "Destination");
-        SetValue(_points, "Point"); // en tu UXML es "Point" (no "Points")
+        SetValue(_points, "Point");
 
         _warning.text = "Select a work environment";
-        _arMenu?.SetEnabled(false);
+        _arScaraMenu?.SetEnabled(false);
 
-        ShowOnlyArPanel(ArPanel.None);
+        ShowOnlyArScaraPanel(ArScaraPanel.None);
         SetBodyOpaque(true);
         ApplyModeUi(ModeType.None);
     }
 
-    // ---------- UI helpers ----------
     private T Q<T>(string name) where T : VisualElement => _root.Q<T>(name);
 
     private static void SetValue(DropdownField df, string v) { if (df != null) df.value = v; }
@@ -195,8 +202,8 @@ public class ArScaraUiController : MonoBehaviour
     private void SetBodyOpaque(bool opaque)
     {
         if (_body == null) return;
-        _body.RemoveFromClassList(opaque ? "backgroundTransparent" : "backgroundOpaque");
-        _body.AddToClassList(opaque ? "backgroundOpaque" : "backgroundTransparent");
+        _body.RemoveFromClassList(opaque ? Uss.BgTransparent : Uss.BgOpaque);
+        _body.AddToClassList(opaque ? Uss.BgOpaque : Uss.BgTransparent);
     }
 
     private void ShowPanelSliding(VisualElement panel)
@@ -214,19 +221,19 @@ public class ArScaraUiController : MonoBehaviour
         if (panel == null) return;
         panel.RemoveFromClassList(Uss.MainMenuBase + Uss.PanelIn);
         panel.AddToClassList(Uss.MainMenuBase + Uss.PanelOut);
-        _slidingPanels.style.display = DisplayStyle.Flex; // se oculta en TransitionEnd
+        _slidingPanels.style.display = DisplayStyle.Flex; 
         _scrim?.RemoveFromClassList(Uss.ScrimOpaque);
         _scrim?.AddToClassList(Uss.ScrimTransparent);
     }
 
-    private void ShowOnlyArPanel(ArPanel which)
+    private void ShowOnlyArScaraPanel(ArScaraPanel which)
     {
-        SetArPanel(_controlPanel, which == ArPanel.Control);
-        SetArPanel(_jogTeachPanel, which == ArPanel.JogTeach);
-        SetArPanel(_pointsPanel, which == ArPanel.Points);
+        SetArScaraPanel(_controlPanel, which == ArScaraPanel.Control);
+        SetArScaraPanel(_jogTeachPanel, which == ArScaraPanel.JogTeach);
+        SetArScaraPanel(_pointsPanel, which == ArScaraPanel.Points);
     }
 
-    private static void SetArPanel(VisualElement panel, bool visible)
+    private static void SetArScaraPanel(VisualElement panel, bool visible)
     {
         if (panel == null) return;
         var add = visible ? "arScaraPanelsIn" : "arScaraPanelsOut";
@@ -234,25 +241,73 @@ public class ArScaraUiController : MonoBehaviour
         panel.RemoveFromClassList(rem);
         panel.AddToClassList(add);
     }
+    private IEnumerator SafeDestroyEnvironment(GameObject root)
+    {
+        if (!root) yield break;
+        var bg     = root.GetComponentInChildren<ARCameraBackground>(true);
+        var camMgr = root.GetComponentInChildren<ARCameraManager>(true);
+        var sess   = root.GetComponentInChildren<ARSession>(true);
 
-    // ---------- Grouping ----------
+        if (!bg && !camMgr && !sess)
+        {
+            Destroy(root);
+            yield break;
+        }
+        
+        if (bg)     bg.enabled = false;
+        if (camMgr) camMgr.enabled = false;
+        if (sess)   sess.enabled  = false;
+        
+        root.SetActive(false);
+        
+        var mgr = XRGeneralSettings.Instance?.Manager;
+        if (mgr != null)
+        {
+            mgr.StopSubsystems();
+            mgr.DeinitializeLoader();
+            
+            int frames = 0;
+            while (mgr.activeLoader != null && frames++ < 10)
+                yield return null;
+        }
+        
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        if (root) Destroy(root);
+    }
+
+    private IEnumerator StartXRNextFrame()
+    {
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        var mgr = XRGeneralSettings.Instance?.Manager;
+        if (mgr != null)
+        {
+            mgr.InitializeLoaderSync();
+            
+            yield return null;
+            mgr.StartSubsystems();
+        }
+    }
+    
     private void BuildGroups()
     {
-        // World buttons
         Add(_worldButtons, Q<Button>(Id.BpX), Q<Button>(Id.BmX), Q<Button>(Id.BpY), Q<Button>(Id.BmY),
                            Q<Button>(Id.BpZ), Q<Button>(Id.BmZ), Q<Button>(Id.BpU), Q<Button>(Id.BmU));
-        // Joint buttons
+
         Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2),
                            Q<Button>(Id.BpJ3), Q<Button>(Id.BmJ3), Q<Button>(Id.BpJ4), Q<Button>(Id.BmJ4));
-        // Labels
+
         Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY), Q<Label>(Id.LZ), Q<Label>(Id.LU));
         Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2), Q<Label>(Id.LJ3), Q<Label>(Id.LJ4));
-        // Radios
+        
         Add(_moveRadios, Q<RadioButton>(Id.MoveCont), Q<RadioButton>(Id.MoveLong),
                          Q<RadioButton>(Id.MoveMed),  Q<RadioButton>(Id.MoveShort));
-        // Teach/Edit
+        
         Add(_teachEdit, Q<Button>(Id.Teach), Q<Button>(Id.Edit));
-        // Commanding
+        
         Add(_commanding, _command, _destination);
     }
 
@@ -261,7 +316,6 @@ public class ArScaraUiController : MonoBehaviour
         foreach (var it in items) if (it != null) list.Add(it);
     }
 
-    // ---------- State application ----------
     private void ApplyModeUi(ModeType mode)
     {
         bool common = mode is ModeType.World or ModeType.Joint;
@@ -288,44 +342,93 @@ public class ArScaraUiController : MonoBehaviour
     private void OnEnvironmentChanged(EnvType env)
     {
         bool none = env == EnvType.None;
-        _arMenu?.SetEnabled(!none);
+        _arScaraMenu?.SetEnabled(!none);
         _warning.text = none ? "Select a work environment" : "Select ARSCARA robot interface";
         SetBodyOpaque(none);
+        if (none)
+        {
+            SetValue(_arScaraMenu, "ARSCARA menu");
+        }
+        if (env == EnvType.Augmented && XRGeneralSettings.Instance?.Manager == null)
+            _warning.text = "AR not available: enable a provider in Project Settings > XR Plug-in Management.";
+
         SpawnEnvironment(env);
     }
 
-    private void OnArMenuChanged(ArPanel panel)
+
+    private void OnArScaraMenuChanged(ArScaraPanel panel)
     {
-        if (panel == ArPanel.None)
+        if (panel == ArScaraPanel.None)
         {
             _warning.style.display = DisplayStyle.Flex;
             _warning.text = _envMenu?.value == "environment"
                 ? "Select a work environment"
                 : "Select ARSCARA robot interface";
-            ShowOnlyArPanel(ArPanel.None);
+            ShowOnlyArScaraPanel(ArScaraPanel.None);
             return;
         }
 
         _warning.style.display = DisplayStyle.None;
-        ShowOnlyArPanel(panel);
+        ShowOnlyArScaraPanel(panel);
     }
 
-    // ---------- Environments ----------
     private void SpawnEnvironment(EnvType env)
     {
-        if (_currentEnv != null) { Destroy(_currentEnv); _currentEnv = null; }
+
+        if (_currentEnv != null)
+        {
+            StartCoroutine(SafeDestroyEnvironment(_currentEnv));
+            _currentEnv = null;
+        }
+
+        _currentEnvType = env;
+
         if (env == EnvType.None) return;
 
         if (_envPrefabs.TryGetValue(env, out var prefab) && prefab != null)
+        {
+            if (env == EnvType.Augmented)
+            {
+                StartCoroutine(StartXRThenSpawn(prefab));
+                return;
+            }
+
             _currentEnv = Instantiate(prefab);
+        }
         else
+        {
             Debug.LogWarning($"Prefab not set for environment {env}");
+        }
     }
 
-    // ---------- Parsers (robustos) ----------
+    private IEnumerator StartXRThenSpawn(GameObject prefab)
+    {
+        var mgr = XRGeneralSettings.Instance?.Manager;
+        if (mgr == null)
+        {
+            Debug.LogWarning("XR Manager not available. Cannot start AR.");
+            _currentEnv = null;
+            _currentEnvType = EnvType.None;
+            yield break;
+        }
+        
+        if (mgr.activeLoader != null)
+        {
+            mgr.StopSubsystems();
+            mgr.DeinitializeLoader();
+            yield return null;
+        }
+        mgr.InitializeLoaderSync();
+        yield return null; 
+        mgr.StartSubsystems();
+        yield return null;   
+        _currentEnv = Instantiate(prefab);
+    }
+
+    
     private static EnvType ParseEnv(string raw)
     {
-        var s = (raw ?? "").Trim(); // protege " Real"
+        var s = (raw ?? "").Trim();
         return s switch
         {
             "Virtual"   => EnvType.Virtual,
@@ -347,15 +450,15 @@ public class ArScaraUiController : MonoBehaviour
         };
     }
 
-    private static ArPanel ParseArPanel(string raw)
+    private static ArScaraPanel ParseArScaraPanel(string raw)
     {
         var s = (raw ?? "").Trim();
         return s switch
         {
-            "Control panel" => ArPanel.Control,
-            "Jog and teach" => ArPanel.JogTeach,
-            "Points"        => ArPanel.Points,
-            _               => ArPanel.None
+            "Control panel" => ArScaraPanel.Control,
+            "Jog and teach" => ArScaraPanel.JogTeach,
+            "Points"        => ArScaraPanel.Points,
+            _               => ArScaraPanel.None
         };
     }
 }

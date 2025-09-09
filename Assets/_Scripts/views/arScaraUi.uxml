@@ -100,9 +100,7 @@
     <ui:VisualElement name="jogAndTeachPanel" class="arScaraPanelsOut">
         <ui:VisualElement name="leftPanel" class="leftPanel">
             <ui:VisualElement class="miniPanel">
-                <ui:VisualElement class="headerMiniPanel ">
-                    <ui:Label text="Select jogging mode" class="nameMiniPanel" />
-                </ui:VisualElement>
+                <ui:VisualElement class="headerMiniPanel " />
                 <ui:VisualElement class="bodyMiniPanel ">
                     <ui:DropdownField choices="Mode,World,Joint" name="modeDropdown" class="dropdownOptions" />
                     <ui:DropdownField choices="Speed,Low,High" name="speedDropdown" class="dropdownOptions hideItem" />
