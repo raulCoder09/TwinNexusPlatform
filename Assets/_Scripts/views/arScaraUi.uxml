@@ -1,0 +1,247 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Scripts/views/styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
+    <ui:VisualElement name="body" class="body backgroundOpaque">
+        <ui:VisualElement name="header" class="header rowOrientationItems">
+            <ui:VisualElement style="flex-grow: 1; width: 33.3%; align-items: center; justify-content: center; align-self: center; align-content: center; height: 100%;">
+                <ui:Button text="Menu" name="showMenuButton" class="generalButton" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; width: 33.3%; align-items: center; justify-content: center; align-self: center; align-content: center; height: 100%;">
+                <ui:DropdownField name="environmentMenu" choices="environment,Virtual,Augmented,Hybrid, Real" class="dropdownOptions" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 1; width: 33.3%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                <ui:DropdownField name="arscaraMenu" choices="ARSCARA menu,Control panel,Jog and teach,Points" class="dropdownOptions" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="main" class="main" style="align-items: center; justify-content: center; align-self: center; align-content: center;">
+            <ui:Label name="warningMessages" text="Select a work environment" class="appSubtitle" />
+        </ui:VisualElement>
+        <ui:VisualElement name="footer" class="footer" />
+    </ui:VisualElement>
+    <ui:VisualElement name="slidingPanels" class="slidingPanels" style="display: flex;">
+        <ui:VisualElement name="scrim" class="scrim scrimTransparent" />
+        <ui:VisualElement name="navigationMenuPanel" class="mainMenuPanelOut" style="width: 100%; height: 100%; position: absolute; flex-direction: row; align-items: center; justify-content: center; align-self: center; align-content: center;">
+            <ui:VisualElement name="NavigationMenu" class="navigation-menu" style="width: 30%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                <ui:VisualElement name="NavHeader" class="nav-menu-header" style="width: 100%; height: 30%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                    <ui:Label name="NavUsernameLabel" text="Main Menu" class="tittleSubpanel" />
+                </ui:VisualElement>
+                <ui:VisualElement name="NavContent" class="nav-menu-content" style="width: 100%; height: 70%; align-items: center; justify-content: space-evenly; align-self: center; align-content: center;">
+                    <ui:Button name="DashboardButton" text="Dashboard" class="generalButton" />
+                    <ui:Button name="TrainingButton" text="Training" class="generalButton" />
+                    <ui:Button name="OperationsButton" text="Operations" class="generalButton" />
+                    <ui:Button name="ReportsButton" text="Reports" class="generalButton" />
+                    <ui:Button name="SupportButton" text="Support" class="generalButton" />
+                    <ui:Button name="SettingsButton" text="Settings" class="generalButton" />
+                    <ui:Button name="LogoutButton" text="Logout" class="generalButton" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Button name="hideMenuButton" class="hide-menu-button" style="width: 70%; height: 100%; background-color: rgba(188, 188, 188, 0); -unity-background-image-tint-color: rgba(255, 255, 255, 0); border-left-color: rgba(149, 149, 149, 0); border-right-color: rgba(149, 149, 149, 0); border-top-color: rgba(149, 149, 149, 0); border-bottom-color: rgba(149, 149, 149, 0);" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="controlPanel" class="arScaraPanelsOut">
+        <ui:VisualElement name="leftPanel" class="leftPanel">
+            <ui:VisualElement name="powerMotorsPanel" class="miniPanel">
+                <ui:VisualElement name="headerPowerMotorsPanel" class="headerMiniPanel columnOrientationItems">
+                    <ui:Label class="nameMiniPanel" />
+                </ui:VisualElement>
+                <ui:VisualElement name="bodyPowerMotorsPanel" class="bodyMiniPanel rowOrientationItems">
+                    <ui:Button name="motorsOffButton" text="Off" class="generalButton" />
+                    <ui:Button name="motorsOnButton" text="On" class="generalButton" />
+                </ui:VisualElement>
+                <ui:VisualElement name="footerPowerMotorsPanel" class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="powerLowButton" text="Low" class="generalButton" />
+                    <ui:Button name="powerHighButton" text="High" class="generalButton" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="viewsAndHomePanel" class="miniPanel">
+                <ui:VisualElement name="nameHomeAndViewPanel" class="headerMiniPanel columnOrientationItems">
+                    <ui:Label class="nameMiniPanel" />
+                </ui:VisualElement>
+                <ui:VisualElement name="nameHomeAndViewPanel" class="bodyMiniPanel columnOrientationItems">
+                    <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="views" class="dropdownOptions" />
+                </ui:VisualElement>
+                <ui:VisualElement name="nameHomeAndViewPanel" class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="homeButton" text="Home" class="generalButton" />
+                    <ui:Button name="resetButton" text="Reset" class="generalButton" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="centerPanel" class="centerPanel" />
+        <ui:VisualElement name="rightPanel" class="rightPanel">
+            <ui:VisualElement name="statusPanel" class="miniPanel">
+                <ui:VisualElement name="headerStatusPanel" class="headerMiniPanel columnOrientationItems">
+                    <ui:Label class="nameMiniPanel" />
+                </ui:VisualElement>
+                <ui:VisualElement name="bodyStatusPanel" class="bodyMiniPanel columnOrientationItems">
+                    <ui:Label name="EmergencyStopLabel" text="Emergency stop: Off" class="textMiniPanelLabel" />
+                    <ui:Label name="SafeguardLabel" text="Safeguard: Off" class="textMiniPanelLabel" />
+                </ui:VisualElement>
+                <ui:VisualElement name="footerStatusPanel" class="footerMiniPanel columnOrientationItems">
+                    <ui:Label name="MotorsLabel" text="Motors: Off" class="textMiniPanelLabel" />
+                    <ui:Label name="PowerLabel" text="Power: Low" class="textMiniPanelLabel" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="JointControlsPanel" class="miniPanel">
+                <ui:VisualElement name="nameStatusPanel" class="headerMiniPanel">
+                    <ui:Label class="nameMiniPanel" />
+                </ui:VisualElement>
+                <ui:VisualElement name="toggleControls" class="bodyMiniPanel columnOrientationItems">
+                    <ui:Toggle name="j1" label="J1" class="textMiniPanelLabel" />
+                    <ui:Toggle name="j2" label="J2" class="textMiniPanelLabel" />
+                    <ui:Toggle name="j3" label="J3" class="textMiniPanelLabel" />
+                    <ui:Toggle name="j4" label="J4" class="textMiniPanelLabel" />
+                </ui:VisualElement>
+                <ui:VisualElement name="JointControlsPanel" class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="FreeAllButton" text="Free all" class="generalButton" />
+                    <ui:Button name="LockAllButton" text="Lock all" class="generalButton" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="jogAndTeachPanel" class="arScaraPanelsOut">
+        <ui:VisualElement name="leftPanel" class="leftPanel">
+            <ui:VisualElement class="miniPanel">
+                <ui:VisualElement class="headerMiniPanel " />
+                <ui:VisualElement class="bodyMiniPanel ">
+                    <ui:DropdownField choices="Mode,World,Joint" name="modeDropdown" class="dropdownOptions" />
+                    <ui:DropdownField choices="Speed,Low,High" name="speedDropdown" class="dropdownOptions hideItem" />
+                </ui:VisualElement>
+                <ui:VisualElement class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="plusXButton" text="+X" class="generalButton hideItem" />
+                    <ui:Button name="minusXButton" text="-X" class="generalButton hideItem" />
+                    <ui:Button name="plusJ1Button" text="+J1" class="generalButton hideItem" />
+                    <ui:Button name="minusJ1Button" text="-J1" class="generalButton hideItem" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="miniPanel">
+                <ui:VisualElement class="headerMiniPanel rowOrientationItems">
+                    <ui:Button name="plusYButton" text="+Y" class="generalButton hideItem" />
+                    <ui:Button name="minusYButton" text="-Y" class="generalButton hideItem" />
+                    <ui:Button name="plusJ2Button" text="+J2" class="generalButton hideItem" />
+                    <ui:Button name="minusJ2Button" text="-J2" class="generalButton hideItem" />
+                </ui:VisualElement>
+                <ui:VisualElement class="bodyMiniPanel rowOrientationItems">
+                    <ui:Button name="plusZButton" text="+Z" class="generalButton hideItem" />
+                    <ui:Button name="minusZButton" text="-Z" class="generalButton hideItem" />
+                    <ui:Button name="plusJ3Button" text="+J3" class="generalButton hideItem" />
+                    <ui:Button name="minusJ3Button" text="-J3" class="generalButton hideItem" />
+                </ui:VisualElement>
+                <ui:VisualElement class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="plusUButton" text="+U" class="generalButton hideItem" />
+                    <ui:Button name="minusUButton" text="-U" class="generalButton hideItem" />
+                    <ui:Button name="plusJ4Button" text="+J4" class="generalButton hideItem" />
+                    <ui:Button name="minusJ4Button" text="-J4" class="generalButton hideItem" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="centerPanel" class="centerPanel" />
+        <ui:VisualElement name="rightPanel" class="rightPanel">
+            <ui:VisualElement class="miniPanel">
+                <ui:VisualElement class="headerMiniPanel ">
+                    <ui:Label class="nameMiniPanel" />
+                </ui:VisualElement>
+                <ui:VisualElement class="bodyMiniPanel columnOrientationItems ">
+                    <ui:Label name="xLabel" text="X = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="yLabel" text="Y = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="zLabel" text="Z = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="uLabel" text="U = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="j1Label" text="J1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="j2Label" text="J2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="j3Label" text="J3 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="j4Label" text="J4 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                </ui:VisualElement>
+                <ui:VisualElement class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="TeachButton" text="Teach" class="generalButton hideItem" />
+                    <ui:Button name="EditButton" text="Edit" class="generalButton hideItem" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="miniPanel">
+                <ui:VisualElement class="headerMiniPanel ">
+                    <ui:Label class="nameMiniPanel" />
+                </ui:VisualElement>
+                <ui:VisualElement class="bodyMiniPanel columnOrientationItems">
+                    <ui:RadioButton name="continuousMove" label="Continuous" class="textMiniPanelLabel hideItem" />
+                    <ui:RadioButton name="longMove" label="Long" class="textMiniPanelLabel hideItem" />
+                    <ui:RadioButton name="mediumMove" label="Medium" class="textMiniPanelLabel hideItem" />
+                    <ui:RadioButton name="shortMove" label="Short" class="textMiniPanelLabel hideItem" />
+                </ui:VisualElement>
+                <ui:VisualElement class="footerMiniPanel">
+                    <ui:DropdownField choices="Command,Go, Move, Arc" name="CommandDropdown" class="dropdownOptions hideItem" />
+                    <ui:DropdownField choices="Destination,P0-Home" name="DestinationDropdown" class="dropdownOptions hideItem" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="pointsPanel" class="arScaraPanelsOut">
+        <ui:VisualElement name="leftPanel" class="leftPanel" />
+        <ui:VisualElement name="centerPanel" class="centerPanel">
+            <ui:VisualElement class="headerSubpanel">
+                <ui:Label name="ARSCARAPointsTitle" text="Robot Points Management" class="nameMiniPanel" />
+            </ui:VisualElement>
+            <ui:VisualElement class="bodySubpanel">
+                <ui:VisualElement class="">
+                    <ui:VisualElement class="rowOrientationItems" style="flex-grow: 1; width: 100%; justify-content: center; align-items: center; align-self: center; align-content: center;">
+                        <ui:VisualElement name="pointNumber" enabled="true" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="pointNumberLabel" class="">
+                                <ui:Label name="pointNumberLabelText" text="Number" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="pointName" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="PointNameLabel" class="">
+                                <ui:Label name="pointNameLabelText" text="Name" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="xCoordinate" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="xCoordinateLabel" class="">
+                                <ui:Label name="xCoordinateLabelText" text="X (mm)" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="yCoordinate" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="yCoordinateLabel" class="">
+                                <ui:Label name="YCoordinateLabelText" text="Y (mm)" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="zCoordinate" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="zCoordinateLabel" class="">
+                                <ui:Label name="zCoordinateLabelText" text="Z (mm)" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="uCoordinate" class="" style="width: 16.6%;">
+                            <ui:VisualElement name="uCoordinateLabel" class="">
+                                <ui:Label name="uCoordinateLabelText" text="U (deg)" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:ScrollView style="width: 100%;">
+                        <ui:VisualElement class="rowOrientationItems" style="width: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                            <ui:VisualElement name="pointNumberColumn0" enabled="true" class="" style="width: 16.6%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                                <ui:Label name="PointNumberLabel0" text="0" class="textMiniPanelLabel" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="pointNameColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-self: center; align-content: center;">
+                                <ui:TextField name="pointNameField0" placeholder-text="Point name" class="inputFields" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="xCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center; align-self: center;">
+                                <ui:TextField name="xCoordinateField0" placeholder-text="0.00" class="inputFields" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="yCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center;">
+                                <ui:TextField name="YCoordinateField" placeholder-text="0.00" class="inputFields" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="zCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center;">
+                                <ui:TextField name="zCoordinateField0" placeholder-text="0.00" class="inputFields" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="uCoordinateColumn0" class="" style="width: 16.6%; align-items: center; justify-content: center; align-content: center;">
+                                <ui:TextField name="uCoordinateField0" placeholder-text="0.00" class="inputFields" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:ScrollView>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="footerSubpanel rowOrientationItems">
+                <ui:DropdownField name="pointsDropdown" choices="Point,P1,P2,P3" class="dropdownOptions" />
+                <ui:Button text="Delete" class="generalButton" />
+                <ui:Button text="Save" class="generalButton" />
+                <ui:Button text="Restore" class="generalButton" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="rightPanel" class="rightPanel" />
+    </ui:VisualElement>
+</ui:UXML>
