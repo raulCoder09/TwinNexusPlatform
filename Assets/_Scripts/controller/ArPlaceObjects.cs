@@ -1,43 +1,41 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
 public class ArPlaceObjects : MonoBehaviour
 {
+    [Header("Refs")]
     [SerializeField] private ARRaycastManager arRaycastManager;
-    private bool isPlaced = false;
-    private void Update()
+    [SerializeField] private GameObject placementPrefab;   
+
+    private static readonly List<ARRaycastHit> hits = new();
+    private bool placed = false;
+
+    void Update()
     {
+        if (placed) return;                    
         if (!arRaycastManager) return;
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && !isPlaced)
-        {
-            isPlaced = true;
-            if (Input.touchCount>0)
-            {
-                PlaceObject(Input.GetTouch(0).position);
-            }
-        }
+        if (Input.touchCount == 0) return;
 
+        Touch touch = Input.GetTouch(0);
+        if (touch.phase != TouchPhase.Began) return;
+
+        TryPlace(touch.position);
     }
 
-    private void PlaceObject(Vector2 touchPosition)
+    private void TryPlace(Vector2 touchPos)
     {
-        var raycastHits = new List<ARRaycastHit>();
-        arRaycastManager.Raycast(touchPosition, raycastHits, TrackableType.AllTypes);
-        if (raycastHits.Count>0)
+        if (arRaycastManager.Raycast(touchPos, hits, TrackableType.PlaneWithinPolygon) && hits.Count > 0)
         {
-            var hitPosePosition = raycastHits[0].pose.position;
-            var hitPoseRotation = raycastHits[0].pose.rotation;
-            Instantiate(arRaycastManager.raycastPrefab, hitPosePosition, hitPoseRotation);
-        }
-        StartCoroutine(SetPlacingTofalseWithDelay(0.25f));
-    }
+            Pose pose = hits[0].pose;
 
-    IEnumerator SetPlacingTofalseWithDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        isPlaced = false;
+            pose.rotation = Quaternion.Euler(0f, pose.rotation.eulerAngles.y, 0f);
+
+            Instantiate(placementPrefab, pose.position, pose.rotation);
+
+            placed = true;
+            Debug.Log("[ArPlaceObjects] Robot instanciado en: " + pose.position);
+        }
     }
 }

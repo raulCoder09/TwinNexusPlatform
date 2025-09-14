@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Management;
+using static UnityEngine.XR.Interaction.Toolkit.AR.GestureTransformationUtility;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -20,6 +22,7 @@ public class ArScaraUiController : MonoBehaviour
     private enum EnvType { None, Virtual, Augmented, Hybrid, Real }
     private enum ModeType { None, World, Joint }
     private enum ArScaraPanel { None, Control, JogTeach, Points }
+    private enum Placement { None, Raycast, QRMarker }
 
     private EnvType _currentEnvType = EnvType.None;
 
@@ -53,6 +56,7 @@ public class ArScaraUiController : MonoBehaviour
 
         public const string EnvMenu = "environmentMenu";
         public const string ArScaraMenu = "arscaraMenu";
+        public const string Placement = "placementMenu";
         public const string Views = "views";
         public const string Mode = "modeDropdown";
         public const string Speed = "speedDropdown";
@@ -93,7 +97,7 @@ public class ArScaraUiController : MonoBehaviour
     private VisualElement _root;
     private VisualElement _body, _slidingPanels, _scrim, _navPanel;
     private Label _warning;
-    private DropdownField _envMenu, _arScaraMenu, _views, _mode, _speed, _command, _destination, _points;
+    private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _command, _destination, _points, _placementMenu;
     private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
 
     private readonly List<VisualElement> _worldButtons = new();
@@ -124,8 +128,10 @@ public class ArScaraUiController : MonoBehaviour
 
         _warning = Q<Label>(Id.Warning);
 
-        _envMenu = Q<DropdownField>(Id.EnvMenu);
+        _environmentMenu = Q<DropdownField>(Id.EnvMenu);
         _arScaraMenu = Q<DropdownField>(Id.ArScaraMenu);
+        _placementMenu = Q<DropdownField>(Id.Placement);
+
         _views = Q<DropdownField>(Id.Views);
         _mode = Q<DropdownField>(Id.Mode);
         _speed = Q<DropdownField>(Id.Speed);
@@ -139,9 +145,11 @@ public class ArScaraUiController : MonoBehaviour
 
         Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ =>
         {
-            SetValue(_envMenu, "environment");
+            SetValue(_environmentMenu, "environment");
             
             SetValue(_arScaraMenu, "ARSCARA menu");
+
+            SetValue(_placementMenu, "Placement");
 
             ShowOnlyArScaraPanel(ArScaraPanel.None);
 
@@ -159,8 +167,9 @@ public class ArScaraUiController : MonoBehaviour
                 _slidingPanels.style.display = DisplayStyle.None;
         });
 
-        _envMenu?.RegisterValueChangedCallback(e => OnEnvironmentChanged(ParseEnv(e.newValue)));
+        _environmentMenu?.RegisterValueChangedCallback(e => OnEnvironmentChanged(ParseEnv(e.newValue)));
         _arScaraMenu?.RegisterValueChangedCallback(e => OnArScaraMenuChanged(ParseArScaraPanel(e.newValue)));
+        _placementMenu?.RegisterValueChangedCallback(e =>OnPlacementMenuChanged(ParsePlacement(e.newValue)));
         _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
         _speed?.RegisterValueChangedCallback(_ => { /* hook futuro */ });
 
@@ -171,8 +180,9 @@ public class ArScaraUiController : MonoBehaviour
     {
         _slidingPanels.style.display = DisplayStyle.None;
 
-        SetValue(_envMenu, "environment");
+        SetValue(_environmentMenu, "environment");
         SetValue(_arScaraMenu, "ARSCARA menu");
+        SetValue(_placementMenu, "Placement");
         SetValue(_views, "Select view");
         SetValue(_mode, "Mode");
         SetValue(_speed, "Speed");
@@ -182,10 +192,13 @@ public class ArScaraUiController : MonoBehaviour
 
         _warning.text = "Select a work environment";
         _arScaraMenu?.SetEnabled(false);
+        _placementMenu?.SetEnabled(false);
 
         ShowOnlyArScaraPanel(ArScaraPanel.None);
         SetBodyOpaque(true);
         ApplyModeUi(ModeType.None);
+
+        
     }
 
     private T Q<T>(string name) where T : VisualElement => _root.Q<T>(name);
@@ -248,20 +261,16 @@ public class ArScaraUiController : MonoBehaviour
     private IEnumerator SafeDestroyEnvironment(GameObject root)
     {
         if (!root) yield break;
-
-        // 1) Si el objeto a destruir (o un hijo) está seleccionado en el inspector, quita la selección
 #if UNITY_EDITOR
         var sel = Selection.activeGameObject;
         if (sel && (sel == root || sel.transform.IsChildOf(root.transform)))
             Selection.activeObject = null;
 #endif
-
-        // 2) Desactiva y espera un frame
         root.SetActive(false);
         yield return null;
         yield return new WaitForEndOfFrame();
 
-        // 3) Ahora sí destruye
+       
         if (root) Destroy(root);
     }
 
@@ -331,6 +340,7 @@ public class ArScaraUiController : MonoBehaviour
     {
         bool none = env == EnvType.None;
         _arScaraMenu?.SetEnabled(!none);
+        _placementMenu?.SetEnabled(!none && (env == EnvType.Augmented));
         _warning.text = none ? "Select a work environment" : "Select ARSCARA robot interface";
         SetBodyOpaque(none);
         if (none)
@@ -349,7 +359,7 @@ public class ArScaraUiController : MonoBehaviour
         if (panel == ArScaraPanel.None)
         {
             _warning.style.display = DisplayStyle.Flex;
-            _warning.text = _envMenu?.value == "environment"
+            _warning.text = _environmentMenu?.value == "environment"
                 ? "Select a work environment"
                 : "Select ARSCARA robot interface";
             ShowOnlyArScaraPanel(ArScaraPanel.None);
@@ -358,6 +368,11 @@ public class ArScaraUiController : MonoBehaviour
 
         _warning.style.display = DisplayStyle.None;
         ShowOnlyArScaraPanel(panel);
+    }
+
+    private void OnPlacementMenuChanged(Placement placement)
+    {
+        print(placement);
     }
 
     private void SpawnEnvironment(EnvType env)
@@ -433,6 +448,17 @@ public class ArScaraUiController : MonoBehaviour
             "Jog and teach" => ArScaraPanel.JogTeach,
             "Points"        => ArScaraPanel.Points,
             _               => ArScaraPanel.None
+        };
+    }
+
+    private static Placement ParsePlacement(string raw)
+    {
+        var s = (raw ?? "").Trim();
+        return s switch
+        {
+            "Raycast" => Placement.Raycast,
+            "QR marker" => Placement.QRMarker,
+            _ => Placement.None
         };
     }
 }
