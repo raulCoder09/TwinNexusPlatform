@@ -227,3 +227,6 @@
 
 }
 
+ .passthrough {
+  -unity-picking-mode: ignore;
+}

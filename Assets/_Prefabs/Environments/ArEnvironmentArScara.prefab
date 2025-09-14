@@ -487,6 +487,7 @@ GameObject:
   - component: {fileID: 8419037859446155597}
   - component: {fileID: 8746645424934388362}
   - component: {fileID: 6800949043743705503}
+  - component: {fileID: 6956190978181855445}
   m_Layer: 0
   m_Name: XR Origin (Mobile AR)
   m_TagString: Untagged
@@ -574,7 +575,8 @@ MonoBehaviour:
   <trackablesChanged>k__BackingField:
     m_PersistentCalls:
       m_Calls: []
-  m_RaycastPrefab: {fileID: 0}
+  m_RaycastPrefab: {fileID: 919132149155446097, guid: 009b331cc4b444bf88d907dfe1aff8ad,
+    type: 3}
 --- !u!114 &8746645424934388362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,3 +614,20 @@ MonoBehaviour:
   m_MaxNumberOfMovingImages: 1
   m_TrackedImagePrefab: {fileID: 919132149155446097, guid: 009b331cc4b444bf88d907dfe1aff8ad,
     type: 3}
+--- !u!114 &6956190978181855445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386460493108603907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6221d4fbb3023444683a18b03f4b7b81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArPlaceObjects
+  arRaycastManager: {fileID: 8419037859446155597}
+  placementPrefab: {fileID: 919132149155446097, guid: 009b331cc4b444bf88d907dfe1aff8ad,
+    type: 3}
+  placeOnlyOnPlanes: 1
+  tapCooldown: 0.25

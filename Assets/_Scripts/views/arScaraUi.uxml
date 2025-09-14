@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/_Scripts/views/styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
+    <Style src="project://database/Assets/_scripts/views/styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
     <ui:VisualElement name="body" class="body backgroundOpaque">
         <ui:VisualElement name="header" class="header rowOrientationItems">
             <ui:VisualElement style="flex-grow: 1; width: 33.3%; align-items: center; justify-content: center; align-self: center; align-content: center; height: 100%;">
@@ -12,10 +12,10 @@
                 <ui:DropdownField name="arscaraMenu" choices="ARSCARA menu,Control panel,Jog and teach,Points" class="dropdownOptions" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="main" class="main" style="align-items: center; justify-content: center; align-self: center; align-content: center;">
-            <ui:Label name="warningMessages" text="Select a work environment" class="appSubtitle" />
+        <ui:VisualElement name="main" class="main passthrough" style="align-items: center; justify-content: center; align-self: center; align-content: center;">
+            <ui:Label name="warningMessages" text="Select a work environment" class="appSubtitle passthrough" />
         </ui:VisualElement>
-        <ui:VisualElement name="footer" class="footer" />
+        <ui:VisualElement name="footer" class="footer passthrough" />
     </ui:VisualElement>
     <ui:VisualElement name="slidingPanels" class="slidingPanels" style="display: flex;">
         <ui:VisualElement name="scrim" class="scrim scrimTransparent" />
@@ -65,7 +65,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="centerPanel" class="centerPanel" />
+        <ui:VisualElement name="centerPanel" class="centerPanel passthrough" />
         <ui:VisualElement name="rightPanel" class="rightPanel">
             <ui:VisualElement name="statusPanel" class="miniPanel">
                 <ui:VisualElement name="headerStatusPanel" class="headerMiniPanel columnOrientationItems">
@@ -133,7 +133,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="centerPanel" class="centerPanel" />
+        <ui:VisualElement name="centerPanel" class="centerPanel passthrough" />
         <ui:VisualElement name="rightPanel" class="rightPanel">
             <ui:VisualElement class="miniPanel">
                 <ui:VisualElement class="headerMiniPanel ">

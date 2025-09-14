@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Management;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 
 public class ArScaraUiController : MonoBehaviour
 {
@@ -244,36 +248,20 @@ public class ArScaraUiController : MonoBehaviour
     private IEnumerator SafeDestroyEnvironment(GameObject root)
     {
         if (!root) yield break;
-        var bg     = root.GetComponentInChildren<ARCameraBackground>(true);
-        var camMgr = root.GetComponentInChildren<ARCameraManager>(true);
-        var sess   = root.GetComponentInChildren<ARSession>(true);
 
-        if (!bg && !camMgr && !sess)
-        {
-            Destroy(root);
-            yield break;
-        }
-        
-        if (bg)     bg.enabled = false;
-        if (camMgr) camMgr.enabled = false;
-        if (sess)   sess.enabled  = false;
-        
+        // 1) Si el objeto a destruir (o un hijo) está seleccionado en el inspector, quita la selección
+#if UNITY_EDITOR
+        var sel = Selection.activeGameObject;
+        if (sel && (sel == root || sel.transform.IsChildOf(root.transform)))
+            Selection.activeObject = null;
+#endif
+
+        // 2) Desactiva y espera un frame
         root.SetActive(false);
-        
-        var mgr = XRGeneralSettings.Instance?.Manager;
-        if (mgr != null)
-        {
-            mgr.StopSubsystems();
-            mgr.DeinitializeLoader();
-            
-            int frames = 0;
-            while (mgr.activeLoader != null && frames++ < 10)
-                yield return null;
-        }
-        
         yield return null;
         yield return new WaitForEndOfFrame();
 
+        // 3) Ahora sí destruye
         if (root) Destroy(root);
     }
 
@@ -403,29 +391,15 @@ public class ArScaraUiController : MonoBehaviour
 
     private IEnumerator StartXRThenSpawn(GameObject prefab)
     {
-        var mgr = XRGeneralSettings.Instance?.Manager;
-        if (mgr == null)
-        {
-            Debug.LogWarning("XR Manager not available. Cannot start AR.");
-            _currentEnv = null;
-            _currentEnvType = EnvType.None;
-            yield break;
-        }
-        
-        if (mgr.activeLoader != null)
-        {
-            mgr.StopSubsystems();
-            mgr.DeinitializeLoader();
-            yield return null;
-        }
-        mgr.InitializeLoaderSync();
-        yield return null; 
-        mgr.StartSubsystems();
-        yield return null;   
+
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
         _currentEnv = Instantiate(prefab);
     }
 
-    
+
+
     private static EnvType ParseEnv(string raw)
     {
         var s = (raw ?? "").Trim();
