@@ -18,7 +18,7 @@ public class ArScaraUiController : MonoBehaviour
     [SerializeField] private GameObject augmentedEnvironment;
     [SerializeField] private GameObject twinNexusEnvironment;
 
-    private enum EnvType { None, Virtual, Augmented, TwinNexus, Real }
+    private enum EnvType { None, Virtual, Augmented, TwinNexus }
     private enum ModeType { None, World, Joint }
     private enum ArScaraPanel { None, Control, JogTeach, Points }
     private enum Placement { None, Raycast, QRMarker }
