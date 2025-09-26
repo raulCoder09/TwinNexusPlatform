@@ -1186,6 +1186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2277374189516509764}
   - component: {fileID: 160541083607416914}
+  - component: {fileID: -2746451686532662138}
   m_Layer: 0
   m_Name: VirtualEnvironmentArScara
   m_TagString: Untagged
@@ -1202,7 +1203,7 @@ Transform:
   m_GameObject: {fileID: 8828649784974939132}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05431, y: 0, z: 0.0911}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1224,3 +1225,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ea14873061049cc8e2098f98e2ea696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.JogAndTeachController
+--- !u!114 &-2746451686532662138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8828649784974939132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a821d6aac8b4d4f4d9d4573998909ac2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArScaraVirtualController
+  enableFkTarget: 1
+  fkX: 0
+  fkY: 0
+  fkZ: 0

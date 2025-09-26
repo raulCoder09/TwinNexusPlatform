@@ -9,10 +9,18 @@ namespace _scripts.controllers
         private GameObject _arScaraUi;
         private VisualElement _root;
 
-        private DropdownField _mode, _speed;
-        private RadioButton _continuousMove, _longMove, _mediumMove, _shortMove;
+        private DropdownField 
+            _mode, 
+            _speed;
+        
+        private RadioButton 
+            _continuousMove,
+            _longMove, 
+            _mediumMove,
+            _shortMove;
 
-        private Button _plusXButton,
+        private Button
+            _plusXButton,
             _minusXButton,
             _plusYButton,
             _minusYButton,
@@ -29,12 +37,38 @@ namespace _scripts.controllers
             _plusJ4Button,
             _minusJ4Button;
         
-        private float _xPosition, _yPosition, _zPosition, _uPosition, _j1Position, _j2Position, _j3Position, _j4Position,
-                      _step = 1.25f;
+        private float 
+            _xPosition,
+            _yPosition,
+            _zPosition, 
+            _uPosition, 
+            _j1Rotation,
+            _j2Rotation,
+            _j3Prismatic,
+            _j4Rotation,
+            _step = 1.25f;
+
+        internal string Mode=>_mode.value;
+        internal string Speed=>_speed.value;
         
 
+        public float XPosition => _xPosition;
+
+        public float YPosition => _yPosition;
+
+        public float ZPosition => _zPosition;
+
+        public float UPosition => _uPosition;
+
+        public float J1Rotation => _j1Rotation;
+
+        public float J2Rotation => _j2Rotation;
+
+        public float J3Prismatic => _j3Prismatic;
+
+        public float J4Rotation => _j4Rotation;
+
         // --- Cached handlers (IMPORTANT: same instances for unregister) ---
-        private EventCallback<ChangeEvent<string>> _onModeChanged, _onSpeedChanged;
         private EventCallback<ChangeEvent<bool>> _onContChanged, _onLongChanged, _onMedChanged, _onShortChanged;
 
         private EventCallback<ClickEvent> _onPlusX, _onMinusX, _onPlusY, _onMinusY;
@@ -47,7 +81,6 @@ namespace _scripts.controllers
 
         private void Start()
         {
-            // En el primer frame marcamos "short" como activo para garantizar _step inicial.
             if (_shortMove != null) _shortMove.value = true;
         }
 
@@ -103,14 +136,10 @@ namespace _scripts.controllers
 
         private void BuildHandlers()
         {
-            // ValueChanged handlers
-            _onModeChanged  = evt => Debug.Log($"Mode: {evt.newValue}");
-            _onSpeedChanged = evt => Debug.Log($"Speed: {evt.newValue}");
-
             _onContChanged  = evt => { if (evt.newValue) Debug.Log("Continuous move selected (placeholder)"); };
-            _onLongChanged  = evt => { if (evt.newValue) _step = 5f;    };
-            _onMedChanged   = evt => { if (evt.newValue) _step = 2.5f;  };
-            _onShortChanged = evt => { if (evt.newValue) _step = 1.25f; };
+            _onLongChanged  = evt => { if (evt.newValue) _step = 10f;    };
+            _onMedChanged   = evt => { if (evt.newValue) _step = 5f;  };
+            _onShortChanged = evt => { if (evt.newValue) _step = 1f; };
 
             // Click handlers (WORLD)
             _onPlusX  = evt => MoveAxis(evt, "X", "+");
@@ -136,10 +165,7 @@ namespace _scripts.controllers
         private void RegisterUiEvents()
         {
             if (_root == null) return;
-
-            _mode?.RegisterValueChangedCallback(_onModeChanged);
-            _speed?.RegisterValueChangedCallback(_onSpeedChanged);
-
+            
             _continuousMove?.RegisterValueChangedCallback(_onContChanged);
             _longMove?.RegisterValueChangedCallback(_onLongChanged);
             _mediumMove?.RegisterValueChangedCallback(_onMedChanged);
@@ -167,9 +193,6 @@ namespace _scripts.controllers
         private void UnregisterUiEvents()
         {
             if (_root == null) return;
-
-            _mode?.UnregisterValueChangedCallback(_onModeChanged);
-            _speed?.UnregisterValueChangedCallback(_onSpeedChanged);
 
             _continuousMove?.UnregisterValueChangedCallback(_onContChanged);
             _longMove?.UnregisterValueChangedCallback(_onLongChanged);
@@ -205,12 +228,12 @@ namespace _scripts.controllers
             {
                 case "X":
                     _xPosition += direction == "+" ? _step : -_step;
-                    _xPosition = Mathf.Clamp(_xPosition, -180f, 180f);
+                    _xPosition = Mathf.Clamp(_xPosition, -90f, 90f);
                     break;
 
                 case "Y":
                     _yPosition += direction == "+" ? _step : -_step;
-                    _yPosition = Mathf.Clamp(_yPosition, -180f, 180f);
+                    _yPosition = Mathf.Clamp(_yPosition, -90f, 90f);
                     break;
 
                 case "Z":
@@ -231,23 +254,19 @@ namespace _scripts.controllers
             switch (joint)
             {
                 case 1:
-                    _j1Position += direction == "+" ? _step : -_step;
-                    _j1Position = Mathf.Clamp(_j1Position, -180f, 180f);
+                    _j1Rotation += direction == "+" ? _step : -_step;
                     break;
 
                 case 2:
-                    _j2Position += direction == "+" ? _step : -_step;
-                    _j2Position = Mathf.Clamp(_j2Position, -180f, 180f);
+                    _j2Rotation += direction == "+" ? _step : -_step;
                     break;
 
                 case 3:
-                    _j3Position += direction == "+" ? _step : -_step;
-                    _j3Position = Mathf.Clamp(_j3Position, -10f, 10f);
+                    _j3Prismatic += direction == "+" ? _step : -_step;
                     break;
 
                 case 4:
-                    _j4Position += direction == "+" ? _step : -_step;
-                    _j4Position = Mathf.Clamp(_j4Position, -180f, 180f);
+                    _j4Rotation += direction == "+" ? _step : -_step;
                     break;
             }
         }
