@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controllers/WelcomeUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controllers/WelcomeUiController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/UnityXRContent/ARFoundation/SimulationEnvironments/Common/Materials/SimEnvironment_Accent.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UnityXRContent/ARFoundation/SimulationEnvironments/Common/Materials/SimEnvironment_Accent.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/UnityXRContent/ARFoundation/SimulationEnvironments/Common/Materials/SimEnvironment_Object_Accent.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UnityXRContent/ARFoundation/SimulationEnvironments/Common/Materials/SimEnvironment_Object_Accent.mat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +22,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/348ed09ed1634d388253e20b5aab3fcf223400/0e/251267d9/EventCallbackFunctor`1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/TwinNexusController.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">

@@ -657,6 +657,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2844032484631987350}
+  - component: {fileID: 6636826182854854264}
   m_Layer: 0
   m_Name: TwinNexusEnvironmentArScara
   m_TagString: Untagged
@@ -683,6 +684,18 @@ Transform:
   - {fileID: 8362340823772272210}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6636826182854854264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5778107008051415702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ea14873061049cc8e2098f98e2ea696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.TwinNexusController
 --- !u!1 &5854267825670190849
 GameObject:
   m_ObjectHideFlags: 0
