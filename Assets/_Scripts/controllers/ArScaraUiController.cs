@@ -16,10 +16,9 @@ public class ArScaraUiController : MonoBehaviour
     [Header("Environment Prefabs")]
     [SerializeField] private GameObject virtualEnvironment;
     [SerializeField] private GameObject augmentedEnvironment;
-    [SerializeField] private GameObject hybridEnvironment;
-    [SerializeField] private GameObject realEnvironment;
+    [SerializeField] private GameObject twinNexusEnvironment;
 
-    private enum EnvType { None, Virtual, Augmented, Hybrid, Real }
+    private enum EnvType { None, Virtual, Augmented, TwinNexus, Real }
     private enum ModeType { None, World, Joint }
     private enum ArScaraPanel { None, Control, JogTeach, Points }
     private enum Placement { None, Raycast, QRMarker }
@@ -118,8 +117,7 @@ public class ArScaraUiController : MonoBehaviour
 
         _envPrefabs[EnvType.Virtual]   = virtualEnvironment;
         _envPrefabs[EnvType.Augmented] = augmentedEnvironment;
-        _envPrefabs[EnvType.Hybrid]    = hybridEnvironment;
-        _envPrefabs[EnvType.Real]      = realEnvironment;
+        _envPrefabs[EnvType.TwinNexus]    = twinNexusEnvironment;
 
         _body = Q<VisualElement>(Id.Body);
         _slidingPanels = Q<VisualElement>(Id.SlidingPanels);
@@ -422,8 +420,7 @@ public class ArScaraUiController : MonoBehaviour
         {
             "Virtual"   => EnvType.Virtual,
             "Augmented" => EnvType.Augmented,
-            "Hybrid"    => EnvType.Hybrid,
-            "Real"      => EnvType.Real,
+            "Twin Nexus"    => EnvType.TwinNexus,
             _           => EnvType.None
         };
     }

@@ -261,9 +261,7 @@ MonoBehaviour:
     type: 3}
   augmentedEnvironment: {fileID: 670126800946319048, guid: 95154ae8be0d39941a501e2f8bad72f4,
     type: 3}
-  hybridEnvironment: {fileID: 6135597731827560740, guid: 8a5e74e86e6d436458163b2153eba2ae,
-    type: 3}
-  realEnvironment: {fileID: 72585816444042619, guid: 90a57c2fc9ad9414aad54dd7ba823879,
+  twinNexusEnvironment: {fileID: 5778107008051415702, guid: 2e5068c8cbea9014293e3842cd8bd977,
     type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
