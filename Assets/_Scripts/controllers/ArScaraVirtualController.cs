@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using _scripts.Models;
 namespace _scripts.controllers
@@ -5,6 +6,7 @@ namespace _scripts.controllers
     [RequireComponent(typeof(JogAndTeachController))]
     public class ArScaraVirtualController : MonoBehaviour
     {
+        [SerializeField] private bool _activate=false;
         private JogAndTeachController _jogAndTeachController;
         private ScaraRobotKinematics  _kinematics;
         
@@ -23,6 +25,11 @@ namespace _scripts.controllers
 
         private void Update()
         {
+            
+        }
+
+        private void Borrame()
+        {
             var q1=_jogAndTeachController.J1Rotation;
             var q2 =_jogAndTeachController.J2Rotation;
             var (x, y, z) = _kinematics.DirectKinematics("Geometric", q1, q2);
@@ -33,6 +40,10 @@ namespace _scripts.controllers
 
             if (_axisLink2 != null)
                 _axisLink2.localRotation = Quaternion.Euler(0f, q2, 0f);
+        }
+        IEnumerator Sleep(float delay)
+        {
+            yield return new WaitForSeconds(delay);
         }
     }
 }
