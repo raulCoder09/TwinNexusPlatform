@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace _scripts.Models
+namespace _scripts.models.robotics
 {
-    public class ScaraRobotKinematics
+    public class RobotKinematics
     {
         private float _l1 = 0.10f;
         private float _l2 = 0.10f;

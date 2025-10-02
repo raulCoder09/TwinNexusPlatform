@@ -1,6 +1,7 @@
 using System.Collections;
+using _scripts.models.robotics;
 using UnityEngine;
-using _scripts.Models;
+
 namespace _scripts.controllers
 {
     [RequireComponent(typeof(JogAndTeachController))]
@@ -8,14 +9,14 @@ namespace _scripts.controllers
     {
         [SerializeField] private bool _activate=false;
         private JogAndTeachController _jogAndTeachController;
-        private ScaraRobotKinematics  _kinematics;
+        private RobotKinematics  _kinematics;
         
         private Transform _axisLink1;
         private Transform _axisLink2;
         private void Awake()
         {
             _jogAndTeachController = GetComponent<JogAndTeachController>();
-            _kinematics = new ScaraRobotKinematics();
+            _kinematics = new RobotKinematics();
         }
         private void Start()
         {
