@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Client;
 
-namespace _scripts.Protocols
+namespace _scripts.models.communicationProtocols
 {
     internal class MqttManager
     {

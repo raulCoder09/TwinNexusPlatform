@@ -661,7 +661,7 @@ GameObject:
   - component: {fileID: 1250461734498714880}
   m_Layer: 0
   m_Name: TwinNexusEnvironmentArScara
-  m_TagString: Untagged
+  m_TagString: TwinNexusEnvironmentArScara
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
