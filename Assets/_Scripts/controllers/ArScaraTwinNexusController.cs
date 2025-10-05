@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using _scripts.models.communicationProtocols;
 using UnityEngine;
@@ -10,376 +13,358 @@ namespace _scripts.controllers
     public class ArScaraTwinNexusController : MonoBehaviour
     {
         private JogAndTeachController _jogAndTeachController;
+        private ControlPanelController  _controlPanelController;
         private MqttManager _mqttIoTCore;
         private string _deviceName;
+        
+        private CancellationTokenSource _cts;
         private void Awake()
         {
             _deviceName = "ARSCARA";
             
         }
-
         private void Start()
         {
             _jogAndTeachController = GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<JogAndTeachController>();
+            _controlPanelController= GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<ControlPanelController>();
             RegisterEvents();
+            _ = Subscribe("test");
         }
 
+        private void Update()
+        {
+
+        }
         
+
+
         private void RegisterEvents()
         {
-            _jogAndTeachController.PlusJ1Button.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+J1",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.PlusJ1Button.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+J1",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            });
+            #region ControlPanel
 
-            _jogAndTeachController.MinusJ1Button.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
+                _controlPanelController.MotorsOffButton.RegisterCallback<PointerDownEvent>(_ =>
                 {
-                    ButtonControl("-J1",true);
-                }
-                else
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("MotorsOff",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+            
+                _controlPanelController.MotorsOffButton.RegisterCallback<PointerUpEvent>(_ =>
                 {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-
-            _jogAndTeachController.MinusJ1Button.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("-J1",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }); 
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("MotorsOff",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
                 
-            _jogAndTeachController.PlusJ2Button.RegisterCallback<PointerDownEvent>(_ =>
+                _controlPanelController.MotorsOnButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("MotorsOn",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+            
+                _controlPanelController.MotorsOnButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("MotorsOn",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _controlPanelController.PowerLowButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("PowerLow",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+            
+                _controlPanelController.PowerLowButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("PowerLow",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _controlPanelController.PowerHighButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("PowerHigh",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+            
+                _controlPanelController.PowerHighButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("PowerHigh",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+
+                _controlPanelController.HomeButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("Home",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+            
+                _controlPanelController.HomeButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("Home",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _controlPanelController.ResetButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("Reset",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+            
+                _controlPanelController.ResetButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("Reset",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                _controlPanelController.FreeAllButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("FreeAll",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+            
+                _controlPanelController.FreeAllButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("FreeAll",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                _controlPanelController.LockAllButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("LockAll",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+            
+                _controlPanelController.LockAllButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("LockAll",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+
+                _controlPanelController.J1Toggle.RegisterValueChangedCallback(evt =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("J1",evt.newValue);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _controlPanelController.J2Toggle.RegisterValueChangedCallback(evt =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("J2",evt.newValue);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _controlPanelController.J3Toggle.RegisterValueChangedCallback(evt =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("J3",evt.newValue);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _controlPanelController.J4Toggle.RegisterValueChangedCallback(evt =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("J4",evt.newValue);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+            #endregion
+
+            #region JogAndTeach
+
+            _jogAndTeachController.Mode.RegisterValueChangedCallback(evt =>
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    ButtonControl("+J2",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.PlusJ2Button.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+J2",false);
+                    UiItemControl("Mode",evt.newValue);
                 }
                 else
                 {
                     print("not connected");
                 }
             });
-            
-            _jogAndTeachController.MinusJ2Button.RegisterCallback<PointerDownEvent>(_ =>
+            _jogAndTeachController.Speed.RegisterValueChangedCallback(evt =>
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    ButtonControl("-J2",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.MinusJ2Button.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("-J2",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }); 
-            
-            _jogAndTeachController.PlusJ3Button.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+J3",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.PlusJ3Button.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+J3",false);
+                    UiItemControl("Speed",evt.newValue);
                 }
                 else
                 {
                     print("not connected");
                 }
             });
-            
-            _jogAndTeachController.MinusJ3Button.RegisterCallback<PointerDownEvent>(_ =>
+            _jogAndTeachController.ContinuousMove.RegisterValueChangedCallback(evt =>
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    ButtonControl("-J3",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.MinusJ3Button.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("-J3",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }); 
-            
-            _jogAndTeachController.PlusJ4Button.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+J4",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.PlusJ4Button.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+J4",false);
+                    UiItemControl("ContinuousMove",evt.newValue);
                 }
                 else
                 {
                     print("not connected");
                 }
             });
-            
-            _jogAndTeachController.MinusJ4Button.RegisterCallback<PointerDownEvent>(_ =>
+            _jogAndTeachController.LongMove.RegisterValueChangedCallback(evt =>
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    ButtonControl("-J4",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.MinusJ4Button.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("-J4",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }); 
-            
-            _jogAndTeachController.PlusXButton.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+X",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.PlusXButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+X",false);
+                    UiItemControl("LongMove",evt.newValue);
                 }
                 else
                 {
                     print("not connected");
                 }
             });
-
-            _jogAndTeachController.MinusXButton.RegisterCallback<PointerDownEvent>(_ =>
+            _jogAndTeachController.MediumMove.RegisterValueChangedCallback(evt =>
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    ButtonControl("-X",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-
-            _jogAndTeachController.MinusXButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("-X",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }); 
-            
-            _jogAndTeachController.PlusYButton.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+Y",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.PlusYButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+Y",false);
+                    UiItemControl("MediumMove",evt.newValue);
                 }
                 else
                 {
                     print("not connected");
                 }
             });
-
-            _jogAndTeachController.MinusYButton.RegisterCallback<PointerDownEvent>(_ =>
+            _jogAndTeachController.ShortMove.RegisterValueChangedCallback(evt =>
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    ButtonControl("-Y",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-
-            _jogAndTeachController.MinusYButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("-Y",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }); 
-            
-            _jogAndTeachController.PlusZButton.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+Z",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.PlusZButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+Z",false);
+                    UiItemControl("ShortMove",evt.newValue);
                 }
                 else
                 {
                     print("not connected");
                 }
             });
-
-            _jogAndTeachController.MinusZButton.RegisterCallback<PointerDownEvent>(_ =>
+            _jogAndTeachController.Command.RegisterValueChangedCallback(evt =>
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    ButtonControl("-Z",true);
+                    UiItemControl("Command",evt.newValue);
                 }
                 else
                 {
                     print("not connected");
                 }
-            }, TrickleDown.TrickleDown);
-
-            _jogAndTeachController.MinusZButton.RegisterCallback<PointerUpEvent>(_ =>
+            });
+            _jogAndTeachController.Destination.RegisterValueChangedCallback(evt =>
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    ButtonControl("-Z",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }); 
-            
-            _jogAndTeachController.PlusUButton.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+U",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-    
-            _jogAndTeachController.PlusUButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("+U",false);
+                    UiItemControl("Destination",evt.newValue);
                 }
                 else
                 {
@@ -387,93 +372,463 @@ namespace _scripts.controllers
                 }
             });
 
-            _jogAndTeachController.MinusUButton.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
+                _jogAndTeachController.PlusJ1Button.RegisterCallback<PointerDownEvent>(_ =>
                 {
-                    ButtonControl("-U",true);
-                }
-                else
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+J1",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.PlusJ1Button.RegisterCallback<PointerUpEvent>(_ =>
                 {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+J1",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
 
-            _jogAndTeachController.MinusUButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
+                _jogAndTeachController.MinusJ1Button.RegisterCallback<PointerDownEvent>(_ =>
                 {
-                    ButtonControl("-U",false);
-                }
-                else
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-J1",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+
+                _jogAndTeachController.MinusJ1Button.RegisterCallback<PointerUpEvent>(_ =>
                 {
-                    print("not connected");
-                }
-            });
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-J1",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }); 
+                    
+                _jogAndTeachController.PlusJ2Button.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+J2",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.PlusJ2Button.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+J2",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _jogAndTeachController.MinusJ2Button.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-J2",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.MinusJ2Button.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-J2",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }); 
+                
+                _jogAndTeachController.PlusJ3Button.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+J3",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.PlusJ3Button.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+J3",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _jogAndTeachController.MinusJ3Button.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-J3",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.MinusJ3Button.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-J3",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }); 
+                
+                _jogAndTeachController.PlusJ4Button.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+J4",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.PlusJ4Button.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+J4",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _jogAndTeachController.MinusJ4Button.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-J4",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.MinusJ4Button.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-J4",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }); 
+                
+                _jogAndTeachController.PlusXButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+X",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.PlusXButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+X",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+
+                _jogAndTeachController.MinusXButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-X",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+
+                _jogAndTeachController.MinusXButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-X",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }); 
+                
+                _jogAndTeachController.PlusYButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+Y",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.PlusYButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+Y",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+
+                _jogAndTeachController.MinusYButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-Y",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+
+                _jogAndTeachController.MinusYButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-Y",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }); 
+                
+                _jogAndTeachController.PlusZButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+Z",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.PlusZButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+Z",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+
+                _jogAndTeachController.MinusZButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-Z",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+
+                _jogAndTeachController.MinusZButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-Z",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }); 
+                
+                _jogAndTeachController.PlusUButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+U",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+        
+                _jogAndTeachController.PlusUButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("+U",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+
+                _jogAndTeachController.MinusUButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-U",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+
+                _jogAndTeachController.MinusUButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("-U",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _jogAndTeachController.TeachButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("Teach",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+
+                _jogAndTeachController.TeachButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("Teach",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+                
+                _jogAndTeachController.EditButton.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("Edit",true);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                }, TrickleDown.TrickleDown);
+
+                _jogAndTeachController.EditButton.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    if (_mqttIoTCore.IsConnected)
+                    {
+                        UiItemControl("Edit",false);
+                    }
+                    else
+                    {
+                        print("not connected");
+                    }
+                });
+
+            #endregion
             
-            _jogAndTeachController.TeachButton.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("Teach",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-
-            _jogAndTeachController.TeachButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("Teach",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            });
-            
-            _jogAndTeachController.EditButton.RegisterCallback<PointerDownEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("Edit",true);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            }, TrickleDown.TrickleDown);
-
-            _jogAndTeachController.EditButton.RegisterCallback<PointerUpEvent>(_ =>
-            {
-                if (_mqttIoTCore.IsConnected)
-                {
-                    ButtonControl("Edit",false);
-                }
-                else
-                {
-                    print("not connected");
-                }
-            });
         }
-        private void ButtonControl(string buttonName, bool state)
+        private void UiItemControl(string uiItemName, bool value)
         {
             var data = new Dictionary<string, object>
             {
-                { buttonName, state }
+                { uiItemName, value }
             };
     
             _ = Publish($"{_deviceName}", data, 1);
         }
-
+        private void UiItemControl(string uiItemName, string value)
+        {
+            var data = new Dictionary<string, object>
+            {
+                { uiItemName, value }
+            };
+    
+            _ = Publish($"{_deviceName}", data, 1);
+        }
         private void OnEnable()
         {
             StartCoroutine(StartConnectIotCore());
         }
-
         private void OnDisable()
         {
             _ = Unsubscribe("test");
@@ -492,17 +847,14 @@ namespace _scripts.controllers
             );
             await _mqttIoTCore.Connect();
         }
-        
         private async Task Subscribe(string topic)
         {
             await _mqttIoTCore.Subscribe(topic);
         }
-        
         private async Task Publish(string topic, object message, int qos)
         {
             await _mqttIoTCore.Publish(topic, message,qos);
         }
-        
         private async Task Unsubscribe(string topic)
         {
             await _mqttIoTCore.Unsubscribe(topic);

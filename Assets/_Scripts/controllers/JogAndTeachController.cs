@@ -11,7 +11,9 @@ namespace _scripts.controllers
 
         private DropdownField 
             _mode, 
-            _speed;
+            _speed,
+            _command,
+            _destination;
         
         private RadioButton 
             _continuousMove,
@@ -183,6 +185,17 @@ namespace _scripts.controllers
             get => _editButton;
             set => _editButton = value;
         }
+        
+        internal DropdownField Command
+        {
+            get => _command;
+            set => _command = value;
+        }
+        internal DropdownField Destination
+        {
+            get => _destination;
+            set => _destination = value;
+        }
         private void Start()
         {
             if (_shortMove != null) _shortMove.value = true;
@@ -229,6 +242,9 @@ namespace _scripts.controllers
             _longMove       = _root.Q<RadioButton>("longMove");
             _mediumMove     = _root.Q<RadioButton>("mediumMove");
             _shortMove      = _root.Q<RadioButton>("shortMove");
+            
+            _command= _root.Q<DropdownField>("CommandDropdown");
+            _destination= _root.Q<DropdownField>("DestinationDropdown");
         }
     }
 }

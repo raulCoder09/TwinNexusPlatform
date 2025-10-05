@@ -6,16 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/UnityXRContent/ARFoundation/SimulationEnvironments/Common/Materials/SimEnvironment_Accent.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UnityXRContent/ARFoundation/SimulationEnvironments/Common/Materials/SimEnvironment_Accent.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/UnityXRContent/ARFoundation/SimulationEnvironments/Common/Materials/SimEnvironment_Object_Accent.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UnityXRContent/ARFoundation/SimulationEnvironments/Common/Materials/SimEnvironment_Object_Accent.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Prefabs/AR Default Point Cloud.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Prefabs/AR Default Point Cloud.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/communicationProtocols/MqttManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/communicationProtocols/MqttManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/robotics/robotKinematics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/robotics/robotKinematics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Prefabs/Environments/TwinNexusEnvironmentArScara.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Prefabs/Environments/TwinNexusEnvironmentArScara.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controllers/ArScaraTwinNexusController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controllers/ArScaraTwinNexusController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controllers/ArScaraVirtualController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controllers/ArScaraVirtualController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controllers/JogAndTeachController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controllers/JogAndTeachController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/views/arScaraUi.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/views/arScaraUi.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +25,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/348ed09ed1634d388253e20b5aab3fcf223400/0e/251267d9/EventCallbackFunctor`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/_scripts/Models/ScaraRobotKinematics.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/ControlPanelController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/JogAndTeachController.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
@@ -81,7 +76,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.6f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.6f2\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath $PROJECT_DIR$ -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -93,7 +88,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.6f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.6f2\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath $PROJECT_DIR$ -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -245,7 +240,8 @@
       <workItem from="1758867536251" duration="550000" />
       <workItem from="1758922249545" duration="5463000" />
       <workItem from="1759416836216" duration="9852000" />
-      <workItem from="1759428658778" duration="8417000" />
+      <workItem from="1759428658778" duration="8747000" />
+      <workItem from="1759625208794" duration="10411000" />
     </task>
     <servers />
   </component>

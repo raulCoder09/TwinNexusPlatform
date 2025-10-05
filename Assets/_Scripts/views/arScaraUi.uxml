@@ -12,7 +12,7 @@
                 <ui:DropdownField name="arscaraMenu" choices="ARSCARA menu,Control panel,Jog and teach,Points" class="dropdownOptions" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; width: 25%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
-                <ui:DropdownField name="placementMenu" choices="Placement,Raycast,QR marker" class="dropdownOptions " /> 
+                <ui:DropdownField name="placementMenu" choices="Placement,Raycast,QR marker" class="dropdownOptions " />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="main" class="main passthrough" style="align-items: center; justify-content: center; align-self: center; align-content: center;">
@@ -88,10 +88,10 @@
                     <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
                 <ui:VisualElement name="toggleControls" class="bodyMiniPanel columnOrientationItems">
-                    <ui:Toggle name="j1" label="J1" class="textMiniPanelLabel" />
-                    <ui:Toggle name="j2" label="J2" class="textMiniPanelLabel" />
-                    <ui:Toggle name="j3" label="J3" class="textMiniPanelLabel" />
-                    <ui:Toggle name="j4" label="J4" class="textMiniPanelLabel" />
+                    <ui:Toggle name="J1Toggle" label="J1" class="textMiniPanelLabel" />
+                    <ui:Toggle name="J2Toggle" label="J2" class="textMiniPanelLabel" />
+                    <ui:Toggle name="J3Toggle" label="J3" class="textMiniPanelLabel" />
+                    <ui:Toggle name="J4Toggle" label="J4" class="textMiniPanelLabel" />
                 </ui:VisualElement>
                 <ui:VisualElement name="JointControlsPanel" class="footerMiniPanel rowOrientationItems">
                     <ui:Button name="FreeAllButton" text="Free all" class="generalButton" />
