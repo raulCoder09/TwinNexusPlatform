@@ -8,6 +8,13 @@ namespace _scripts.controllers
     {
         private GameObject _arScaraUi;
         private VisualElement _root;
+
+
+        private Label 
+            _emergencyStopLabel, 
+            _safeguardLabel, 
+            _motorsLabel,
+            _powerLabel;
         
         private Button 
             _motorsOffButton,
@@ -97,6 +104,30 @@ namespace _scripts.controllers
             set => _j4Toggle = value;
         }
 
+        internal Label EmergencyStopLabel
+        {
+            get => _emergencyStopLabel;
+            set => _emergencyStopLabel = value;
+        }
+
+        internal Label SafeguardLabel
+        {
+            get => _safeguardLabel;
+            set => _safeguardLabel = value;
+        }
+
+        internal Label MotorsLabel
+        {
+            get => _motorsLabel;
+            set => _motorsLabel = value;
+        }
+
+        internal Label PowerLabel
+        {
+            get => _powerLabel;
+            set => _powerLabel = value;
+        }
+
         private void OnEnable()
         {
             RegisterUiItems();
@@ -122,6 +153,11 @@ namespace _scripts.controllers
             _j2Toggle=_root.Q<Toggle>("J2Toggle");
             _j3Toggle=_root.Q<Toggle>("J3Toggle");
             _j4Toggle=_root.Q<Toggle>("J4Toggle");
+            
+            _emergencyStopLabel=_root.Q<Label>("EmergencyStopLabel");
+            _safeguardLabel=_root.Q<Label>("SafeguardLabel");
+            _motorsLabel=_root.Q<Label>("MotorsLabel");
+            _powerLabel=_root.Q<Label>("PowerLabel");
             
             
         }

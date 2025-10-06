@@ -8,6 +8,16 @@ namespace _scripts.controllers
     {
         private GameObject _arScaraUi;
         private VisualElement _root;
+        
+        private Label 
+            _xLabel,
+            _yLabel,
+            _zLabel,
+            _uLabel,
+            _j1Label,
+            _j2Label,
+            _j3Label,
+            _j4Label;
 
         private DropdownField 
             _mode, 
@@ -196,6 +206,55 @@ namespace _scripts.controllers
             get => _destination;
             set => _destination = value;
         }
+
+        internal Label XLabel
+        {
+            get => _xLabel;
+            set => _xLabel = value;
+        }
+
+        internal Label YLabel
+        {
+            get => _yLabel;
+            set => _yLabel = value;
+        }
+
+        internal Label ZLabel
+        {
+            get => _zLabel;
+            set => _zLabel = value;
+        }
+
+        internal Label ULabel
+        {
+            get => _uLabel;
+            set => _uLabel = value;
+        }
+
+        internal Label J1Label
+        {
+            get => _j1Label;
+            set => _j1Label = value;
+        }
+
+        internal Label J2Label
+        {
+            get => _j2Label;
+            set => _j2Label = value;
+        }
+
+        internal Label J3Label
+        {
+            get => _j3Label;
+            set => _j3Label = value;
+        }
+
+        internal Label J4Label
+        {
+            get => _j4Label;
+            set => _j4Label = value;
+        }
+
         private void Start()
         {
             if (_shortMove != null) _shortMove.value = true;
@@ -245,6 +304,17 @@ namespace _scripts.controllers
             
             _command= _root.Q<DropdownField>("CommandDropdown");
             _destination= _root.Q<DropdownField>("DestinationDropdown");
+            
+            
+            
+            _xLabel= _root.Q<Label>("xLabel");
+            _yLabel= _root.Q<Label>("yLabel");
+            _zLabel= _root.Q<Label>("zLabel");
+            _uLabel= _root.Q<Label>("uLabel");
+            _j1Label= _root.Q<Label>("j1Label");
+            _j2Label= _root.Q<Label>("j2Label");
+            _j3Label= _root.Q<Label>("j3Label");
+            _j4Label= _root.Q<Label>("j4Label");
         }
     }
 }

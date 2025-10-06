@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using _scripts.models.communicationProtocols;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace _scripts.controllers
@@ -18,25 +19,99 @@ namespace _scripts.controllers
         private string _deviceName;
         
         private CancellationTokenSource _cts;
+        [SerializeField] private bool borrame=false;
+        
+        private Dictionary<string, System.Text.Json.JsonElement> _data;
+        
         private void Awake()
         {
             _deviceName = "ARSCARA";
-            
-        }
-        private void Start()
-        {
-            _jogAndTeachController = GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<JogAndTeachController>();
-            _controlPanelController= GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<ControlPanelController>();
-            RegisterEvents();
-            _ = Subscribe("test");
-        }
-
-        private void Update()
-        {
-
         }
         
+        private async void Start()
+        {
+            try
+            {
+                _jogAndTeachController = GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<JogAndTeachController>();
+                _controlPanelController= GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<ControlPanelController>();
+                RegisterEvents();
+            
+                await Task.Delay(2000);
+                await Subscribe("test");
+                await Subscribe("ARSCARA");
+            
+                _cts = new CancellationTokenSource();
+                _ = ListenForMessages(_cts.Token);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        
+        
+        // analizar si este metodo se queda aqui o lo pasamos a mqtt manager
+        private async Task ListenForMessages(CancellationToken ct)
+        {
+            try
+            {
+                await foreach (var msg in _mqttIoTCore.ReadAllAsync(ct))
+                {
+                    var payload = Encoding.UTF8.GetString(msg.Payload.ToArray()); 
+                    print($"Topic: {msg.Topic} | Payload: {payload}");
+                    _data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(payload);
 
+                    if (borrame)
+                    {
+                        // aqui debo considerar que pantalla de control del robot esta activa para no causar errores, considero que con un if
+                        _controlPanelController.EmergencyStopLabel.text = $"Emergency stop: {_data["emergencyStop"].GetString()}";
+                        _controlPanelController.SafeguardLabel.text = $"Safe guard: {_data["safeGuard"].GetString()}";
+                        _controlPanelController.MotorsLabel.text = $"Motors: {_data["motors"].GetString()}";
+                        _controlPanelController.PowerLabel.text = $"Power: {_data["power"].GetString()}";
+                        
+                        //debo ver que hacer al eliminar los labels me genera error cuando estoy en otra pantalla
+                        
+                        // debo hacer un evento por que si no enviara errores al no existir al principio generara errores
+
+                        switch (_jogAndTeachController.Mode.value)
+                        {
+                            case "World":
+                                print("modo world activado");
+                                _jogAndTeachController.XLabel.text = $"X: {_data["axisX"].GetDouble()}";
+                                _jogAndTeachController.XLabel.text = $"Y: {_data["axisY"].GetDouble()}";
+                                _jogAndTeachController.XLabel.text = $"Z: {_data["axisZ"].GetDouble()}";
+                                _jogAndTeachController.XLabel.text = $"U: {_data["axisU"].GetDouble()}";
+                                break;
+                            case "Joint":
+                                print("modo joint activado");
+                                _jogAndTeachController.J1Label.text = $"J1: {_data["joint1"].GetDouble()}";
+                                _jogAndTeachController.J2Label.text = $"J2: {_data["joint2"].GetDouble()}";
+                                _jogAndTeachController.J3Label.text = $"J3: {_data["joint3"].GetDouble()}";
+                                _jogAndTeachController.J4Label.text = $"J4: {_data["joint4"].GetDouble()}";
+                                break;
+                        }
+
+                    }
+
+
+                    
+                    
+                    
+                    // _emergencyStop = data["name"].GetString();
+                    // _safeGuard = data["age"].GetInt32();
+                    // _motors = data["height"].GetDouble();
+                    // _power = data["weight"].GetInt32();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                print("Listener cancelado");
+            }
+            catch (Exception ex)
+            {
+                print($"Error: {ex.Message}");
+            }
+        }
 
         private void RegisterEvents()
         {
@@ -807,6 +882,7 @@ namespace _scripts.controllers
             #endregion
             
         }
+        
         private void UiItemControl(string uiItemName, bool value)
         {
             var data = new Dictionary<string, object>
@@ -816,6 +892,7 @@ namespace _scripts.controllers
     
             _ = Publish($"{_deviceName}", data, 1);
         }
+        
         private void UiItemControl(string uiItemName, string value)
         {
             var data = new Dictionary<string, object>
@@ -825,15 +902,20 @@ namespace _scripts.controllers
     
             _ = Publish($"{_deviceName}", data, 1);
         }
+        
         private void OnEnable()
         {
             StartCoroutine(StartConnectIotCore());
         }
+        
         private void OnDisable()
         {
+            _cts?.Cancel();
+            _cts?.Dispose();
             _ = Unsubscribe("test");
             _ = Disconnect();
         }
+        
         private async Task Connect()
         {
             _mqttIoTCore = new MqttManager(
@@ -847,24 +929,29 @@ namespace _scripts.controllers
             );
             await _mqttIoTCore.Connect();
         }
+        
         private async Task Subscribe(string topic)
         {
             await _mqttIoTCore.Subscribe(topic);
         }
+        
         private async Task Publish(string topic, object message, int qos)
         {
             await _mqttIoTCore.Publish(topic, message,qos);
         }
+        
         private async Task Unsubscribe(string topic)
         {
             await _mqttIoTCore.Unsubscribe(topic);
         }
+        
         private async Task Disconnect()
         {
             _ = Publish($"{_deviceName}, Connection status",new { message= "Twin Nexus Platform - AWS IoT Core end connection"},1);
             await _mqttIoTCore.Disconnect();
             print("Disconnected");
         }
+        
         private IEnumerator StartConnectIotCore() 
         {
             _ = Connect();
@@ -882,58 +969,3 @@ namespace _scripts.controllers
         }
     }
 }
-
-#region revisar esta logica
-
-
-// private void MoveAxis(ClickEvent evt, string axis, string direction)
-// {
-//     switch (axis)
-//     {
-//         case "X":
-//             _xPosition += direction == "+" ? _step : -_step;
-//             _xPosition = Mathf.Clamp(_xPosition, -90f, 90f);
-//             break;
-//
-//         case "Y":
-//             _yPosition += direction == "+" ? _step : -_step;
-//             _yPosition = Mathf.Clamp(_yPosition, -90f, 90f);
-//             break;
-//
-//         case "Z":
-//             _zPosition += direction == "+" ? _step : -_step;
-//             _zPosition = Mathf.Clamp(_zPosition, -10f, 0f);
-//             break;
-//
-//         case "U":
-//             _uPosition += direction == "+" ? _step : -_step;
-//             _uPosition = Mathf.Clamp(_uPosition, -180f, 180f);
-//             break;
-//     }
-//             
-// }
-//
-// private void MoveJoint(ClickEvent evt, int joint, string direction)
-// {
-//     switch (joint)
-//     {
-//         case 1:
-//             _j1Rotation += direction == "+" ? _step : -_step;
-//             break;
-//
-//         case 2:
-//             _j2Rotation += direction == "+" ? _step : -_step;
-//             break;
-//
-//         case 3:
-//             _j3Prismatic += direction == "+" ? _step : -_step;
-//             break;
-//
-//         case 4:
-//             _j4Rotation += direction == "+" ? _step : -_step;
-//             break;
-//     }
-// }
-
-#endregion
-
