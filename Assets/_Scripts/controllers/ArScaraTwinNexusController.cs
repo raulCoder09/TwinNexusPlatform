@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using _scripts.models.communicationProtocols;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace _scripts.controllers
@@ -19,7 +18,6 @@ namespace _scripts.controllers
         private string _deviceName;
         
         private CancellationTokenSource _cts;
-        [SerializeField] private bool borrame=false;
         
         private Dictionary<string, System.Text.Json.JsonElement> _data;
         
@@ -28,20 +26,14 @@ namespace _scripts.controllers
             _deviceName = "ARSCARA";
         }
         
-        private async void Start()
+        private void Start()
         {
             try
             {
                 _jogAndTeachController = GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<JogAndTeachController>();
                 _controlPanelController= GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<ControlPanelController>();
                 RegisterEvents();
-            
-                await Task.Delay(2000);
-                await Subscribe("test");
-                await Subscribe("ARSCARA");
-            
-                _cts = new CancellationTokenSource();
-                _ = ListenForMessages(_cts.Token);
+                
             }
             catch (Exception e)
             {
@@ -60,47 +52,6 @@ namespace _scripts.controllers
                     var payload = Encoding.UTF8.GetString(msg.Payload.ToArray()); 
                     print($"Topic: {msg.Topic} | Payload: {payload}");
                     _data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(payload);
-
-                    if (borrame)
-                    {
-                        // aqui debo considerar que pantalla de control del robot esta activa para no causar errores, considero que con un if
-                        _controlPanelController.EmergencyStopLabel.text = $"Emergency stop: {_data["emergencyStop"].GetString()}";
-                        _controlPanelController.SafeguardLabel.text = $"Safe guard: {_data["safeGuard"].GetString()}";
-                        _controlPanelController.MotorsLabel.text = $"Motors: {_data["motors"].GetString()}";
-                        _controlPanelController.PowerLabel.text = $"Power: {_data["power"].GetString()}";
-                        
-                        //debo ver que hacer al eliminar los labels me genera error cuando estoy en otra pantalla
-                        
-                        // debo hacer un evento por que si no enviara errores al no existir al principio generara errores
-
-                        switch (_jogAndTeachController.Mode.value)
-                        {
-                            case "World":
-                                print("modo world activado");
-                                _jogAndTeachController.XLabel.text = $"X: {_data["axisX"].GetDouble()}";
-                                _jogAndTeachController.XLabel.text = $"Y: {_data["axisY"].GetDouble()}";
-                                _jogAndTeachController.XLabel.text = $"Z: {_data["axisZ"].GetDouble()}";
-                                _jogAndTeachController.XLabel.text = $"U: {_data["axisU"].GetDouble()}";
-                                break;
-                            case "Joint":
-                                print("modo joint activado");
-                                _jogAndTeachController.J1Label.text = $"J1: {_data["joint1"].GetDouble()}";
-                                _jogAndTeachController.J2Label.text = $"J2: {_data["joint2"].GetDouble()}";
-                                _jogAndTeachController.J3Label.text = $"J3: {_data["joint3"].GetDouble()}";
-                                _jogAndTeachController.J4Label.text = $"J4: {_data["joint4"].GetDouble()}";
-                                break;
-                        }
-
-                    }
-
-
-                    
-                    
-                    
-                    // _emergencyStop = data["name"].GetString();
-                    // _safeGuard = data["age"].GetInt32();
-                    // _motors = data["height"].GetDouble();
-                    // _power = data["weight"].GetInt32();
                 }
             }
             catch (OperationCanceledException)
@@ -905,7 +856,7 @@ namespace _scripts.controllers
         
         private void OnEnable()
         {
-            StartCoroutine(StartConnectIotCore());
+            StartCoroutine(ActivateMQTT());
         }
         
         private void OnDisable()
@@ -952,7 +903,7 @@ namespace _scripts.controllers
             print("Disconnected");
         }
         
-        private IEnumerator StartConnectIotCore() 
+        private IEnumerator ActivateMQTT() 
         {
             _ = Connect();
             yield return new WaitForSeconds(2f);
@@ -960,6 +911,10 @@ namespace _scripts.controllers
             {
                 _ = Publish($"{_deviceName}",new { message= "Twin Nexus Platform - AWS IoT Core connection established"},1);
                 print("connection established");
+                _ = Subscribe("test");
+                _ = Subscribe("ARSCARA");
+                _cts = new CancellationTokenSource();
+                _ = ListenForMessages(_cts.Token);
             }
             else
             {
