@@ -3,12 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Client;
-
 namespace _scripts.models.communicationProtocols
 {
     internal class MqttManager
@@ -26,9 +26,10 @@ namespace _scripts.models.communicationProtocols
         private string _pfxPath;
         private string _pfxPassword;
         private string _exceptionMessage;
-        
 
         private byte[] _payloadReceived;
+
+        private string _dataLoading;
         public readonly struct InboundMessage
         {
             public readonly string Topic;
@@ -72,12 +73,7 @@ namespace _scripts.models.communicationProtocols
         public bool TryGetLast(string topic, out InboundMessage last)
             => _lastByTopic.TryGetValue(topic, out last);
 
-        internal bool IsConnected
-        {
-            get => _isConnected;
-            set => _isConnected = value;
-        }
-
+        internal bool IsConnected { get => _isConnected; set => _isConnected = value;}
         internal string Host { get => _host; set => _host = value; }
         internal int Port { get => _port; set => _port = value; }
         internal string ClientId { get => _clientId; set => _clientId = value; }
@@ -85,6 +81,7 @@ namespace _scripts.models.communicationProtocols
         internal string Password { get => _password; set => _password = value; }
         internal bool CleanSession { get => _cleanSession; set => _cleanSession = value; }
         internal bool UseTls { get => _useTls; set => _useTls = value; }
+        internal string DataLoading {get => _dataLoading; set => _dataLoading = value; }
         internal CancellationToken CancellationToken { get => _cancellationToken; set => _cancellationToken = value; }
         internal string ExceptionMessage { get => _exceptionMessage; set => _exceptionMessage = value; }
         internal byte[] PayloadReceived => _payloadReceived;
@@ -269,11 +266,30 @@ namespace _scripts.models.communicationProtocols
             }
         }
 
+        internal async Task ListenForMessages(CancellationToken ct)
+        {
+            try
+            {
+                await foreach (var msg in ReadAllAsync(ct))
+                {
+                    _dataLoading = Encoding.UTF8.GetString(msg.Payload.ToArray()); 
+                    // =$"Topic: {msg.Topic} | Payload: {_dataLoading}";
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                _exceptionMessage="Listener cancelado";
+            }
+            catch (Exception ex)
+            {
+                _exceptionMessage=$"Error: {ex.Message}";
+            }
+        }
+
         internal async Task Unsubscribe(string topic)
         {
-            if (_mqttClient == null || !_mqttClient.IsConnected)
+            if (_mqttClient is not { IsConnected: true })
                 throw new InvalidOperationException("Unable to unsubscribe, client is not connected.");
-
             try
             {
                 var unsubscribeOptions = new MqttClientUnsubscribeOptionsBuilder()

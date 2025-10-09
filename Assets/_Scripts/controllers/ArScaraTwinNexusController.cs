@@ -17,7 +17,7 @@ namespace _scripts.controllers
         private MqttManager _mqttIoTCore;
         private string _deviceName;
         
-        private CancellationTokenSource _cts;
+        private CancellationTokenSource _cancellationTokenSource;
         
         private Dictionary<string, System.Text.Json.JsonElement> _data;
         
@@ -33,36 +33,19 @@ namespace _scripts.controllers
                 _jogAndTeachController = GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<JogAndTeachController>();
                 _controlPanelController= GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<ControlPanelController>();
                 RegisterEvents();
-                
+                // _data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(payload);
             }
             catch (Exception e)
             {
                 throw;
             }
         }
-        
-        
-        // analizar si este metodo se queda aqui o lo pasamos a mqtt manager
-        private async Task ListenForMessages(CancellationToken ct)
+
+        private void Update()
         {
-            try
-            {
-                await foreach (var msg in _mqttIoTCore.ReadAllAsync(ct))
-                {
-                    var payload = Encoding.UTF8.GetString(msg.Payload.ToArray()); 
-                    print($"Topic: {msg.Topic} | Payload: {payload}");
-                    _data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(payload);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                print("Listener cancelado");
-            }
-            catch (Exception ex)
-            {
-                print($"Error: {ex.Message}");
-            }
+            print(_mqttIoTCore.DataLoading);
         }
+
 
         private void RegisterEvents()
         {
@@ -856,13 +839,13 @@ namespace _scripts.controllers
         
         private void OnEnable()
         {
-            StartCoroutine(ActivateMQTT());
+            StartCoroutine(ActivateMqtt());
         }
         
         private void OnDisable()
         {
-            _cts?.Cancel();
-            _cts?.Dispose();
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
             _ = Unsubscribe("test");
             _ = Disconnect();
         }
@@ -902,19 +885,18 @@ namespace _scripts.controllers
             await _mqttIoTCore.Disconnect();
             print("Disconnected");
         }
-        
-        private IEnumerator ActivateMQTT() 
+        private IEnumerator ActivateMqtt() 
         {
             _ = Connect();
             yield return new WaitForSeconds(2f);
             if (_mqttIoTCore.IsConnected)
             {
+                _cancellationTokenSource = new CancellationTokenSource();
                 _ = Publish($"{_deviceName}",new { message= "Twin Nexus Platform - AWS IoT Core connection established"},1);
                 print("connection established");
                 _ = Subscribe("test");
                 _ = Subscribe("ARSCARA");
-                _cts = new CancellationTokenSource();
-                _ = ListenForMessages(_cts.Token);
+                _ = _mqttIoTCore.ListenForMessages(_cancellationTokenSource.Token);
             }
             else
             {
