@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using _scripts.models.communicationProtocols;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Text.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace _scripts.controllers
 {
@@ -15,17 +15,13 @@ namespace _scripts.controllers
         private JogAndTeachController _jogAndTeachController;
         private ControlPanelController  _controlPanelController;
         private MqttManager _mqttIoTCore;
-        private string _deviceName;
-        
-        private CancellationTokenSource _cancellationTokenSource;
-        
         private Dictionary<string, System.Text.Json.JsonElement> _data;
-        
+        private string _dataReceived;
+        private string _lastProcessedData = string.Empty;
+
         private void Awake()
         {
-            _deviceName = "ARSCARA";
         }
-        
         private void Start()
         {
             try
@@ -33,17 +29,73 @@ namespace _scripts.controllers
                 _jogAndTeachController = GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<JogAndTeachController>();
                 _controlPanelController= GameObject.FindWithTag("TwinNexusEnvironmentArScara").GetComponent<ControlPanelController>();
                 RegisterEvents();
-                // _data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(payload);
             }
             catch (Exception e)
             {
                 throw;
             }
         }
-
+        
         private void Update()
         {
-            print(_mqttIoTCore.DataLoading);
+            if (_mqttIoTCore != null && 
+                !string.IsNullOrEmpty(_mqttIoTCore.DataLoading) && 
+                _mqttIoTCore.DataLoading != _lastProcessedData)
+            {
+                ProcessMqttData();
+                _lastProcessedData = _mqttIoTCore.DataLoading;
+            }
+        }
+        
+        private void ProcessMqttData()
+        {
+            try
+            {
+                var data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(_mqttIoTCore.DataLoading);
+
+                foreach (var item in data)
+                {
+                    if (_mqttIoTCore.CurrentTopic=="TwinNexus/ARSCARA/ControlPanel")
+                    {
+                        if (data.ContainsKey("EmergencyStop") && data.ContainsKey("Safeguard") && 
+                            data.ContainsKey("Motors") && data.ContainsKey("Power"))
+                        {
+                            _controlPanelController.EmergencyStopLabel.text=$"Emergency stop: {data["EmergencyStop"].GetString()}";
+                            _controlPanelController.SafeguardLabel.text=$"Safeguard: {data["Safeguard"].GetString()}";
+                            _controlPanelController.MotorsLabel.text=$"Motors: {data["Motors"].GetString()}";
+                            _controlPanelController.PowerLabel.text=$"Power: {data["Power"].GetString()}";
+                        }
+                    }
+
+                    if (_mqttIoTCore.CurrentTopic == "TwinNexus/ARSCARA/JogAndTeach/World")
+                    {
+                        if (data.ContainsKey("XData") && data.ContainsKey("YData") &&
+                            data.ContainsKey("ZData") && data.ContainsKey("UData")) 
+                        { 
+                            _jogAndTeachController.XLabel.text =$"X: {data["XData"].GetDouble().ToString()} mm";
+                            _jogAndTeachController.YLabel.text =$"Y: {data["YData"].GetDouble().ToString()} mm";
+                            _jogAndTeachController.ZLabel.text =$"Z: {data["ZData"].GetDouble().ToString()} mm";
+                            _jogAndTeachController.ULabel.text =$"U: {data["UData"].GetDouble().ToString()} deg";
+                        }
+                    }
+                    if (_mqttIoTCore.CurrentTopic == "TwinNexus/ARSCARA/JogAndTeach/Joint")
+                    {
+                        if (data.ContainsKey("J1Data") && data.ContainsKey("J2Data") &&
+                            data.ContainsKey("J3Data") && data.ContainsKey("J4Data")) 
+                        { 
+                            _jogAndTeachController.J1Label.text =$"J1: {data["J1Data"].GetDouble().ToString()} deg";
+                            _jogAndTeachController.J2Label.text =$"J2: {data["J2Data"].GetDouble().ToString()} deg";
+                            _jogAndTeachController.J3Label.text =$"J3: {data["J3Data"].GetDouble().ToString()} deg";
+                            _jogAndTeachController.J4Label.text =$"J4: {data["J4Data"].GetDouble().ToString()} deg";
+                        }
+                    }
+                }
+            }
+            catch (JsonException ex)
+            {
+                Debug.LogError($"Error deserializando JSON: {ex.Message}");
+                Debug.LogError($"JSON recibido: {_mqttIoTCore.DataLoading}");
+            }
         }
 
 
@@ -55,7 +107,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("MotorsOff",true);
+                        UiItemControl("ControlPanel","MotorsOff",true);
                     }
                     else
                     {
@@ -67,7 +119,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("MotorsOff",false);
+                        UiItemControl("ControlPanel","MotorsOff",false);
                     }
                     else
                     {
@@ -79,7 +131,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("MotorsOn",true);
+                        UiItemControl("ControlPanel","MotorsOn",true);
                     }
                     else
                     {
@@ -91,7 +143,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("MotorsOn",false);
+                        UiItemControl("ControlPanel","MotorsOn",false);
                     }
                     else
                     {
@@ -103,7 +155,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("PowerLow",true);
+                        UiItemControl("ControlPanel","PowerLow",true);
                     }
                     else
                     {
@@ -115,7 +167,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("PowerLow",false);
+                        UiItemControl("ControlPanel","PowerLow",false);
                     }
                     else
                     {
@@ -127,7 +179,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("PowerHigh",true);
+                        UiItemControl("ControlPanel","PowerHigh",true);
                     }
                     else
                     {
@@ -139,7 +191,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("PowerHigh",false);
+                        UiItemControl("ControlPanel","PowerHigh",false);
                     }
                     else
                     {
@@ -151,7 +203,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("Home",true);
+                        UiItemControl("ControlPanel","Home",true);
                     }
                     else
                     {
@@ -163,7 +215,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("Home",false);
+                        UiItemControl("ControlPanel","Home",false);
                     }
                     else
                     {
@@ -175,7 +227,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("Reset",true);
+                        UiItemControl("ControlPanel","Reset",true);
                     }
                     else
                     {
@@ -187,7 +239,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("Reset",false);
+                        UiItemControl("ControlPanel","Reset",false);
                     }
                     else
                     {
@@ -198,7 +250,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("FreeAll",true);
+                        UiItemControl("ControlPanel","FreeAll",true);
                     }
                     else
                     {
@@ -210,7 +262,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("FreeAll",false);
+                        UiItemControl("ControlPanel","FreeAll",false);
                     }
                     else
                     {
@@ -221,7 +273,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("LockAll",true);
+                        UiItemControl("ControlPanel","LockAll",true);
                     }
                     else
                     {
@@ -233,7 +285,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("LockAll",false);
+                        UiItemControl("ControlPanel","LockAll",false);
                     }
                     else
                     {
@@ -245,7 +297,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("J1",evt.newValue);
+                        UiItemControl("ControlPanel","J1",evt.newValue);
                     }
                     else
                     {
@@ -257,7 +309,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("J2",evt.newValue);
+                        UiItemControl("ControlPanel","J2",evt.newValue);
                     }
                     else
                     {
@@ -269,7 +321,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("J3",evt.newValue);
+                        UiItemControl("ControlPanel","J3",evt.newValue);
                     }
                     else
                     {
@@ -281,7 +333,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("J4",evt.newValue);
+                        UiItemControl("ControlPanel","J4",evt.newValue);
                     }
                     else
                     {
@@ -296,7 +348,7 @@ namespace _scripts.controllers
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    UiItemControl("Mode",evt.newValue);
+                    UiItemControl("JogAndTeach","Mode",evt.newValue);
                 }
                 else
                 {
@@ -307,7 +359,7 @@ namespace _scripts.controllers
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    UiItemControl("Speed",evt.newValue);
+                    UiItemControl("JogAndTeach","Speed",evt.newValue);
                 }
                 else
                 {
@@ -318,7 +370,7 @@ namespace _scripts.controllers
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    UiItemControl("ContinuousMove",evt.newValue);
+                    UiItemControl("JogAndTeach","ContinuousMove",evt.newValue);
                 }
                 else
                 {
@@ -329,7 +381,7 @@ namespace _scripts.controllers
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    UiItemControl("LongMove",evt.newValue);
+                    UiItemControl("JogAndTeach","LongMove",evt.newValue);
                 }
                 else
                 {
@@ -340,7 +392,7 @@ namespace _scripts.controllers
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    UiItemControl("MediumMove",evt.newValue);
+                    UiItemControl("JogAndTeach","MediumMove",evt.newValue);
                 }
                 else
                 {
@@ -351,7 +403,7 @@ namespace _scripts.controllers
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    UiItemControl("ShortMove",evt.newValue);
+                    UiItemControl("JogAndTeach","ShortMove",evt.newValue);
                 }
                 else
                 {
@@ -362,7 +414,7 @@ namespace _scripts.controllers
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    UiItemControl("Command",evt.newValue);
+                    UiItemControl("JogAndTeach","Command",evt.newValue);
                 }
                 else
                 {
@@ -373,7 +425,7 @@ namespace _scripts.controllers
             {
                 if (_mqttIoTCore.IsConnected)
                 {
-                    UiItemControl("Destination",evt.newValue);
+                    UiItemControl("JogAndTeach","Destination",evt.newValue);
                 }
                 else
                 {
@@ -381,11 +433,15 @@ namespace _scripts.controllers
                 }
             });
 
+            #endregion
+            
+            
+            #region JogAndTeachJoint
                 _jogAndTeachController.PlusJ1Button.RegisterCallback<PointerDownEvent>(_ =>
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+J1",true);
+                        UiItemControl("JogAndTeach","Joint","+J1",true);
                     }
                     else
                     {
@@ -397,7 +453,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+J1",false);
+                        UiItemControl("JogAndTeach","Joint","+J1",false);
                     }
                     else
                     {
@@ -409,7 +465,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-J1",true);
+                        UiItemControl("JogAndTeach","Joint","-J1",true);
                     }
                     else
                     {
@@ -421,7 +477,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-J1",false);
+                        UiItemControl("JogAndTeach","Joint","-J1",false);
                     }
                     else
                     {
@@ -433,7 +489,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+J2",true);
+                        UiItemControl("JogAndTeach","Joint","+J2",true);
                     }
                     else
                     {
@@ -445,7 +501,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+J2",false);
+                        UiItemControl("JogAndTeach","Joint","+J2",false);
                     }
                     else
                     {
@@ -457,7 +513,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-J2",true);
+                        UiItemControl("JogAndTeach","Joint","-J2",true);
                     }
                     else
                     {
@@ -469,7 +525,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-J2",false);
+                        UiItemControl("JogAndTeach","Joint","-J2",false);
                     }
                     else
                     {
@@ -481,7 +537,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+J3",true);
+                        UiItemControl("JogAndTeach","Joint","+J3",true);
                     }
                     else
                     {
@@ -493,7 +549,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+J3",false);
+                        UiItemControl("JogAndTeach","Joint","+J3",false);
                     }
                     else
                     {
@@ -505,7 +561,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-J3",true);
+                        UiItemControl("JogAndTeach","Joint","-J3",true);
                     }
                     else
                     {
@@ -517,7 +573,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-J3",false);
+                        UiItemControl("JogAndTeach","Joint","-J3",false);
                     }
                     else
                     {
@@ -529,7 +585,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+J4",true);
+                        UiItemControl("JogAndTeach","Joint","+J4",true);
                     }
                     else
                     {
@@ -541,7 +597,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+J4",false);
+                        UiItemControl("JogAndTeach","Joint","+J4",false);
                     }
                     else
                     {
@@ -553,7 +609,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-J4",true);
+                        UiItemControl("JogAndTeach","Joint","-J4",true);
                     }
                     else
                     {
@@ -565,7 +621,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-J4",false);
+                        UiItemControl("JogAndTeach","Joint","-J4",false);
                     }
                     else
                     {
@@ -573,11 +629,16 @@ namespace _scripts.controllers
                     }
                 }); 
                 
+                #endregion
+
+            #region JogAndTeachWorld
+            
+                
                 _jogAndTeachController.PlusXButton.RegisterCallback<PointerDownEvent>(_ =>
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+X",true);
+                        UiItemControl("JogAndTeach","World","+X",true);
                     }
                     else
                     {
@@ -589,7 +650,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+X",false);
+                        UiItemControl("JogAndTeach","World","+X",false);
                     }
                     else
                     {
@@ -601,7 +662,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-X",true);
+                        UiItemControl("JogAndTeach","World","-X",true);
                     }
                     else
                     {
@@ -613,7 +674,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-X",false);
+                        UiItemControl("JogAndTeach","World","-X",false);
                     }
                     else
                     {
@@ -625,7 +686,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+Y",true);
+                        UiItemControl("JogAndTeach","World","+Y",true);
                     }
                     else
                     {
@@ -637,7 +698,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+Y",false);
+                        UiItemControl("JogAndTeach","World","+Y",false);
                     }
                     else
                     {
@@ -649,7 +710,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-Y",true);
+                        UiItemControl("JogAndTeach","World","-Y",true);
                     }
                     else
                     {
@@ -661,7 +722,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-Y",false);
+                        UiItemControl("JogAndTeach","World","-Y",false);
                     }
                     else
                     {
@@ -673,7 +734,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+Z",true);
+                        UiItemControl("JogAndTeach","World","+Z",true);
                     }
                     else
                     {
@@ -685,7 +746,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+Z",false);
+                        UiItemControl("JogAndTeach","World","+Z",false);
                     }
                     else
                     {
@@ -697,7 +758,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-Z",true);
+                        UiItemControl("JogAndTeach","World","-Z",true);
                     }
                     else
                     {
@@ -709,7 +770,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-Z",false);
+                        UiItemControl("JogAndTeach","World","-Z",false);
                     }
                     else
                     {
@@ -721,7 +782,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+U",true);
+                        UiItemControl("JogAndTeach","World","+U",true);
                     }
                     else
                     {
@@ -733,7 +794,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("+U",false);
+                        UiItemControl("JogAndTeach","World","+U",false);
                     }
                     else
                     {
@@ -745,7 +806,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-U",true);
+                        UiItemControl("JogAndTeach","World","-U",true);
                     }
                     else
                     {
@@ -757,7 +818,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("-U",false);
+                        UiItemControl("JogAndTeach","World","-U",false);
                     }
                     else
                     {
@@ -769,7 +830,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("Teach",true);
+                        UiItemControl("JogAndTeach","Teach",true);
                     }
                     else
                     {
@@ -781,7 +842,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("Teach",false);
+                        UiItemControl("JogAndTeach","Teach",false);
                     }
                     else
                     {
@@ -793,7 +854,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("Edit",true);
+                        UiItemControl("JogAndTeach","Edit",true);
                     }
                     else
                     {
@@ -805,7 +866,7 @@ namespace _scripts.controllers
                 {
                     if (_mqttIoTCore.IsConnected)
                     {
-                        UiItemControl("Edit",false);
+                        UiItemControl("JogAndTeach","Edit",false);
                     }
                     else
                     {
@@ -816,40 +877,58 @@ namespace _scripts.controllers
             #endregion
             
         }
-        
-        private void UiItemControl(string uiItemName, bool value)
+        private void UiItemControl(string userInterface,string uiItemName, bool value)
         {
             var data = new Dictionary<string, object>
             {
                 { uiItemName, value }
             };
     
-            _ = Publish($"{_deviceName}", data, 1);
+            _ = Publish($"TwinNexus/ARSCARA/{userInterface}", data, 1);
         }
         
-        private void UiItemControl(string uiItemName, string value)
+        private void UiItemControl(string userInterface,string uiItemName, string value)
         {
             var data = new Dictionary<string, object>
             {
                 { uiItemName, value }
             };
     
-            _ = Publish($"{_deviceName}", data, 1);
+            _ = Publish($"TwinNexus/ARSCARA/{userInterface}", data, 1);
         }
         
+        private void UiItemControl(string userInterface,string motionMode,string uiItemName, bool value)
+        {
+            var data = new Dictionary<string, object>
+            {
+                { uiItemName, value }
+            };
+    
+            _ = Publish($"TwinNexus/ARSCARA/{userInterface}/{motionMode}", data, 1);
+        }
+        private void UiItemControl(string userInterface,string motionMode,string uiItemName, string value)
+        {
+            var data = new Dictionary<string, object>
+            {
+                { uiItemName, value }
+            };
+    
+            _ = Publish($"TwinNexus/ARSCARA/{userInterface}/{motionMode}", data, 1);
+        }
         private void OnEnable()
         {
             StartCoroutine(ActivateMqtt());
         }
-        
         private void OnDisable()
         {
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
-            _ = Unsubscribe("test");
-            _ = Disconnect();
+            _ = Unsubscribe("Connection status");
+            _ = Unsubscribe("Listen status");
+            _ = Unsubscribe("TwinNexus/ARSCARA/ControlPanel");
+            _ = Unsubscribe("TwinNexus/ARSCARA/JogAndTeach");
+            _ = Unsubscribe("TwinNexus/ARSCARA/JogAndTeach/World");
+            _ = Unsubscribe("TwinNexus/ARSCARA/JogAndTeach/Joint");
+            _mqttIoTCore.DisableMqtt();
         }
-        
         private async Task Connect()
         {
             _mqttIoTCore = new MqttManager(
@@ -863,27 +942,17 @@ namespace _scripts.controllers
             );
             await _mqttIoTCore.Connect();
         }
-        
         private async Task Subscribe(string topic)
         {
             await _mqttIoTCore.Subscribe(topic);
         }
-        
         private async Task Publish(string topic, object message, int qos)
         {
             await _mqttIoTCore.Publish(topic, message,qos);
         }
-        
         private async Task Unsubscribe(string topic)
         {
             await _mqttIoTCore.Unsubscribe(topic);
-        }
-        
-        private async Task Disconnect()
-        {
-            _ = Publish($"{_deviceName}, Connection status",new { message= "Twin Nexus Platform - AWS IoT Core end connection"},1);
-            await _mqttIoTCore.Disconnect();
-            print("Disconnected");
         }
         private IEnumerator ActivateMqtt() 
         {
@@ -891,17 +960,16 @@ namespace _scripts.controllers
             yield return new WaitForSeconds(2f);
             if (_mqttIoTCore.IsConnected)
             {
-                _cancellationTokenSource = new CancellationTokenSource();
-                _ = Publish($"{_deviceName}",new { message= "Twin Nexus Platform - AWS IoT Core connection established"},1);
-                print("connection established");
-                _ = Subscribe("test");
-                _ = Subscribe("ARSCARA");
-                _ = _mqttIoTCore.ListenForMessages(_cancellationTokenSource.Token);
+                _ = Subscribe("Connection status");
+                _ = Subscribe("Listen status");
+                _ = Subscribe("TwinNexus/ARSCARA/ControlPanel");
+                _ = Subscribe("TwinNexus/ARSCARA/JogAndTeach");
+                _ = Subscribe("TwinNexus/ARSCARA/JogAndTeach/World");
+                _ = Subscribe("TwinNexus/ARSCARA/JogAndTeach/Joint");
             }
             else
             {
                 _mqttIoTCore.ExceptionMessage = "connection not established";
-                print("connection not established");
             }
         }
     }

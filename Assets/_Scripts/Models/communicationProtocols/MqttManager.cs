@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Client;
+using UnityEngine;
+
 namespace _scripts.models.communicationProtocols
 {
     internal class MqttManager
@@ -26,10 +28,11 @@ namespace _scripts.models.communicationProtocols
         private string _pfxPath;
         private string _pfxPassword;
         private string _exceptionMessage;
-
         private byte[] _payloadReceived;
-
         private string _dataLoading;
+        private string _currentTopic;
+        
+        private CancellationTokenSource _cancellationTokenSource;
         public readonly struct InboundMessage
         {
             public readonly string Topic;
@@ -46,13 +49,11 @@ namespace _scripts.models.communicationProtocols
         {
             private readonly ConcurrentQueue<T> _queue = new ConcurrentQueue<T>();
             private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
-
             public void Enqueue(T item)
             {
                 _queue.Enqueue(item);
                 _signal.Release();
             }
-
             public async IAsyncEnumerable<T> ReadAllAsync([System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
             {
                 while (!ct.IsCancellationRequested)
@@ -63,16 +64,12 @@ namespace _scripts.models.communicationProtocols
                 }
             }
         }
-
         private readonly AsyncQueue<InboundMessage> _inbox = new AsyncQueue<InboundMessage>();
         private readonly ConcurrentDictionary<string, InboundMessage> _lastByTopic = new ConcurrentDictionary<string, InboundMessage>();
-
         public IAsyncEnumerable<InboundMessage> ReadAllAsync(CancellationToken ct = default)
             => _inbox.ReadAllAsync(ct);
-
         public bool TryGetLast(string topic, out InboundMessage last)
             => _lastByTopic.TryGetValue(topic, out last);
-
         internal bool IsConnected { get => _isConnected; set => _isConnected = value;}
         internal string Host { get => _host; set => _host = value; }
         internal int Port { get => _port; set => _port = value; }
@@ -82,10 +79,10 @@ namespace _scripts.models.communicationProtocols
         internal bool CleanSession { get => _cleanSession; set => _cleanSession = value; }
         internal bool UseTls { get => _useTls; set => _useTls = value; }
         internal string DataLoading {get => _dataLoading; set => _dataLoading = value; }
+        internal string CurrentTopic { get => _currentTopic; set => _currentTopic = value; }
         internal CancellationToken CancellationToken { get => _cancellationToken; set => _cancellationToken = value; }
         internal string ExceptionMessage { get => _exceptionMessage; set => _exceptionMessage = value; }
         internal byte[] PayloadReceived => _payloadReceived;
-
         public MqttManager(
             string host = "localhost",
             int port = 1883,
@@ -111,7 +108,6 @@ namespace _scripts.models.communicationProtocols
             _mqttClient = factory.CreateMqttClient();
             _pfxPath = pfxPath;
             _pfxPassword = pfxPassword;
-
             _mqttClient.ConnectedAsync += arg =>
             {
                 _isConnected = true;
@@ -122,7 +118,6 @@ namespace _scripts.models.communicationProtocols
                 _isConnected = false;
                 return Task.CompletedTask;
             };
-
             _mqttClient.ApplicationMessageReceivedAsync += e =>
             {
                 try
@@ -147,7 +142,6 @@ namespace _scripts.models.communicationProtocols
                 return Task.CompletedTask;
             };
         }
-
         #region Connection
         internal async Task Connect()
         {
@@ -156,22 +150,18 @@ namespace _scripts.models.communicationProtocols
                 .WithTcpServer(_host, _port)
                 .WithCleanSession(_cleanSession)
                 .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
-
             if (_useTls)
             {
                 if (string.IsNullOrWhiteSpace(_pfxPath))
                     throw new InvalidOperationException("TLS was enabled but no pfxPath was specified.");
-
                 var clientCert = new X509Certificate2(
                     _pfxPath,
                     string.IsNullOrEmpty(_pfxPassword) ? null : _pfxPassword,
                     X509KeyStorageFlags.UserKeySet |
                     X509KeyStorageFlags.PersistKeySet |
                     X509KeyStorageFlags.Exportable);
-
                 if (!clientCert.HasPrivateKey)
                     throw new InvalidOperationException("The .pfx does not contain a private key.");
-
                 builder.WithTlsOptions(tls =>
                 {
                     tls.UseTls();
@@ -186,14 +176,16 @@ namespace _scripts.models.communicationProtocols
                     });
                 });
             }
-
             var options = builder.Build();
-
             if (!_mqttClient.IsConnected)
+            {
                 await _mqttClient.ConnectAsync(options, _cancellationToken).ConfigureAwait(false);
+                _ = Publish($"Connection status",new { message= "Connection established"},1);
+                _ = ListenForMessages();
+                _ = Publish($"Listen status",new { message= "listening"},1);
+            }
         }
-
-        internal async Task Disconnect()
+        private async Task Disconnect()
         {
             if (_mqttClient == null || !_mqttClient.IsConnected) return;
 
@@ -209,13 +201,11 @@ namespace _scripts.models.communicationProtocols
             }
         }
         #endregion
-
         #region Message
         internal async Task Publish(string topic, string payload, int qos = 1, bool retained = false)
         {
             if (_mqttClient == null || !_mqttClient.IsConnected)
                 throw new InvalidOperationException("Unable to publish, client is not connected.");
-
             try
             {
                 var message = new MqttApplicationMessageBuilder()
@@ -232,7 +222,6 @@ namespace _scripts.models.communicationProtocols
                 _exceptionMessage = $"Error publishing in {topic}: {ex.Message}";
             }
         }
-
         internal async Task Publish(string topic, object payload, int qos = 1, bool retained = false)
         {
             if (payload == null)
@@ -245,14 +234,11 @@ namespace _scripts.models.communicationProtocols
             await Publish(topic, jsonPayload, qos, retained).ConfigureAwait(false);
         }
         #endregion
-
         #region Subscription
-        
         internal async Task Subscribe(string topic, int qos = 1)
         {
             if (_mqttClient == null || !_mqttClient.IsConnected)
                 throw new InvalidOperationException("Unable to subscribe, client is not connected.");
-
             try
             {
                 await _mqttClient.SubscribeAsync(new MqttTopicFilterBuilder()
@@ -265,15 +251,15 @@ namespace _scripts.models.communicationProtocols
                 _exceptionMessage = $"Error subscribing to {topic}: {ex.Message}";
             }
         }
-
-        internal async Task ListenForMessages(CancellationToken ct)
+        internal async Task ListenForMessages()
         {
             try
             {
-                await foreach (var msg in ReadAllAsync(ct))
-                {
-                    _dataLoading = Encoding.UTF8.GetString(msg.Payload.ToArray()); 
-                    // =$"Topic: {msg.Topic} | Payload: {_dataLoading}";
+                _cancellationTokenSource = new CancellationTokenSource();
+                await foreach (var msg in ReadAllAsync(_cancellationTokenSource.Token))
+                { 
+                    _currentTopic = msg.Topic; 
+                    _dataLoading = Encoding.UTF8.GetString(msg.Payload.ToArray());
                 }
             }
             catch (OperationCanceledException)
@@ -285,7 +271,6 @@ namespace _scripts.models.communicationProtocols
                 _exceptionMessage=$"Error: {ex.Message}";
             }
         }
-
         internal async Task Unsubscribe(string topic)
         {
             if (_mqttClient is not { IsConnected: true })
@@ -303,12 +288,10 @@ namespace _scripts.models.communicationProtocols
                 _exceptionMessage = $"Error unsubscribing from {topic}: {ex.Message}";
             }
         }
-
         internal async Task Unsubscribe(params string[] topics)
         {
             if (_mqttClient == null || !_mqttClient.IsConnected)
                 throw new InvalidOperationException("Unable to unsubscribe, client is not logged in.");
-
             try
             {
                 var builder = new MqttClientUnsubscribeOptionsBuilder();
@@ -325,9 +308,19 @@ namespace _scripts.models.communicationProtocols
             }
         }
         #endregion
-
         #region extra
+        internal void DisableMqtt()
+        {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
+            _ = Publish($"Connection status",new { message= "End connection"},1);
+            _ = Disconnect();
+        }
+
         // TODO: funciones extra
         #endregion
     }
 }
+
+// Debug.Log(_dataLoading);
+// $"Topic: {msg.Topic} | Payload: {_dataLoading}";

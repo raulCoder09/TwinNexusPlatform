@@ -10,6 +10,10 @@ namespace _scripts.controllers
         private VisualElement _root;
         
         private Label 
+            _emergencyStopLabel,
+            _safeguardLabel,
+            _motorsLabel,
+            _powerLabel,
             _xLabel,
             _yLabel,
             _zLabel,
@@ -255,6 +259,25 @@ namespace _scripts.controllers
             set => _j4Label = value;
         }
 
+        internal Label EmergencyStopLabel{
+            get =>_emergencyStopLabel;
+            set=> _emergencyStopLabel=value;
+        }
+        internal Label SafeguardLabel{
+            get => _safeguardLabel;
+            set=>_safeguardLabel =value;
+        }
+
+        internal Label MotorsLabel{
+            get => _motorsLabel;
+            set=>_motorsLabel =value;
+        }
+        internal Label PowerLabel{
+            get => _powerLabel;
+            set=> _powerLabel=value;
+        }
+        
+
         private void Start()
         {
             if (_shortMove != null) _shortMove.value = true;
@@ -315,6 +338,11 @@ namespace _scripts.controllers
             _j2Label= _root.Q<Label>("j2Label");
             _j3Label= _root.Q<Label>("j3Label");
             _j4Label= _root.Q<Label>("j4Label");
+            
+            _emergencyStopLabel= _root.Q<Label>("EmergencyStopLabel");
+            _safeguardLabel= _root.Q<Label>("SafeguardLabel");
+            _motorsLabel= _root.Q<Label>("MotorsLabel");
+            _powerLabel= _root.Q<Label>("PowerLabel");
         }
     }
 }
