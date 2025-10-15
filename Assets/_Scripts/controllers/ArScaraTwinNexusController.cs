@@ -932,7 +932,7 @@ namespace _scripts.controllers
         private async Task Connect()
         {
             _mqttIoTCore = new MqttManager(
-                host: "aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com",
+                endpoint: "aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com",
                 port: 8883,
                 clientId: "TNPSGA52",
                 cleanSession: true,

@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Client;
-using UnityEngine;
 
 namespace _scripts.models.communicationProtocols
 {
@@ -17,7 +16,7 @@ namespace _scripts.models.communicationProtocols
     {
         private readonly IMqttClient _mqttClient;
         private bool _isConnected;
-        private string _host;
+        private string _endpoint;
         private int _port;
         private string _clientId;
         private string _username;
@@ -31,7 +30,6 @@ namespace _scripts.models.communicationProtocols
         private byte[] _payloadReceived;
         private string _dataLoading;
         private string _currentTopic;
-        
         private CancellationTokenSource _cancellationTokenSource;
         public readonly struct InboundMessage
         {
@@ -71,7 +69,7 @@ namespace _scripts.models.communicationProtocols
         public bool TryGetLast(string topic, out InboundMessage last)
             => _lastByTopic.TryGetValue(topic, out last);
         internal bool IsConnected { get => _isConnected; set => _isConnected = value;}
-        internal string Host { get => _host; set => _host = value; }
+        internal string Endpoint { get => _endpoint; set => _endpoint = value; }
         internal int Port { get => _port; set => _port = value; }
         internal string ClientId { get => _clientId; set => _clientId = value; }
         internal string Username { get => _username; set => _username = value; }
@@ -84,7 +82,7 @@ namespace _scripts.models.communicationProtocols
         internal string ExceptionMessage { get => _exceptionMessage; set => _exceptionMessage = value; }
         internal byte[] PayloadReceived => _payloadReceived;
         public MqttManager(
-            string host = "localhost",
+            string endpoint = "localhost",
             int port = 1883,
             string clientId = null,
             string username = null,
@@ -97,7 +95,7 @@ namespace _scripts.models.communicationProtocols
         )
         {
             var factory = new MqttFactory();
-            _host = host;
+            _endpoint = endpoint;
             _port = port;
             _clientId = clientId;
             _username = username;
@@ -142,12 +140,13 @@ namespace _scripts.models.communicationProtocols
                 return Task.CompletedTask;
             };
         }
+        
         #region Connection
         internal async Task Connect()
         {
             var builder = new MqttClientOptionsBuilder()
                 .WithClientId(_clientId)
-                .WithTcpServer(_host, _port)
+                .WithTcpServer(_endpoint, _port)
                 .WithCleanSession(_cleanSession)
                 .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
             if (_useTls)
@@ -321,6 +320,3 @@ namespace _scripts.models.communicationProtocols
         #endregion
     }
 }
-
-// Debug.Log(_dataLoading);
-// $"Topic: {msg.Topic} | Payload: {_dataLoading}";
