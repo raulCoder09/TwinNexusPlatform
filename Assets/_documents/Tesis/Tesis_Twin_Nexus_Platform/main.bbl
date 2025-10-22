@@ -1,0 +1,80 @@
+\begin{thebibliography}{10}
+
+\bibitem{garcia_industria_adoption_2023}
+L.~Garcia and M.~Lopez, ``Advances and challenges to adoption of industry 4.0
+  in the manufacturing sector: Case of mexico,'' {\em ResearchGate}, August
+  2023.
+
+\bibitem{martinez_industria_mexico_2023}
+A.~Martinez and J.~Ramirez, ``Opportunities and challenges for the adoption of
+  industry 4.0 in mexico,'' {\em ResearchGate}, May 2023.
+\newblock Publisher: UNAM / PLAZA Y VALDES.
+
+\bibitem{rodriguez_scrum_pcs_2023}
+J.~Rodriguez and A.~Smith, ``An empirical evaluation of scrum training's
+  suitability for the model-driven development of knowledge-intensive
+  process-centric systems,'' {\em Data \& Knowledge Engineering}, vol.~148,
+  2023.
+\newblock Case study on Scrum in industrial software.
+
+\bibitem{zamora_medara_2022}
+M.~A. Zamora-Antuñano {\em et~al.}, ``Methodology for the development of
+  augmented reality applications: Medara. drone flight case study,'' {\em
+  Sensors}, vol.~22, no.~15, p.~5664, 2022.
+\newblock Application of MEDARA in AR educational systems.
+
+\bibitem{mathworks_scara_2024}
+MathWorks, ``Dynamical modeling of scara robot and hexabot robot,'' {\em
+  MathWorks File Exchange}, February 2024.
+\newblock Insights into kinematic behaviors and control for SCARA robots.
+
+\bibitem{aws_iot_industrial_2024}
+A.~Team, ``Building smart industrial machines with aws: A comprehensive
+  guide,'' {\em AWS IoT Blog}, October 2024.
+\newblock Best practices for IoT, MQTT in industrial automation.
+
+\bibitem{mathworks_kinematics_scara_2023}
+MathWorks, ``Forward and inverse kinematics of scara robot,'' {\em MathWorks
+  File Exchange}, December 2023.
+\newblock Simulation using Simscape and Robotic System Toolbox.
+
+\bibitem{ieee_scm_std}
+IEEE, ``Ieee standard for configuration management in systems and software
+  engineering,'' {\em IEEE Std 828-2012}, 2012.
+\newblock Best practices for SCM in agile contexts.
+
+\bibitem{aws_connected_factory_2020}
+A.~Team, ``Connected factory solution based on aws iot for industry 4.0
+  success,'' {\em AWS IoT Blog}, July 2020.
+\newblock Case study on IoT for industrial optimization (updated relevance in
+  2023+ contexts).
+
+\bibitem{morales_github_repo}
+A.~R.~M. Hernández, ``Twinnexusplatform.'' GitHub repository, 2025.
+\newblock Accedido el 15 de Mayo de 2025. Descripción: Plataforma para
+  manipulación, monitoreo y simulación de dispositivos industriales con
+  integración IoT, AR y cloud.
+
+\bibitem{morales_ui_design}
+A.~R.~M. Hernández, ``Documento de diseño de interfaces de usuario:
+  Plataforma twin nexus,'' tech. rep., Universidad de Guadalajara, Centro
+  Universitario de los Valles, Ameca, Jalisco, México, Abril 2025.
+\newblock Versión 0.1.
+
+\bibitem{morales_azure_repo}
+A.~R.~M. Hernández, ``Twinnexusplatform.'' Azure DevOps repository, 2025.
+\newblock Accedido el 15 de Mayo de 2025. Soporta SCM con Git Flow para
+  desarrollo agile.
+
+\bibitem{morales_srs}
+A.~R.~M. Hernández, ``Especificación de requisitos de software (srs) para la
+  plataforma twin nexus,'' tech. rep., Universidad de Guadalajara, Centro
+  Universitario de los Valles, Ameca, Jalisco, México, Mayo 2025.
+\newblock Versión 1.0.
+
+\bibitem{ieee_srs_std}
+IEEE, ``Ieee recommended practice for software requirements specifications,''
+  {\em IEEE Std 830-1998}, 1998.
+\newblock Standards for SRS, relevant to your project.
+
+\end{thebibliography}

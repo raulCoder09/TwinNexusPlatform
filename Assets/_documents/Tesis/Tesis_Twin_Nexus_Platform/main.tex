@@ -1,0 +1,322 @@
+\documentclass[12pt,letterpaper]{report}
+
+% =========================
+% Idioma y codificación
+% =========================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish, es-nodecimaldot]{babel}
+
+% =========================
+% Página y tipografía
+% =========================
+\usepackage{geometry}
+\geometry{letterpaper, margin=1in}
+
+\usepackage{setspace}
+\onehalfspacing
+
+% --- Parche para evitar redefinir \Bbbk (newtxmath vs amssymb) ---
+\let\Bbbk\relax
+
+% Fuentes modernas estilo Times (texto + matemáticas)
+\usepackage{newtxtext,newtxmath}
+\usepackage[scaled=0.92]{helvet}  % Sans serif (opcional)
+\usepackage{courier}               % Monoespaciada (opcional)
+
+% =========================
+% Utilidades generales
+% =========================
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}   % ¡OJO! no usar [H] con longtable
+\usepackage{float}       % Para H con figuras/tablas normales
+\usepackage{placeins}
+\usepackage{afterpage}
+\usepackage{tocloft}
+\usepackage{microtype}   % reduce overfull boxes
+
+% Índice: puntos en capítulos
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+
+% =========================
+% Bibliografía: biblatex + biber (soporta UTF-8)
+% =========================
+\usepackage{csquotes}
+\usepackage[
+backend=biber,
+style=ieee,
+sorting=none,
+maxbibnames=6
+]{biblatex}
+\addbibresource{referencias.bib}
+
+% =========================
+% Enlaces SIEMPRE al final
+% =========================
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,
+	urlcolor=cyan,
+}
+
+\begin{document}
+	
+	% =========================
+	% Portada
+	% =========================
+	\begin{titlepage}
+		\centering
+		\vspace*{0.25cm}
+		{\bfseries \LARGE Universidad de Guadalajara\par}
+		{\bfseries \Large Centro Universitario de los Valles\par}
+		\vspace{0.25cm}
+		{\large Maestría en Ingeniería de Software\par}
+		\vspace{0.25cm}
+		\includegraphics[width=0.2\linewidth]{logo_udg.jpg}\par
+		\vspace{0.25cm}
+		{\bfseries \Large \textsc{Twin Nexus Platform:}\par}
+		{\Large Plataforma auxiliar para la manipulación, monitoreo y simulación de dispositivos y sistemas de automatización industrial, integrando tecnologías de la Industria 4.0.\par}
+		\vspace{0.25cm}
+		{\bfseries \large Protocolo de investigación\par}
+		\vspace{0.25cm}
+		{\bfseries Presenta:\par}
+		\vspace{0.2cm}
+		{Ing. Adán Raúl Morales Hernández\par}
+		\vspace{0.25cm}
+		{\bfseries Director:\par}
+		\vspace{0.2cm}
+		{Dr. Yehoshua Aguilar Molina\par}
+		\vspace{0.25cm}
+		{\bfseries Codirectores:\par}
+		\vspace{0.2cm}
+		{Dr. Luis Fernando Luque Vega\par}
+		{Dr. Eduardo Espadas Aldana\par}
+		\vspace{0.2cm}
+		{\bfseries Lectores:\par}
+		\vspace{0.2cm}
+		{Dra. Miriam Alejandra Carlos Mancilla\par}
+		{Dr. Rodolfo Omar Domínguez García\par}
+		\vfill
+		{\large Ameca, Jalisco\par}
+		{\large \today\par}
+	\end{titlepage}
+	
+	% =========================
+	% Índices (con anclas limpias)
+	% =========================
+	\cleardoublepage
+	\phantomsection
+	\addcontentsline{toc}{chapter}{Resumen}
+	% \chapter*{Resumen}
+	% (Contenido del resumen si lo activas)
+	
+	\cleardoublepage
+	\tableofcontents
+	
+	\cleardoublepage
+	\phantomsection
+	\listoffigures
+	\addcontentsline{toc}{chapter}{Índice de figuras}
+	
+	\cleardoublepage
+	\phantomsection
+	\listoftables
+	\addcontentsline{toc}{chapter}{Índice de cuadros}
+	
+	% ============================================================
+	% ======== CONTENIDO: pega aquí tu contenido original ========
+	% ============================================================
+	
+	% Introducción
+	\chapter{Introducción}
+	\section{Contexto}
+	La Industria 4.0 representa una transformación en los procesos de producción mediante la integración de tecnologías avanzadas como la Realidad Aumentada (RA), el Internet de las Cosas (IoT), la computación en la nube y gemelos digitales, que permiten mayor eficiencia, flexibilidad y personalización \cite{garcia_industria_adoption_2023}. En México, la adopción de estas tecnologías ha mostrado un crecimiento sostenido en múltiples sectores, impulsado por la necesidad de mejorar la competitividad global \cite{martinez_industria_mexico_2023}. Sin embargo, el país enfrenta desafíos significativos, incluyendo la falta de infraestructura tecnológica adecuada, los altos costos asociados a la implementación de soluciones digitales y la escasez de talento técnico especializado, lo que limita el ritmo de la transición hacia la digitalización.
+	En este contexto, la plataforma Twin Nexus se propone como una solución de código abierto diseñada para auxiliar la manipulación, monitoreo y simulación de sistemas de automatización industrial, integrando tecnologías clave de la Industria 4.0. Desarrollada bajo la metodología ágil Scrum \cite{rodriguez_scrum_pcs_2023}, la plataforma se enfoca inicialmente en el robot AR-SCARA del Instituto Tecnológico y de Estudios Superiores de Occidente (ITESO). Twin Nexus proporciona funcionalidades esenciales, como la implementación de gemelos digitales en tiempo real y offline, monitoreo de dispositivos IoT mediante el protocolo MQTT, generación de reportes y un módulo de capacitación basado en la metodología MEDARA, que estructura el aprendizaje en niveles concreto, gráfico y abstracto \cite{zamora_medara_2022}. La plataforma utiliza herramientas como Unity para simulaciones virtuales, RA y como medio de interacción con el dispositivo real, así como la implementación de gemelos digitales, MATLAB para control del robot por sus beneficios de procesamiento matemático y flexibilidad \cite{mathworks_scara_2024}, una base de datos relacional para almacenamiento de datos, y servicios de Amazon Web Services (AWS) como IoT Core, Cognito, S3, SES, CloudWatch, Lambda y EC2, promoviendo escalabilidad, seguridad y trazabilidad \cite{aws_iot_industrial_2024}.
+	Este proyecto busca contribuir a la adopción de tecnologías de la Industria 4.0 en México, abordando los desafíos de infraestructura y talento mediante una solución modular, escalable y accesible.
+	
+	\section{Planteamiento del Problema}
+	La adopción de tecnologías de la Industria 4.0, como la Realidad Aumentada (RA), el Internet de las Cosas (IoT), la computación en la nube y la simulación de gemelos digitales, enfrenta obstáculos significativos en México que limitan su implementación efectiva en la automatización industrial \cite{garcia_industria_adoption_2023}. Entre estos desafíos se encuentran la falta de infraestructura tecnológica adecuada, que restringe la conectividad y el acceso a soluciones avanzadas en entornos industriales y educativos. Asimismo, la escasez de talento técnico especializado dificulta el desarrollo, operación y mantenimiento de sistemas complejos, lo que incrementa la dependencia de soluciones externas y eleva los costos operativos. Además, la ausencia de plataformas accesibles y modulares que integren estas tecnologías de manera práctica limita la capacidad de las empresas y centros educativos para implementar sistemas de automatización que combinen monitoreo en tiempo real, control de dispositivos y capacitación efectiva.
+	Estos problemas se manifiestan en la dificultad para implementar sistemas de automatización que combinen simulación segura y control de hardware físico en contextos industriales. Por ejemplo, la operación de robots industriales, como el AR-SCARA del Instituto Tecnológico y de Estudios Superiores de Occidente (ITESO), requiere herramientas que permitan tanto la simulación en entornos virtuales como la interacción con dispositivos reales, integrando tecnologías como IoT y RA de manera eficiente \cite{mathworks_kinematics_scara_2023}. Sin embargo, las soluciones existentes suelen ser propietarias, poco adaptables a contextos locales o requieren recursos técnicos avanzados, lo que restringe su adopción en México \cite{martinez_industria_mexico_2023}. En este sentido, surge la necesidad de desarrollar una plataforma de código abierto que facilite la manipulación, monitoreo y simulación de sistemas industriales, integrando un módulo de capacitación basado en metodologías como MEDARA, que estructura el aprendizaje en niveles concreto, gráfico y abstracto \cite{zamora_medara_2022}.
+	La plataforma Twin Nexus busca abordar estos desafíos mediante una solución modular que combine implementación de gemelos digitales, comunicación IoT a través del protocolo MQTT, y herramientas de monitoreo y capacitación, utilizando tecnologías como Unity, MATLAB, bases de datos relacionales y servicios de Amazon Web Services (AWS), incluyendo IoT Core, Cognito, S3, SES, CloudWatch, Lambda y EC2. A través de un proceso de Gestión de Configuración de Software (SCM) \cite{ieee_scm_std}, el proyecto promueve la trazabilidad y calidad de las modificaciones, contribuyendo a la adopción de tecnologías de la Industria 4.0 en contextos industriales y educativos mexicanos.
+	
+	\section{Objetivos Generales y Específicos}
+	\subsection{Objetivo General}
+	Desarrollar una plataforma de código abierto que facilite la manipulación, monitoreo y simulación de sistemas de automatización industrial, integrando tecnologías de la Industria 4.0 como Realidad Aumentada (RA), Internet de las Cosas (IoT), computación en la nube y simulación de gemelos digitales, con un enfoque en el robot AR-SCARA del Instituto Tecnológico y de Estudios Superiores de Occidente (ITESO), para contribuir a la adopción de estas tecnologías en contextos industriales y educativos mexicanos.
+	\subsection{Objetivos Específicos}
+	\begin{enumerate}
+		\item Diseñar e implementar una arquitectura modular que integre gemelos digitales en tiempo real y offline, utilizando Unity y MATLAB \cite{mathworks_scara_2024}, para permitir la operación segura y eficiente del robot AR-SCARA en entornos virtuales y reales.
+		\item Establecer un sistema de monitoreo y control de dispositivos IoT mediante el protocolo MQTT, soportado por servicios de Amazon Web Services (AWS) como IoT Core, Cognito, S3, SES, CloudWatch, Lambda y EC2 \cite{aws_iot_industrial_2024}, para garantizar comunicación bidireccional y trazabilidad de datos.
+		\item Desarrollar un módulo de capacitación basado en la metodología MEDARA \cite{zamora_medara_2022}, estructurado en niveles concreto, gráfico y abstracto, para facilitar el aprendizaje de usuarios en el uso de sistemas de automatización industrial.
+		\item Implementar interfaces de usuario intuitivas que soporten la manipulación, monitoreo y capacitación, integrando herramientas de reportes y soporte, con almacenamiento en bases de datos relacionales y servicios en la nube.
+		\item Validar la funcionalidad de la plataforma mediante pruebas en entornos simulados y reales, utilizando el robot AR-SCARA como caso de estudio, para verificar el desempeño de las simulaciones, el monitoreo y el control.
+	\end{enumerate}
+	
+	\section{Alcances y limitaciones}
+	\subsection{Alcances}
+	La investigación se centra en el desarrollo y evaluación de la plataforma Twin Nexus para facilitar la manipulación, monitoreo y simulación del robot AR-SCARA en un entorno educativo, con potencial escalabilidad a otros sistemas industriales. La plataforma prioriza el control en el ambiente real mediante un gemelo digital y simulaciones en realidad aumentada (RA), soportados por algoritmos de cinemática directa e inversa, implementados en Unity y MATLAB \cite{mathworks_kinematics_scara_2023}. Incluye interfaces de usuario intuitivas, destacando la interfaz Operations para el control del robot, con comunicación bidireccional a través del protocolo MQTT y servicios de Amazon Web Services (AWS), como IoT Core, Cognito, S3, SES, CloudWatch, Lambda y EC2 \cite{aws_connected_factory_2020}. La plataforma soporta almacenamiento en MariaDB en Amazon RDS y acceso remoto con permisos de superusuario, dirigido a estudiantes y docentes del ITESO, CUValles y Tecnológico de Software. La evaluación se realiza mediante pruebas específicas en el laboratorio de mecatrónica del ITESO, analizando métricas de desempeño y usabilidad.
+	\subsection{Limitaciones}
+	La plataforma Twin Nexus se limita al caso de estudio del robot AR-SCARA, soportando únicamente movimientos en 3D mediante algoritmos de cinemática directa e inversa, excluyendo funcionalidades avanzadas como visión por computadora. Las interfaces de reportes y soporte se restringen a funcionalidades básicas a modo de demostración, sin incluir capacidades avanzadas de análisis o soporte técnico completo. Las pruebas en los ambientes híbrido y real se limitan al laboratorio de mecatrónica del Instituto Tecnológico y de Estudios Superiores de Occidente (ITESO), excluyendo entornos industriales externos, y el acceso remoto se restringe a usuarios con permisos de superusuario. Todas las interfaces y funcionalidades, incluyendo autenticación mediante AWS Cognito, monitoreo en tiempo real con AWS IoT Core, y generación de reportes con CloudWatch y S3, dependen de una conexión a internet estable. El control del robot mediante MATLAB se restringe a un controlador local.
+	
+	\section{Justificación}
+	El desarrollo de la plataforma Twin Nexus es relevante debido a la necesidad de superar los desafíos en la adopción de tecnologías de la Industria 4.0 en México, como la falta de infraestructura tecnológica adecuada, la escasez de talento técnico especializado y la ausencia de soluciones accesibles para la automatización industrial \cite{martinez_industria_mexico_2023}. La implementación de una plataforma de código abierto que facilite la manipulación, monitoreo y simulación de sistemas industriales, con un enfoque inicial en el robot AR-SCARA del Instituto Tecnológico y de Estudios Superiores de Occidente (ITESO), ofrece una solución práctica para entornos industriales y educativos mexicanos.
+	La justificación de este proyecto radica en su capacidad para integrar tecnologías clave, como Realidad Aumentada (RA), Internet de las Cosas (IoT), computación en la nube y simulación de gemelos digitales, utilizando herramientas como Unity, MATLAB, bases de datos relacionales y servicios de Amazon Web Services (AWS), incluyendo IoT Core, Cognito, S3, SES, CloudWatch, Lambda y EC2 \cite{aws_iot_industrial_2024}. Esta integración permite abordar la limitación de soluciones propietarias, que suelen ser costosas y poco adaptables, al proporcionar una plataforma modular y escalable que reduce la dependencia de recursos técnicos avanzados. Además, el uso del protocolo MQTT para comunicación bidireccional y la generación de reportes de rendimiento fomenta la trazabilidad y el monitoreo efectivo de dispositivos industriales.
+	El proyecto también se justifica por su enfoque educativo, al incorporar un módulo de capacitación basado en la metodología MEDARA \cite{zamora_medara_2022}, que estructura el aprendizaje en niveles concreto, gráfico y abstracto. Esto facilita la formación de operadores en el uso de sistemas de automatización, abordando la escasez de talento técnico y promoviendo la adopción de tecnologías avanzadas en México. A través de interfaces de usuario intuitivas y un proceso de Gestión de Configuración de Software (SCM) \cite{ieee_scm_std}, la plataforma promueve la calidad y adaptabilidad del sistema, contribuyendo a la competitividad de los sectores industriales y educativos mexicanos.
+	
+	\section{Estructura del Documento}
+	Este documento está organizado en los siguientes capítulos para presentar de manera sistemática el desarrollo y evaluación de la plataforma Twin Nexus, diseñada para facilitar la manipulación, monitoreo y simulación de sistemas de automatización industrial:
+	\begin{itemize}
+		\item \textbf{Capítulo 1: Introducción.} Presenta el contexto de la Industria 4.0 en México, el planteamiento del problema, los objetivos generales y específicos, la justificación del proyecto y la estructura del documento, estableciendo la base para el desarrollo de la plataforma.
+		\item \textbf{Capítulo 2: Marco Teórico y Estado del Arte.} Describe los fundamentos teóricos y técnicos relacionados con la Industria 4.0, incluyendo Realidad Aumentada, Internet de las Cosas, computación en la nube y simulación de gemelos digitales, además de revisar investigaciones previas y brechas que la plataforma busca abordar.
+		\item \textbf{Capítulo 3: Metodología.} Detalla el tipo de investigación, el enfoque, las técnicas y herramientas utilizadas, el diseño de la investigación y los procedimientos aplicados para desarrollar y evaluar la plataforma.
+		\item \textbf{Capítulo 4: Desarrollo o Implementación.} Explica el trabajo práctico realizado, incluyendo la arquitectura modular de la plataforma, las tecnologías empleadas (Unity, MATLAB, bases de datos relacionales, servicios AWS) y el proceso de desarrollo basado en la metodología Scrum.
+		\item \textbf{Capítulo 5: Resultados.} Presenta los datos obtenidos de las pruebas en entornos simulados y reales, con un enfoque en el robot AR-SCARA, comparándolos con los objetivos establecidos y utilizando visualizaciones técnicas.
+		\item \textbf{Capítulo 6: Discusión.} Analiza los resultados en el contexto del marco teórico, destacando las implicaciones prácticas y teóricas, así como las limitaciones del proyecto.
+		\item \textbf{Capítulo 7: Conclusiones y Recomendaciones.} Resume los hallazgos principales, las contribuciones del proyecto a los contextos industriales y educativos mexicanos, y propone recomendaciones para futuros desarrollos.
+	\end{itemize}
+	
+	% Marco Teórico y Estado del Arte
+	\chapter{Marco Teórico y Estado del Arte}
+	\section{Conceptos Clave}
+	\begin{itemize}
+		\item \textbf{Industria 4.0:} ... \cite{garcia_industria_adoption_2023}.
+		\item \textbf{Automatización industrial:} ...
+		\item \textbf{Realidad Aumentada (RA):} ...
+		\item \textbf{Internet de las Cosas (IoT):} ... \cite{aws_iot_industrial_2024}.
+		\item \textbf{Gemelos digitales:} ... \cite{mathworks_scara_2024}.
+		\item \textbf{Simulación de gemelos digitales:} ... \cite{mathworks_kinematics_scara_2023}.
+		\item \textbf{Protocolo MQTT:} ... \cite{aws_connected_factory_2020}.
+		\item \textbf{Computación en la nube:} ... \cite{aws_iot_industrial_2024}.
+		\item \textbf{Amazon Web Services (AWS):} ... \cite{aws_connected_factory_2020}.
+		\item \textbf{Robot AR-SCARA:} ... \cite{mathworks_scara_2024}.
+		\item \textbf{Código abierto:} ... \cite{morales_github_repo}.
+		\item \textbf{Interfaz de usuario intuitiva:} ... \cite{morales_ui_design}.
+		\item \textbf{Trazabilidad de datos:} ... \cite{ieee_scm_std}.
+		\item \textbf{Metodología MEDARA:} ... \cite{zamora_medara_2022}.
+		\item \textbf{Metodología ágil Scrum:} ... \cite{rodriguez_scrum_pcs_2023}.
+		\item \textbf{Gestión de Configuración de Software (SCM):} ... \cite{ieee_scm_std}.
+		\item \textbf{Arquitectura modular:} ...
+		\item \textbf{Comunicación bidireccional:} ... \cite{aws_iot_industrial_2024}.
+		\item \textbf{Capacitación técnica:} ... \cite{zamora_medara_2022}.
+		\item \textbf{Monitoreo en tiempo real:} ... \cite{aws_connected_factory_2020}.
+		\item \textbf{Base de datos relacional:} ...
+	\end{itemize}
+	
+	\section{Estado del Arte}
+	% (tu texto completo de estado del arte)
+	
+	\subsection{Comparación de Soluciones}
+	\begin{table}[H]
+		\centering
+		\caption{Comparación de soluciones industriales y académicas}
+		\label{tab:comparacion_plataformas_industrial}
+		\scriptsize
+		\begin{tabular}{|>{\centering\arraybackslash}p{2.2cm}|>{\centering\arraybackslash}p{2.4cm}|>{\centering\arraybackslash}p{2.4cm}|>{\centering\arraybackslash}p{2.0cm}|>{\centering\arraybackslash}p{2.0cm}|>{\centering\arraybackslash}p{1.8cm}|>{\centering\arraybackslash}p{2.0cm}|}
+			\hline
+			\textbf{Característica} & \textbf{Tecnomatix} & \textbf{MATLAB/Simulink} & \textbf{RoboDK} & \textbf{LabVIEW} & \textbf{ROS} & \textbf{Gazebo} \\
+			\hline
+			\textbf{Propósito} & Validación industrial & Modelado, análisis & Simulación robótica & Laboratorio virtual & Robótica & Simulación robótica \\
+			\hline
+			\textbf{Licencia} & Comercial & Académica/ comercial & Gratuita (educación) & Comercial & Código abierto & Código abierto \\
+			\hline
+			\textbf{Tecnologías} & CAD/CAM, PLCs & MATLAB, Simulink & Python, MATLAB & LabVIEW & Python, Gazebo & ROS, Python \\
+			\hline
+			\textbf{Funcionalidades} & Simulación robótica, PLCs & Modelado, control & Simulación 3D, control & Simulación, monitoreo & Simulación, control & Simulación 3D, control \\
+			\hline
+			\textbf{AR/IoT} & Limitado & No principal & No RA, IoT limitado & No RA, IoT limitado & No RA, IoT limitado & No RA, IoT limitado \\
+			\hline
+			\textbf{Audiencia} & Empresas & Investigadores & Investigadores, educación & Estudiantes, industria & Investigadores & Investigadores, educación \\
+			\hline
+			\textbf{Portabilidad Móvil} & No & No & Limitada & No & No & No \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	\begin{table}[H]
+		\centering
+		\caption{Comparación de soluciones educativas y de entrenamiento}
+		\label{tab:comparacion_plataformas_educativas}
+		\scriptsize
+		\begin{tabular}{|>{\centering\arraybackslash}p{2.8cm}|>{\centering\arraybackslash}p{2.8cm}|>{\centering\arraybackslash}p{2.8cm}|>{\centering\arraybackslash}p{2.8cm}|>{\centering\arraybackslash}p{2.8cm}|}
+			\hline
+			\textbf{Característica} & \textbf{BMW Virtual Factory} & \textbf{Osso VR} & \textbf{MindMotion} & \textbf{Labster} \\
+			\hline
+			\textbf{Propósito} & Simulación industrial & Entrenamiento quirúrgico & Rehabilitación motora & Educación científica \\
+			\hline
+			\textbf{Licencia} & Comercial & Comercial & Comercial & Comercial \\
+			\hline
+			\textbf{Tecnologías} & IA, CAD, gemelos digitales & VR, hápticos & VR, sensores & 3D, LMS \\
+			\hline
+			\textbf{Funcionalidades} & Simulación 3D, colaboración remota & Simulación VR, métricas & Gamificación, monitoreo & Simulación 3D, análisis \\
+			\hline
+			\textbf{AR/IoT} & No AR, IoT limitado & VR & VR, IoT limitado & No AR/VR, IoT limitado \\
+			\hline
+			\textbf{Audiencia} & Empresas automotrices & Profesionales médicos & Pacientes, terapeutas & Estudiantes \\
+			\hline
+			\textbf{Portabilidad Móvil} & No & Limitada & Sí & Sí \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	\begin{table}[H]
+		\centering
+		\caption{Comparación de herramientas de simulación robótica}
+		\label{tab:comparacion_simulacion_robotica}
+		\scriptsize
+		\begin{tabular}{|>{\centering\arraybackslash}p{4.0cm}|>{\centering\arraybackslash}p{4.0cm}|>{\centering\arraybackslash}p{4.0cm}|>{\centering\arraybackslash}p{4.0cm}|}
+			\hline
+			\textbf{Característica} & \textbf{CoppeliaSim} & \textbf{Webots} & \textbf{RoboDK} \\
+			\hline
+			\textbf{Propósito} & Simulación robótica & Simulación robótica & Simulación robótica \\
+			\hline
+			\textbf{Licencia} & Código abierto & Parcial código abierto & Gratuita (educación) \\
+			\hline
+			\textbf{Tecnologías} & Lua, Python, ROS & Python, C++, ROS & Python, MATLAB \\
+			\hline
+			\textbf{Funcionalidades} & Simulación 3D, control & Simulación 3D, control & Simulación 3D, control \\
+			\hline
+			\textbf{AR/IoT} & No RA, IoT limitado & No RA, IoT limitado & No RA, IoT limitado \\
+			\hline
+			\textbf{Audiencia} & Investigadores, educación & Investigadores, educación & Investigadores, educación \\
+			\hline
+			\textbf{Portabilidad Móvil} & No & Limitada & Limitada \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	\section{Brechas de Investigación}
+	% (tu contenido completo)
+	
+	% Metodología
+	\chapter{Metodología}
+	% (tu contenido completo)
+	
+	% Desarrollo o Implementación
+	\chapter{Desarrollo o Implementación}
+	% (tu contenido completo, incluyendo longtable SIN [H] si usas longtable)
+	
+	% Resultados
+	\chapter{Resultados}
+	% (tu contenido)
+	
+	% Discusión
+	\chapter{Discusión}
+	% (tu contenido)
+	
+	% Conclusiones y Recomendaciones
+	\chapter{Conclusiones y Recomendaciones}
+	% (tu contenido)
+	
+	% =========================
+	% Bibliografía
+	% =========================
+	\cleardoublepage
+	\phantomsection
+	\addcontentsline{toc}{chapter}{Bibliografía}
+	\printbibliography
+	
+\end{document}
