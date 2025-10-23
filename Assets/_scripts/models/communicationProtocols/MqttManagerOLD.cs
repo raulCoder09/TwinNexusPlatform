@@ -12,7 +12,7 @@ using MQTTnet.Client;
 
 namespace _scripts.models.communicationProtocols
 {
-    internal sealed class MqttManager
+    internal sealed class MqttManagerOLD
     {
         private readonly IMqttClient _mqttClient;
         private bool _isConnected;
@@ -85,7 +85,7 @@ namespace _scripts.models.communicationProtocols
         internal CancellationToken CancellationToken { get => _cancellationToken; set => _cancellationToken = value; }
         internal string ExceptionMessage { get => _exceptionMessage; set => _exceptionMessage = value; }
         internal byte[] PayloadReceived => _payloadReceived;
-        public MqttManager(
+        public MqttManagerOLD(
             string endpoint = "localhost",
             int port = 1883,
             string clientId = null,

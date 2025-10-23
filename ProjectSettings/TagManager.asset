@@ -12,6 +12,7 @@ TagManager:
   - realEnvironment
   - VirtualEnvironmentCamera
   - TwinNexusEnvironmentArScara
+  - MqttManager
   layers:
   - Default
   - TransparentFX

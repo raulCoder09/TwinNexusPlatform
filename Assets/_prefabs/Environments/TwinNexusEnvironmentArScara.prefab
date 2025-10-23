@@ -710,6 +710,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b077016dbf785a946990ede80160e08a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArScaraTwinNexusController
+  endpoint: aqloxhiemdroo-ats.iot.us-east-1.amazonaws.com
+  port: 8883
+  clientId: TNPSGA52
+  username: null
+  password: null
+  cleanSession: 1
+  useTls: 1
+  pfxPath: Assets/StreamingAssets/resources/certificates/aws-iot-core.pfx
+  pfxPassword: 5859
 --- !u!114 &2243256023043240629
 MonoBehaviour:
   m_ObjectHideFlags: 0

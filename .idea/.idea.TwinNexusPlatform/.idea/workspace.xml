@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/Models/communicationProtocols/MqttManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/Models/communicationProtocols/MqttManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_Scripts/controllers/ArScaraTwinNexusController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_Scripts/controllers/ArScaraTwinNexusController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/packages.config" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/packages.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scenes/New Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scenes/New Scene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraTwinNexusController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraTwinNexusController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/models/communicationProtocols/MqttManager.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/models/communicationProtocols/MqttManager.cs.meta" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +56,7 @@
     &quot;do_not_show_Android_plugin_suggestion&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/rulocoder09/Documents/dotNetProjects/Communications&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -78,7 +80,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.6f2\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="$USER_HOME$/Unity/Hub/Editor/6000.2.8f1/Editor/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath $PROJECT_DIR$ -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -90,7 +92,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.6f2\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="$USER_HOME$/Unity/Hub/Editor/6000.2.8f1/Editor/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath $PROJECT_DIR$ -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -250,6 +252,7 @@
       <workItem from="1760128059659" duration="19656000" />
       <workItem from="1760399324770" duration="21928000" />
       <workItem from="1760460979991" duration="2727000" />
+      <workItem from="1761153854845" duration="3534000" />
     </task>
     <servers />
   </component>
