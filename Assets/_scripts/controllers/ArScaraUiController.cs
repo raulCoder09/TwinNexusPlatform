@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using _scripts.controllers;
+using _scripts.models.communicationProtocols;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.XR.ARFoundation;
@@ -258,19 +260,32 @@ public class ArScaraUiController : MonoBehaviour
     }
     private IEnumerator SafeDestroyEnvironment(GameObject root)
     {
-        if (!root) yield break;
-#if UNITY_EDITOR
-        var sel = Selection.activeGameObject;
-        if (sel && (sel == root || sel.transform.IsChildOf(root.transform)))
-            Selection.activeObject = null;
-#endif
+                if (!root) yield break;
+        #if UNITY_EDITOR
+                var sel = Selection.activeGameObject;
+                if (sel && (sel == root || sel.transform.IsChildOf(root.transform)))
+                    Selection.activeObject = null;
+        #endif
+
+        if (root.name=="TwinNexusEnvironmentArScara(Clone)")
+        {
+            var twinNexus = root.GetComponent<ArScaraTwinNexusController>();
+            if (twinNexus.mqttProtocol.IsConnected)
+            {
+                twinNexus.mqttProtocol.Topic = "ARSCARA/StatusConnection";
+                twinNexus.mqttProtocol.Payload = new { Status = "Disconnected" };
+                twinNexus.mqttProtocol.SendData();
+                twinNexus.mqttProtocol.Disconnect();
+            }
+            yield return new WaitForSeconds(1f);
+        }
+
         root.SetActive(false);
         yield return null;
         yield return new WaitForEndOfFrame();
-
-       
         if (root) Destroy(root);
     }
+    
 
     private IEnumerator StartXRNextFrame()
     {

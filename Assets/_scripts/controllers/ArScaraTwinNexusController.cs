@@ -20,6 +20,7 @@ namespace _scripts.controllers
         public string Key { get; set; }
         public JsonElement Value { get; set; }
     }
+    
     public class ArScaraTwinNexusController : MonoBehaviour
     {
         private JogAndTeachController _jogAndTeachController;
@@ -27,14 +28,9 @@ namespace _scripts.controllers
         private MqttProtocol _mqttProtocol;
         private Dictionary<string, JsonElement> _data;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private MqttMessageData _lastProcessedMessage;
         private Queue<MqttMessageData> _messageHistory = new Queue<MqttMessageData>(50);
-        
-        private string _date;
-        private string _topic;
-        private string _key;
-        private string _value;
-
+        private readonly Queue<MqttMessageData> _messageQueue = new Queue<MqttMessageData>();
+        private readonly object _queueLock = new object();
         
         [SerializeField] private string endpoint;
         [SerializeField] private int port;
@@ -45,6 +41,13 @@ namespace _scripts.controllers
         [SerializeField] private bool useTls;
         [SerializeField] private string pfxPath;
         [SerializeField] private string pfxPassword;
+
+        internal MqttProtocol mqttProtocol
+        {
+            get => _mqttProtocol;
+            set => _mqttProtocol = value;
+        }
+
         private void Awake()
         {
             try
@@ -57,10 +60,12 @@ namespace _scripts.controllers
                 throw;
             }
         }
+        
         private void OnEnable()
         {
             StartCoroutine(ConnectToAws());
         }
+        
         private void Start()
         {
             WireControlPanel();
@@ -69,39 +74,83 @@ namespace _scripts.controllers
 
         private void Update()
         {
-
-
-            if (_topic=="ARSCARA/RobotManager/ControlPanel")
+            lock (_queueLock)
             {
-                if (_key=="EmergencyStop")
+                while (_messageQueue.Count > 0)
                 {
-                    _controlPanelController.EmergencyStopLabel.text = $"Emergency stop: {_value}";
-                }
-                if (_key=="Safeguard")
-                {
-                    _controlPanelController.SafeguardLabel.text = $"Safeguard: {_value}";
-                }
-                if (_key=="Motors")
-                {
-                    _controlPanelController.MotorsLabel.text = $"Motors: {_value}";
-                }
-                if (_key=="Power")
-                {
-                    _controlPanelController.PowerLabel.text = $"Power: {_value}";
+                    var message = _messageQueue.Dequeue();
+                    ProcessMessage(message);
                 }
             }
-
         }
 
         private void OnDisable()
         {
             StopCoroutine(ConnectToAws());
         }
+        
         private void OnDestroy()
         {
             _mqttProtocol?.Dispose();
             _mqttProtocol?.Disconnect();
         }
+        
+        private void ProcessMessage(MqttMessageData message)
+        {
+            if (message.Topic == "ARSCARA/RobotManager/ControlPanel")
+            {
+                var valueStr = message.Value.ToString();
+                switch (message.Key)
+                {
+                    case "EmergencyStop":
+                        _controlPanelController.EmergencyStopLabel.text = $"Emergency stop: {valueStr}";
+                        break;
+                    case "Safeguard":
+                        _controlPanelController.SafeguardLabel.text = $"Safeguard: {valueStr}";
+                        break;
+                    case "Motors":
+                        _controlPanelController.MotorsLabel.text = $"Motors: {valueStr}";
+                        break;
+                    case "Power":
+                        _controlPanelController.PowerLabel.text = $"Power: {valueStr}";
+                        break;
+                }
+            }
+            
+            if (message.Topic == "ARSCARA/RobotManager/JogAndTeach")
+            {
+                var valueStr = message.Value.ToString();
+                
+                    switch (message.Key)
+                    {
+                        case "X":
+                            _jogAndTeachController.XLabel.text = $"X: {valueStr} mm";
+                            break;
+                        case "Y":
+                            _jogAndTeachController.YLabel.text = $"Y: {valueStr} mm";
+                            break;
+                        case "Z":
+                            _jogAndTeachController.ZLabel.text = $"Z: {valueStr} mm";
+                            break;
+                        case "U":
+                            _jogAndTeachController.ULabel.text = $"U: {valueStr} deg";
+                            break;
+                        case "J1":
+                            _jogAndTeachController.J1Label.text = $"J1: {valueStr} deg";
+                            break;
+                        case "J2":
+                            _jogAndTeachController.J2Label.text = $"J2: {valueStr} deg";
+                            break;
+                        case "J3":
+                            _jogAndTeachController.J3Label.text = $"J3: {valueStr} deg";
+                            break;
+                        case "J4":
+                            _jogAndTeachController.J4Label.text = $"J4: {valueStr} deg";
+                            break;
+                    }
+            }
+        }
+        
         private void WireControlPanel()
         {
             var buttons = new (string itemName, Button button)[]
@@ -198,11 +247,13 @@ namespace _scripts.controllers
                 SendData(topic,itemName,false.ToString());
             });
         }
+        
         private void WireToggle(string topic, string itemName, Toggle toggle)
         {
             toggle.RegisterValueChangedCallback(evt =>
                 SendData(topic,itemName,evt.newValue.ToString()));
         }
+        
         private void WireRadio(string topic, string itemName, RadioButton radioButton)
         {
             radioButton.RegisterValueChangedCallback(evt =>
@@ -227,6 +278,7 @@ namespace _scripts.controllers
             _mqttProtocol.Payload = data;
             _mqttProtocol?.SendData();
         }
+        
         private void Subscribe(string topic)
         {
             _mqttProtocol.Topic = topic;
@@ -234,6 +286,7 @@ namespace _scripts.controllers
             _mqttProtocol.Payload = new { message = $"subscribed to {topic}" };
             _mqttProtocol?.SendData();
         }
+        
         private IEnumerator ConnectToAws()
         {
             _mqttProtocol=MqttProtocol.GetInstance(
@@ -263,7 +316,7 @@ namespace _scripts.controllers
     
                 foreach (var kvp in e.Data)
                 {
-                    _lastProcessedMessage = new MqttMessageData
+                    var messageData = new MqttMessageData
                     {
                         ReceivedAt = e.ReceivedAt.ToLocalTime(),
                         Topic = e.Topic,
@@ -271,14 +324,14 @@ namespace _scripts.controllers
                         Value = kvp.Value
                     };
         
-                    _messageHistory.Enqueue(_lastProcessedMessage);
+                    _messageHistory.Enqueue(messageData);
                     if (_messageHistory.Count > 50)
                         _messageHistory.Dequeue();
                     
-                    _date=$"{_lastProcessedMessage.ReceivedAt:HH:mm:ss}";
-                    _topic=$"{_lastProcessedMessage.Topic}";
-                    _key=$"{_lastProcessedMessage.Key}";
-                    _value=$"{_lastProcessedMessage.Value}";
+                    lock (_queueLock)
+                    {
+                        _messageQueue.Enqueue(messageData);
+                    }
                 }
             };
         }
