@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scenes/Main.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/WelcomeUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/WelcomeUiController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_scripts/models/awsServices/Cognito.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/models/awsServices/Cognito.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
-    </list>
+    <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -262,7 +256,7 @@
       <workItem from="1761657866911" duration="18000" />
       <workItem from="1761659379197" duration="906000" />
       <workItem from="1761931993488" duration="523000" />
-      <workItem from="1761941020363" duration="367000" />
+      <workItem from="1761941020363" duration="1110000" />
     </task>
     <servers />
   </component>
