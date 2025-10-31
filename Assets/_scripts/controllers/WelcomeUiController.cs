@@ -150,6 +150,8 @@ namespace _scripts.controllers
                 new AmazonCognitoIdentityProviderClient(RegionEndpoint.USEast1)
             );
             
+            
+            
             var region = Amazon.RegionEndpoint.USEast1;
             const string IDENTITY_POOL_ID = "us-east-1:e962d906-6f36-4e52-8771-a2de6a11b19a";
             const string USER_POOL_ID     = "us-east-1_eyRKiPuWJ";
