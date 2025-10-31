@@ -46,7 +46,5 @@ namespace _scripts
                 return ($"error: {ex.GetType().Name}: {ex.Message}", null, null);
             }
         }
-        
-        
     }
 }

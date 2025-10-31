@@ -158,9 +158,9 @@ public class WelcomeUiController : MonoBehaviour
     private void ExitApplication(ClickEvent _)
     {
         Application.Quit();
-        // #if UNITY_EDITOR
-        // UnityEditor.EditorApplication.isPlaying = false;
-        // #endif
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
     
     private void ShowPanel(string name)

@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/WelcomeUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/WelcomeUiController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/models/awsServices/Cognito.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/models/awsServices/Cognito.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,9 +21,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/348ed09ed1634d388253e20b5aab3fcf223400/0e/251267d9/EventCallbackFunctor`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3f5387c94c9d4e9117601ed49ca970c033a97530f78df44add4951d58f33794/IMqttClient.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/82e9288cb3e4fb0e5316f85257376df465dc7bc82890c2121a640dfb03916/JsonElement.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/ControlPanelController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/JogAndTeachController.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -253,6 +253,11 @@
       <workItem from="1761218327010" duration="8140000" />
       <workItem from="1761257399277" duration="13675000" />
       <workItem from="1761383661912" duration="8124000" />
+      <workItem from="1761575489132" duration="31000" />
+      <workItem from="1761576574348" duration="27000" />
+      <workItem from="1761578023084" duration="656000" />
+      <workItem from="1761657866911" duration="18000" />
+      <workItem from="1761659379197" duration="906000" />
     </task>
     <servers />
   </component>

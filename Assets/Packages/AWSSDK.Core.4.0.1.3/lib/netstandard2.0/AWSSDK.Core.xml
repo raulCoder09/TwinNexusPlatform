@@ -1178,6 +1178,11 @@
             The string value which could not be converted into a valid DateTime instance.
             </summary>
         </member>
+        <member name="P:Amazon.Runtime.AmazonServiceClient.ExplicitAWSCredentials">
+            <summary>
+            Credentials explicitly specified when constructing the client.
+            </summary>
+        </member>
         <member name="E:Amazon.Runtime.AmazonServiceClient.BeforeMarshallingEvent">
             <summary>
             Occurs before a request is marshalled.
@@ -2226,7 +2231,8 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Auth.AWS4Signer.SetContentEncodingHeader(Amazon.Runtime.Internal.IRequest)">
             <summary>
-            Appends "aws-chunked" to the Content-Encoding header if it's already set
+            Adds <see cref="F:Amazon.Runtime.Internal.Auth.AWS4Signer.AWSChunkedEncoding"/> to the <see cref="F:Amazon.Util.HeaderKeys.ContentEncodingHeader"/> (appending to the
+            existing value if it's already set).
             </summary>
             <param name="request">Request to modify</param>
         </member>
@@ -2616,6 +2622,12 @@
         <member name="P:Amazon.Runtime.Internal.Auth.IAuthSchemeOption.SchemeId">
             <summary>
             The ID of the scheme to use. This value matches the one returned by <see cref="P:Amazon.Runtime.Internal.Auth.IAuthScheme`1.SchemeId"/>.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Auth.IAuthSchemeOption.ShortName">
+            <summary>
+            The unqualified / short name of this scheme.
+            For example, "sigv4" is the short name for "aws.auth#sigv4".
             </summary>
         </member>
         <member name="T:Amazon.Runtime.Internal.Auth.IAuthSchemeParameters">
@@ -3188,6 +3200,11 @@
             The version of the HTTP protocol to use. The default is HTTP 1.1.
             </summary>
         </member>
+        <member name="P:Amazon.Runtime.Internal.DefaultRequest.ChosenAuthScheme">
+            <summary>
+            Auth scheme chosen for the current request.
+            </summary>
+        </member>
         <member name="T:Amazon.Runtime.Internal.DiscoveryEndpointBase">
             <summary>
             Class containing the data for one endpoint returned from a endpoint discovery request
@@ -3692,6 +3709,16 @@
             Determines the behavior for validating checksums on response payloads.
             </summary>
         </member>
+        <member name="P:Amazon.Runtime.Internal.InternalConfiguration.AuthSchemePreference">
+            <summary>
+            List of preferred authentication schemes in priority order.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.InternalConfiguration.SigV4aSigningRegionSet">
+            <summary>
+            List of AWS regions for SigV4a multi-region signing.
+            </summary>
+        </member>
         <member name="T:Amazon.Runtime.Internal.EnvironmentVariableInternalConfiguration">
             <summary>
             Determines the configuration values based on environment variables. If 
@@ -3719,6 +3746,11 @@
             Throws an exception if the length of client app id is longer than 50.
             </summary>
             <returns>Client app id string</returns>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.EnvironmentVariableInternalConfiguration.GetCommaDelimitedEnvironmentVariable(System.String)">
+            <summary>
+            Parses an environment variable containing a comma delimited list into a list of strings.
+            </summary>
         </member>
         <member name="T:Amazon.Runtime.Internal.ProfileInternalConfiguration">
             <summary>
@@ -4141,6 +4173,11 @@
         <member name="P:Amazon.Runtime.Internal.IRequest.HttpProtocolVersion">
             <summary>
             The version of the HTTP protocol to use. The default is HTTP 1.1.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.IRequest.ChosenAuthScheme">
+            <summary>
+            Auth scheme chosen for the current request.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.IServiceMetadata.ServiceId">
@@ -4908,6 +4945,11 @@
             An operation called using GZIP request compression.
             </summary>
         </member>
+        <member name="F:Amazon.Runtime.Internal.UserAgent.UserAgentFeatureId.PROTOCOL_RPC_V2_CBOR">
+            <summary>
+            An operation called using the Smithy RPC v2 CBOR protocol.
+            </summary>
+        </member>
         <member name="F:Amazon.Runtime.Internal.UserAgent.UserAgentFeatureId.ENDPOINT_OVERRIDE">
             <summary>
             An operation called using a user provided endpoint URL.
@@ -5116,6 +5158,30 @@
         <member name="F:Amazon.Runtime.Internal.UserAgent.UserAgentFeatureId.OBSERVABILITY_OTEL_METRICS">
             <summary>
             Indicates that an AWS SDK client has been configured with an OpenTelemetry metrics provider.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.Internal.Util.CachedChecksum">
+            <summary>
+            Class to keep track of the first request cached checksum and callback for caching the checksum.
+            </summary>
+        </member>
+        <member name="T:Amazon.Runtime.Internal.Util.CachedChecksum.Callback">
+            <summary>
+            Callback delegate to define the method called when the checksum is finalized for the request 
+            passing the final calculated checksum to the callback for caching.
+            </summary>
+            <param name="completeBase64Checksum">The base64 checksum to cache.</param>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Util.CachedChecksum.Value">
+            <summary>
+            The value of the finalized checksum for the request. This will be the cached checksum value
+            on subsequent requests and filled in on the first request.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Internal.Util.CachedChecksum.OnComplete">
+            <summary>
+            OnComplete called when the checksum is finalized for the request passing the final calculated
+            checksum to the callback for caching.
             </summary>
         </member>
         <member name="T:Amazon.Runtime.Internal.Util.CachingWrapperStream">
@@ -5337,6 +5403,18 @@
             <param name="headerSigningResult">SigV4 or SigV4a signing result for the request's headers</param>
             <param name="trailingChecksum">Algorithm to use to calculate the stream's checksum</param>
             <param name="trailingHeaders">Trailing headers to append after the wrapped stream</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.ChunkedUploadWrapperStream.#ctor(System.IO.Stream,System.Int32,Amazon.Runtime.Internal.Auth.AWSSigningResultBase,Amazon.Runtime.CoreChecksumAlgorithm,System.Collections.Generic.IDictionary{System.String,System.String},Amazon.Runtime.Internal.Util.CachedChecksum)">
+            <summary>
+            Initializes a chunked upload stream with one or more trailing headers,
+            which may include a trailing checksum header.
+            </summary>
+            <param name="stream">Stream to wrap</param>
+            <param name="wrappedStreamBufferSize">Size of buffer used for reading from stream</param>
+            <param name="headerSigningResult">SigV4 or SigV4a signing result for the request's headers</param>
+            <param name="trailingChecksum">Algorithm to use to calculate the stream's checksum</param>
+            <param name="trailingHeaders">Trailing headers to append after the wrapped stream</param>
+            <param name="cachedChecksum">Instance of the cachedChecksum object containing any cached checksum value and checksum OnComplete callback.</param>
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.ChunkedUploadWrapperStream.Read(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -7342,7 +7420,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.TrailingHeadersWrapperStream.#ctor(System.IO.Stream,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
-            Initiates a stream wrapper to append trailing headers to an unsigned payload
+            Initiates a stream wrapper to append trailing headers to an unsigned payload.
             </summary>
             <param name="baseStream">Stream to wrap</param>
             <param name="trailingHeaders">Trailing headers to append after the wrapped stream</param>
@@ -7350,11 +7428,21 @@
         <member name="M:Amazon.Runtime.Internal.Util.TrailingHeadersWrapperStream.#ctor(System.IO.Stream,System.Collections.Generic.IDictionary{System.String,System.String},Amazon.Runtime.CoreChecksumAlgorithm)">
             <summary>
             Initiates a stream wrapper to append trailing headers to an unsigned payload,
-            with a trailing checksum
+            with a trailing checksum.
             </summary>
             <param name="baseStream">Stream to wrap</param>
-            <param name="trailingHeaders">Header keys and values to append after the stream's conent</param>
+            <param name="trailingHeaders">Header keys and values to append after the stream's content</param>
             <param name="checksumAlgorithm">Algorithm to use to calculate the stream's checksum</param>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.Util.TrailingHeadersWrapperStream.#ctor(System.IO.Stream,System.Collections.Generic.IDictionary{System.String,System.String},Amazon.Runtime.CoreChecksumAlgorithm,Amazon.Runtime.Internal.Util.CachedChecksum)">
+            <summary>
+            Initiates a stream wrapper to append trailing headers to an unsigned payload,
+            with a trailing checksum.
+            </summary>
+            <param name="baseStream">Stream to wrap</param>
+            <param name="trailingHeaders">Header keys and values to append after the stream's content</param>
+            <param name="checksumAlgorithm">Algorithm to use to calculate the stream's checksum</param>
+            <param name="cachedChecksum">Instance of the cachedChecksum object containing any cached checksum value and checksum OnComplete callback.</param>
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.TrailingHeadersWrapperStream.Read(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -7906,6 +7994,31 @@
         <member name="M:Amazon.Runtime.Internal.BaseAuthResolverHandler.ResolveAuthOptions(Amazon.Runtime.IExecutionContext)">
             <summary>
             Invokes the service auth scheme resolver to determine which auth options we should consider for this request.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.BaseAuthResolverHandler.ApplyPreferences(System.Collections.Generic.List{Amazon.Runtime.Internal.Auth.IAuthSchemeOption},Amazon.Runtime.IRequestContext)">
+            <summary>
+            Apply any auth scheme preferences that were manually set in the client config.
+            Only schemes supported by the service (i.e. in <paramref name="candidates"/>) will be considered.
+            </summary>
+            <remarks>
+            For majority of use cases, no preferences will be set so this method will be a no-op.
+            <para />
+            When preferences are set however, the auth schemes will be (potentially) reorderd on every request,
+            but there should not be a large amount of preferences to impact performance.
+            <para />
+            If that happens, we may look into some form of caching the data in the request context, but we need
+            to be aware the client config can be modified between service calls.
+            </remarks>
+        </member>
+        <member name="M:Amazon.Runtime.Internal.BaseAuthResolverHandler.ApplySigningRegionSetOverrides(Amazon.Runtime.IRequestContext)">
+            <summary>
+            For SigV4a signing only, customers can override the signing region set. If a value is set in the client config,
+            we'll apply it to the AuthenticationRegion property (which the signer will try to use first when determining the
+            region to be used for signing).
+            <para />
+            In the endpoint resolver handler, there's existing logic that can override the AuthenticationRegion property if a 
+            value was set in the client config.
             </summary>
         </member>
         <member name="T:Amazon.Runtime.Internal.BaseEndpointResolver">
@@ -9247,6 +9360,37 @@
             name of the service being called.
             </summary>
         </member>
+        <member name="P:Amazon.Runtime.ClientConfig.AuthSchemePreference">
+            <summary>
+            List of preferred authentication schemes in priority order. 
+            When a service supports multiple authentication schemes, the SDK attempts to use schemes from this list in 
+            the specified order, falling back to default behavior if none of the preferred schemes are available.
+            
+            <para />
+            
+            Valid values are a list of one or more of the following:
+            <list type="bullet">
+            <item><b>sigv4</b> – Signature Version 4 (fastest performance, single-region)</item>
+            <item><b>sigv4a</b> – Signature Version 4a (enhanced availability, cross-region support, has a slower signing performance than SigV4)</item>
+            <item><b>httpBearerAuth</b> – HTTP Bearer token authentication</item>
+            </list>
+            </summary>
+            <remarks>
+            Space and tab characters in scheme names are ignored.
+            </remarks>
+        </member>
+        <member name="P:Amazon.Runtime.ClientConfig.SigV4aSigningRegionSet">
+            <summary>
+            List of AWS regions for SigV4a multi-region signing.
+            This is used as the default region set for the request if SigV4a is the selected authentication scheme.
+            </summary>
+            <remarks>
+            Space and tab characters in region names are ignored.
+            <para />
+            For backwards compability reasons, the signers in the SDK will attempt to use
+            the <see cref="P:Amazon.Runtime.ClientConfig.AuthenticationRegion"/> property (if set) over this region set.
+            </remarks>
+        </member>
         <member name="P:Amazon.Runtime.ClientConfig.ServiceId">
             <summary>
             The serviceId for the service, which is specified in the metadata in the ServiceModel.
@@ -9937,6 +10081,16 @@
         <member name="P:Amazon.Runtime.CredentialManagement.CredentialProfile.AccountIdEndpointMode">
             <summary>
             The Account ID endpoint mode as preferred, required, or disabled.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.CredentialManagement.CredentialProfile.AuthSchemePreference">
+            <summary>
+            List of preferred authentication schemes in priority order.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.CredentialManagement.CredentialProfile.SigV4aSigningRegionSet">
+            <summary>
+            List of AWS regions for SigV4a multi-region signing.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.CredentialManagement.CredentialProfile.Properties">
@@ -11226,6 +11380,9 @@
         <member name="P:Amazon.Runtime.Credentials.Internal.AuthSchemeOption.SchemeId">
             <inheritdoc/>
         </member>
+        <member name="P:Amazon.Runtime.Credentials.Internal.AuthSchemeOption.ShortName">
+            <inheritdoc/>
+        </member>
         <member name="F:Amazon.Runtime.Credentials.Internal.AuthSchemeOption.DEFAULT_SIGV4">
             <summary>
             Default auth scheme options for services / operations that only support SigV4.
@@ -11489,6 +11646,11 @@
             <para />
             NOTE: If setting to <c>true</c>, either <see cref="P:Amazon.Runtime.Credentials.Internal.SSOTokenManagerGetTokenOptions.SsoVerificationCallback"/> or <see cref="P:Amazon.Runtime.Credentials.Internal.SSOTokenManagerGetTokenOptions.PkceFlowOptions"/> must 
             also be set for authorization flow to succeed.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.Credentials.Internal.SSOTokenManagerGetTokenOptions.ProxySettings">
+            <summary>
+            The proxy settings to use when calling SSOOIDC and SSO Services.
             </summary>
         </member>
         <member name="M:Amazon.Runtime.Credentials.Internal.SsoTokenUtils.IsExpired(Amazon.Runtime.Credentials.Internal.SsoToken)">
@@ -12382,11 +12544,6 @@
         <member name="M:Amazon.Runtime.MonitoringListener.PostMessagesOverUDPAsync(System.String)">
             <summary>
             Method to post UDP datagram for async calls
-            </summary>
-        </member>
-        <member name="F:Amazon.Runtime.MonitoringListener._disposed">
-            <summary>
-            Method to post UDP datagram for bcl35 async calls
             </summary>
         </member>
         <member name="T:Amazon.Runtime.IDefaultConfiguration">
@@ -13980,6 +14137,13 @@
             <param name="message">The event stream message</param>
             <returns>The JsonUnmarshallerContext</returns>
         </member>
+        <member name="M:Amazon.Runtime.EventStreams.Utils.EventStreamUtils.ConvertMessageToStream(Amazon.Runtime.EventStreams.IEventStreamMessage)">
+            <summary>
+            Converts an <seealso cref="T:Amazon.Runtime.EventStreams.EventStreamMessage"/> to a Stream
+            </summary>
+            <param name="message">The event stream message</param>
+            <returns>The stream of <seealso cref="T:Amazon.Runtime.EventStreams.EventStreamMessage"/></returns>
+        </member>
         <member name="T:Amazon.Runtime.EventStreams.UnknownEventStreamMessageTypeException">
             <summary>
             Signals that an an <see cref="T:Amazon.Runtime.EventStreams.EventStreamMessage"/> has an unknown message type. These exceptions whould be
@@ -14056,15 +14220,15 @@
             <summary> 
             <para> 
             The AWS credentials used for authenticating calls to AWS for services using AWS signature version 4 (SigV4). 
-            SigV4 is the most common authentication mechanism used for AWS service calls. If AWSCredentials are used as a 
-            parameter to the service client's constructor the value will be set on this property. 
+            SigV4 is the most common authentication mechanism used for AWS service calls. 
             </para> 
             <para> 
             Common instances of AWSCredentials are <see cref="T:Amazon.Runtime.BasicAWSCredentials" /> for static credentials and 
             <see cref="T:Amazon.Runtime.AssumeRoleAWSCredentials" /> for getting credentials by assuming an IAM role. 
             </para> 
             <para> 
-            If null, the SDK will determine which credentials to use at request time using information from the source service model. 
+            If null, the SDK will determine which credentials to use at request time using information from the source service model.
+            Credentials passed as a parameter to the service client's constructor take precedence over these default credentials.
             </para> 
             </summary>
         </member>
@@ -14152,6 +14316,37 @@
             Used in AWS4 request signing, this is the short-form
             name of the service being called.
             </summary>
+        </member>
+        <member name="P:Amazon.Runtime.IClientConfig.AuthSchemePreference">
+            <summary>
+            List of preferred authentication schemes in priority order. 
+            When a service supports multiple authentication schemes, the SDK attempts to use schemes from this list in 
+            the specified order, falling back to default behavior if none of the preferred schemes are available.
+            
+            <para />
+            
+            Valid values are a list of one or more of the following:
+            <list type="bullet">
+            <item><b>sigv4</b> – Signature Version 4 (fastest performance, single-region)</item>
+            <item><b>sigv4a</b> – Signature Version 4a (enhanced availability, cross-region support, has a slower signing performance than SigV4)</item>
+            <item><b>httpBearerAuth</b> – HTTP Bearer token authentication</item>
+            </list>
+            </summary>
+            <remarks>
+            Space and tab characters in scheme names are ignored.
+            </remarks>
+        </member>
+        <member name="P:Amazon.Runtime.IClientConfig.SigV4aSigningRegionSet">
+            <summary>
+            List of AWS regions for SigV4a multi-region signing.
+            This is used as the default region set for the request if SigV4a is the selected authentication scheme.
+            </summary>
+            <remarks>
+            Space and tab characters in region names are ignored.
+            <para />
+            For backwards compability reasons, the signers in the SDK will attempt to use
+            the <see cref="P:Amazon.Runtime.IClientConfig.AuthenticationRegion"/> property (if set) over this region set.
+            </remarks>
         </member>
         <member name="P:Amazon.Runtime.IClientConfig.UserAgent">
             <summary>
@@ -15509,6 +15704,31 @@
             <summary>
             The checksum of the response stream did not match the header sent by the service.
             </summary>
+        </member>
+        <member name="T:Amazon.Runtime.SDKTaskContext">
+            <summary>
+            This class is used to store state data used by the SDK that is scoped within the .NET Task that is calling
+            the SDK.
+            </summary>
+        </member>
+        <member name="P:Amazon.Runtime.SDKTaskContext.Default">
+            <summary>
+            The default instance of the <see cref="T:Amazon.Runtime.SDKTaskContext"/> used by the SDK.
+            </summary>
+        </member>
+        <member name="M:Amazon.Runtime.SDKTaskContext.Set(System.String,System.Object)">
+            <summary>
+            Store the value identified by the key in the current Task context.
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:Amazon.Runtime.SDKTaskContext.Get(System.String)">
+            <summary>
+            Retrieve the value identified by the key from the current Task context.
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
         </member>
         <member name="T:Amazon.Runtime.SharedInterfaces.IAWSSigV4aProvider">
             <summary>
@@ -17367,6 +17587,13 @@
             <param name="seconds">The number of seconds since January 1, 1970.</param>
             <returns>Converted DateTime structure</returns>
         </member>
+        <member name="M:Amazon.Util.AWSSDKUtils.ConvertFromUnixDoubleEpochSeconds(System.Double)">
+            <summary>
+            Utility method for converting Unix epoch seconds to DateTime structure.
+            </summary>
+            <param name="seconds">The number of seconds since January 1, 1970.</param>
+            <returns>Converted DateTime structure</returns>
+        </member>
         <member name="M:Amazon.Util.AWSSDKUtils.ConvertFromUnixEpochMilliseconds(System.Int64)">
             <summary>
             Utility method for converting Unix epoch milliseconds to DateTime structure.
@@ -17476,6 +17703,14 @@
             <param name="path">The hypothetical absolute path.</param>
             <returns>True if <paramref name="path"/> is an absolute path.</returns>
         </member>
+        <member name="M:Amazon.Util.AWSSDKUtils.IsNETFramework">
+            <summary>
+            This method returns true if the variant of the SDK being used is the .NET Framework target. This allows
+            libraries using .NET Standard 2.0 like AWSSDK.Extensions.NETCore.Setup to know at runtime if they are
+            using the .NET Framework version and if so make decisions on what APIs it should call.
+            </summary>
+            <returns>True if the version of the SDK is .NET Framework variant.</returns>
+        </member>
         <member name="M:Amazon.Util.AWSSDKUtils.IsPartiallyQualifiedForWindows(System.String)">
             <summary>
             Returns true if the path specified is relative to the current drive or working directory.
@@ -17514,7 +17749,7 @@
             URL encodes a string per the specified RFC. If the path property is specified,
             the accepted path characters {/+:} are not encoded.
             </summary>
-            <param name="rfcNumber">RFC number determing safe characters</param>
+            <param name="rfcNumber">RFC number determining safe characters</param>
             <param name="data">The string to encode</param>
             <param name="path">Whether the string is a URL path or not</param>
             <returns>The encoded string</returns>
@@ -19000,6 +19235,25 @@
             </code>
             </summary>
         </member>
+        <member name="F:Amazon.AWSConfigs.CborReaderInitialBufferSizeKey">
+            <summary>
+            Key for the CborReaderInitialBufferSize property.
+            <seealso cref="P:Amazon.AWSConfigs.CborReaderInitialBufferSize"/>
+            </summary>
+        </member>
+        <member name="P:Amazon.AWSConfigs.CborReaderInitialBufferSize">
+            <summary>
+            Configures the initial buffer size in bytes for the streaming CBOR reader.
+            If this value isn't set, a default size of 4,096 bytes (4 KB) will be used.
+            <para />
+            Setting this property is not thread safe and should only be set at application startup.
+            <para />
+            <remarks>
+            Note that the buffer will automatically resize if it encounters a single data item larger
+            than this initial size.
+            </remarks>
+            </summary>
+        </member>
         <member name="F:Amazon.AWSConfigs.InitializeCollectionsKey">
             <summary>
             Key for the InitializeCollections property.
@@ -19040,6 +19294,26 @@
             <remarks>
             This option is only used in the <see cref="T:Amazon.Runtime.Credentials.DefaultAWSCredentialsIdentityResolver"/>, it's not considered by the 
             deprecated <see cref="T:Amazon.Runtime.FallbackCredentialsFactory"/> when resolving credentials.
+            </remarks>
+        </member>
+        <member name="F:Amazon.AWSConfigs.DisableLegacyPersistenceStoreKey">
+            <summary>
+            Key for the <seealso cref="P:Amazon.AWSConfigs.DisableLegacyPersistenceStore"/> property.
+            </summary>
+        </member>
+        <member name="P:Amazon.AWSConfigs.DisableLegacyPersistenceStore">
+            <summary>
+            When attempting to retrieve configuration options for a given profile, the AWS SDK for .NET will look at both 
+            the shared config file and the SDK Store by default - via the <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfileStoreChain"/>.
+            <para />
+            The SDK Store has a few limitations, such as only being available on Windows and being specific to a particular user on a particular host. 
+            <para />
+            Setting this property to <c>true</c> will instruct the SDK not to check the legacy persistence store when interacting with
+            profiles (this setting is only applicable to the <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfileStoreChain"/> and it's not considered when 
+            interacting with the <see cref="T:Amazon.Runtime.CredentialManagement.NetSDKCredentialsFile"/> class directly).
+            </summary>
+            <remarks>
+            The default value is <c>false</c>.
             </remarks>
         </member>
         <member name="P:Amazon.AWSConfigs.LoggingConfig">
@@ -19316,6 +19590,11 @@
             The Asia Pacific (Malaysia) endpoint.
             </summary>
         </member>
+        <member name="F:Amazon.RegionEndpoint.APSoutheast6">
+            <summary>
+            The Asia Pacific (New Zealand) endpoint.
+            </summary>
+        </member>
         <member name="F:Amazon.RegionEndpoint.APSoutheast7">
             <summary>
             The Asia Pacific (Thailand) endpoint.
@@ -19432,14 +19711,9 @@
             The China (Ningxia) endpoint.
             </summary>
         </member>
-        <member name="F:Amazon.RegionEndpoint.USGovCloudEast1">
+        <member name="F:Amazon.RegionEndpoint.EUSCDeEast1">
             <summary>
-            The AWS GovCloud (US-East) endpoint.
-            </summary>
-        </member>
-        <member name="F:Amazon.RegionEndpoint.USGovCloudWest1">
-            <summary>
-            The AWS GovCloud (US-West) endpoint.
+            The EU (Germany) endpoint.
             </summary>
         </member>
         <member name="F:Amazon.RegionEndpoint.USIsoEast1">
@@ -19457,6 +19731,11 @@
             The US ISOB East (Ohio) endpoint.
             </summary>
         </member>
+        <member name="F:Amazon.RegionEndpoint.USIsobWest1">
+            <summary>
+            The US ISOB West endpoint.
+            </summary>
+        </member>
         <member name="F:Amazon.RegionEndpoint.EUIsoeWest1">
             <summary>
             The EU ISOE West endpoint.
@@ -19472,9 +19751,14 @@
             The US ISOF SOUTH endpoint.
             </summary>
         </member>
-        <member name="F:Amazon.RegionEndpoint.EUSCDeEast1">
+        <member name="F:Amazon.RegionEndpoint.USGovCloudEast1">
             <summary>
-            The EU (Germany) endpoint.
+            The AWS GovCloud (US-East) endpoint.
+            </summary>
+        </member>
+        <member name="F:Amazon.RegionEndpoint.USGovCloudWest1">
+            <summary>
+            The AWS GovCloud (US-West) endpoint.
             </summary>
         </member>
         <member name="T:Amazon.RuntimeDependencies.RuntimeDependencyFactory">

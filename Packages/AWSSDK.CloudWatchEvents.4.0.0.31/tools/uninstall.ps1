@@ -1,72 +1,64 @@
+﻿param($installPath, $toolsPath, $package, $project)
 
-function RegisterProfile()
+$analyzersPaths = Join-Path (Join-Path (Split-Path -Path $toolsPath -Parent) "analyzers" ) * -Resolve
+
+foreach($analyzersPath in $analyzersPaths)
 {
-	$dllpath = "..\lib\net35\AWSSDK.Core.dll"
-	$sdkassembly = [System.Reflection.Assembly]::LoadFrom($dllpath)
-
-	$completed = $FALSE
-	do
-	{
-		Write-Host "1) Add/Update new profile credentials"
-		Write-Host "2) List registered profiles"
-        Write-Host "3) Remove profile credentials"
-		Write-Host "4) Exit"
-
-		Write-Host ""
-		$choose = Read-Host "Choose an option"
-
-		If ($choose -eq "1")
-		{
-			$profileName = Read-Host "Profile name: "
-			$accessKey = Read-Host "Access key: "
-			$secretKey = Read-Host "Secret key: "
-			[Amazon.Util.ProfileManager]::RegisterProfile($profileName, $accessKey, $secretKey)
-		}
-		ElseIf($choose -eq "2")
-		{
-			Write-Host ""
-
-			$profiles = [Amazon.Util.ProfileManager]::ListProfileNames() | sort
-			foreach($profile in $profiles)
-			{
-				Write-Host "*" $profile
-			}
-			Write-Host ""
-		}
-        ElseIf($choose -eq "3")
+    # Uninstall the language agnostic analyzers.
+    if (Test-Path $analyzersPath)
+    {
+        foreach ($analyzerFilePath in Get-ChildItem $analyzersPath -Filter *.dll)
         {
-			Write-Host ""
-
-			$i = 1
-			$profiles = [Amazon.Util.ProfileManager]::ListProfileNames() | sort
-			foreach($profile in $profiles)
-			{
-				Write-Host $i")" $profile
-				$i++
-			}
-			Write-Host ""
-            $pick = Read-Host "Select a profile to unregister"
-            [Amazon.Util.ProfileManager]::UnregisterProfile($profiles[$pick - 1])
+            if($project.Object.AnalyzerReferences)
+            {
+                $project.Object.AnalyzerReferences.Remove($analyzerFilePath.FullName)
+            }
         }
-		ElseIf($choose -eq "4")
-		{
-			$completed = $TRUE
-		}
-		Else
-		{
-			Write-Host ""
-			Write-Host "Unknown choose"
-			Write-Host ""
-		}
-	}while($completed -ne $TRUE)
+    }
 }
 
-RegisterProfile
+# $project.Type gives the language name like (C# or VB.NET)
+$languageFolder = ""
+if($project.Type -eq "C#")
+{
+    $languageFolder = "cs"
+}
+if($project.Type -eq "VB.NET")
+{
+    $languageFolder = "vb"
+}
+if($languageFolder -eq "")
+{
+    return
+}
+
+foreach($analyzersPath in $analyzersPaths)
+{
+    # Uninstall language specific analyzers.
+    $languageAnalyzersPath = join-path $analyzersPath $languageFolder
+    if (Test-Path $languageAnalyzersPath)
+    {
+        foreach ($analyzerFilePath in Get-ChildItem $languageAnalyzersPath -Filter *.dll)
+        {
+            if($project.Object.AnalyzerReferences)
+            {
+                try
+                {
+                    $project.Object.AnalyzerReferences.Remove($analyzerFilePath.FullName)
+                }
+                catch
+                {
+
+                }
+            }
+        }
+    }
+}
 # SIG # Begin signature block
 # MIIufQYJKoZIhvcNAQcCoIIubjCCLmoCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCohHFUJXXrvoIv
-# ahe6k5cJyoWYQnyICduo/D3a50+fIKCCE+owggXAMIIEqKADAgECAhAP0bvKeWvX
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCA0o1Q2Ssh45kim
+# Q4Z6GSL/ZYYQ36aRIydIY6BR1mJeQaCCE+owggXAMIIEqKADAgECAhAP0bvKeWvX
 # +N1MguEKmpYxMA0GCSqGSIb3DQEBCwUAMGwxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xKzApBgNV
 # BAMTIkRpZ2lDZXJ0IEhpZ2ggQXNzdXJhbmNlIEVWIFJvb3QgQ0EwHhcNMjIwMTEz
@@ -177,20 +169,20 @@ RegisterProfile
 # BAMTOERpZ2lDZXJ0IFRydXN0ZWQgRzQgQ29kZSBTaWduaW5nIFJTQTQwOTYgU0hB
 # Mzg0IDIwMjEgQ0ExAhAFJ6TU4X386Byt5yj8tyv0MA0GCWCGSAFlAwQCAQUAoHww
 # EAYKKwYBBAGCNwIBDDECMAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYK
-# KwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwLwYJKoZIhvcNAQkEMSIEIOe/EMp7
-# 0LvvsaOyI4346vY2yIyHxk7JJdEK7OPn3pqdMA0GCSqGSIb3DQEBAQUABIIBgHO2
-# eHgkVAu7ZJvrO3SHcQTJqU0JI5a1EkPKdS1kOtxIoruhQL+RDtSm3G+Zeawa2C5M
-# AkALh2yhLDjKjoTgP2OqNbGjxFovwC5VvE9DQ5VX2+EYG71DfDyftQrxUcI2Wzeu
-# +42w3bNFgpyE6J+M5CfApEpWQu3TAP9CiK+W9w5Boev8waazUuSXluv8NNfz6BdB
-# dfSKovHJ6u7OLQzgWQMGP9XOq2AEVszLyd56UgFTgfn1SysxicUslUKOmj8sZNSY
-# D+G8oSZNnT2QZVyIHhM9sFS6UypTvtAw77thqVMHQYeRk4sBwsWxTLs8tgXYa38a
-# DFQx2OehiaqFmXfquf8BNKWj4pfifLYPUXfEpMNpfaNYjnFLJo0vQCjajKooxVYk
-# P4OK08w6E4sc49odYOezDTO4xBxsN11iV8GCcV1ZgKQzSHjATDo3AVZvNdzOcnf1
-# pQPL+JopMPNIMlXT1mQ66EluhfybSHMFErT+ERuOCBbGgrBuhpVwphEausH8l6GC
+# KwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwLwYJKoZIhvcNAQkEMSIEIORYtAjF
+# MQ3gCzLzBJgwl7H6t5HinNPpAt7n8yYK3fwtMA0GCSqGSIb3DQEBAQUABIIBgGwT
+# xEJVou5lqAOz3yqTjttp2C72rteERwVP1uReNMt3G0JCnoU4v6Ntc7/pwc1EO3fg
+# XCdNHrvJSZ/gwd5ZI4xL6jlvDh25Swwb0m6tZtmnWuEwfVtdEf+WBnO9xr85O66O
+# og8tiSsVPPY+nRRZpxt//EAnJ0w/AIp/GbgCHgMxgXALNMoEInqLAlNreJXEb6sa
+# SnckaQges/CiUVfp8pbMtV3IqjvLNU7AylwtkoBfK5v4LLsmyQKUFJqDeOzW25xd
+# BLTir4I+u78JJLk0z3k9ZRTAo4p++4ec9EVNmZFcx2dESI/RxVE/gjfOtzJDvTwA
+# 6wSCf50Nsy0A+HruM88pMyd9D+ZRFfIK9lAsfnqjHWSLx/tvQJM5EYIxKGNqbssy
+# Ahwk7KVE14K+BT1HFQcakVTWo2h8sOu94TCpWhcK0mS4+FwH9GtqY4l6n9+1S/3R
+# 8brHBCeOTKcDWxjB43xJKO1uZOiZLS8ma+UrswmeIAJzNrEfbntNU6+mCSJdEaGC
 # Fz8wghc7BgorBgEEAYI3AwMBMYIXKzCCFycGCSqGSIb3DQEHAqCCFxgwghcUAgED
 # MQ8wDQYJYIZIAWUDBAIBBQAwdwYLKoZIhvcNAQkQAQSgaARmMGQCAQEGCWCGSAGG
-# /WwHATAxMA0GCWCGSAFlAwQCAQUABCBK1ZcMZCxtpDqMPJDEcAjNrx4UKrFRmu6J
-# X1BRS8BWgwIQIo3h/0PO+Dj9E794wAqr/xgPMjAyMzEwMDYxODU3NDNaoIITCTCC
+# /WwHATAxMA0GCWCGSAFlAwQCAQUABCBJF7Q3/ZkdmleGktSenH/rbMz9VREVS3ba
+# cSl1cRcjvQIQRYxH0TJOQrNusicyAKfdvxgPMjAyMzEwMDYxODU4NDlaoIITCTCC
 # BsIwggSqoAMCAQICEAVEr/OUnQg5pr/bP1/lYRYwDQYJKoZIhvcNAQELBQAwYzEL
 # MAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTswOQYDVQQDEzJE
 # aWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVTdGFtcGluZyBD
@@ -296,20 +288,20 @@ RegisterProfile
 # AlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQg
 # VHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAVEr/OU
 # nQg5pr/bP1/lYRYwDQYJYIZIAWUDBAIBBQCggdEwGgYJKoZIhvcNAQkDMQ0GCyqG
-# SIb3DQEJEAEEMBwGCSqGSIb3DQEJBTEPFw0yMzEwMDYxODU3NDNaMCsGCyqGSIb3
+# SIb3DQEJEAEEMBwGCSqGSIb3DQEJBTEPFw0yMzEwMDYxODU4NDlaMCsGCyqGSIb3
 # DQEJEAIMMRwwGjAYMBYEFGbwKzLCwskPgl3OqorJxk8ZnM9AMC8GCSqGSIb3DQEJ
-# BDEiBCCeVEVrPzdanvi+3OMqXO0gmbiEeSC0zMfaty8N7ywADTA3BgsqhkiG9w0B
+# BDEiBCCx0hk4ojIARi79EcEBjD1uYJZCHsd6qxJeblr/3X8oXDA3BgsqhkiG9w0B
 # CRACLzEoMCYwJDAiBCDS9uRt7XQizNHUQFdoQTZvgoraVZquMxavTRqa1Ax4KDAN
-# BgkqhkiG9w0BAQEFAASCAgBiTvEYh+j1B2J3r/R2zllDyKO+WbWcizosq70J7ecu
-# n5u/0OxQMnCEbSQzBO7Vt7teEj7O/Lv3zcqXWmW1IZKVDtCIHvEpsxdPErB3Iyi8
-# CahdzMlndJUGOq6hCJvdWkW4mYyMCBuE5vaRCzgWh01oB0T9cu0ZGYwX4WEVG8eG
-# 6wtf7hzdnK9AuRRYFGNZpf5rgY+3KdtwwNcGVQH+weIZpY/XQsVJciq7jlR3efKe
-# 6Zew7aw4EwprgGJmjQ2Si4pNSIoxZwIFkMtpvo3UAZjZ4ofNoh6OIwWCJs8u62RM
-# qiGJMAova0LNOSpYYlBx511c3Mi8AS1Z7+mbwuMfR85NP8BMfMDCMxKn+czodrN4
-# z6E39sEz/4pAA3h4uAeESdeKKsCPleXPVFVOIAqxYS8EHRom1zqwfl2TRrNKHwiQ
-# WTYrwZEmnaCZh55NJBH2H68iQavXKRlFHtBQIs1JhkYUmVqkw3Hby8unYLW8ezVP
-# e23GuvagHtPjXStQ4stx6bBpzF9gSxSNl2/nBJ+k1eN09Bx/NkQGg5+n2BRzJ1Jt
-# Zw/eZSz79xqI7FaRKabakLyk1YrcJK8P2JZGa/3UDTiRuvnM6OwjY4mDYLZqPsnL
-# HbZuKeoW6FQC/Ifa/9BIc4oW91rUyS6eC1oSjy3kxo7aIT70Y395s6Ht2SB2LDYz
-# tQ==
+# BgkqhkiG9w0BAQEFAASCAgAOE2hDz5xHrHEX/9dU4ZPoQO5netBmRqSwGlUAkE58
+# LNxpZu2DDW4aY8hZm1ETS0dSMjCdvtAhzjO6npAf7siHVEl+wXn3izPvRp/zVuF4
+# 9piEr7SEohjXpb9GAHnOxOihStNhl8MD2iaWdqI8r3xFTaTLmynWaZnbN46B/l9t
+# ADjmItLH90AKvQdm00iT8ADnWSEvnE2NBZaMAGijr67AJcuU1gEqmdoO0/6ScZ+S
+# zqzIhqjAPuQLy4MN0sRw/ZyTqea+501++53am2vxpslOnVLqLaJmr0ywyJ/DfG3O
+# 1IqktzZXVwKIRSaRLt+lQd9kXRPeiQafoThLGA3Ar+nCNr9QBzDBZzD5mEh2PHp0
+# PPb+fvzXzvTV2J+d99/ArfPtsFC9576K/gxTMZa25nLiNjCI9320xxnfcJ7fydJW
+# L7jfOX+ZfPOVu28bn3HpHidITZLno5jx5ZAoE644oLKwuRrOT2DFyzLiI1N6JWIz
+# G4KzpGy6CHkSmnKx7QtGEG0m1G33ggmbC0B4FuwQCXig1X5aD84tfaYkkzwaz8JC
+# L/KJKhmxwD3beKF0nEA03Yu6mhKOL14w8XkO9E3b7nXbjX/4gYRKc1BhYuclEtIo
+# f0iooFuML/SqvOc7mGvb7lXR2mFIBmYbSXOri3z1emo1Hjhu9j3rcL/eXu/iNtqe
+# Wg==
 # SIG # End signature block
