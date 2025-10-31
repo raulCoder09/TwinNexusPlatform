@@ -13,6 +13,7 @@ TagManager:
   - VirtualEnvironmentCamera
   - TwinNexusEnvironmentArScara
   - MqttManager
+  - AmazonWebServices
   layers:
   - Default
   - TransparentFX
