@@ -1,16 +1,40 @@
 using System;
 using System.Collections.Generic;
 using _scripts.models.awsServices;
+using _scripts.scriptableObjects;
 using Amazon;
 using Amazon.CognitoIdentityProvider;
 using AmazonWebServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace _scripts.controllers
 {
     public class WelcomeUiController : MonoBehaviour
     {
+        private string _idToken, _accessToken, _refreshToken;
+
+        private Cognito _cognito;
+        private IdentityContext _ctx;
+        private SimpleEmailService _ses;
+        [SerializeField] private UserData userData;
+
+
+        #region esto solo para pruebas
+            [Header("Datos para pruebas")]
+
+            [SerializeField] private string sourceEmail="mechar09@outlook.com";
+            [SerializeField] private string destinationMail="mechar09@yahoo.com";
+            [SerializeField] private string subjectMail;
+        
+            // private RegionEndpoint _region=Amazon.RegionEndpoint.USEast1;
+            // private string _identityPoolID = "us-east-1:e962d906-6f36-4e52-8771-a2de6a11b19a";
+            // private string _userPoolID     = "us-east-1_eyRKiPuWJ"; 
+        
+        #endregion
+
+
         private string _lastAccessToken = null;
         private string _lastRefreshToken = null;
         private string _statusCognitoMessage;
@@ -44,6 +68,9 @@ namespace _scripts.controllers
             public const string BackVerify = "backVerifyEmailButton";
             public const string ResendCode = "resendVerificationCodeButton";
             public const string Verify = "verifyEmailButton";
+            
+            public const string UsernameLogin = "usernameLoginField";
+            public const string Password = "passwordLoginField";
         }
 
         private static class Uss
@@ -65,6 +92,15 @@ namespace _scripts.controllers
     
         private void Awake()
         {
+            // #region solo para pruebas
+            //     userData.region=_region;
+            //     userData.identityPoolID=_identityPoolID;
+            //     userData.userPoolID = _userPoolID;
+            // #endregion
+            
+            
+            
+            
             _doc = GetComponent<UIDocument>();
             _root = _doc.rootVisualElement;
         
@@ -78,18 +114,30 @@ namespace _scripts.controllers
             RegisterEvents();
         }
 
+        private void OnEnable()
+        {
+            _cognito = Cognito.GetInstance(
+                "62ham6j5iav40urvcooai5vka4",
+                new AmazonCognitoIdentityProviderClient(RegionEndpoint.USEast1)
+            );
+        }
+
         private void Start()
         {
-            // Overlay oculto al iniciar
+            LoadData();
             if (_overlay != null) _overlay.style.display = DisplayStyle.None;
-
-            // Asegurar que todos los subpaneles queden en OUT al inicio
             foreach (var p in _panels.Values)
             {
                 if (p == null) continue;
                 p.RemoveFromClassList(Uss.In);
                 if (!p.ClassListContains(Uss.Out)) p.AddToClassList(Uss.Out);
             }
+        }
+
+        private void LoadData()
+        {
+            userData.Load();
+            Q<TextField>(Id.UsernameLogin).value = userData.username;
         }
     
         private void RegisterEvents()
@@ -122,6 +170,7 @@ namespace _scripts.controllers
             {
                 HidePanel(Id.RegisterPanel);
                 ShowPanel(Id.VerifyPanel);
+                Register();
                 Debug.Log("Register!!");
             });
         
@@ -140,42 +189,77 @@ namespace _scripts.controllers
                 ShowPanel(Id.RegisterPanel);
             });
             Q<Button>(Id.ResendCode)?.RegisterCallback<ClickEvent>(_ => Debug.Log("Resend verification code!!"));
-            Q<Button>(Id.Verify)?.RegisterCallback<ClickEvent>(_ => Debug.Log("Verify email"));
+            Q<Button>(Id.Verify)?.RegisterCallback<ClickEvent>(_ => VerifyEmail());
         }
 
         private void Login()
         {
-            var cognito = Cognito.GetInstance(
-                "62ham6j5iav40urvcooai5vka4",
-                new AmazonCognitoIdentityProviderClient(RegionEndpoint.USEast1)
-            );
-            
-            
-            
-            var region = Amazon.RegionEndpoint.USEast1;
-            const string IDENTITY_POOL_ID = "us-east-1:e962d906-6f36-4e52-8771-a2de6a11b19a";
-            const string USER_POOL_ID     = "us-east-1_eyRKiPuWJ";
-            var (idToken, accessToken, refreshToken) = cognito.Login("raulCoder09", "AntoyDuna09!");
-            var ctx = new IdentityContext(region, IDENTITY_POOL_ID, USER_POOL_ID).AsUser(idToken);
-            var ses = SimpleEmailService.GetInstance(ctx);
-
-            
-            if (idToken?.StartsWith("error") == true)
+            if (!string.IsNullOrEmpty(Q<TextField>(Id.UsernameLogin).value) && !string.IsNullOrEmpty(Q<TextField>(Id.Password).value))
             {
-                _statusCognitoMessage = $"login failed: {idToken}";
-            }
-            else
-            {
-                _lastAccessToken = accessToken;
-                _lastRefreshToken = refreshToken;
-                _statusCognitoMessage =$"Login ok at {DateTime.Now}";
-                var result = ses.SendEmail("mechar09@outlook.com", "mechar09@yahoo.com", "login", _statusCognitoMessage, "text");
-            }
-            print(_statusCognitoMessage);
+                if (Q<TextField>(Id.UsernameLogin).value != userData.username)
+                {
+                    userData.username=Q<TextField>(Id.UsernameLogin).value;
+                }
+                
+                (_idToken, _accessToken, _refreshToken) = _cognito.Login(userData.username, Q<TextField>(Id.Password).value);
+                
             
-
-            
+                if (_idToken?.StartsWith("error") == true)
+                {
+                    _statusCognitoMessage = $"login failed: {_idToken}";
+                }
+                else
+                {
+                    _lastAccessToken = _accessToken;
+                    _lastRefreshToken = _refreshToken;
+                    _statusCognitoMessage =$"User {userData.username} logged in at {DateTime.Now}";
+                    ActivateAwsServices();
+                    subjectMail = "login";
+                    var result = _ses.SendEmail(sourceEmail, destinationMail, subjectMail, _statusCognitoMessage, "text");
+                }
+            }
         }
+        
+        private void ActivateAwsServices(){
+            _ctx = new IdentityContext(userData.region, userData.identityPoolID, userData.userPoolID).AsUser(_idToken);
+            _ses = SimpleEmailService.GetInstance(_ctx);
+        }
+
+        private void Register()
+        {
+            {
+                // Q<TextField>(Id.UsernameLogin).value 
+                var (ok, error, medium, dest) = _cognito.SignUp(
+                    "test",
+                    "AntoyDuna009!!",
+                    new Dictionary<string, string>
+                    {
+                        ["email"] = "mechar09@yahoo.com",
+                        ["preferred_username"] = "coder2"
+                    }
+                );
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Console.WriteLine($"❌ Error: {error}");
+                }
+                else if (ok)
+                {
+                    Console.WriteLine("Usuario confirmado (auto-confirm).");
+                }
+                else
+                {
+                    Console.WriteLine($"Registro creado. Código enviado por {medium} a {dest}. Usa 'confirm' para validar.");
+                }
+            }
+        }
+
+        private void VerifyEmail()
+        {
+            print("pon el codigo");
+            // var result = _cognito.ConfirmSignUp(user, code);
+        }
+
         private void CancelAll(ClickEvent _)
         {
             foreach (var key in _panels.Keys)

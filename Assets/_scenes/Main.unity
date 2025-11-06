@@ -188,6 +188,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f4e2eb2968202c4aa4663fd941ff59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WelcomeUiController
+  userData: {fileID: 11400000, guid: 6c081a73423cc7b459363ed09c055672, type: 2}
+  sourceEmail: mechar09@outlook.com
+  destinationMail: mechar09@yahoo.com
+  subjectMail: login
 --- !u!1 &841921418
 GameObject:
   m_ObjectHideFlags: 0
