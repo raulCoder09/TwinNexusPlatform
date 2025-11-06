@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/_Scripts/views/styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
+    <Style src="project://database/Assets/_scripts/views/styles/cyberpunk.uss?fileID=7433441132597879392&amp;guid=ac48303ff3780ff47bd21c5acb5600c5&amp;type=3#cyberpunk" />
     <ui:VisualElement name="body" class="body">
         <ui:VisualElement name="header" class="header">
             <ui:VisualElement name="usernamePanel">
@@ -41,7 +41,7 @@
                 <ui:VisualElement name="footerLoginPanel" class="footerSubpanel rowOrientationItems">
                     <ui:Button text="Cancel" name="cancelLoginButton" class="generalButton" />
                     <ui:Button text="Register" name="registerLoginButton" class="generalButton" />
-                    <ui:Button text="Recover" name="recoverLoginButton" class="generalButton" />
+                    <ui:Button text="Recover" name="recoverLoginButton" enabled="false" class="generalButton" />
                     <ui:Button text="Login" name="loginButton" class="generalButton" />
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -55,7 +55,6 @@
                 <ui:VisualElement name="bodyRegisterPanel" class="bodySubpanel centerItemsCompletely">
                     <ui:TextField name="usernameRegisterField" placeholder-text="Username" class="inputFields" />
                     <ui:TextField name="emailRegisterField" placeholder-text="Email" hide-placeholder-on-focus="false" class="inputFields" />
-                    <!-- <ui:TextField name="phoneRegisterField" placeholder-text="Phone Number (Optional)" hide-placeholder-on-focus="false" class="inputFields" /> -->
                     <ui:TextField name="passwordRegisterField" placeholder-text="Password" password="true" class="inputFields" />
                     <ui:TextField name="repeatPasswordRegisterField" placeholder-text="Repeat password" password="true" class="inputFields" />
                 </ui:VisualElement>
@@ -63,7 +62,6 @@
                     <ui:Button text="Cancel" name="cancelRegisterButton" class="generalButton" />
                     <ui:Button text="Back" name="backRegisterButton" class="generalButton" />
                     <ui:Button text="Register" name="registerButton" class="generalButton" />
-                    
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="recoverPasswordPanel" class="subpanels subpanelPanelOut">

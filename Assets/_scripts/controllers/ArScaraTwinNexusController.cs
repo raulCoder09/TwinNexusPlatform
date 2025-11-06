@@ -23,6 +23,7 @@ namespace _scripts.controllers
     
     public class ArScaraTwinNexusController : MonoBehaviour
     {
+        private AWS _aws;
         private JogAndTeachController _jogAndTeachController;
         private ControlPanelController  _controlPanelController;
         private MqttProtocol _mqttProtocol;
@@ -70,6 +71,7 @@ namespace _scripts.controllers
         {
             WireControlPanel();
             WireJogAndTeach();
+            _aws= GameObject.FindWithTag("AWS").GetComponent<AWS>();
         }
 
         private void Update()
@@ -240,30 +242,41 @@ namespace _scripts.controllers
             Button.RegisterCallback<PointerDownEvent>(_ =>
             {
                 SendData(topic,itemName,true.ToString());
+                _aws.SendLogAsync(topic, itemName, true);
             }, TrickleDown.TrickleDown);
 
             Button.RegisterCallback<PointerUpEvent>(_ => 
             {
                 SendData(topic,itemName,false.ToString());
+                _aws.SendLogAsync(topic, itemName, false);
             });
         }
         
         private void WireToggle(string topic, string itemName, Toggle toggle)
         {
             toggle.RegisterValueChangedCallback(evt =>
-                SendData(topic,itemName,evt.newValue.ToString()));
+            {
+                SendData(topic, itemName, evt.newValue.ToString());
+                _aws.SendLogAsync(topic, itemName, evt.newValue.ToString());
+            });
         }
         
         private void WireRadio(string topic, string itemName, RadioButton radioButton)
         {
             radioButton.RegisterValueChangedCallback(evt =>
-                SendData(topic,itemName,evt.newValue.ToString()));
+            {
+                SendData(topic, itemName, evt.newValue.ToString());
+                _aws.SendLogAsync(topic, itemName, evt.newValue.ToString());
+            });
         }
         
         private void WireDropdown(string topic, string itemName, DropdownField dropdownField)
         {
             dropdownField.RegisterValueChangedCallback(evt =>
-                SendData(topic,itemName,evt.newValue.ToString()));
+            {
+                SendData(topic, itemName, evt.newValue.ToString());
+                _aws.SendLogAsync(topic, itemName, evt.newValue.ToString());
+            });
         }
         
         private void SendData(string topic, string fieldName, string payload)

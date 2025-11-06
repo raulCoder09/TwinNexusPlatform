@@ -2,46 +2,20 @@ using System;
 using System.Collections.Generic;
 using _scripts.models.awsServices;
 using _scripts.scriptableObjects;
-using Amazon;
-using Amazon.CognitoIdentityProvider;
-using AmazonWebServices;
-using Unity.Tutorials.Core.Editor;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace _scripts.controllers
 {
     public class WelcomeUiController : MonoBehaviour
     {
-        private string _idToken, _accessToken, _refreshToken;
-
-        private Cognito _cognito;
-        private IdentityContext _ctx;
-        private SimpleEmailService _ses;
         [SerializeField] private UserData userData;
         
         private ArScaraUiController _arScaraUiController;
+        private AWS _aws;
 
-
-        #region esto solo para pruebas
-            [Header("Datos para pruebas")]
-
-            [SerializeField] private string sourceEmail="mechar09@outlook.com";
-            [SerializeField] private string destinationMail="mechar09@yahoo.com";
-            [SerializeField] private string subjectMail;
+        private string _statusLoginMessage=null;
         
-            // private RegionEndpoint _region=Amazon.RegionEndpoint.USEast1;
-            // private string _identityPoolID = "us-east-1:e962d906-6f36-4e52-8771-a2de6a11b19a";
-            // private string _userPoolID     = "us-east-1_eyRKiPuWJ"; 
-        
-        #endregion
-
-
-        private string _lastAccessToken = null;
-        private string _lastRefreshToken = null;
-        private string _statusCognitoMessage;
-
         private static class Id
         {
             public const string SlidingPanels = "slidingPanels";
@@ -105,19 +79,10 @@ namespace _scripts.controllers
         private readonly Dictionary<string, VisualElement> _panels = new();
     
         private int _openPanels = 0;
-    
+
         private void Awake()
         {
-            // #region solo para pruebas
-            //     userData.region=_region;
-            //     userData.identityPoolID=_identityPoolID;
-            //     userData.userPoolID = _userPoolID;
-            // #endregion
-            
-            
-            
-            
-            _doc = GetComponent<UIDocument>();
+        _doc = GetComponent<UIDocument>();
             _root = _doc.rootVisualElement;
         
             _overlay = Q<VisualElement>(Id.SlidingPanels);
@@ -130,17 +95,12 @@ namespace _scripts.controllers
             RegisterEvents();
         }
 
-        private void OnEnable()
-        {
-            _cognito = Cognito.GetInstance(
-                "62ham6j5iav40urvcooai5vka4",
-                new AmazonCognitoIdentityProviderClient(RegionEndpoint.USEast1)
-            );
-        }
+
 
         private void Start()
         {
             _arScaraUiController = GameObject.FindWithTag("arScaraUi").GetComponent<ArScaraUiController>();
+            _aws= GameObject.FindWithTag("AWS").GetComponent<AWS>();
             LoadData();
             if (_overlay != null) _overlay.style.display = DisplayStyle.None;
             foreach (var p in _panels.Values)
@@ -154,7 +114,7 @@ namespace _scripts.controllers
 
         private void LoadData()
         {
-            userData.Load();
+            _ = userData.LoadAsync();
             Q<TextField>(Id.UsernameLogin).value = userData.username;
         }
     
@@ -207,13 +167,9 @@ namespace _scripts.controllers
                 ShowPanel(Id.LoginPanel);
             });
             Q<Button>(Id.Recover)?.RegisterCallback<ClickEvent>(_ =>
-            {
-                if (RecoverPassword())
                 {
-                    print("Recover password");
-                    
+                    RecoverPassword();
                 }
-            }
 
             );
         
@@ -234,11 +190,7 @@ namespace _scripts.controllers
             }
             );
         }
-
-        private void ActivateAwsServices(){
-            _ctx = new IdentityContext(userData.region, userData.identityPoolID, userData.userPoolID).AsUser(_idToken);
-            _ses = SimpleEmailService.GetInstance(_ctx);
-        }
+        
         private bool Login()
         {
             if (!string.IsNullOrEmpty(Q<TextField>(Id.UsernameLogin).value) && !string.IsNullOrEmpty(Q<TextField>(Id.PasswordLogin).value))
@@ -246,32 +198,15 @@ namespace _scripts.controllers
                 if (Q<TextField>(Id.UsernameLogin).value != userData.username)
                 {
                     userData.username=Q<TextField>(Id.UsernameLogin).value;
+                    _ = userData.SaveAsync();
                 }
-                
-                (_idToken, _accessToken, _refreshToken) = _cognito.Login(userData.username, Q<TextField>(Id.PasswordLogin).value);
-                
-            
-                if (_idToken?.StartsWith("error") == true)
-                {
-                    _statusCognitoMessage = $"login failed: {_idToken}";
-                    print(_statusCognitoMessage);
-                    return false;
-                }
-                else
-                {
-                    _lastAccessToken = _accessToken;
-                    _lastRefreshToken = _refreshToken;
-                    _statusCognitoMessage =$"User {userData.username} logged in at {DateTime.Now}";
-                    ActivateAwsServices();
-                    subjectMail = "login";
-                    var result = _ses.SendEmail(sourceEmail, destinationMail, subjectMail, _statusCognitoMessage, "text");
-                    print(_statusCognitoMessage);
-                }
+
+                _aws.Login(userData.username,Q<TextField>(Id.PasswordLogin).value);
                 return true;
             }
 
-            _statusCognitoMessage = "algun campo esta vacio";
-            print(_statusCognitoMessage);
+            _statusLoginMessage = "algun campo esta vacio";
+            print(_statusLoginMessage);
             return false;
         }
         private bool Register()
@@ -286,23 +221,13 @@ namespace _scripts.controllers
                 {
                     if (Q<TextField>(Id.PasswordRegister).value.Equals(Q<TextField>(Id.RepeatPasswordRegister).value))
                     {
-                        var (ok, error, medium, dest) = _cognito.SignUp(
-                            Q<TextField>(Id.UsernameRegister).value,
-                            Q<TextField>(Id.PasswordRegister).value,
-                            new Dictionary<string, string>
-                            {
-                                ["email"] = Q<TextField>(Id.EmailRegister).value,
-                                ["preferred_username"] = Q<TextField>(Id.UsernameRegister).value
-                            }
-                        );
-
-                        if (string.IsNullOrEmpty(error)) return true;
-                        print($"Error: {error}");
-                        return false;
+                        _aws.Register(Q<TextField>(Id.UsernameRegister).value, Q<TextField>(Id.PasswordRegister).value,
+                            Q<TextField>(Id.EmailRegister).value);
+                        return true;
                     }
                     else
                     {
-                        print("no son iguales");
+                        print("las contraseñas no son iguales");
                         return false;
                     }
                 }
@@ -315,22 +240,12 @@ namespace _scripts.controllers
         }
         private bool VerifyEmail()
         {
-            var result=_cognito.ConfirmSignUp(Q<TextField>(Id.UsernameRegister).value,Q<TextField>(Id.VerificationCode).value);
-            return result.ok;
+            _aws.ConfirmSignUp(Q<TextField>(Id.UsernameRegister).value, Q<TextField>(Id.VerificationCode).value);
+            return true;
         }
-        private bool RecoverPassword()
+        private void RecoverPassword()
         {
-            var forgot = _cognito.ForgotPasswordStart(Q<TextField>(Id.EmailRecover).value);
-            if (forgot.ok)
-            {
-                print($"Código enviado a {forgot.destination} ({forgot.deliveryMedium})");
-                return true;
-            }
-            else
-            {
-                print($"Error: {forgot.error}");
-                return false;
-            }
+            print("pendiente");
         }
         private void CancelAll(ClickEvent _)
         {

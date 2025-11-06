@@ -119,6 +119,55 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &46887238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 46887239}
+  - component: {fileID: 46887240}
+  m_Layer: 0
+  m_Name: AWS
+  m_TagString: AWS
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &46887239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46887238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &46887240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46887238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00e9796a162c4e756809e15b16676f32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.AWS
+  _identityPoolID: us-east-1:e962d906-6f36-4e52-8771-a2de6a11b19a
+  _userPoolID: us-east-1_eyRKiPuWJ
+  _clientID: 62ham6j5iav40urvcooai5vka4
+  _sourceEmail: mechar09@outlook.com
+  _destinationMail: mechar09@yahoo.com
 --- !u!1 &548123520
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,9 +238,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WelcomeUiController
   userData: {fileID: 11400000, guid: 6c081a73423cc7b459363ed09c055672, type: 2}
-  sourceEmail: mechar09@outlook.com
-  destinationMail: mechar09@yahoo.com
-  subjectMail: login
 --- !u!1 &841921418
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,3 +319,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 548123521}
   - {fileID: 841921419}
+  - {fileID: 46887239}
