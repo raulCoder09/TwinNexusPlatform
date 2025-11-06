@@ -55,7 +55,7 @@
                 <ui:VisualElement name="bodyRegisterPanel" class="bodySubpanel centerItemsCompletely">
                     <ui:TextField name="usernameRegisterField" placeholder-text="Username" class="inputFields" />
                     <ui:TextField name="emailRegisterField" placeholder-text="Email" hide-placeholder-on-focus="false" class="inputFields" />
-                    <ui:TextField name="phoneRegisterField" placeholder-text="Phone Number (Optional)" hide-placeholder-on-focus="false" class="inputFields" />
+                    <!-- <ui:TextField name="phoneRegisterField" placeholder-text="Phone Number (Optional)" hide-placeholder-on-focus="false" class="inputFields" /> -->
                     <ui:TextField name="passwordRegisterField" placeholder-text="Password" password="true" class="inputFields" />
                     <ui:TextField name="repeatPasswordRegisterField" placeholder-text="Repeat password" password="true" class="inputFields" />
                 </ui:VisualElement>

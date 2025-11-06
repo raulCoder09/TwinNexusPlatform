@@ -92,6 +92,7 @@ public class ArScaraUiController : MonoBehaviour
         public const string MoveLong = "longMove";
         public const string MoveMed  = "mediumMove";
         public const string MoveShort= "shortMove";
+        
     }
 
     private UIDocument _doc;
@@ -178,6 +179,7 @@ public class ArScaraUiController : MonoBehaviour
 
     private void Start()
     {
+        HideUI();
         _slidingPanels.style.display = DisplayStyle.None;
 
         SetValue(_environmentMenu, "environment");
@@ -472,5 +474,15 @@ public class ArScaraUiController : MonoBehaviour
             "QR marker" => Placement.QRMarker,
             _ => Placement.None
         };
+    }
+    
+    internal void ShowUI()
+    {
+        Q<VisualElement>(Id.Body).style.display = DisplayStyle.Flex;
+    }
+
+    internal void HideUI()
+    {
+        Q<VisualElement>(Id.Body).style.display = DisplayStyle.None;
     }
 }

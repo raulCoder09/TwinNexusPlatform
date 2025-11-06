@@ -5,6 +5,7 @@ using _scripts.scriptableObjects;
 using Amazon;
 using Amazon.CognitoIdentityProvider;
 using AmazonWebServices;
+using Unity.Tutorials.Core.Editor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
@@ -19,6 +20,8 @@ namespace _scripts.controllers
         private IdentityContext _ctx;
         private SimpleEmailService _ses;
         [SerializeField] private UserData userData;
+        
+        private ArScaraUiController _arScaraUiController;
 
 
         #region esto solo para pruebas
@@ -70,7 +73,20 @@ namespace _scripts.controllers
             public const string Verify = "verifyEmailButton";
             
             public const string UsernameLogin = "usernameLoginField";
-            public const string Password = "passwordLoginField";
+            public const string PasswordLogin = "passwordLoginField";
+            
+            
+            public const string UsernameRegister = "usernameRegisterField";
+            public const string EmailRegister = "emailRegisterField";
+            public const string PasswordRegister = "passwordRegisterField";
+            public const string RepeatPasswordRegister = "repeatPasswordRegisterField";
+            public const string VerificationCode = "verificationCodeField";
+            public const string EmailRecover = "emailRecoverField";
+            public const string Body = "body";
+            
+            
+            
+            
         }
 
         private static class Uss
@@ -124,6 +140,7 @@ namespace _scripts.controllers
 
         private void Start()
         {
+            _arScaraUiController = GameObject.FindWithTag("arScaraUi").GetComponent<ArScaraUiController>();
             LoadData();
             if (_overlay != null) _overlay.style.display = DisplayStyle.None;
             foreach (var p in _panels.Values)
@@ -132,6 +149,7 @@ namespace _scripts.controllers
                 p.RemoveFromClassList(Uss.In);
                 if (!p.ClassListContains(Uss.Out)) p.AddToClassList(Uss.Out);
             }
+            ShowUI();
         }
 
         private void LoadData()
@@ -158,7 +176,16 @@ namespace _scripts.controllers
                 HidePanel(Id.RegisterPanel);
                 ShowPanel(Id.RecoverPanel);
             });
-            Q<Button>(Id.Login)?.RegisterCallback<ClickEvent>(_ =>Login());
+            Q<Button>(Id.Login)?.RegisterCallback<ClickEvent>(_ =>
+            {
+                if (Login())
+                {
+                    HidePanel(Id.LoginPanel);
+                    HideUI();
+                    _arScaraUiController.ShowUI();
+                }
+            }
+                );
         
             Q<Button>(Id.CancelRegister)?.RegisterCallback<ClickEvent>(CancelAll);
             Q<Button>(Id.BackRegister)?.RegisterCallback<ClickEvent>(_ =>
@@ -168,10 +195,9 @@ namespace _scripts.controllers
             });
             Q<Button>(Id.Register)?.RegisterCallback<ClickEvent>(_ =>
             {
+                if (!Register()) return;
                 HidePanel(Id.RegisterPanel);
                 ShowPanel(Id.VerifyPanel);
-                Register();
-                Debug.Log("Register!!");
             });
         
             Q<Button>(Id.CancelRecover)?.RegisterCallback<ClickEvent>(CancelAll);
@@ -180,7 +206,16 @@ namespace _scripts.controllers
                 HidePanel(Id.RecoverPanel);
                 ShowPanel(Id.LoginPanel);
             });
-            Q<Button>(Id.Recover)?.RegisterCallback<ClickEvent>(_ => Debug.Log("Recover Password!!"));
+            Q<Button>(Id.Recover)?.RegisterCallback<ClickEvent>(_ =>
+            {
+                if (RecoverPassword())
+                {
+                    print("Recover password");
+                    
+                }
+            }
+
+            );
         
             Q<Button>(Id.CancelVerify)?.RegisterCallback<ClickEvent>(CancelAll);
             Q<Button>(Id.BackVerify)?.RegisterCallback<ClickEvent>(_ =>
@@ -189,24 +224,38 @@ namespace _scripts.controllers
                 ShowPanel(Id.RegisterPanel);
             });
             Q<Button>(Id.ResendCode)?.RegisterCallback<ClickEvent>(_ => Debug.Log("Resend verification code!!"));
-            Q<Button>(Id.Verify)?.RegisterCallback<ClickEvent>(_ => VerifyEmail());
+            Q<Button>(Id.Verify)?.RegisterCallback<ClickEvent>(_ => 
+            {
+                if (VerifyEmail())
+                {
+                    HidePanel(Id.VerifyPanel);
+                    ShowPanel(Id.LoginPanel);
+                }
+            }
+            );
         }
 
-        private void Login()
+        private void ActivateAwsServices(){
+            _ctx = new IdentityContext(userData.region, userData.identityPoolID, userData.userPoolID).AsUser(_idToken);
+            _ses = SimpleEmailService.GetInstance(_ctx);
+        }
+        private bool Login()
         {
-            if (!string.IsNullOrEmpty(Q<TextField>(Id.UsernameLogin).value) && !string.IsNullOrEmpty(Q<TextField>(Id.Password).value))
+            if (!string.IsNullOrEmpty(Q<TextField>(Id.UsernameLogin).value) && !string.IsNullOrEmpty(Q<TextField>(Id.PasswordLogin).value))
             {
                 if (Q<TextField>(Id.UsernameLogin).value != userData.username)
                 {
                     userData.username=Q<TextField>(Id.UsernameLogin).value;
                 }
                 
-                (_idToken, _accessToken, _refreshToken) = _cognito.Login(userData.username, Q<TextField>(Id.Password).value);
+                (_idToken, _accessToken, _refreshToken) = _cognito.Login(userData.username, Q<TextField>(Id.PasswordLogin).value);
                 
             
                 if (_idToken?.StartsWith("error") == true)
                 {
                     _statusCognitoMessage = $"login failed: {_idToken}";
+                    print(_statusCognitoMessage);
+                    return false;
                 }
                 else
                 {
@@ -216,56 +265,78 @@ namespace _scripts.controllers
                     ActivateAwsServices();
                     subjectMail = "login";
                     var result = _ses.SendEmail(sourceEmail, destinationMail, subjectMail, _statusCognitoMessage, "text");
+                    print(_statusCognitoMessage);
                 }
+                return true;
             }
-        }
-        
-        private void ActivateAwsServices(){
-            _ctx = new IdentityContext(userData.region, userData.identityPoolID, userData.userPoolID).AsUser(_idToken);
-            _ses = SimpleEmailService.GetInstance(_ctx);
-        }
 
-        private void Register()
+            _statusCognitoMessage = "algun campo esta vacio";
+            print(_statusCognitoMessage);
+            return false;
+        }
+        private bool Register()
         {
             {
-                // Q<TextField>(Id.UsernameLogin).value 
-                var (ok, error, medium, dest) = _cognito.SignUp(
-                    "test",
-                    "AntoyDuna009!!",
-                    new Dictionary<string, string>
+                if (
+                    !string.IsNullOrEmpty(Q<TextField>(Id.UsernameRegister).value) &&
+                    !string.IsNullOrEmpty(Q<TextField>(Id.EmailRegister).value) &&
+                    !string.IsNullOrEmpty(Q<TextField>(Id.PasswordRegister).value) &&
+                    !string.IsNullOrEmpty(Q<TextField>(Id.RepeatPasswordRegister).value)
+                )
+                {
+                    if (Q<TextField>(Id.PasswordRegister).value.Equals(Q<TextField>(Id.RepeatPasswordRegister).value))
                     {
-                        ["email"] = "mechar09@yahoo.com",
-                        ["preferred_username"] = "coder2"
-                    }
-                );
+                        var (ok, error, medium, dest) = _cognito.SignUp(
+                            Q<TextField>(Id.UsernameRegister).value,
+                            Q<TextField>(Id.PasswordRegister).value,
+                            new Dictionary<string, string>
+                            {
+                                ["email"] = Q<TextField>(Id.EmailRegister).value,
+                                ["preferred_username"] = Q<TextField>(Id.UsernameRegister).value
+                            }
+                        );
 
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Console.WriteLine($"❌ Error: {error}");
-                }
-                else if (ok)
-                {
-                    Console.WriteLine("Usuario confirmado (auto-confirm).");
+                        if (string.IsNullOrEmpty(error)) return true;
+                        print($"Error: {error}");
+                        return false;
+                    }
+                    else
+                    {
+                        print("no son iguales");
+                        return false;
+                    }
                 }
                 else
                 {
-                    Console.WriteLine($"Registro creado. Código enviado por {medium} a {dest}. Usa 'confirm' para validar.");
+                    print("revisa algun campo esta vacio");
+                    return false;
                 }
             }
         }
-
-        private void VerifyEmail()
+        private bool VerifyEmail()
         {
-            print("pon el codigo");
-            // var result = _cognito.ConfirmSignUp(user, code);
+            var result=_cognito.ConfirmSignUp(Q<TextField>(Id.UsernameRegister).value,Q<TextField>(Id.VerificationCode).value);
+            return result.ok;
         }
-
+        private bool RecoverPassword()
+        {
+            var forgot = _cognito.ForgotPasswordStart(Q<TextField>(Id.EmailRecover).value);
+            if (forgot.ok)
+            {
+                print($"Código enviado a {forgot.destination} ({forgot.deliveryMedium})");
+                return true;
+            }
+            else
+            {
+                print($"Error: {forgot.error}");
+                return false;
+            }
+        }
         private void CancelAll(ClickEvent _)
         {
             foreach (var key in _panels.Keys)
                 HidePanel(key);
         }
-
         private void ExitApplication(ClickEvent _)
         {
             Application.Quit();
@@ -273,7 +344,6 @@ namespace _scripts.controllers
             UnityEditor.EditorApplication.isPlaying = false;
 #endif
         }
-    
         private void ShowPanel(string name)
         {
             if (!_panels.TryGetValue(name, out var panel) || panel == null) return;
@@ -290,7 +360,6 @@ namespace _scripts.controllers
                 _openPanels++;
             }
         }
-
         private void HidePanel(string name)
         {
             if (!_panels.TryGetValue(name, out var panel) || panel == null) return;
@@ -314,7 +383,6 @@ namespace _scripts.controllers
             };
             panel.RegisterCallback(handler);
         }
-    
         private void SetOverlayVisible(bool on)
         {
             if (_overlay == null || _scrim == null) return;
@@ -323,9 +391,7 @@ namespace _scripts.controllers
             _scrim.RemoveFromClassList(on ? Uss.ScrimTransparent : Uss.ScrimOpaque);
             _scrim.AddToClassList(on ? Uss.ScrimOpaque : Uss.ScrimTransparent);
         }
-
         private T Q<T>(string name) where T : VisualElement => _root.Q<T>(name);
-
         private void CachePanel(string name)
         {
             var ve = Q<VisualElement>(name);
@@ -335,6 +401,16 @@ namespace _scripts.controllers
                 return;
             }
             _panels[name] = ve;
+        }
+
+        private void ShowUI()
+        {
+            Q<VisualElement>(Id.Body).style.display = DisplayStyle.Flex;
+        }
+
+        private void HideUI()
+        {
+            Q<VisualElement>(Id.Body).style.display = DisplayStyle.None;
         }
     }
 }
