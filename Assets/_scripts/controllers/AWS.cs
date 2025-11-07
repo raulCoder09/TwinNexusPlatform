@@ -92,7 +92,6 @@ namespace _scripts.controllers
             
             _ = SendEmailAsync(_sourceEmail, _destinationMail, _subjectMail, _statusCognitoMessage);
             _ = SendLogAsync($"auth | {username} | {_statusCognitoMessage}");
-
             return (true, _statusCognitoMessage);
         }
 

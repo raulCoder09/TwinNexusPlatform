@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using _scripts.models.awsServices;
 using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 
-namespace AmazonWebServices
+namespace _scripts.models.awsServices
 {
     public sealed class CloudWatch
     {

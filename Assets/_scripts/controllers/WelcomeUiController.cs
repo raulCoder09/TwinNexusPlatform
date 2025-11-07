@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using _scripts.models.awsServices;
 using _scripts.scriptableObjects;
 using UnityEngine;
@@ -136,13 +137,17 @@ namespace _scripts.controllers
                 HidePanel(Id.RegisterPanel);
                 ShowPanel(Id.RecoverPanel);
             });
-            Q<Button>(Id.Login)?.RegisterCallback<ClickEvent>(_ =>
+            Q<Button>(Id.Login)?.RegisterCallback<ClickEvent>(async _ =>
             {
-                if (Login())
+                if (await Login())
                 {
                     HidePanel(Id.LoginPanel);
                     HideUI();
                     _arScaraUiController.ShowUI();
+                }
+                else
+                {
+                    print(_statusLoginMessage);
                 }
             }
                 );
@@ -191,7 +196,7 @@ namespace _scripts.controllers
             );
         }
         
-        private bool Login()
+        private async Task<bool> Login()
         {
             if (!string.IsNullOrEmpty(Q<TextField>(Id.UsernameLogin).value) && !string.IsNullOrEmpty(Q<TextField>(Id.PasswordLogin).value))
             {
@@ -200,12 +205,21 @@ namespace _scripts.controllers
                     userData.username=Q<TextField>(Id.UsernameLogin).value;
                     _ = userData.SaveAsync();
                 }
+                
+                (bool ok, string msg) = await _aws.Login(userData.username,Q<TextField>(Id.PasswordLogin).value);
 
-                _aws.Login(userData.username,Q<TextField>(Id.PasswordLogin).value);
-                return true;
+                if (ok)
+                {
+                    return true;
+                }
+                else
+                {
+                    _statusLoginMessage = msg;
+                    return false;
+                }
             }
 
-            _statusLoginMessage = "algun campo esta vacio";
+            _statusLoginMessage = "Check if any field is empty";
             print(_statusLoginMessage);
             return false;
         }
@@ -227,13 +241,13 @@ namespace _scripts.controllers
                     }
                     else
                     {
-                        print("las contraseñas no son iguales");
+                        print("The passwords are different");
                         return false;
                     }
                 }
                 else
                 {
-                    print("revisa algun campo esta vacio");
+                    print("Check if any field is empty");
                     return false;
                 }
             }
