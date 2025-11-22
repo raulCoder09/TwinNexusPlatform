@@ -291,7 +291,7 @@ namespace _scripts.controllers
         
         private void RegisterUiItems()
         {
-            _arScaraUi = GameObject.FindWithTag("arScaraUi");
+            _arScaraUi = GameObject.FindWithTag("UserInterfaceArScara");
             if (_arScaraUi == null) return;
 
             _root = _arScaraUi.GetComponent<UIDocument>()?.rootVisualElement;

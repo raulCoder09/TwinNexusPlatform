@@ -13,7 +13,7 @@ namespace _scripts.controllers
         [SerializeField] private UserData userData;
         
         private ArScaraUiController _arScaraUiController;
-        private AWS _aws;
+        private AwsController _awsController;
 
         private string _statusLoginMessage=null;
         
@@ -100,8 +100,8 @@ namespace _scripts.controllers
 
         private void Start()
         {
-            _arScaraUiController = GameObject.FindWithTag("arScaraUi").GetComponent<ArScaraUiController>();
-            _aws= GameObject.FindWithTag("AWS").GetComponent<AWS>();
+            _arScaraUiController = GameObject.FindWithTag("UserInterfaceArScara").GetComponent<ArScaraUiController>();
+            _awsController= GameObject.FindWithTag("AwsController").GetComponent<AwsController>();
             LoadData();
             if (_overlay != null) _overlay.style.display = DisplayStyle.None;
             foreach (var p in _panels.Values)
@@ -206,7 +206,7 @@ namespace _scripts.controllers
                     _ = userData.SaveAsync();
                 }
                 
-                (bool ok, string msg) = await _aws.Login(userData.username,Q<TextField>(Id.PasswordLogin).value);
+                (bool ok, string msg) = await _awsController.Login(userData.username,Q<TextField>(Id.PasswordLogin).value);
 
                 if (ok)
                 {
@@ -235,7 +235,7 @@ namespace _scripts.controllers
                 {
                     if (Q<TextField>(Id.PasswordRegister).value.Equals(Q<TextField>(Id.RepeatPasswordRegister).value))
                     {
-                        _aws.Register(Q<TextField>(Id.UsernameRegister).value, Q<TextField>(Id.PasswordRegister).value,
+                        _awsController.Register(Q<TextField>(Id.UsernameRegister).value, Q<TextField>(Id.PasswordRegister).value,
                             Q<TextField>(Id.EmailRegister).value);
                         return true;
                     }
@@ -254,7 +254,7 @@ namespace _scripts.controllers
         }
         private bool VerifyEmail()
         {
-            _aws.ConfirmSignUp(Q<TextField>(Id.UsernameRegister).value, Q<TextField>(Id.VerificationCode).value);
+            _awsController.ConfirmSignUp(Q<TextField>(Id.UsernameRegister).value, Q<TextField>(Id.VerificationCode).value);
             return true;
         }
         private void RecoverPassword()

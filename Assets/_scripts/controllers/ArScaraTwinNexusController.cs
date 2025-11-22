@@ -23,7 +23,7 @@ namespace _scripts.controllers
     
     public class ArScaraTwinNexusController : MonoBehaviour
     {
-        private AWS _aws;
+        private AwsController _awsController;
         private JogAndTeachController _jogAndTeachController;
         private ControlPanelController  _controlPanelController;
         private MqttProtocol _mqttProtocol;
@@ -71,7 +71,7 @@ namespace _scripts.controllers
         {
             WireControlPanel();
             WireJogAndTeach();
-            _aws= GameObject.FindWithTag("AWS").GetComponent<AWS>();
+            _awsController= GameObject.FindWithTag("AwsController").GetComponent<AwsController>();
         }
 
         private void Update()
@@ -106,19 +106,19 @@ namespace _scripts.controllers
                 {
                     case "EmergencyStop":
                         _controlPanelController.EmergencyStopLabel.text = $"Emergency stop: {valueStr}";
-                        _aws.SendLogAsync(message.Topic,"EmergencyStop",valueStr);
+                        _awsController.SendLogAsync(message.Topic,"EmergencyStop",valueStr);
                         break;
                     case "Safeguard":
                         _controlPanelController.SafeguardLabel.text = $"Safeguard: {valueStr}";
-                        _aws.SendLogAsync(message.Topic,"Safeguard",valueStr);
+                        _awsController.SendLogAsync(message.Topic,"Safeguard",valueStr);
                         break;
                     case "Motors":
                         _controlPanelController.MotorsLabel.text = $"Motors: {valueStr}";
-                        _aws.SendLogAsync(message.Topic,"Motors",valueStr);
+                        _awsController.SendLogAsync(message.Topic,"Motors",valueStr);
                         break;
                     case "Power":
                         _controlPanelController.PowerLabel.text = $"Power: {valueStr}";
-                        _aws.SendLogAsync(message.Topic,"Power",valueStr);
+                        _awsController.SendLogAsync(message.Topic,"Power",valueStr);
                         break;
                 }
             }
@@ -131,35 +131,35 @@ namespace _scripts.controllers
                     {
                         case "X":
                             _jogAndTeachController.XLabel.text = $"X: {valueStr} mm";
-                            _aws.SendLogAsync(message.Topic,"X",$"{valueStr} mm");
+                            _awsController.SendLogAsync(message.Topic,"X",$"{valueStr} mm");
                             break;
                         case "Y":
                             _jogAndTeachController.YLabel.text = $"Y: {valueStr} mm";
-                            _aws.SendLogAsync(message.Topic,"Y",$"{valueStr} mm");
+                            _awsController.SendLogAsync(message.Topic,"Y",$"{valueStr} mm");
                             break;
                         case "Z":
                             _jogAndTeachController.ZLabel.text = $"Z: {valueStr} mm";
-                            _aws.SendLogAsync(message.Topic,"Z",$"{valueStr} mm");
+                            _awsController.SendLogAsync(message.Topic,"Z",$"{valueStr} mm");
                             break;
                         case "U":
                             _jogAndTeachController.ULabel.text = $"U: {valueStr} deg";
-                            _aws.SendLogAsync(message.Topic,"U",$"{valueStr} deg");
+                            _awsController.SendLogAsync(message.Topic,"U",$"{valueStr} deg");
                             break;
                         case "J1":
                             _jogAndTeachController.J1Label.text = $"J1: {valueStr} deg";
-                            _aws.SendLogAsync(message.Topic,"J1",$"{valueStr} deg");
+                            _awsController.SendLogAsync(message.Topic,"J1",$"{valueStr} deg");
                             break;
                         case "J2":
                             _jogAndTeachController.J2Label.text = $"J2: {valueStr} deg";
-                            _aws.SendLogAsync(message.Topic,"J2",$"{valueStr} deg");
+                            _awsController.SendLogAsync(message.Topic,"J2",$"{valueStr} deg");
                             break;
                         case "J3":
                             _jogAndTeachController.J3Label.text = $"J3: {valueStr} deg";
-                            _aws.SendLogAsync(message.Topic,"J3",$"{valueStr} deg");
+                            _awsController.SendLogAsync(message.Topic,"J3",$"{valueStr} deg");
                             break;
                         case "J4":
                             _jogAndTeachController.J4Label.text = $"J4: {valueStr} deg";
-                            _aws.SendLogAsync(message.Topic,"J4",$"{valueStr} deg");
+                            _awsController.SendLogAsync(message.Topic,"J4",$"{valueStr} deg");
                             break;
                     }
             }
@@ -254,13 +254,13 @@ namespace _scripts.controllers
             Button.RegisterCallback<PointerDownEvent>(_ =>
             {
                 SendData(topic,itemName,true.ToString());
-                _aws.SendLogAsync(topic, itemName, true);
+                _awsController.SendLogAsync(topic, itemName, true);
             }, TrickleDown.TrickleDown);
 
             Button.RegisterCallback<PointerUpEvent>(_ => 
             {
                 SendData(topic,itemName,false.ToString());
-                _aws.SendLogAsync(topic, itemName, false);
+                _awsController.SendLogAsync(topic, itemName, false);
             });
         }
         
@@ -269,7 +269,7 @@ namespace _scripts.controllers
             toggle.RegisterValueChangedCallback(evt =>
             {
                 SendData(topic, itemName, evt.newValue.ToString());
-                _aws.SendLogAsync(topic, itemName, evt.newValue.ToString());
+                _awsController.SendLogAsync(topic, itemName, evt.newValue.ToString());
             });
         }
         
@@ -278,7 +278,7 @@ namespace _scripts.controllers
             radioButton.RegisterValueChangedCallback(evt =>
             {
                 SendData(topic, itemName, evt.newValue.ToString());
-                _aws.SendLogAsync(topic, itemName, evt.newValue.ToString());
+                _awsController.SendLogAsync(topic, itemName, evt.newValue.ToString());
             });
         }
         
@@ -287,7 +287,7 @@ namespace _scripts.controllers
             dropdownField.RegisterValueChangedCallback(evt =>
             {
                 SendData(topic, itemName, evt.newValue.ToString());
-                _aws.SendLogAsync(topic, itemName, evt.newValue.ToString());
+                _awsController.SendLogAsync(topic, itemName, evt.newValue.ToString());
             });
         }
         

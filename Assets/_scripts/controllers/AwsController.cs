@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace _scripts.controllers
 {
-    public class AWS : MonoBehaviour
+    public class AwsController : MonoBehaviour
     {
         #region AWS parámetros fundamentales
             [Header("AWS")]

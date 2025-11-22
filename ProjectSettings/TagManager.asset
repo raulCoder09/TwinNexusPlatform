@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 3
   tags:
   - welcomeUi
-  - arScaraUi
   - virtualEnvironment
   - augmentedEnvironment
   - hybridEnvironment
@@ -13,7 +12,10 @@ TagManager:
   - VirtualEnvironmentCamera
   - TwinNexusEnvironmentArScara
   - MqttManager
-  - AWS
+  - AwsController
+  - UserInterfaceArScara
+  - ARSCARA
+  - EnvironmentControllerArScara
   layers:
   - Default
   - TransparentFX
