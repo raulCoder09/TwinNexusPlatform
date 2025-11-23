@@ -703,7 +703,7 @@ GameObject:
   - component: {fileID: 7769290786696566913}
   - component: {fileID: 3609178527196362181}
   m_Layer: 0
-  m_Name: ARSCARA
+  m_Name: Model3D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1237,7 +1237,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a821d6aac8b4d4f4d9d4573998909ac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArScaraVirtualController
-  enableFkTarget: 1
-  fkX: 0
-  fkY: 0
-  fkZ: 0
+  _activate: 0

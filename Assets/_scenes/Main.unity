@@ -357,6 +357,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 458fbceb90934e03982f846b84ea6081, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.ArScaraEnvironmentController
+  virtualEnvironment: {fileID: 0}
+  augmentedEnvironment: {fileID: 0}
+  twinNexusEnvironment: {fileID: 0}
 --- !u!1 &1995920507
 GameObject:
   m_ObjectHideFlags: 0

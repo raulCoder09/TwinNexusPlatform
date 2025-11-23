@@ -1181,7 +1181,7 @@ GameObject:
   - component: {fileID: 5706154361215437569}
   - component: {fileID: 7698886108113442470}
   m_Layer: 0
-  m_Name: ARSCARA
+  m_Name: Model3D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

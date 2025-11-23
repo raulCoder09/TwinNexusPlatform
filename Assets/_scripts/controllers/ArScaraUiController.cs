@@ -1,26 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.XR.Management;
-
 
 namespace _scripts.controllers
 {
     public class ArScaraUiController : MonoBehaviour
     {
-        [Header("Environment Prefabs")]
-        [SerializeField] private GameObject virtualEnvironment;
-        [SerializeField] private GameObject augmentedEnvironment;
-        [SerializeField] private GameObject twinNexusEnvironment;
+        [Header("Controllers")]
+        private ArScaraEnvironmentController _environmentController;
 
-        private enum EnvType { None, Virtual, Augmented, TwinNexus }
         private enum ModeType { None, World, Joint }
         private enum ArScaraPanel { None, Control, JogTeach, Points }
         private enum Placement { None, Raycast, QRMarker }
-
-        private EnvType _currentEnvType = EnvType.None;
 
         private static class Uss
         {
@@ -87,7 +79,6 @@ namespace _scripts.controllers
             public const string MoveLong = "longMove";
             public const string MoveMed  = "mediumMove";
             public const string MoveShort= "shortMove";
-        
         }
 
         private UIDocument _doc;
@@ -105,17 +96,20 @@ namespace _scripts.controllers
         private readonly List<VisualElement> _teachEdit    = new();
         private readonly List<VisualElement> _commanding   = new();
 
-        private readonly Dictionary<EnvType, GameObject> _envPrefabs = new();
-        private GameObject _currentEnv;
-
         private void Awake()
         {
+            // Obtener referencia al Environment Controller si no está asignada
+            if (_environmentController == null)
+            {
+                _environmentController = GameObject.FindWithTag("EnvironmentControllerArScara").GetComponent<ArScaraEnvironmentController>();
+                if (_environmentController == null)
+                {
+                    Debug.LogError("ArScaraEnvironmentController not found! Please assign it in the Inspector.");
+                }
+            }
+
             _doc = GetComponent<UIDocument>();
             _root = _doc.rootVisualElement;
-
-            _envPrefabs[EnvType.Virtual]   = virtualEnvironment;
-            _envPrefabs[EnvType.Augmented] = augmentedEnvironment;
-            _envPrefabs[EnvType.TwinNexus]    = twinNexusEnvironment;
 
             _body = Q<VisualElement>(Id.Body);
             _slidingPanels = Q<VisualElement>(Id.SlidingPanels);
@@ -142,9 +136,7 @@ namespace _scripts.controllers
             Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ =>
             {
                 SetValue(_environmentMenu, "environment");
-            
                 SetValue(_arScaraMenu, "ARSCARA menu");
-
                 SetValue(_placementMenu, "Placement");
 
                 ShowOnlyArScaraPanel(ArScaraPanel.None);
@@ -165,7 +157,7 @@ namespace _scripts.controllers
 
             _environmentMenu?.RegisterValueChangedCallback(e => OnEnvironmentChanged(ParseEnv(e.newValue)));
             _arScaraMenu?.RegisterValueChangedCallback(e => OnArScaraMenuChanged(ParseArScaraPanel(e.newValue)));
-            _placementMenu?.RegisterValueChangedCallback(e =>OnPlacementMenuChanged(ParsePlacement(e.newValue)));
+            _placementMenu?.RegisterValueChangedCallback(e => OnPlacementMenuChanged(ParsePlacement(e.newValue)));
             _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
             _speed?.RegisterValueChangedCallback(_ => { /* hook futuro */ });
 
@@ -194,9 +186,9 @@ namespace _scripts.controllers
             ShowOnlyArScaraPanel(ArScaraPanel.None);
             SetBodyOpaque(true);
             ApplyModeUi(ModeType.None);
-
-        
         }
+
+        #region UI Query & Manipulation
 
         private T Q<T>(string name) where T : VisualElement => _root.Q<T>(name);
 
@@ -208,6 +200,7 @@ namespace _scripts.controllers
             if (on) { ve.RemoveFromClassList(Uss.Hide); ve.AddToClassList(Uss.Show); }
             else    { ve.RemoveFromClassList(Uss.Show); ve.AddToClassList(Uss.Hide); }
         }
+
         private static void SetVisible(IEnumerable<VisualElement> list, bool on)
         {
             foreach (var ve in list) SetVisible(ve, on);
@@ -219,6 +212,10 @@ namespace _scripts.controllers
             _body.RemoveFromClassList(opaque ? Uss.BgTransparent : Uss.BgOpaque);
             _body.AddToClassList(opaque ? Uss.BgOpaque : Uss.BgTransparent);
         }
+
+        #endregion
+
+        #region Panel Animations
 
         private void ShowPanelSliding(VisualElement panel)
         {
@@ -255,50 +252,11 @@ namespace _scripts.controllers
             panel.RemoveFromClassList(rem);
             panel.AddToClassList(add);
         }
-        private IEnumerator SafeDestroyEnvironment(GameObject root)
-        {
-            if (!root) yield break;
-#if UNITY_EDITOR
-            var sel = Selection.activeGameObject;
-            if (sel && (sel == root || sel.transform.IsChildOf(root.transform)))
-                Selection.activeObject = null;
-#endif
 
-            if (root.name=="TwinNexusEnvironmentArScara(Clone)")
-            {
-                var twinNexus = root.GetComponent<ArScaraTwinNexusController>();
-                if (twinNexus.mqttProtocol.IsConnected)
-                {
-                    twinNexus.mqttProtocol.Topic = "ARSCARA/StatusConnection";
-                    twinNexus.mqttProtocol.Payload = new { Status = "Disconnected" };
-                    twinNexus.mqttProtocol.SendData();
-                    twinNexus.mqttProtocol.Disconnect();
-                }
-                yield return new WaitForSeconds(1f);
-            }
+        #endregion
 
-            root.SetActive(false);
-            yield return null;
-            yield return new WaitForEndOfFrame();
-            if (root) Destroy(root);
-        }
-    
+        #region UI Groups Setup
 
-        private IEnumerator StartXRNextFrame()
-        {
-            yield return null;
-            yield return new WaitForEndOfFrame();
-
-            var mgr = XRGeneralSettings.Instance?.Manager;
-            if (mgr != null)
-            {
-                mgr.InitializeLoaderSync();
-            
-                yield return null;
-                mgr.StartSubsystems();
-            }
-        }
-    
         private void BuildGroups()
         {
             Add(_worldButtons, Q<Button>(Id.BpX), Q<Button>(Id.BmX), Q<Button>(Id.BpY), Q<Button>(Id.BmY),
@@ -323,6 +281,10 @@ namespace _scripts.controllers
             foreach (var it in items) if (it != null) list.Add(it);
         }
 
+        #endregion
+
+        #region Mode UI
+
         private void ApplyModeUi(ModeType mode)
         {
             bool common = mode is ModeType.World or ModeType.Joint;
@@ -346,23 +308,41 @@ namespace _scripts.controllers
             }
         }
 
-        private void OnEnvironmentChanged(EnvType env)
+        #endregion
+
+        #region Event Handlers
+
+        private void OnEnvironmentChanged(ArScaraEnvironmentController.EnvType env)
         {
-            bool none = env == EnvType.None;
+            bool none = env == ArScaraEnvironmentController.EnvType.None;
+            
+            // Actualizar UI según selección
             _arScaraMenu?.SetEnabled(!none);
-            _placementMenu?.SetEnabled(!none && (env == EnvType.Augmented));
+            _placementMenu?.SetEnabled(!none && (env == ArScaraEnvironmentController.EnvType.Augmented));
             _warning.text = none ? "Select a work environment" : "Select ARSCARA robot interface";
             SetBodyOpaque(none);
+            
             if (none)
             {
                 SetValue(_arScaraMenu, "ARSCARA menu");
             }
-            if (env == EnvType.Augmented && XRGeneralSettings.Instance?.Manager == null)
+
+            // Verificar disponibilidad de XR para AR
+            if (env == ArScaraEnvironmentController.EnvType.Augmented && !_environmentController.IsXRAvailable())
+            {
                 _warning.text = "AR not available: enable a provider in Project Settings > XR Plug-in Management.";
+            }
 
-            SpawnEnvironment(env);
+            // ✨ LLAMAR AL ENVIRONMENT CONTROLLER PARA CREAR EL ENTORNO
+            if (_environmentController != null)
+            {
+                _environmentController.CreateEnvironment(env);
+            }
+            else
+            {
+                Debug.LogError("Environment Controller not assigned!");
+            }
         }
-
 
         private void OnArScaraMenuChanged(ArScaraPanel panel)
         {
@@ -382,58 +362,23 @@ namespace _scripts.controllers
 
         private void OnPlacementMenuChanged(Placement placement)
         {
-            print(placement);
+            Debug.Log($"Placement changed to: {placement}");
+            // TODO: Implementar lógica de placement (Raycast/QR Marker)
         }
 
-        private void SpawnEnvironment(EnvType env)
-        {
+        #endregion
 
-            if (_currentEnv != null)
-            {
-                StartCoroutine(SafeDestroyEnvironment(_currentEnv));
-                _currentEnv = null;
-            }
+        #region Parsers
 
-            _currentEnvType = env;
-
-            if (env == EnvType.None) return;
-
-            if (_envPrefabs.TryGetValue(env, out var prefab) && prefab != null)
-            {
-                if (env == EnvType.Augmented)
-                {
-                    StartCoroutine(StartXRThenSpawn(prefab));
-                    return;
-                }
-
-                _currentEnv = Instantiate(prefab);
-            }
-            else
-            {
-                Debug.LogWarning($"Prefab not set for environment {env}");
-            }
-        }
-
-        private IEnumerator StartXRThenSpawn(GameObject prefab)
-        {
-
-            yield return null;
-            yield return new WaitForEndOfFrame();
-
-            _currentEnv = Instantiate(prefab);
-        }
-
-
-
-        private static EnvType ParseEnv(string raw)
+        private static ArScaraEnvironmentController.EnvType ParseEnv(string raw)
         {
             var s = (raw ?? "").Trim();
             return s switch
             {
-                "Virtual"   => EnvType.Virtual,
-                "Augmented" => EnvType.Augmented,
-                "Twin Nexus"    => EnvType.TwinNexus,
-                _           => EnvType.None
+                "Virtual"    => ArScaraEnvironmentController.EnvType.Virtual,
+                "Augmented"  => ArScaraEnvironmentController.EnvType.Augmented,
+                "Twin Nexus" => ArScaraEnvironmentController.EnvType.TwinNexus,
+                _            => ArScaraEnvironmentController.EnvType.None
             };
         }
 
@@ -465,12 +410,16 @@ namespace _scripts.controllers
             var s = (raw ?? "").Trim();
             return s switch
             {
-                "Raycast" => Placement.Raycast,
+                "Raycast"   => Placement.Raycast,
                 "QR marker" => Placement.QRMarker,
-                _ => Placement.None
+                _           => Placement.None
             };
         }
-    
+
+        #endregion
+
+        #region Public API
+
         internal void ShowUI()
         {
             Q<VisualElement>(Id.Body).style.display = DisplayStyle.Flex;
@@ -480,5 +429,7 @@ namespace _scripts.controllers
         {
             Q<VisualElement>(Id.Body).style.display = DisplayStyle.None;
         }
+
+        #endregion
     }
 }
