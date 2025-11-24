@@ -16,6 +16,7 @@ TagManager:
   - UserInterfaceArScara
   - ARSCARA
   - EnvironmentControllerArScara
+  - VirtualEnvironmentArScara
   layers:
   - Default
   - TransparentFX

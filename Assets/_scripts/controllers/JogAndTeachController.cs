@@ -280,7 +280,7 @@ namespace _scripts.controllers
 
         private void Start()
         {
-            if (_shortMove != null) _shortMove.value = true;
+            if (_continuousMove != null) _continuousMove.value = true;
         }
 
         private void OnEnable()

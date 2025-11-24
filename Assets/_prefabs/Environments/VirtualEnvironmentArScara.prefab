@@ -1187,9 +1187,10 @@ GameObject:
   - component: {fileID: 2277374189516509764}
   - component: {fileID: 160541083607416914}
   - component: {fileID: -2746451686532662138}
+  - component: {fileID: 715831670823619050}
   m_Layer: 0
   m_Name: VirtualEnvironmentArScara
-  m_TagString: Untagged
+  m_TagString: VirtualEnvironmentArScara
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1237,4 +1238,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a821d6aac8b4d4f4d9d4573998909ac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArScaraVirtualController
-  _activate: 0
+--- !u!114 &715831670823619050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8828649784974939132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14640e4b95142c9a6e2d66d1c36530b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.ControlPanelController

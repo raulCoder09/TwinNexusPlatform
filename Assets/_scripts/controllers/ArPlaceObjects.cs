@@ -10,7 +10,7 @@ public class ArPlaceObjects : MonoBehaviour
     [SerializeField] private GameObject placementPrefab;   
 
     private static readonly List<ARRaycastHit> hits = new();
-    private bool placed = false;
+    private bool placed;
 
     void Update()
     {
