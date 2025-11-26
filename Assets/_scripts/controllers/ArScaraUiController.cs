@@ -332,8 +332,7 @@ namespace _scripts.controllers
             {
                 _warning.text = "AR not available: enable a provider in Project Settings > XR Plug-in Management.";
             }
-
-            // ✨ LLAMAR AL ENVIRONMENT CONTROLLER PARA CREAR EL ENTORNO
+            
             if (_environmentController != null)
             {
                 _environmentController.CreateEnvironment(env);
