@@ -187,8 +187,6 @@ namespace _scripts.controllers
             {
                 ("J1", _controlPanelController.J1Toggle),
                 ("J2", _controlPanelController.J2Toggle),
-                ("J3", _controlPanelController.J3Toggle),
-                ("J4", _controlPanelController.J4Toggle),
             };
 
             foreach (var (itemName, toggle) in toggles)

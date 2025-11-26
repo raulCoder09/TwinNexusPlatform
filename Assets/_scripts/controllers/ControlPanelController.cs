@@ -25,12 +25,10 @@ namespace _scripts.controllers
             _resetButton,
             _freeAllButton,
             _lockAllButton;
-       
-        private Toggle  
+
+        private Toggle
             _j1Toggle,
-            _j2Toggle,
-            _j3Toggle,
-            _j4Toggle;
+            _j2Toggle;
 
         internal Button MotorsOffButton
         {
@@ -92,17 +90,6 @@ namespace _scripts.controllers
             set => _j2Toggle = value;
         }
 
-        internal Toggle J3Toggle
-        {
-            get => _j3Toggle;
-            set => _j3Toggle = value;
-        }
-
-        internal Toggle J4Toggle
-        {
-            get => _j4Toggle;
-            set => _j4Toggle = value;
-        }
 
         internal Label EmergencyStopLabel
         {
@@ -151,8 +138,6 @@ namespace _scripts.controllers
             
             _j1Toggle=_root.Q<Toggle>("J1Toggle");
             _j2Toggle=_root.Q<Toggle>("J2Toggle");
-            _j3Toggle=_root.Q<Toggle>("J3Toggle");
-            _j4Toggle=_root.Q<Toggle>("J4Toggle");
             
             _emergencyStopLabel=_root.Q<Label>("EmergencyStopLabel");
             _safeguardLabel=_root.Q<Label>("SafeguardLabel");
