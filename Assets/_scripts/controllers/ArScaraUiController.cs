@@ -48,7 +48,6 @@ namespace _scripts.controllers
             public const string Views = "views";
             public const string Mode = "modeDropdown";
             public const string Speed = "speedDropdown";
-            public const string Command = "CommandDropdown";
             public const string Destination = "DestinationDropdown";
             public const string Points = "pointsDropdown";
 
@@ -72,7 +71,7 @@ namespace _scripts.controllers
             public const string Stop = "StopButton";
             public const string Emergency = "EmergencyButton";
             public const string Medara = "MEDARAButton";
-            public const string Transparent = "TransparentButton";
+            public const string Glass = "GlassButton";
             public const string Results = "ResultsButton";
 
             public const string MoveCont = "continuousMove";
@@ -90,7 +89,7 @@ namespace _scripts.controllers
         private VisualElement _root;
         private VisualElement _body, _slidingPanels, _scrim, _navPanel;
         private Label _warning;
-        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _command, _destination, _points; //,_placementMenu
+        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _destination, _points; //,_placementMenu
         private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
 
         private readonly List<VisualElement> _worldButtons = new();
@@ -131,7 +130,6 @@ namespace _scripts.controllers
             _views = Q<DropdownField>(Id.Views);
             _mode = Q<DropdownField>(Id.Mode);
             _speed = Q<DropdownField>(Id.Speed);
-            _command = Q<DropdownField>(Id.Command);
             _destination = Q<DropdownField>(Id.Destination);
             _points = Q<DropdownField>(Id.Points);
 
@@ -181,7 +179,6 @@ namespace _scripts.controllers
             SetValue(_views, "Select view");
             SetValue(_mode, "Mode");
             SetValue(_speed, "Speed");
-            SetValue(_command, "Command");
             SetValue(_destination, "Destination");
             SetValue(_points, "Point");
 
@@ -271,7 +268,7 @@ namespace _scripts.controllers
 
             Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2));
 
-            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<DropdownField>(Id.Kinematics),Q<DropdownField>(Id.Method));
+            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<DropdownField>(Id.Kinematics),Q<DropdownField>(Id.Method),Q<Button>(Id.Results));
             Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2));
         
             Add(_moveRadios, Q<RadioButton>(Id.MoveCont), Q<RadioButton>(Id.MoveLong),
@@ -279,9 +276,9 @@ namespace _scripts.controllers
         
             Add(_teachEdit, Q<Button>(Id.Teach), Q<Button>(Id.Edit));
             Add(_runStop, Q<Button>(Id.Run), Q<Button>(Id.Stop),Q<Button>(Id.Emergency));
-            Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.Results),Q<Button>(Id.Transparent));
+            Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.Glass));
             
-            Add(_commanding, _command, _destination);
+            Add(_commanding, _destination);
         }
 
         private static void Add(List<VisualElement> list, params VisualElement[] items)
