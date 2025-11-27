@@ -53,7 +53,8 @@ namespace _scripts.controllers
             _plusJ4Button,
             _minusJ4Button,
             _teachButton,
-            _editButton;
+            _editButton,
+            _stopButton;
 
 
         internal DropdownField Mode
@@ -199,7 +200,13 @@ namespace _scripts.controllers
             get => _editButton;
             set => _editButton = value;
         }
-        
+
+        internal Button StopButton
+        {
+            get=> _stopButton;
+            set => _stopButton = value;
+        }
+
         internal DropdownField Command
         {
             get => _command;
@@ -280,7 +287,7 @@ namespace _scripts.controllers
 
         private void Start()
         {
-            if (_shortMove != null) _shortMove.value = true;
+            if (_continuousMove != null) _continuousMove.value = true;
         }
 
         private void OnEnable()
@@ -319,6 +326,8 @@ namespace _scripts.controllers
 
             _teachButton= _root.Q<Button>("TeachButton");
             _editButton= _root.Q<Button>("EditButton");
+            _stopButton= _root.Q<Button>("StopButton");
+            
             
             _continuousMove = _root.Q<RadioButton>("continuousMove");
             _longMove       = _root.Q<RadioButton>("longMove");

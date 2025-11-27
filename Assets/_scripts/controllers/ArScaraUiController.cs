@@ -12,7 +12,7 @@ namespace _scripts.controllers
 
         private enum ModeType { None, World, Joint }
         private enum ArScaraPanel { None, Control, JogTeach, Points }
-        private enum Placement { None, Raycast, QRMarker }
+        // private enum Placement { None, Raycast, QRMarker }
 
         private static class Uss
         {
@@ -44,11 +44,10 @@ namespace _scripts.controllers
 
             public const string EnvMenu = "environmentMenu";
             public const string ArScaraMenu = "arscaraMenu";
-            public const string Placement = "placementMenu";
+            // public const string Placement = "placementMenu";
             public const string Views = "views";
             public const string Mode = "modeDropdown";
             public const string Speed = "speedDropdown";
-            public const string Command = "CommandDropdown";
             public const string Destination = "DestinationDropdown";
             public const string Points = "pointsDropdown";
 
@@ -58,34 +57,39 @@ namespace _scripts.controllers
 
             public const string BpX = "plusXButton";    public const string BmX = "minusXButton";
             public const string BpY = "plusYButton";    public const string BmY = "minusYButton";
-            public const string BpZ = "plusZButton";    public const string BmZ = "minusZButton";
-            public const string BpU = "plusUButton";    public const string BmU = "minusUButton";
 
             public const string BpJ1 = "plusJ1Button";  public const string BmJ1 = "minusJ1Button";
             public const string BpJ2 = "plusJ2Button";  public const string BmJ2 = "minusJ2Button";
-            public const string BpJ3 = "plusJ3Button";  public const string BmJ3 = "minusJ3Button";
-            public const string BpJ4 = "plusJ4Button";  public const string BmJ4 = "minusJ4Button";
 
             public const string LX = "xLabel"; public const string LY = "yLabel";
-            public const string LZ = "zLabel"; public const string LU = "uLabel";
 
             public const string LJ1 = "j1Label"; public const string LJ2 = "j2Label";
-            public const string LJ3 = "j3Label"; public const string LJ4 = "j4Label";
 
             public const string Teach = "TeachButton";
             public const string Edit = "EditButton";
+            public const string Run = "RunButton";
+            public const string Stop = "StopButton";
+            public const string Emergency = "EmergencyButton";
+            public const string Medara = "MEDARAButton";
+            public const string Glass = "GlassButton";
+            public const string Results = "ResultsButton";
 
             public const string MoveCont = "continuousMove";
             public const string MoveLong = "longMove";
             public const string MoveMed  = "mediumMove";
             public const string MoveShort= "shortMove";
+            
+            public const string Kinematics= "kinematicsDropdown";
+            public const string Method= "methodDropdown";
+            
+            
         }
 
         private UIDocument _doc;
         private VisualElement _root;
         private VisualElement _body, _slidingPanels, _scrim, _navPanel;
         private Label _warning;
-        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _command, _destination, _points, _placementMenu;
+        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _destination, _points; //,_placementMenu
         private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
 
         private readonly List<VisualElement> _worldButtons = new();
@@ -94,11 +98,12 @@ namespace _scripts.controllers
         private readonly List<VisualElement> _jointLabels  = new();
         private readonly List<VisualElement> _moveRadios   = new();
         private readonly List<VisualElement> _teachEdit    = new();
+        private readonly List<VisualElement> _runStop    = new();
         private readonly List<VisualElement> _commanding   = new();
+        private readonly List<VisualElement> _medara   = new();
 
         private void Awake()
         {
-            // Obtener referencia al Environment Controller si no está asignada
             if (_environmentController == null)
             {
                 _environmentController = GameObject.FindWithTag("EnvironmentControllerArScara").GetComponent<ArScaraEnvironmentController>();
@@ -120,12 +125,11 @@ namespace _scripts.controllers
 
             _environmentMenu = Q<DropdownField>(Id.EnvMenu);
             _arScaraMenu = Q<DropdownField>(Id.ArScaraMenu);
-            _placementMenu = Q<DropdownField>(Id.Placement);
+            // _placementMenu = Q<DropdownField>(Id.Placement);
 
             _views = Q<DropdownField>(Id.Views);
             _mode = Q<DropdownField>(Id.Mode);
             _speed = Q<DropdownField>(Id.Speed);
-            _command = Q<DropdownField>(Id.Command);
             _destination = Q<DropdownField>(Id.Destination);
             _points = Q<DropdownField>(Id.Points);
 
@@ -137,7 +141,7 @@ namespace _scripts.controllers
             {
                 SetValue(_environmentMenu, "environment");
                 SetValue(_arScaraMenu, "ARSCARA menu");
-                SetValue(_placementMenu, "Placement");
+                // SetValue(_placementMenu, "Placement");
 
                 ShowOnlyArScaraPanel(ArScaraPanel.None);
 
@@ -157,7 +161,7 @@ namespace _scripts.controllers
 
             _environmentMenu?.RegisterValueChangedCallback(e => OnEnvironmentChanged(ParseEnv(e.newValue)));
             _arScaraMenu?.RegisterValueChangedCallback(e => OnArScaraMenuChanged(ParseArScaraPanel(e.newValue)));
-            _placementMenu?.RegisterValueChangedCallback(e => OnPlacementMenuChanged(ParsePlacement(e.newValue)));
+            // _placementMenu?.RegisterValueChangedCallback(e => OnPlacementMenuChanged(ParsePlacement(e.newValue)));
             _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
             _speed?.RegisterValueChangedCallback(_ => { /* hook futuro */ });
 
@@ -171,17 +175,17 @@ namespace _scripts.controllers
 
             SetValue(_environmentMenu, "environment");
             SetValue(_arScaraMenu, "ARSCARA menu");
-            SetValue(_placementMenu, "Placement");
+            // SetValue(_placementMenu, "Placement");
             SetValue(_views, "Select view");
             SetValue(_mode, "Mode");
             SetValue(_speed, "Speed");
-            SetValue(_command, "Command");
             SetValue(_destination, "Destination");
             SetValue(_points, "Point");
 
+
             _warning.text = "Select a work environment";
             _arScaraMenu?.SetEnabled(false);
-            _placementMenu?.SetEnabled(false);
+            // _placementMenu?.SetEnabled(false);
 
             ShowOnlyArScaraPanel(ArScaraPanel.None);
             SetBodyOpaque(true);
@@ -259,21 +263,22 @@ namespace _scripts.controllers
 
         private void BuildGroups()
         {
-            Add(_worldButtons, Q<Button>(Id.BpX), Q<Button>(Id.BmX), Q<Button>(Id.BpY), Q<Button>(Id.BmY),
-                Q<Button>(Id.BpZ), Q<Button>(Id.BmZ), Q<Button>(Id.BpU), Q<Button>(Id.BmU));
+            
+            Add(_worldButtons, Q<Button>(Id.BpX), Q<Button>(Id.BmX), Q<Button>(Id.BpY), Q<Button>(Id.BmY));
 
-            Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2),
-                Q<Button>(Id.BpJ3), Q<Button>(Id.BmJ3), Q<Button>(Id.BpJ4), Q<Button>(Id.BmJ4));
+            Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2));
 
-            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY), Q<Label>(Id.LZ), Q<Label>(Id.LU));
-            Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2), Q<Label>(Id.LJ3), Q<Label>(Id.LJ4));
+            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<DropdownField>(Id.Kinematics),Q<DropdownField>(Id.Method),Q<Button>(Id.Results));
+            Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2));
         
             Add(_moveRadios, Q<RadioButton>(Id.MoveCont), Q<RadioButton>(Id.MoveLong),
                 Q<RadioButton>(Id.MoveMed),  Q<RadioButton>(Id.MoveShort));
         
             Add(_teachEdit, Q<Button>(Id.Teach), Q<Button>(Id.Edit));
-        
-            Add(_commanding, _command, _destination);
+            Add(_runStop, Q<Button>(Id.Run), Q<Button>(Id.Stop),Q<Button>(Id.Emergency));
+            Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.Glass));
+            
+            Add(_commanding, _destination);
         }
 
         private static void Add(List<VisualElement> list, params VisualElement[] items)
@@ -292,6 +297,8 @@ namespace _scripts.controllers
             SetVisible(_moveRadios, common);
             SetVisible(_teachEdit, common);
             SetVisible(_commanding, common);
+            SetVisible(_runStop, common);
+            SetVisible(_medara, common);
 
             SetVisible(_worldButtons, mode == ModeType.World);
             SetVisible(_worldLabels,  mode == ModeType.World);
@@ -318,7 +325,7 @@ namespace _scripts.controllers
             
             // Actualizar UI según selección
             _arScaraMenu?.SetEnabled(!none);
-            _placementMenu?.SetEnabled(!none && (env == ArScaraEnvironmentController.EnvType.Augmented));
+            // _placementMenu?.SetEnabled(!none && (env == ArScaraEnvironmentController.EnvType.Augmented));
             _warning.text = none ? "Select a work environment" : "Select ARSCARA robot interface";
             SetBodyOpaque(none);
             
@@ -332,8 +339,7 @@ namespace _scripts.controllers
             {
                 _warning.text = "AR not available: enable a provider in Project Settings > XR Plug-in Management.";
             }
-
-            // ✨ LLAMAR AL ENVIRONMENT CONTROLLER PARA CREAR EL ENTORNO
+            
             if (_environmentController != null)
             {
                 _environmentController.CreateEnvironment(env);
@@ -360,11 +366,11 @@ namespace _scripts.controllers
             ShowOnlyArScaraPanel(panel);
         }
 
-        private void OnPlacementMenuChanged(Placement placement)
-        {
-            Debug.Log($"Placement changed to: {placement}");
-            // TODO: Implementar lógica de placement (Raycast/QR Marker)
-        }
+        // private void OnPlacementMenuChanged(Placement placement)
+        // {
+        //     Debug.Log($"Placement changed to: {placement}");
+        //     // TODO: Implementar lógica de placement (Raycast/QR Marker)
+        // }
 
         #endregion
 
@@ -405,16 +411,16 @@ namespace _scripts.controllers
             };
         }
 
-        private static Placement ParsePlacement(string raw)
-        {
-            var s = (raw ?? "").Trim();
-            return s switch
-            {
-                "Raycast"   => Placement.Raycast,
-                "QR marker" => Placement.QRMarker,
-                _           => Placement.None
-            };
-        }
+        // private static Placement ParsePlacement(string raw)
+        // {
+        //     var s = (raw ?? "").Trim();
+        //     return s switch
+        //     {
+        //         "Raycast"   => Placement.Raycast,
+        //         "QR marker" => Placement.QRMarker,
+        //         _           => Placement.None
+        //     };
+        // }
 
         #endregion
 

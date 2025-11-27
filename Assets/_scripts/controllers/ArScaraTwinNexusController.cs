@@ -187,8 +187,6 @@ namespace _scripts.controllers
             {
                 ("J1", _controlPanelController.J1Toggle),
                 ("J2", _controlPanelController.J2Toggle),
-                ("J3", _controlPanelController.J3Toggle),
-                ("J4", _controlPanelController.J4Toggle),
             };
 
             foreach (var (itemName, toggle) in toggles)
@@ -203,19 +201,11 @@ namespace _scripts.controllers
                 ("MinusX", _jogAndTeachController.MinusXButton),
                 ("PlusY", _jogAndTeachController.PlusYButton),
                 ("MinusY", _jogAndTeachController.MinusYButton),
-                ("PlusZ", _jogAndTeachController.PlusZButton),
-                ("MinusZ", _jogAndTeachController.MinusZButton),
-                ("PlusU", _jogAndTeachController.PlusUButton),
-                ("MinusU", _jogAndTeachController.MinusUButton),
                 
                 ("PlusJ1", _jogAndTeachController.PlusJ1Button),
                 ("MinusJ1", _jogAndTeachController.MinusJ1Button),
                 ("PlusJ2", _jogAndTeachController.PlusJ2Button),
                 ("MinusJ2", _jogAndTeachController.MinusJ2Button),
-                ("PlusJ3", _jogAndTeachController.PlusJ3Button),
-                ("MinusJ3", _jogAndTeachController.MinusJ3Button),
-                ("PlusJ4", _jogAndTeachController.PlusJ4Button),
-                ("MinusJ4", _jogAndTeachController.MinusJ4Button),
                 
                 ("Teach", _jogAndTeachController.TeachButton),
                 ("Edit", _jogAndTeachController.EditButton)

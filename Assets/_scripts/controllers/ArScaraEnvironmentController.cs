@@ -28,9 +28,6 @@ namespace _scripts.controllers
         private GameObject _arPointCloud;
         private GameObject _simulationCamera;
         private UnityEngine.SceneManagement.Scene _simulatedEnvironmentScene;
-
-        #region Unity Lifecycle
-
         private void Awake()
         {
             // Inicializar dictionary de prefabs
@@ -38,21 +35,11 @@ namespace _scripts.controllers
             _envPrefabs[EnvType.Augmented] = augmentedEnvironment;
             _envPrefabs[EnvType.TwinNexus] = twinNexusEnvironment;
         }
-
-        #endregion
-
-        #region Public API
-
-        /// <summary>
-        /// Crea un nuevo entorno del tipo especificado.
-        /// Destruye el entorno actual si existe.
-        /// </summary>
-        /// <param name="envType">Tipo de entorno a crear</param>
         public void CreateEnvironment(EnvType envType)
         {
             if (_currentEnv != null)
             {
-                StartCoroutine(SafeDestroyEnvironment(_currentEnv));
+                DestroyEnvironment(_currentEnv);
                 _currentEnv = null;
             }
 
@@ -60,12 +47,8 @@ namespace _scripts.controllers
 
             if (envType == EnvType.None) return;
             
-            if (!_envPrefabs.TryGetValue(envType, out var prefab) || prefab == null)
-            {
-                Debug.LogWarning($"Prefab not set for environment {envType}");
-                return;
-            }
-
+            if (!_envPrefabs.TryGetValue(envType, out var prefab) || prefab == null) return;
+            
             if (envType == EnvType.Augmented)
             {
                 StartCoroutine(StartXRThenSpawn(prefab));
@@ -79,70 +62,24 @@ namespace _scripts.controllers
                 _currentEnv.transform.SetParent(arscaraParent.transform);
             }
         }
-
-        /// <summary>
-        /// Destruye el entorno actual de forma segura
-        /// </summary>
-        public void DestroyCurrentEnvironment()
+        private void DestroyEnvironment(GameObject root)
         {
-            if (_currentEnv != null)
-            {
-                StartCoroutine(SafeDestroyEnvironment(_currentEnv));
-                _currentEnv = null;
-            }
-
-            _currentEnvType = EnvType.None;
-        }
-        
-        public EnvType GetCurrentEnvironmentType()
-        {
-            return _currentEnvType;
-        }
-        
-        public GameObject GetCurrentEnvironment()
-        {
-            return _currentEnv;
-        }
-        
-        public bool HasActiveEnvironment()
-        {
-            return _currentEnv != null && _currentEnvType != EnvType.None;
-        }
-
-        #endregion
-
-        #region Private Methods - Environment Management
-        
-        private IEnumerator SafeDestroyEnvironment(GameObject root)
-        {
-            if (!root) yield break;
-
-#if UNITY_EDITOR
-            // Deseleccionar en Editor si está seleccionado
-            var sel = Selection.activeGameObject;
-            if (sel && (sel == root || sel.transform.IsChildOf(root.transform)))
-                Selection.activeObject = null;
-#endif
-            
             if (root.name == "TwinNexusEnvironmentArScara(Clone)")
             {
-                var twinNexus = root.GetComponent<ArScaraTwinNexusController>();
-                if (twinNexus != null && twinNexus.mqttProtocol.IsConnected)
-                {
-                    twinNexus.mqttProtocol.Topic = "ARSCARA/StatusConnection";
-                    twinNexus.mqttProtocol.Payload = new { Status = "Disconnected" };
-                    twinNexus.mqttProtocol.SendData();
-                }
-                yield return new WaitForSeconds(1f);
-                twinNexus.mqttProtocol.Disconnect();
+                
             }
-            root.SetActive(false);
-            yield return null;
-            yield return new WaitForEndOfFrame();
-            
+            if (Application.isEditor)
+            {
+                if (_arPointCloud!=null && _simulationCamera!=null)
+                {
+                    Destroy(_arPointCloud);
+                    Destroy(_simulationCamera);
+                }
+            }
             if (root) Destroy(root);
         }
-        
+
+
         private IEnumerator StartXRThenSpawn(GameObject prefab)
         {
             yield return null;
@@ -159,20 +96,15 @@ namespace _scripts.controllers
             yield return new WaitForEndOfFrame();
             
             _currentEnv = Instantiate(prefab);
-            var arscara = GameObject.FindGameObjectWithTag("ARSCARA");
-            if (arscara != null)
+            if (Application.isEditor)
             {
-                if (Application.isEditor)
-                {
-                    StartCoroutine(FindSimulationElements());
-                }
+                yield return new WaitForSeconds(.5f);
+                FindSimulationElements();
             }
         }
 
-        private IEnumerator FindSimulationElements()
+        private void FindSimulationElements()
         {
-            yield return new WaitForSeconds(10f);
-
             foreach (var t in FindObjectsOfType<Transform>(true))
             {
                 var n = t.name;
@@ -185,44 +117,14 @@ namespace _scripts.controllers
                 var scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
                 if (scene.name.StartsWith("Simulated Environment Scene"))_namesSimulationElements.Add($"{scene.name}");
             }
-
-
             _arPointCloud = GameObject.Find(_namesSimulationElements[0]);
             _simulationCamera = GameObject.Find(_namesSimulationElements[1]);
             _simulatedEnvironmentScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(_namesSimulationElements[2]);
-
-            if (_simulatedEnvironmentScene.IsValid())
-            {
-                print($"Scene encontrada: {_simulatedEnvironmentScene.name}");
-            }
-            else
-            {
-                print("Scene no encontrada o no está cargada");
-            }
         }
 
-        private IEnumerator StartXRNextFrame()
-        {
-            yield return null;
-            yield return new WaitForEndOfFrame();
-
-            var mgr = XRGeneralSettings.Instance?.Manager;
-            if (mgr != null)
-            {
-                mgr.InitializeLoaderSync();
-                yield return null;
-                mgr.StartSubsystems();
-            }
-        }
-
-        #endregion
-
-        #region Utility Methods
         public bool IsXRAvailable()
         {
             return XRGeneralSettings.Instance?.Manager != null;
         }
-
-        #endregion
     }
 }
