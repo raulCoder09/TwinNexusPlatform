@@ -171,6 +171,7 @@ GameObject:
   - component: {fileID: 7076431585441285691}
   - component: {fileID: 5001030664794324864}
   - component: {fileID: 6619194129901385827}
+  - component: {fileID: 9138873110554215381}
   m_Layer: 0
   m_Name: AxisLink1
   m_TagString: Untagged
@@ -250,6 +251,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9138873110554215381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3465341726644577420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daab069ae0b54fa3a72aaa1cea9dfa4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.LinkController
 --- !u!1 &3482262260613129675
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,7 +716,7 @@ GameObject:
   - component: {fileID: 7769290786696566913}
   - component: {fileID: 3609178527196362181}
   m_Layer: 0
-  m_Name: Model3D
+  m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -723,7 +736,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8304246827672150082}
-  m_Father: {fileID: 2277374189516509764}
+  m_Father: {fileID: 1864349943401435717}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7769290786696566913
 MeshFilter:
@@ -781,6 +794,38 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &5184229938257435702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1864349943401435717}
+  m_Layer: 0
+  m_Name: Model3D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1864349943401435717
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5184229938257435702}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4256479523928795842}
+  m_Father: {fileID: 2277374189516509764}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6738150534253272724
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,6 +837,7 @@ GameObject:
   - component: {fileID: 5428709942129066768}
   - component: {fileID: 4735342671472231758}
   - component: {fileID: 6973174956939549222}
+  - component: {fileID: 2959220053977486337}
   m_Layer: 0
   m_Name: AxisLink2
   m_TagString: Untagged
@@ -871,6 +917,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2959220053977486337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6738150534253272724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daab069ae0b54fa3a72aaa1cea9dfa4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.LinkController
 --- !u!1 &7070839668523387064
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,7 +1268,7 @@ Transform:
   m_Children:
   - {fileID: 8036149951677470731}
   - {fileID: 874133462661807816}
-  - {fileID: 4256479523928795842}
+  - {fileID: 1864349943401435717}
   - {fileID: 2220599373552571825}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
