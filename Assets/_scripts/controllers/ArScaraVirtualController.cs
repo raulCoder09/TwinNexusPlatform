@@ -11,7 +11,6 @@ namespace _scripts.controllers
     {
         private JogAndTeachController _jogAndTeachController;
         private ControlPanelController _controlPanelController;
-        private RobotKinematics _kinematics;
         
         private LinkController _linkController1;
         private LinkController _linkController2;
@@ -23,7 +22,6 @@ namespace _scripts.controllers
         {
             _controlPanelController = GameObject.FindWithTag("VirtualEnvironmentArScara").GetComponent<ControlPanelController>();
             _jogAndTeachController = GameObject.FindWithTag("VirtualEnvironmentArScara").GetComponent<JogAndTeachController>();
-            _kinematics = new RobotKinematics();
         }
 
         private void Start()
@@ -33,11 +31,9 @@ namespace _scripts.controllers
                 _modeMotion = "Continuous";    
             }
             
-            // Obtener los LinkControllers
             _linkController1 = transform.Find("Model3D/Base/XL430W250T1/AxisLink1").GetComponent<LinkController>();
             _linkController2 = transform.Find("Model3D/Base/XL430W250T1/AxisLink1/Link1/XL430W250T2/AxisLink2").GetComponent<LinkController>();
             
-            // Configurar límites de cada link
             if (_linkController1 != null)
             {
                 _linkController1.minimumAngle = -90f;
@@ -170,28 +166,41 @@ namespace _scripts.controllers
                 
                 if (itemName == "Stop")
                 {
+                    // modelo 3d
+                    // cadena cinematica
                     _linkController1?.StopMotion();
+                    // modelo 3d
+                    // cadena cinematica
                     _linkController2?.StopMotion();
                     return;
                 }
                 
                 if (itemName.Contains("J1"))
+                    // modelo 3d
+                    // cadena cinematica
                     targetLink = _linkController1;
                 else if (itemName.Contains("J2"))
+                    // modelo 3d
+                    // cadena cinematica
                     targetLink = _linkController2;
                 
                 if (targetLink == null) return;
-                
+                // modelo 3d
+                // cadena cinematica
                 targetLink.speed = _speed;
                 
                 switch (itemName)
                 {
                     case "PlusJ1":
                     case "PlusJ2":
+                        // modelo 3d
+                        // cadena cinematica
                         ExecuteMotion(targetLink, true);
                         break;
                     case "MinusJ1":
                     case "MinusJ2":
+                        // modelo 3d
+                        // cadena cinematica
                         ExecuteMotion(targetLink, false);
                         break;
                 }
@@ -202,8 +211,12 @@ namespace _scripts.controllers
                 if (_modeMotion == "Continuous")
                 {
                     if (itemName.Contains("J1"))
+                        // modelo 3d
+                        // cadena cinematica
                         _linkController1?.StopMotion();
                     else if (itemName.Contains("J2"))
+                        // modelo 3d
+                        // cadena cinematica
                         _linkController2?.StopMotion();
                 }
             });

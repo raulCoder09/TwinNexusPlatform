@@ -351,7 +351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 458fbceb90934e03982f846b84ea6081, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.ArScaraEnvironmentController
-  virtualEnvironment: {fileID: 8828649784974939132, guid: c0f55aa25607d4b25ab0896690ec24c8,
+  virtualEnvironment: {fileID: 5167456199676975797, guid: fa4f2569cffbf5b93acfa8a589344f65,
     type: 3}
   augmentedEnvironment: {fileID: 670126800946319048, guid: 95154ae8be0d39941a501e2f8bad72f4,
     type: 3}
