@@ -17,8 +17,8 @@ namespace _scripts.controllers
         [SerializeField] private GameObject _linkE;
         [SerializeField] private GameObject _node6;
 
-        private float _q1;
-        private float _q2;
+        private float _angleLinkB;
+        private float _angleLinkD;
 
         private Vector3 _currentPosition;
 
@@ -35,6 +35,21 @@ namespace _scripts.controllers
         private RobotKinematics _robotKinematics;
         private LinkController _linkControllerB;
         private LinkController _linkControllerD;
+
+
+        internal LinkController linkControllerB
+        {
+            get => _linkControllerB;
+            set => _linkControllerB = value;
+        }
+
+        internal LinkController linkControllerD
+        {
+            get => _linkControllerD;
+            set => _linkControllerD = value;
+        }
+
+
         private void Start()
         {
             _robotKinematics = new RobotKinematics();
@@ -43,7 +58,7 @@ namespace _scripts.controllers
             _linkLengthC = GetLinkLength(_linkC);
             _linkLengthD = GetLinkLength(_linkD);
             _linkLengthE = GetLinkLength(_linkE);
-            
+            print(_linkLengthA);
             _linkControllerB = transform.Find("Node1/LinkA/Node2/LinkB").GetComponent<LinkController>();
             _linkControllerD = transform.Find("Node1/LinkA/Node2/LinkB/Node3/LinkC/Node4/LinkD").GetComponent<LinkController>();
             
@@ -74,15 +89,14 @@ namespace _scripts.controllers
             _currentPosition = _node6.transform.position;
             if (_linkControllerB != null && _linkControllerD != null)
             {
-                var angleLinkB = _linkControllerB.GetNormalizedAngle(); //este angulo entraran en q1
-                var angleLinkD = _linkControllerD.GetNormalizedAngle(); //este angulo entraran en q1
-                print($"q1: {angleLinkB:F2} deg");
-                print($"q1: {angleLinkD:F2} deg");
+                _angleLinkB = _linkControllerB.GetNormalizedAngle();
+                _angleLinkD = _linkControllerD.GetNormalizedAngle();
+                (_x,_y,_z)=_robotKinematics.DirectKinematics("Geometric",_linkLengthC,_linkLengthE,_angleLinkB,_angleLinkD,_linkLengthB+_linkLengthD);
+                print($"End effector - X: {_currentPosition.x:F5}, Y: {_currentPosition.y:F5}, Z: {_currentPosition.z:F5}");
+                print($"Compute - X: {_x:F5}, Y: {_y:F5}, Z: {_z:F5}");
             }
-            
-            
-            // (_x,_y,_z)=_robotKinematics.DirectKinematics("Geometric",_linkLengthC,_linkLengthE,_q1,_q2); //ver donde llamamos este metodo
         }
+        
         private float GetLinkLength(GameObject link)
         {
             var lineRenderer = link.GetComponent<LineRenderer>();

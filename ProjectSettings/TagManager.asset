@@ -17,6 +17,8 @@ TagManager:
   - ARSCARA
   - EnvironmentControllerArScara
   - VirtualEnvironmentArScara
+  - ArScaraModel3D
+  - AeScaraKinematicChain
   layers:
   - Default
   - TransparentFX
