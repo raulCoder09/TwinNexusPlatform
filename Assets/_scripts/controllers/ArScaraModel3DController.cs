@@ -67,6 +67,7 @@ namespace _scripts.controllers
                 _angleLink2 = _linkController2.GetNormalizedAngle();
             }
         }
+        
     }
     
 }

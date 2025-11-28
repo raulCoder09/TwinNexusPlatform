@@ -52,7 +52,9 @@ namespace _scripts.controllers
 
         private void Start()
         {
-            _robotKinematics = new RobotKinematics();
+            HideKinematicChain(); 
+            _robotKinematics = new RobotKinematics(RobotKinematics.CoordinateSystem.Unity);
+
             _linkLengthA = GetLinkLength(_linkA);
             _linkLengthB = GetLinkLength(_linkB);
             _linkLengthC = GetLinkLength(_linkC);
@@ -91,7 +93,16 @@ namespace _scripts.controllers
             {
                 _angleLinkB = _linkControllerB.GetNormalizedAngle();
                 _angleLinkD = _linkControllerD.GetNormalizedAngle();
-                (_x,_y,_z)=_robotKinematics.DirectKinematics("Geometric",_linkLengthC,_linkLengthE,_angleLinkB,_angleLinkD,_linkLengthB+_linkLengthD);
+                (_x,_y,_z)=_robotKinematics.DirectKinematics(
+                    "Geometric",
+                    _linkLengthC,
+                    _linkLengthE,
+                    _angleLinkB,
+                    _angleLinkD,
+                    _linkLengthB+_linkLengthD,
+                    0.0f,
+                    0.0f,
+                    _linkLengthA);
                 print($"End effector - X: {_currentPosition.x:F5}, Y: {_currentPosition.y:F5}, Z: {_currentPosition.z:F5}");
                 print($"Compute - X: {_x:F5}, Y: {_y:F5}, Z: {_z:F5}");
             }
@@ -107,6 +118,41 @@ namespace _scripts.controllers
             var endingPoint = lineRenderer.GetPosition(1);
 
             return Vector3.Distance(startingPoint, endingPoint);
+        }
+        
+        
+        internal void HideKinematicChain()
+        {
+            LineRenderer[] lineRenderers = GetComponentsInChildren<LineRenderer>();
+            foreach (var lr in lineRenderers)
+            {
+                lr.enabled = false;
+            }
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                if (!(renderer is LineRenderer))
+                {
+                    renderer.enabled = false;
+                }
+            }
+        }
+
+        internal void ShowKinematicChain()
+        {
+            LineRenderer[] lineRenderers = GetComponentsInChildren<LineRenderer>();
+            foreach (var lr in lineRenderers)
+            {
+                lr.enabled = true;
+            }
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                if (!(renderer is LineRenderer))
+                {
+                    renderer.enabled = true;
+                }
+            }
         }
     }
 }

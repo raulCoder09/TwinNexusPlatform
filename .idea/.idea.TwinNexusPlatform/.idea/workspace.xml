@@ -10,7 +10,7 @@
       <change beforePath="$PROJECT_DIR$/Assets/_prefabs/Environments/VirtualEnvironmentArScara.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_prefabs/Environments/VirtualEnvironmentArScara.prefab.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scenes/Main.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraKinematicChainController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraKinematicChainController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraVirtualController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraVirtualController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraModel3DController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraModel3DController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/models/robotics/robotKinematics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/models/robotics/robotKinematics.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -275,7 +275,7 @@
       <workItem from="1764202833048" duration="650000" />
       <workItem from="1764226271524" duration="990000" />
       <workItem from="1764227702676" duration="11629000" />
-      <workItem from="1764255274393" duration="22254000" />
+      <workItem from="1764255274393" duration="31275000" />
     </task>
     <servers />
   </component>
