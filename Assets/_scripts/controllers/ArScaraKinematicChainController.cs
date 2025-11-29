@@ -17,6 +17,7 @@ namespace _scripts.controllers
         [SerializeField] private GameObject _linkE;
         [SerializeField] private GameObject _node6;
 
+        [SerializeField] private Method _method;
         private float _angleLinkB;
         private float _angleLinkD;
 
@@ -36,6 +37,13 @@ namespace _scripts.controllers
         private LinkController _linkControllerB;
         private LinkController _linkControllerD;
 
+        private enum Method
+        {
+            DirectGeometric,
+            DirectHTM,
+            DirectDH,
+            DirectQuaternions
+        }
 
         internal LinkController linkControllerB
         {
@@ -60,7 +68,6 @@ namespace _scripts.controllers
             _linkLengthC = GetLinkLength(_linkC);
             _linkLengthD = GetLinkLength(_linkD);
             _linkLengthE = GetLinkLength(_linkE);
-            print(_linkLengthA);
             _linkControllerB = transform.Find("Node1/LinkA/Node2/LinkB").GetComponent<LinkController>();
             _linkControllerD = transform.Find("Node1/LinkA/Node2/LinkB/Node3/LinkC/Node4/LinkD").GetComponent<LinkController>();
             
@@ -93,18 +100,52 @@ namespace _scripts.controllers
             {
                 _angleLinkB = _linkControllerB.GetNormalizedAngle();
                 _angleLinkD = _linkControllerD.GetNormalizedAngle();
-                (_x,_y,_z)=_robotKinematics.DirectKinematics(
-                    "Geometric",
-                    _linkLengthC,
-                    _linkLengthE,
-                    _angleLinkB,
-                    _angleLinkD,
-                    _linkLengthB+_linkLengthD,
-                    0.0f,
-                    0.0f,
-                    _linkLengthA);
-                print($"End effector - X: {_currentPosition.x:F5}, Y: {_currentPosition.y:F5}, Z: {_currentPosition.z:F5}");
-                print($"Compute - X: {_x:F5}, Y: {_y:F5}, Z: {_z:F5}");
+                switch (_method)
+                {
+                    case Method.DirectGeometric:
+                        (_x,_y,_z)=_robotKinematics.DirectGeometric(_linkLengthC,
+                            _linkLengthE,
+                            _angleLinkB,
+                            _angleLinkD,
+                            _linkLengthB+_linkLengthD,
+                            0.0f,
+                            0.0f,
+                            _linkLengthA);
+                        break;
+                    case Method.DirectHTM:
+                        (_x,_y,_z)=_robotKinematics.DirectHTM(_linkLengthC,
+                            _linkLengthE,
+                            _angleLinkB,
+                            _angleLinkD,
+                            _linkLengthB+_linkLengthD,
+                            0.0f,
+                            0.0f,
+                            _linkLengthA);
+                        break;
+                    case Method.DirectDH:
+                        (_x,_y,_z)=_robotKinematics.DirectDH(_linkLengthC,
+                            _linkLengthE,
+                            _angleLinkB,
+                            _angleLinkD,
+                            _linkLengthB+_linkLengthD,
+                            0.0f,
+                            0.0f,
+                            _linkLengthA);
+                        break;
+                    case Method.DirectQuaternions:
+                        (_x,_y,_z)=_robotKinematics.DirectQuaternions(_linkLengthC,
+                            _linkLengthE,
+                            _angleLinkB,
+                            _angleLinkD,
+                            _linkLengthB+_linkLengthD,
+                            0.0f,
+                            0.0f,
+                            _linkLengthA);
+                        break;
+                }
+                
+                // print($"End effector - X: {_currentPosition.x:F5}, Y: {_currentPosition.y:F5}, Z: {_currentPosition.z:F5}");
+                // print($"{_method} compute - X: {_x:F5}, Y: {_y:F5}, Z: {_z:F5}");
             }
         }
         

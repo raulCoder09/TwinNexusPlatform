@@ -17,7 +17,7 @@ namespace _scripts.controllers
         
         private string _modeMotion;
         private float _speed;
-
+        private string _displayMode;
         private void Awake()
         {
             _controlPanelController = GameObject.FindWithTag("VirtualEnvironmentArScara").GetComponent<ControlPanelController>();
@@ -29,6 +29,7 @@ namespace _scripts.controllers
 
         private void Start()
         {
+            _displayMode = "3D";
             if (_jogAndTeachController.ContinuousMove.value)
             {
                 _modeMotion = "Continuous";    
@@ -105,7 +106,8 @@ namespace _scripts.controllers
                 
                 ("Teach", _jogAndTeachController.TeachButton),
                 ("Edit", _jogAndTeachController.EditButton),
-                ("Stop", _jogAndTeachController.StopButton)
+                ("Stop", _jogAndTeachController.StopButton),
+                ("Chain/3D", _jogAndTeachController.ChainOr3DButton)
                 
             };
             
@@ -139,7 +141,22 @@ namespace _scripts.controllers
         {
             button.RegisterCallback<PointerDownEvent>(_ =>
             {
-                LinkController model3dTargetLink = null; //hay que ver que pedo con este
+                if (itemName=="Chain/3D")
+                {
+                    if (_displayMode=="3D")
+                    {
+                        _displayMode = "Chain";
+                        _arScaraKinematicChainController.HideKinematicChain();
+                        _arScaraModel3DController.ShowModel3D();
+                    }
+                    else
+                    {
+                        _displayMode = "3D";
+                        _arScaraKinematicChainController.ShowKinematicChain();
+                        _arScaraModel3DController.HideModel3D();
+                    }
+                }
+                LinkController model3dTargetLink = null;
                 LinkController kinematicChainTargetLink = null;
                 if (itemName == "Stop")
                 {

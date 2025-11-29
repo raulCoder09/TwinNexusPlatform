@@ -148,7 +148,7 @@
                     <ui:Button name="EmergencyButton" text="Emergency" class="generalButton hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="footerMiniPanel rowOrientationItems">
-                    <ui:Button name="GlassButton" text="Glass" class="generalButton hideItem" />
+                    <ui:Button name="ChainOr3DButton" text="Chain/3D" class="generalButton hideItem" />
                     <ui:Button name="ResultsButton" text="Results" class="generalButton hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>

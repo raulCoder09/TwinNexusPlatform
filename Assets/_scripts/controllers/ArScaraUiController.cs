@@ -71,7 +71,7 @@ namespace _scripts.controllers
             public const string Stop = "StopButton";
             public const string Emergency = "EmergencyButton";
             public const string Medara = "MEDARAButton";
-            public const string Glass = "GlassButton";
+            public const string ChainOr3D = "ChainOr3DButton";
             public const string Results = "ResultsButton";
 
             public const string MoveCont = "continuousMove";
@@ -276,7 +276,7 @@ namespace _scripts.controllers
         
             Add(_teachEdit, Q<Button>(Id.Teach), Q<Button>(Id.Edit));
             Add(_runStop, Q<Button>(Id.Run), Q<Button>(Id.Stop),Q<Button>(Id.Emergency));
-            Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.Glass));
+            Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.ChainOr3D));
             
             Add(_commanding, _destination);
         }

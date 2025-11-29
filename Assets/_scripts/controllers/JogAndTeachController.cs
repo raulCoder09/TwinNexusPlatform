@@ -54,7 +54,8 @@ namespace _scripts.controllers
             _minusJ4Button,
             _teachButton,
             _editButton,
-            _stopButton;
+            _stopButton,
+            _chainOr3DButton;
 
 
         internal DropdownField Mode
@@ -200,6 +201,11 @@ namespace _scripts.controllers
             get => _editButton;
             set => _editButton = value;
         }
+        internal Button ChainOr3DButton
+        {
+            get => _chainOr3DButton;
+            set => _chainOr3DButton = value;
+        }
 
         internal Button StopButton
         {
@@ -327,6 +333,7 @@ namespace _scripts.controllers
             _teachButton= _root.Q<Button>("TeachButton");
             _editButton= _root.Q<Button>("EditButton");
             _stopButton= _root.Q<Button>("StopButton");
+            _chainOr3DButton= _root.Q<Button>("ChainOr3DButton");
             
             
             _continuousMove = _root.Q<RadioButton>("continuousMove");

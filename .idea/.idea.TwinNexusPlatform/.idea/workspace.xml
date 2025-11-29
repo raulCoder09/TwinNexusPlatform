@@ -11,7 +11,14 @@
       <change beforePath="$PROJECT_DIR$/Assets/_scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scenes/Main.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraKinematicChainController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraKinematicChainController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraModel3DController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraModel3DController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraVirtualController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraVirtualController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/JogAndTeachController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/JogAndTeachController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/LinkController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/LinkController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/models/robotics/robotKinematics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/models/robotics/robotKinematics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/views/arScaraUi.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/views/arScaraUi.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/robotRR.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/robotRR.cs.meta" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -275,7 +282,7 @@
       <workItem from="1764202833048" duration="650000" />
       <workItem from="1764226271524" duration="990000" />
       <workItem from="1764227702676" duration="11629000" />
-      <workItem from="1764255274393" duration="31275000" />
+      <workItem from="1764255274393" duration="45598000" />
     </task>
     <servers />
   </component>

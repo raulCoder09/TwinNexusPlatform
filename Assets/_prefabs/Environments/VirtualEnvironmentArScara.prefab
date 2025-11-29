@@ -2219,6 +2219,7 @@ MonoBehaviour:
   _node5: {fileID: 5288919520610873589}
   _linkE: {fileID: 2049428716264069474}
   _node6: {fileID: 7114805470707352734}
+  _method: 0
 --- !u!1 &7088238794924401892
 GameObject:
   m_ObjectHideFlags: 0

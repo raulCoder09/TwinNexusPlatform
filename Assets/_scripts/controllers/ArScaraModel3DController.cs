@@ -36,6 +36,7 @@ namespace _scripts.controllers
 
         private void Start()
         {
+            ShowModel3D();
             _linkController1 = transform.Find("Base/XL430W250T1/AxisLink1").GetComponent<LinkController>();
             _linkController2 = transform.Find("Base/XL430W250T1/AxisLink1/Link1/XL430W250T2/AxisLink2").GetComponent<LinkController>();
             if (_linkController1 != null)
@@ -67,7 +68,30 @@ namespace _scripts.controllers
                 _angleLink2 = _linkController2.GetNormalizedAngle();
             }
         }
-        
+
+        internal void HideModel3D()
+        {
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                if (!(renderer is LineRenderer))
+                {
+                    renderer.enabled = false;
+                }
+            }
+        }
+        internal void ShowModel3D()
+        {
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                if (!(renderer is LineRenderer))
+                {
+                    renderer.enabled = true;
+                }
+            }
+        }
+
     }
     
 }

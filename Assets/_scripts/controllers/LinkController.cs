@@ -5,6 +5,7 @@ namespace _scripts.controllers
 {
     public class LinkController : MonoBehaviour
     {
+        [SerializeField] private Mode _mode=Mode.Joint;
         private MotionType _motionType = MotionType.Revolution;
         private float _rotation;
         private Coroutine _motionCoroutine;
@@ -12,10 +13,23 @@ namespace _scripts.controllers
         private float _maximumAngle;
         private float _speed;
 
+        internal Mode mode
+        {
+            get => _mode;
+            set => _mode = value;
+        }
+
+
         private enum MotionType
         {
             Linear,
             Revolution,
+        }
+
+        internal enum Mode
+        {
+            Joint,
+            World
         }
 
         internal float minimumAngle
@@ -40,13 +54,21 @@ namespace _scripts.controllers
 
         private void FixedUpdate()
         {
-            switch (_motionType)
+            switch (_mode)
             {
-                case MotionType.Linear:
+                case Mode.Joint:
+                    switch (_motionType)
+                    {
+                        case MotionType.Linear:
+                            break;
+                        case MotionType.Revolution:
+                            transform.localRotation = Quaternion.Euler(0, _rotation, 0);
+                            break;
+                    }
                     break;
-                case MotionType.Revolution:
-                    transform.localRotation = Quaternion.Euler(0, _rotation, 0);
+                case Mode.World:
                     break;
+                
             }
         }
 
