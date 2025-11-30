@@ -55,7 +55,7 @@ namespace _scripts.controllers
                 return;
             }
 
-            _currentEnv = Instantiate(prefab);
+            // _currentEnv = Instantiate(prefab);
             var arscaraParent = GameObject.FindGameObjectWithTag("ARSCARA");
             if (arscaraParent != null)
             {
@@ -95,7 +95,7 @@ namespace _scripts.controllers
             
             yield return new WaitForEndOfFrame();
             
-            _currentEnv = Instantiate(prefab);
+            // _currentEnv = Instantiate(prefab);
             if (Application.isEditor)
             {
                 yield return new WaitForSeconds(.5f);

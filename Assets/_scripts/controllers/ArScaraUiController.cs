@@ -11,7 +11,19 @@ namespace _scripts.controllers
         private ArScaraEnvironmentController _environmentController;
 
         private enum ModeType { None, World, Joint }
-        p
+        private enum KinematicsType { None, Forward, Reverse}
+        
+        private enum MethodType
+        {
+            None,
+            Geometric,
+            HTM,
+            DenavitHartenberg,
+            Quaternions
+            
+        }
+        
+        
         private enum ArScaraPanel { None, Control, JogTeach, Points }
         // private enum Placement { None, Raycast, QRMarker }
 
@@ -169,8 +181,7 @@ namespace _scripts.controllers
             _arScaraMenu?.RegisterValueChangedCallback(e => OnArScaraMenuChanged(ParseArScaraPanel(e.newValue)));
             // _placementMenu?.RegisterValueChangedCallback(e => OnPlacementMenuChanged(ParsePlacement(e.newValue)));
             _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
-
-            
+            _kinematics?.RegisterValueChangedCallback(e => ApplyKinematics(ParseKinematics(e.newValue)));
             BuildGroups();
         }
 
@@ -299,6 +310,15 @@ namespace _scripts.controllers
 
         #region Mode UI
 
+        private void ApplyKinematics(KinematicsType kinematics)
+        {
+            SetVisible(_kinematicsForward,kinematics==KinematicsType.Forward);
+            if (kinematics == KinematicsType.None)
+            {
+                SetVisible(_kinematicsForward, false);
+            }
+        }
+
         private void ApplyModeUi(ModeType mode)
         {
             bool common = mode is ModeType.World or ModeType.Joint;
@@ -314,9 +334,10 @@ namespace _scripts.controllers
 
             SetVisible(_jointButtons, mode == ModeType.Joint);
             SetVisible(_jointLabels,  mode == ModeType.Joint);
-            
-            SetVisible(_kinematicsForward,);
 
+            _kinematics.value = "Kinematics";
+            _method.value="Method";
+            
             if (mode == ModeType.None)
             {
                 SetVisible(_worldButtons, false);
@@ -409,6 +430,33 @@ namespace _scripts.controllers
                 _       => ModeType.None
             };
         }
+        
+        private static KinematicsType ParseKinematics(string raw)
+        {
+            var s = (raw ?? "").Trim();
+            return s switch
+            {
+                "Forward" => KinematicsType.Forward,
+                "Reverse" => KinematicsType.Reverse,
+                _       => KinematicsType.None
+            };
+        }
+        
+        
+
+        private static MethodType ParseMethod(string raw)
+        {
+            var s = (raw ?? "").Trim();
+            return s switch
+            {
+                "Geometric" => MethodType.Geometric,
+                "HTM" => MethodType.HTM,
+                "Denavit-Hartenberg" => MethodType.DenavitHartenberg,
+                "Quaternions" => MethodType.Quaternions,
+                _       => MethodType.None
+            };
+        }
+        
 
         private static ArScaraPanel ParseArScaraPanel(string raw)
         {
