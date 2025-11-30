@@ -197,10 +197,10 @@ namespace _scripts.controllers
         {
             var buttons = new (string itemName, Button button)[]
             {
-                ("PlusX", _jogAndTeachController.PlusXButton),
-                ("MinusX", _jogAndTeachController.MinusXButton),
-                ("PlusY", _jogAndTeachController.PlusYButton),
-                ("MinusY", _jogAndTeachController.MinusYButton),
+                ("PlusX", _jogAndTeachController.PlusQ1Button),
+                ("MinusX", _jogAndTeachController.MinusQ1Button),
+                ("PlusY", _jogAndTeachController.PlusQ2Button),
+                ("MinusY", _jogAndTeachController.MinusQ2Button),
                 
                 ("PlusJ1", _jogAndTeachController.PlusJ1Button),
                 ("MinusJ1", _jogAndTeachController.MinusJ1Button),

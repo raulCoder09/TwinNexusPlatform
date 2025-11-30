@@ -5,9 +5,11 @@ namespace _scripts.controllers
 {
     public class LinkController : MonoBehaviour
     {
-        [SerializeField] private Mode _mode=Mode.Joint;
+        private Mode _mode=Mode.Joint;
         private MotionType _motionType = MotionType.Revolution;
-        private float _rotation;
+        private float _rotationX;
+        private float _rotationY;
+        private float _rotationZ;
         private Coroutine _motionCoroutine;
         private float _minimumAngle;
         private float _maximumAngle;
@@ -20,7 +22,7 @@ namespace _scripts.controllers
         }
 
 
-        private enum MotionType
+        internal enum MotionType
         {
             Linear,
             Revolution,
@@ -50,7 +52,42 @@ namespace _scripts.controllers
             set => _speed = value;
         }
 
-        internal float currentRotation => _rotation;
+
+        internal MotionType motionType
+        {
+            get => _motionType;
+            set => _motionType = value;
+        }
+
+        internal float rotationX
+        {
+            get => _rotationX;
+            set => _rotationX = value;
+        }
+
+        internal float rotationY
+        {
+            get => _rotationY;
+            set => _rotationY = value;
+        }
+
+        internal float rotationZ
+        {
+            get => _rotationZ;
+            set => _rotationZ = value;
+        }
+
+
+        private void Start()
+        {
+            _rotationX=0f;
+            _rotationY=0f;
+            _rotationZ=0f;
+        }
+        
+        
+        
+        
 
         private void FixedUpdate()
         {
@@ -62,11 +99,18 @@ namespace _scripts.controllers
                         case MotionType.Linear:
                             break;
                         case MotionType.Revolution:
-                            transform.localRotation = Quaternion.Euler(0, _rotation, 0);
+                            transform.localRotation = Quaternion.Euler(_rotationX, _rotationY, _rotationZ);
                             break;
                     }
                     break;
                 case Mode.World:
+                    switch (_motionType)
+                    {
+                        case MotionType.Linear:
+                            break;
+                        case MotionType.Revolution:
+                            break;
+                    }
                     break;
                 
             }
@@ -110,15 +154,15 @@ namespace _scripts.controllers
             while (true)
             {
                 var increment = direction ? 0.25f : -0.25f;
-                var newRotation = _rotation + increment;
+                var newRotation = _rotationY + increment;
                 
                 if (newRotation >= _minimumAngle && newRotation <= _maximumAngle)
                 {
-                    _rotation = newRotation;
+                    _rotationY = newRotation;
                 }
                 else
                 {
-                    _rotation = Mathf.Clamp(_rotation, _minimumAngle, _maximumAngle);
+                    _rotationY = Mathf.Clamp(_rotationY, _minimumAngle, _maximumAngle);
                     _motionCoroutine = null;
                     yield break;
                 }
@@ -138,7 +182,7 @@ namespace _scripts.controllers
                 yield break;
             }
 
-            var startPosition = _rotation;
+            var startPosition = _rotationY;
             var endPosition = startPosition + target;
             endPosition = Mathf.Clamp(endPosition, _minimumAngle, _maximumAngle);
             var currentPosition = startPosition;
@@ -153,23 +197,23 @@ namespace _scripts.controllers
                 else
                     currentPosition = Mathf.Max(currentPosition, endPosition);
 
-                _rotation = Mathf.Clamp(currentPosition, _minimumAngle, _maximumAngle);
+                _rotationY = Mathf.Clamp(currentPosition, _minimumAngle, _maximumAngle);
 
                 yield return new WaitForSeconds(_speed);
             }
 
-            _rotation = Mathf.Clamp(endPosition, _minimumAngle, _maximumAngle);
+            _rotationY = Mathf.Clamp(endPosition, _minimumAngle, _maximumAngle);
             _motionCoroutine = null;
         }
         
         internal void SetRotation(float angle)
         {
-            _rotation = Mathf.Clamp(angle, _minimumAngle, _maximumAngle);
+            _rotationY = Mathf.Clamp(angle, _minimumAngle, _maximumAngle);
         }
         
         internal float GetNormalizedAngle()
         {
-            var angle = _rotation;
+            var angle = _rotationY;
             if (angle > 180f) angle -= 360f;
             return angle;
         }

@@ -18,6 +18,7 @@ namespace _scripts.controllers
         private string _modeMotion;
         private float _speed;
         private string _displayMode;
+        private bool _emergencyDetected;
         private void Awake()
         {
             _controlPanelController = GameObject.FindWithTag("VirtualEnvironmentArScara").GetComponent<ControlPanelController>();
@@ -29,6 +30,7 @@ namespace _scripts.controllers
 
         private void Start()
         {
+            _emergencyDetected=true;
             _displayMode = "3D";
             if (_jogAndTeachController.ContinuousMove.value)
             {
@@ -60,6 +62,23 @@ namespace _scripts.controllers
             {
                 _jogAndTeachController.J1Label.text = $"J1: {_arScaraModel3DController.angleLink1:F2} deg";
                 _jogAndTeachController.J2Label.text = $"J2: {_arScaraModel3DController.angleLink2:F2} deg";
+            }
+
+            if (_emergencyDetected)
+            {
+                _jogAndTeachController.EmergencyButton.style.backgroundColor = new StyleColor(Color.red);
+                _jogAndTeachController.EmergencyButton.style.borderTopColor    = new StyleColor(Color.yellow);
+                _jogAndTeachController.EmergencyButton.style.borderRightColor  = new StyleColor(Color.yellow);
+                _jogAndTeachController.EmergencyButton.style.borderBottomColor = new StyleColor(Color.yellow);
+                _jogAndTeachController.EmergencyButton.style.borderLeftColor   = new StyleColor(Color.yellow);
+                _jogAndTeachController.EmergencyStopLabel.text = "Emergency stop: On";
+                _jogAndTeachController.EmergencyStopLabel.style.color=new StyleColor(Color.red);
+            }
+            else
+            {
+                _jogAndTeachController.EmergencyButton.style.backgroundColor = new StyleColor(Color.green);
+                _jogAndTeachController.EmergencyStopLabel.text = "Emergency stop: Off";
+                _jogAndTeachController.EmergencyStopLabel.style.color=new StyleColor(Color.green);
             }
         }
         
@@ -94,10 +113,10 @@ namespace _scripts.controllers
         {
             var buttons = new (string itemName, Button button)[]
             {
-                ("PlusX", _jogAndTeachController.PlusXButton),
-                ("MinusX", _jogAndTeachController.MinusXButton),
-                ("PlusY", _jogAndTeachController.PlusYButton),
-                ("MinusY", _jogAndTeachController.MinusYButton),
+                ("PlusQ1", _jogAndTeachController.PlusQ1Button),
+                ("MinusQ1", _jogAndTeachController.MinusQ1Button),
+                ("PlusQ2", _jogAndTeachController.PlusQ2Button),
+                ("MinusQ2", _jogAndTeachController.MinusQ2Button),
                 
                 ("PlusJ1", _jogAndTeachController.PlusJ1Button),
                 ("MinusJ1", _jogAndTeachController.MinusJ1Button),
@@ -107,7 +126,8 @@ namespace _scripts.controllers
                 ("Teach", _jogAndTeachController.TeachButton),
                 ("Edit", _jogAndTeachController.EditButton),
                 ("Stop", _jogAndTeachController.StopButton),
-                ("Chain/3D", _jogAndTeachController.ChainOr3DButton)
+                ("Chain/3D", _jogAndTeachController.ChainOr3DButton),
+                ("Emergency", _jogAndTeachController.EmergencyButton)
                 
             };
             
@@ -141,6 +161,15 @@ namespace _scripts.controllers
         {
             button.RegisterCallback<PointerDownEvent>(_ =>
             {
+                if (itemName=="Reset")
+                {
+                    _emergencyDetected=false;
+                }
+
+                if (itemName == "Emergency")
+                {
+                    _emergencyDetected=true;
+                }
                 if (itemName=="Chain/3D")
                 {
                     if (_displayMode=="3D")
@@ -187,13 +216,33 @@ namespace _scripts.controllers
                 {
                     case "PlusJ1":
                     case "PlusJ2":
-                        ExecuteMotion(kinematicChainTargetLink, true);
-                        ExecuteMotion(model3dTargetLink, true);
+                        if (!_emergencyDetected)
+                        {
+                            ExecuteMotion(kinematicChainTargetLink, true);
+                            ExecuteMotion(model3dTargetLink, true);   
+                        }
+                        else
+                        {
+                            _arScaraKinematicChainController.linkControllerB?.StopMotion();
+                            _arScaraModel3DController.linkController1?.StopMotion();
+                            _arScaraKinematicChainController.linkControllerD?.StopMotion();
+                            _arScaraModel3DController.linkController2?.StopMotion();
+                        }
                         break;
                     case "MinusJ1":
                     case "MinusJ2":
-                        ExecuteMotion(kinematicChainTargetLink, false);
-                        ExecuteMotion(model3dTargetLink, false);
+                        if (!_emergencyDetected)
+                        {
+                            ExecuteMotion(kinematicChainTargetLink, false);
+                            ExecuteMotion(model3dTargetLink, false);
+                        }
+                        else
+                        {
+                            _arScaraKinematicChainController.linkControllerB?.StopMotion();
+                            _arScaraModel3DController.linkController1?.StopMotion();
+                            _arScaraKinematicChainController.linkControllerD?.StopMotion();
+                            _arScaraModel3DController.linkController2?.StopMotion();
+                        }
                         break;
                 }
             }, TrickleDown.TrickleDown);
