@@ -11,6 +11,19 @@ namespace _scripts.controllers
         private ArScaraEnvironmentController _environmentController;
 
         private enum ModeType { None, World, Joint }
+        private enum KinematicsType { None, Forward, Reverse}
+        
+        private enum MethodType
+        {
+            None,
+            Geometric,
+            HTM,
+            DenavitHartenberg,
+            Quaternions
+            
+        }
+        
+        
         private enum ArScaraPanel { None, Control, JogTeach, Points }
         // private enum Placement { None, Raycast, QRMarker }
 
@@ -55,8 +68,8 @@ namespace _scripts.controllers
             public const string JogTeachPanel = "jogAndTeachPanel";
             public const string PointsPanel = "pointsPanel";
 
-            public const string BpX = "plusXButton";    public const string BmX = "minusXButton";
-            public const string BpY = "plusYButton";    public const string BmY = "minusYButton";
+            public const string BpQ1 = "plusQ1Button";    public const string BmQ1 = "minusQ1Button";
+            public const string BpQ2 = "plusQ2Button";    public const string BmQ2 = "minusQ2Button";
 
             public const string BpJ1 = "plusJ1Button";  public const string BmJ1 = "minusJ1Button";
             public const string BpJ2 = "plusJ2Button";  public const string BmJ2 = "minusJ2Button";
@@ -71,7 +84,7 @@ namespace _scripts.controllers
             public const string Stop = "StopButton";
             public const string Emergency = "EmergencyButton";
             public const string Medara = "MEDARAButton";
-            public const string Glass = "GlassButton";
+            public const string ChainOr3D = "ChainOr3DButton";
             public const string Results = "ResultsButton";
 
             public const string MoveCont = "continuousMove";
@@ -79,8 +92,8 @@ namespace _scripts.controllers
             public const string MoveMed  = "mediumMove";
             public const string MoveShort= "shortMove";
             
-            public const string Kinematics= "kinematicsDropdown";
-            public const string Method= "methodDropdown";
+            public const string Kinematics= "KinematicsDropdown";
+            public const string Method= "MethodDropdown";
             
             
         }
@@ -89,7 +102,7 @@ namespace _scripts.controllers
         private VisualElement _root;
         private VisualElement _body, _slidingPanels, _scrim, _navPanel;
         private Label _warning;
-        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _destination, _points; //,_placementMenu
+        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _destination, _points,_kinematics,_method; //,_placementMenu
         private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
 
         private readonly List<VisualElement> _worldButtons = new();
@@ -101,6 +114,8 @@ namespace _scripts.controllers
         private readonly List<VisualElement> _runStop    = new();
         private readonly List<VisualElement> _commanding   = new();
         private readonly List<VisualElement> _medara   = new();
+
+        private readonly List<VisualElement> _kinematicsForward = new();
 
         private void Awake()
         {
@@ -136,6 +151,9 @@ namespace _scripts.controllers
             _controlPanel = Q<VisualElement>(Id.ControlPanel);
             _jogTeachPanel = Q<VisualElement>(Id.JogTeachPanel);
             _pointsPanel = Q<VisualElement>(Id.PointsPanel);
+            
+            _kinematics = Q<DropdownField>(Id.Kinematics);
+            _method = Q<DropdownField>(Id.Method);
 
             Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ =>
             {
@@ -163,8 +181,7 @@ namespace _scripts.controllers
             _arScaraMenu?.RegisterValueChangedCallback(e => OnArScaraMenuChanged(ParseArScaraPanel(e.newValue)));
             // _placementMenu?.RegisterValueChangedCallback(e => OnPlacementMenuChanged(ParsePlacement(e.newValue)));
             _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
-            _speed?.RegisterValueChangedCallback(_ => { /* hook futuro */ });
-
+            _kinematics?.RegisterValueChangedCallback(e => ApplyKinematics(ParseKinematics(e.newValue)));
             BuildGroups();
         }
 
@@ -181,7 +198,8 @@ namespace _scripts.controllers
             SetValue(_speed, "Speed");
             SetValue(_destination, "Destination");
             SetValue(_points, "Point");
-
+            SetValue(_kinematics, "Kinematics");
+            SetValue(_method, "Method");
 
             _warning.text = "Select a work environment";
             _arScaraMenu?.SetEnabled(false);
@@ -191,7 +209,6 @@ namespace _scripts.controllers
             SetBodyOpaque(true);
             ApplyModeUi(ModeType.None);
         }
-
         #region UI Query & Manipulation
 
         private T Q<T>(string name) where T : VisualElement => _root.Q<T>(name);
@@ -264,21 +281,24 @@ namespace _scripts.controllers
         private void BuildGroups()
         {
             
-            Add(_worldButtons, Q<Button>(Id.BpX), Q<Button>(Id.BmX), Q<Button>(Id.BpY), Q<Button>(Id.BmY));
+            // Add(_worldButtons, );
 
             Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2));
 
             Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<DropdownField>(Id.Kinematics),Q<DropdownField>(Id.Method),Q<Button>(Id.Results));
             Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2));
         
+            
+            
             Add(_moveRadios, Q<RadioButton>(Id.MoveCont), Q<RadioButton>(Id.MoveLong),
                 Q<RadioButton>(Id.MoveMed),  Q<RadioButton>(Id.MoveShort));
         
             Add(_teachEdit, Q<Button>(Id.Teach), Q<Button>(Id.Edit));
             Add(_runStop, Q<Button>(Id.Run), Q<Button>(Id.Stop),Q<Button>(Id.Emergency));
-            Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.Glass));
+            Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.ChainOr3D));
             
             Add(_commanding, _destination);
+            Add(_kinematicsForward,Q<Button>(Id.BpQ1), Q<Button>(Id.BmQ1), Q<Button>(Id.BpQ2), Q<Button>(Id.BmQ2));
         }
 
         private static void Add(List<VisualElement> list, params VisualElement[] items)
@@ -289,6 +309,15 @@ namespace _scripts.controllers
         #endregion
 
         #region Mode UI
+
+        private void ApplyKinematics(KinematicsType kinematics)
+        {
+            SetVisible(_kinematicsForward,kinematics==KinematicsType.Forward);
+            if (kinematics == KinematicsType.None)
+            {
+                SetVisible(_kinematicsForward, false);
+            }
+        }
 
         private void ApplyModeUi(ModeType mode)
         {
@@ -306,6 +335,9 @@ namespace _scripts.controllers
             SetVisible(_jointButtons, mode == ModeType.Joint);
             SetVisible(_jointLabels,  mode == ModeType.Joint);
 
+            _kinematics.value = "Kinematics";
+            _method.value="Method";
+            
             if (mode == ModeType.None)
             {
                 SetVisible(_worldButtons, false);
@@ -398,6 +430,33 @@ namespace _scripts.controllers
                 _       => ModeType.None
             };
         }
+        
+        private static KinematicsType ParseKinematics(string raw)
+        {
+            var s = (raw ?? "").Trim();
+            return s switch
+            {
+                "Forward" => KinematicsType.Forward,
+                "Reverse" => KinematicsType.Reverse,
+                _       => KinematicsType.None
+            };
+        }
+        
+        
+
+        private static MethodType ParseMethod(string raw)
+        {
+            var s = (raw ?? "").Trim();
+            return s switch
+            {
+                "Geometric" => MethodType.Geometric,
+                "HTM" => MethodType.HTM,
+                "Denavit-Hartenberg" => MethodType.DenavitHartenberg,
+                "Quaternions" => MethodType.Quaternions,
+                _       => MethodType.None
+            };
+        }
+        
 
         private static ArScaraPanel ParseArScaraPanel(string raw)
         {

@@ -36,25 +36,19 @@ namespace _scripts.controllers
             _shortMove;
 
         private Button
-            _plusXButton,
-            _minusXButton,
-            _plusYButton,
-            _minusYButton,
-            _plusZButton,
-            _minusZButton,
-            _plusUButton,
-            _minusUButton,
+            _plusQ1Button,
+            _minusQ1Button,
+            _plusQ2Button,
+            _minusQ2Button,
             _plusJ1Button,
             _minusJ1Button,
             _plusJ2Button,
             _minusJ2Button,
-            _plusJ3Button,
-            _minusJ3Button,
-            _plusJ4Button,
-            _minusJ4Button,
             _teachButton,
             _editButton,
-            _stopButton;
+            _stopButton,
+            _chainOr3DButton,
+            _emergencyButton;
 
 
         internal DropdownField Mode
@@ -93,53 +87,30 @@ namespace _scripts.controllers
             set => _shortMove = value;
         }
 
-        internal Button PlusXButton
+        internal Button PlusQ1Button
         {
-            get => _plusXButton;
-            set => _plusXButton = value;
+            get => _plusQ1Button;
+            set => _plusQ1Button = value;
         }
 
-        internal Button MinusXButton
+        internal Button MinusQ1Button
         {
-            get => _minusXButton;
-            set => _minusXButton = value;
+            get => _minusQ1Button;
+            set => _minusQ1Button = value;
         }
 
-        internal Button PlusYButton
+        internal Button PlusQ2Button
         {
-            get => _plusYButton;
-            set => _plusYButton = value;
+            get => _plusQ2Button;
+            set => _plusQ2Button = value;
         }
 
-        internal Button MinusYButton
+        internal Button MinusQ2Button
         {
-            get => _minusYButton;
-            set => _minusYButton = value;
+            get => _minusQ2Button;
+            set => _minusQ2Button = value;
         }
 
-        internal Button PlusZButton
-        {
-            get => _plusZButton;
-            set => _plusZButton = value;
-        }
-
-        internal Button MinusZButton
-        {
-            get => _minusZButton;
-            set => _minusZButton = value;
-        }
-
-        internal Button PlusUButton
-        {
-            get => _plusUButton;
-            set => _plusUButton = value;
-        }
-
-        internal Button MinusUButton
-        {
-            get => _minusUButton;
-            set => _minusUButton = value;
-        }
 
         internal Button PlusJ1Button
         {
@@ -164,30 +135,7 @@ namespace _scripts.controllers
             get => _minusJ2Button;
             set => _minusJ2Button = value;
         }
-
-        internal Button PlusJ3Button
-        {
-            get => _plusJ3Button;
-            set => _plusJ3Button = value;
-        }
-
-        internal Button MinusJ3Button
-        {
-            get => _minusJ3Button;
-            set => _minusJ3Button = value;
-        }
-
-        internal Button PlusJ4Button
-        {
-            get => _plusJ4Button;
-            set => _plusJ4Button = value;
-        }
-
-        internal Button MinusJ4Button
-        {
-            get => _minusJ4Button;
-            set => _minusJ4Button = value;
-        }
+        
 
         internal Button TeachButton
         {
@@ -200,7 +148,18 @@ namespace _scripts.controllers
             get => _editButton;
             set => _editButton = value;
         }
-
+        internal Button ChainOr3DButton
+        {
+            get => _chainOr3DButton;
+            set => _chainOr3DButton = value;
+        }
+        
+        internal Button EmergencyButton
+        {
+            get => _emergencyButton;
+            set => _emergencyButton = value;
+        }
+        
         internal Button StopButton
         {
             get=> _stopButton;
@@ -306,27 +265,21 @@ namespace _scripts.controllers
             _mode  = _root.Q<DropdownField>("modeDropdown");
             _speed = _root.Q<DropdownField>("speedDropdown");
 
-            _plusXButton = _root.Q<Button>("plusXButton");
-            _minusXButton = _root.Q<Button>("minusXButton");
-            _plusYButton = _root.Q<Button>("plusYButton");
-            _minusYButton = _root.Q<Button>("minusYButton");
-            _plusZButton = _root.Q<Button>("plusZButton");
-            _minusZButton = _root.Q<Button>("minusZButton");
-            _plusUButton = _root.Q<Button>("plusUButton");
-            _minusUButton = _root.Q<Button>("minusUButton");
+            _plusQ1Button = _root.Q<Button>("plusQ1Button");
+            _minusQ1Button = _root.Q<Button>("minusQ1Button");
+            _plusQ2Button = _root.Q<Button>("plusQ2Button");
+            _minusQ2Button = _root.Q<Button>("minusQ2Button");
 
             _plusJ1Button = _root.Q<Button>("plusJ1Button");
             _minusJ1Button = _root.Q<Button>("minusJ1Button");
             _plusJ2Button = _root.Q<Button>("plusJ2Button");
             _minusJ2Button = _root.Q<Button>("minusJ2Button");
-            _plusJ3Button = _root.Q<Button>("plusJ3Button");
-            _minusJ3Button = _root.Q<Button>("minusJ3Button");
-            _plusJ4Button = _root.Q<Button>("plusJ4Button");
-            _minusJ4Button = _root.Q<Button>("minusJ4Button");
 
             _teachButton= _root.Q<Button>("TeachButton");
             _editButton= _root.Q<Button>("EditButton");
             _stopButton= _root.Q<Button>("StopButton");
+            _chainOr3DButton= _root.Q<Button>("ChainOr3DButton");
+            _emergencyButton= _root.Q<Button>("EmergencyButton");
             
             
             _continuousMove = _root.Q<RadioButton>("continuousMove");

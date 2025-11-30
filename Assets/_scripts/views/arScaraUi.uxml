@@ -105,11 +105,14 @@
                 <ui:VisualElement class="headerMiniPanel " />
                 <ui:VisualElement class="bodyMiniPanel ">
                     <ui:DropdownField choices="Mode,World,Joint" name="modeDropdown" class="dropdownOptions" />
+                    <ui:DropdownField choices="Kinematics,Forward,Reverse" name="KinematicsDropdown" class="dropdownOptions hideItem" />
+                    <ui:DropdownField choices="Method,Geometric,HTM,Denavit-Hartenberg,Quaternions" name="MethodDropdown" class="dropdownOptions hideItem" />
+                    <!-- <ui:DropdownField choices="Method,Geometric,HTM,Denavit-Hartenberg,Quaternions" name="MethodDropdown" class="dropdownOptions hideItem" /> aqui deben ir los metodos de la inversa-->
                     <ui:DropdownField choices="Speed,Low,High" name="speedDropdown" class="dropdownOptions hideItem" />
-                    <ui:DropdownField choices="kinematics,Forward,Reverse" name="kinematicsDropdown" class="dropdownOptions hideItem" />
-                    <ui:DropdownField choices="Method,Geometric,HTM,Denavit-Hartenberg,Quaternions" name="methodDropdown" class="dropdownOptions hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="plusQ1Button" text="+Q1" class="generalButton hideItem" />
+                    <ui:Button name="minusQ1Button" text="-Q1" class="generalButton hideItem" />
                     <ui:Button name="plusXButton" text="+X" class="generalButton hideItem" />
                     <ui:Button name="minusXButton" text="-X" class="generalButton hideItem" />
                     <ui:Button name="minusJ1Button" text="-J1" class="generalButton hideItem" />
@@ -119,6 +122,8 @@
             </ui:VisualElement>
             <ui:VisualElement class="miniPanel">
                 <ui:VisualElement class="headerMiniPanel rowOrientationItems">
+                    <ui:Button name="plusQ2Button" text="+Q2" class="generalButton hideItem" />
+                    <ui:Button name="minusQ2Button" text="-Q2" class="generalButton hideItem" />
                     <ui:Button name="plusYButton" text="+Y" class="generalButton hideItem" />
                     <ui:Button name="minusYButton" text="-Y" class="generalButton hideItem" />
                     <ui:Button name="minusJ2Button" text="-J2" class="generalButton hideItem" />
@@ -148,7 +153,7 @@
                     <ui:Button name="EmergencyButton" text="Emergency" class="generalButton hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="footerMiniPanel rowOrientationItems">
-                    <ui:Button name="GlassButton" text="Glass" class="generalButton hideItem" />
+                    <ui:Button name="ChainOr3DButton" text="Chain/3D" class="generalButton hideItem" />
                     <ui:Button name="ResultsButton" text="Results" class="generalButton hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>

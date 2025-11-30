@@ -1355,9 +1355,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4480572069763773760}
+  - component: {fileID: 4607263334810986034}
   m_Layer: 0
-  m_Name: Model3D
-  m_TagString: Untagged
+  m_Name: ArScaraModel3D
+  m_TagString: ArScaraModel3D
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1378,6 +1379,18 @@ Transform:
   - {fileID: 3782625114958959162}
   m_Father: {fileID: 8322835160682238714}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4607263334810986034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4783800477261050163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 105c4510efbc468fa1f18990c55cce92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.ArScaraModel3DController
 --- !u!1 &4863535433278513472
 GameObject:
   m_ObjectHideFlags: 0
@@ -2161,8 +2174,8 @@ GameObject:
   - component: {fileID: 7052892626538404018}
   - component: {fileID: 221955684364276596}
   m_Layer: 0
-  m_Name: KinematicChain
-  m_TagString: Untagged
+  m_Name: AeScaraKinematicChain
+  m_TagString: AeScaraKinematicChain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2206,8 +2219,7 @@ MonoBehaviour:
   _node5: {fileID: 5288919520610873589}
   _linkE: {fileID: 2049428716264069474}
   _node6: {fileID: 7114805470707352734}
-  _q1: 33
-  _q2: 0
+  _method: 0
 --- !u!1 &7088238794924401892
 GameObject:
   m_ObjectHideFlags: 0
