@@ -13,15 +13,9 @@ namespace _scripts.controllers
         private enum ModeType { None, World, Joint }
         private enum KinematicsType { None, Forward, Reverse}
         
-        private enum MethodType
-        {
-            None,
-            Geometric,
-            HTM,
-            DenavitHartenberg,
-            Quaternions
-            
-        }
+        private enum MethodForwardType { None, Geometric, HTM, DenavitHartenberg }
+        private enum MethodReverseType {a,b,c,d }
+        
         
         
         private enum ArScaraPanel { None, Control, JogTeach, Points }
@@ -57,7 +51,7 @@ namespace _scripts.controllers
 
             public const string EnvMenu = "environmentMenu";
             public const string ArScaraMenu = "arscaraMenu";
-            // public const string Placement = "placementMenu";
+            public const string Placement = "placementMenu";
             public const string Views = "views";
             public const string Mode = "modeDropdown";
             public const string Speed = "speedDropdown";
@@ -70,6 +64,9 @@ namespace _scripts.controllers
 
             public const string BpQ1 = "plusQ1Button";    public const string BmQ1 = "minusQ1Button";
             public const string BpQ2 = "plusQ2Button";    public const string BmQ2 = "minusQ2Button";
+            
+            public const string BpX = "plusXButton";    public const string BmX = "minusXButton";
+            public const string BpY = "plusYButton";    public const string BmY = "minusYButton";
 
             public const string BpJ1 = "plusJ1Button";  public const string BmJ1 = "minusJ1Button";
             public const string BpJ2 = "plusJ2Button";  public const string BmJ2 = "minusJ2Button";
@@ -93,7 +90,8 @@ namespace _scripts.controllers
             public const string MoveShort= "shortMove";
             
             public const string Kinematics= "KinematicsDropdown";
-            public const string Method= "MethodDropdown";
+            public const string MethodForward= "MethodForwardDropdown";
+            public const string MethodReverse= "MethodReverseDropdown";
             
             
         }
@@ -102,7 +100,7 @@ namespace _scripts.controllers
         private VisualElement _root;
         private VisualElement _body, _slidingPanels, _scrim, _navPanel;
         private Label _warning;
-        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _destination, _points,_kinematics,_method; //,_placementMenu
+        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _destination, _points,_kinematics,_methodForward,_placementMenu,_methodReverse;
         private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
 
         private readonly List<VisualElement> _worldButtons = new();
@@ -116,6 +114,10 @@ namespace _scripts.controllers
         private readonly List<VisualElement> _medara   = new();
 
         private readonly List<VisualElement> _kinematicsForward = new();
+        private readonly List<VisualElement> _methodForwardControls = new();
+        private readonly List<VisualElement> _virtualControls = new();
+        private readonly List<VisualElement> _arControls = new();
+        private readonly List<VisualElement> _twinNexusControls = new();
 
         private void Awake()
         {
@@ -140,7 +142,7 @@ namespace _scripts.controllers
 
             _environmentMenu = Q<DropdownField>(Id.EnvMenu);
             _arScaraMenu = Q<DropdownField>(Id.ArScaraMenu);
-            // _placementMenu = Q<DropdownField>(Id.Placement);
+            _placementMenu = Q<DropdownField>(Id.Placement);
 
             _views = Q<DropdownField>(Id.Views);
             _mode = Q<DropdownField>(Id.Mode);
@@ -153,13 +155,15 @@ namespace _scripts.controllers
             _pointsPanel = Q<VisualElement>(Id.PointsPanel);
             
             _kinematics = Q<DropdownField>(Id.Kinematics);
-            _method = Q<DropdownField>(Id.Method);
+            _methodForward = Q<DropdownField>(Id.MethodForward);
+            _methodReverse = Q<DropdownField>(Id.MethodReverse);
+            
 
             Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ =>
             {
                 SetValue(_environmentMenu, "environment");
                 SetValue(_arScaraMenu, "ARSCARA menu");
-                // SetValue(_placementMenu, "Placement");
+                SetValue(_placementMenu, "Placement");
 
                 ShowOnlyArScaraPanel(ArScaraPanel.None);
 
@@ -182,6 +186,13 @@ namespace _scripts.controllers
             // _placementMenu?.RegisterValueChangedCallback(e => OnPlacementMenuChanged(ParsePlacement(e.newValue)));
             _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
             _kinematics?.RegisterValueChangedCallback(e => ApplyKinematics(ParseKinematics(e.newValue)));
+            _methodForward?.RegisterValueChangedCallback(e => ApplyMethodForward(ParseMethodForward(e.newValue)));
+            
+            
+            
+            // _methodReverse?.RegisterValueChangedCallback(e => ApplyMethodReverse(ParseMethodReverse(e.newValue)));
+            
+            
             BuildGroups();
         }
 
@@ -192,14 +203,15 @@ namespace _scripts.controllers
 
             SetValue(_environmentMenu, "environment");
             SetValue(_arScaraMenu, "ARSCARA menu");
-            // SetValue(_placementMenu, "Placement");
+            SetValue(_placementMenu, "Placement");
             SetValue(_views, "Select view");
             SetValue(_mode, "Mode");
             SetValue(_speed, "Speed");
             SetValue(_destination, "Destination");
             SetValue(_points, "Point");
             SetValue(_kinematics, "Kinematics");
-            SetValue(_method, "Method");
+            SetValue(_methodForward, "Method");
+            SetValue(_methodReverse, "Method");
 
             _warning.text = "Select a work environment";
             _arScaraMenu?.SetEnabled(false);
@@ -230,8 +242,8 @@ namespace _scripts.controllers
         private void SetBodyOpaque(bool opaque)
         {
             if (_body == null) return;
-            _body.RemoveFromClassList(opaque ? Uss.BgTransparent : Uss.BgOpaque);
-            _body.AddToClassList(opaque ? Uss.BgOpaque : Uss.BgTransparent);
+            // _body.RemoveFromClassList(opaque ? Uss.BgTransparent : Uss.BgOpaque);
+            // _body.AddToClassList(opaque ? Uss.BgOpaque : Uss.BgTransparent);
         }
 
         #endregion
@@ -282,10 +294,12 @@ namespace _scripts.controllers
         {
             
             // Add(_worldButtons, );
+            Add(_virtualControls,Q<DropdownField>(Id.Views));
+            Add(_arControls,Q<DropdownField>(Id.Placement));
 
             Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2));
 
-            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<DropdownField>(Id.Kinematics),Q<DropdownField>(Id.Method),Q<Button>(Id.Results));
+            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<DropdownField>(Id.Kinematics),Q<Button>(Id.Results));
             Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2));
         
             
@@ -298,7 +312,12 @@ namespace _scripts.controllers
             Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.ChainOr3D));
             
             Add(_commanding, _destination);
-            Add(_kinematicsForward,Q<Button>(Id.BpQ1), Q<Button>(Id.BmQ1), Q<Button>(Id.BpQ2), Q<Button>(Id.BmQ2));
+            Add(_kinematicsForward,Q<DropdownField>(Id.MethodForward));
+            Add(_methodForwardControls,Q<Button>(Id.BpQ1), Q<Button>(Id.BmQ1), Q<Button>(Id.BpQ2), Q<Button>(Id.BmQ2));
+            
+            
+            // Add(_methodReverseControls,);
+            
         }
 
         private static void Add(List<VisualElement> list, params VisualElement[] items)
@@ -312,10 +331,26 @@ namespace _scripts.controllers
 
         private void ApplyKinematics(KinematicsType kinematics)
         {
-            SetVisible(_kinematicsForward,kinematics==KinematicsType.Forward);
-            if (kinematics == KinematicsType.None)
+            switch (kinematics)
             {
-                SetVisible(_kinematicsForward, false);
+                case KinematicsType.Forward:
+                    SetVisible(_kinematicsForward,true);
+                    break;
+                default:
+                    SetVisible(_kinematicsForward, false);
+                    SetVisible(_methodForwardControls, false);
+                    _methodForward.value = "Method";
+                    break;
+                
+            }
+        }
+
+        private void ApplyMethodForward(MethodForwardType methodForward)
+        {
+            SetVisible(_methodForwardControls, methodForward != MethodForwardType.None);
+            if (methodForward == MethodForwardType.None)
+            {
+                SetVisible(_methodForwardControls, false);
             }
         }
 
@@ -336,7 +371,8 @@ namespace _scripts.controllers
             SetVisible(_jointLabels,  mode == ModeType.Joint);
 
             _kinematics.value = "Kinematics";
-            _method.value="Method";
+            _methodForward.value="Method";
+            _methodReverse.value="Method";
             
             if (mode == ModeType.None)
             {
@@ -353,6 +389,29 @@ namespace _scripts.controllers
 
         private void OnEnvironmentChanged(ArScaraEnvironmentController.EnvType env)
         {
+            switch (env)
+            {
+                case ArScaraEnvironmentController.EnvType.Virtual:
+                case ArScaraEnvironmentController.EnvType.TwinNexus:
+                    SetVisible(_virtualControls, true);
+                    SetVisible(_arControls,false);
+                    break;
+                case ArScaraEnvironmentController.EnvType.Augmented:
+                    SetVisible(_arControls,true);
+                    SetVisible(_virtualControls, false);
+                    break;
+                default:
+                    SetVisible(_virtualControls, false);
+                    SetVisible(_arControls,false);
+                    _mode.value = "Mode";
+                    _speed.value = "Speed";
+                    _destination.value = "Destination";
+                    _kinematics.value = "Kinematics";
+                    _methodForward.value = "Method";
+                    _methodReverse.value = "Method";
+                    _points.value = "Points";
+                    break;
+            }
             bool none = env == ArScaraEnvironmentController.EnvType.None;
             
             // Actualizar UI según selección
@@ -374,7 +433,7 @@ namespace _scripts.controllers
             
             if (_environmentController != null)
             {
-                _environmentController.CreateEnvironment(env);
+                 // _environmentController.CreateEnvironment(env);
             }
             else
             {
@@ -444,16 +503,15 @@ namespace _scripts.controllers
         
         
 
-        private static MethodType ParseMethod(string raw)
+        private static MethodForwardType ParseMethodForward(string raw)
         {
             var s = (raw ?? "").Trim();
             return s switch
             {
-                "Geometric" => MethodType.Geometric,
-                "HTM" => MethodType.HTM,
-                "Denavit-Hartenberg" => MethodType.DenavitHartenberg,
-                "Quaternions" => MethodType.Quaternions,
-                _       => MethodType.None
+                "Geometric" => MethodForwardType.Geometric,
+                "HTM" => MethodForwardType.HTM,
+                "Denavit-Hartenberg" => MethodForwardType.DenavitHartenberg,
+                _       => MethodForwardType.None
             };
         }
         

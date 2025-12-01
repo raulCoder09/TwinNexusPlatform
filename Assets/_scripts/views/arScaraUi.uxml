@@ -12,8 +12,8 @@
                 <ui:DropdownField name="arscaraMenu" choices="ARSCARA menu,Control panel,Jog and teach,Points" class="dropdownOptions" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; width: 25%; height: 100%; align-items: center; justify-content: center; align-self: center; align-content: center;">
-                <!-- <ui:DropdownField name="placementMenu" choices="Placement,Raycast,QR marker" class="dropdownOptions " /> -->
-                <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="views" class="dropdownOptions" />
+                <ui:DropdownField name="placementMenu" choices="Placement,Raycast,QR marker" class="dropdownOptions " />
+                <ui:DropdownField choices="Select view,Default,Top,Front,Back,Left,Right" name="views" class="dropdownOptions hideItem" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="main" class="main passthrough" style="align-items: center; justify-content: center; align-self: center; align-content: center;">
@@ -105,10 +105,10 @@
                 <ui:VisualElement class="headerMiniPanel " />
                 <ui:VisualElement class="bodyMiniPanel ">
                     <ui:DropdownField choices="Mode,World,Joint" name="modeDropdown" class="dropdownOptions" />
-                    <ui:DropdownField choices="Kinematics,Forward,Reverse" name="KinematicsDropdown" class="dropdownOptions hideItem" />
-                    <ui:DropdownField choices="Method,Geometric,HTM,Denavit-Hartenberg,Quaternions" name="MethodDropdown" class="dropdownOptions hideItem" />
-                    <!-- <ui:DropdownField choices="Method,Geometric,HTM,Denavit-Hartenberg,Quaternions" name="MethodDropdown" class="dropdownOptions hideItem" /> aqui deben ir los metodos de la inversa-->
                     <ui:DropdownField choices="Speed,Low,High" name="speedDropdown" class="dropdownOptions hideItem" />
+                    <ui:DropdownField choices="Kinematics,Forward,Reverse" name="KinematicsDropdown" class="dropdownOptions hideItem" />
+                    <ui:DropdownField choices="Method,Geometric,HTM,Denavit-Hartenberg" name="MethodForwardDropdown" class="dropdownOptions hideItem" />
+                    <ui:DropdownField choices="Method,a,b,c,d" name="MethodReverseDropdown" class="dropdownOptions hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="footerMiniPanel rowOrientationItems">
                     <ui:Button name="plusQ1Button" text="+Q1" class="generalButton hideItem" />
