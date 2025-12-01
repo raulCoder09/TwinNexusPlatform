@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraEnvironmentController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_scripts/views/arScaraUi.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/views/arScaraUi.uxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -274,6 +272,9 @@
       <workItem from="1764227702676" duration="11629000" />
       <workItem from="1764255274393" duration="47993000" />
       <workItem from="1764492729010" duration="17785000" />
+      <workItem from="1764581902573" duration="6106000" />
+      <workItem from="1764591772772" duration="52000" />
+      <workItem from="1764591984678" duration="2938000" />
     </task>
     <servers />
   </component>
@@ -308,68 +309,81 @@
         </breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs</url>
-          <line>376</line>
+          <line>452</line>
           <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" containingFunctionPresentation="Method 'OnEnvironmentChanged'">
             <startOffsets>
-              <option value="15126" />
+              <option value="19088" />
             </startOffsets>
             <endOffsets>
-              <option value="15172" />
+              <option value="19134" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs</url>
-          <line>232</line>
+          <line>244</line>
           <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" containingFunctionPresentation="Method 'SetBodyOpaque'">
             <startOffsets>
-              <option value="9646" />
+              <option value="10756" />
             </startOffsets>
             <endOffsets>
-              <option value="9715" />
+              <option value="10825" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs</url>
-          <line>233</line>
+          <line>245</line>
           <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" containingFunctionPresentation="Method 'SetBodyOpaque'">
             <startOffsets>
-              <option value="9731" />
+              <option value="10841" />
             </startOffsets>
             <endOffsets>
-              <option value="9795" />
+              <option value="10905" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs</url>
-          <line>230</line>
+          <line>242</line>
           <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" containingFunctionPresentation="Method 'SetBodyOpaque'">
             <startOffsets>
-              <option value="9590" />
+              <option value="10700" />
             </startOffsets>
             <endOffsets>
-              <option value="9591" />
+              <option value="10701" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs</url>
-          <line>231</line>
+          <line>243</line>
           <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" containingFunctionPresentation="Method 'SetBodyOpaque'">
             <startOffsets>
-              <option value="9604" />
+              <option value="10714" />
             </startOffsets>
             <endOffsets>
-              <option value="9622" />
+              <option value="10732" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs</url>
+          <line>192</line>
+          <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" containingFunctionPresentation="Method 'Awake'">
+            <startOffsets>
+              <option value="8869" />
+            </startOffsets>
+            <endOffsets>
+              <option value="8971" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

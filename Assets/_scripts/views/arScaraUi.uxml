@@ -145,6 +145,8 @@
                 <ui:VisualElement class="headerMiniPanel ">
                     <ui:Label name="xLabel" text="X = 00.00 mm" class="textMiniPanelLabel hideItem" />
                     <ui:Label name="yLabel" text="Y = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="q1Label" text="Q1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    <ui:Label name="q2Label" text="Q2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
                     <ui:Label name="j1Label" text="J1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
                     <ui:Label name="j2Label" text="J2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
                 </ui:VisualElement>

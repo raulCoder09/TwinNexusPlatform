@@ -14,7 +14,7 @@ namespace _scripts.controllers
         private enum KinematicsType { None, Forward, Reverse}
         
         private enum MethodForwardType { None, Geometric, HTM, DenavitHartenberg }
-        private enum MethodReverseType {a,b,c,d }
+        private enum MethodReverseType {None,a,b,c }
         
         
         
@@ -72,6 +72,7 @@ namespace _scripts.controllers
             public const string BpJ2 = "plusJ2Button";  public const string BmJ2 = "minusJ2Button";
 
             public const string LX = "xLabel"; public const string LY = "yLabel";
+            public const string LQ1 = "q1Label"; public const string LQ2 = "q2Label";
 
             public const string LJ1 = "j1Label"; public const string LJ2 = "j2Label";
 
@@ -114,7 +115,9 @@ namespace _scripts.controllers
         private readonly List<VisualElement> _medara   = new();
 
         private readonly List<VisualElement> _kinematicsForward = new();
+        private readonly List<VisualElement> _kinematicsReverse = new();
         private readonly List<VisualElement> _methodForwardControls = new();
+        private readonly List<VisualElement> _methodReverseControls = new();
         private readonly List<VisualElement> _virtualControls = new();
         private readonly List<VisualElement> _arControls = new();
         private readonly List<VisualElement> _twinNexusControls = new();
@@ -187,10 +190,8 @@ namespace _scripts.controllers
             _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
             _kinematics?.RegisterValueChangedCallback(e => ApplyKinematics(ParseKinematics(e.newValue)));
             _methodForward?.RegisterValueChangedCallback(e => ApplyMethodForward(ParseMethodForward(e.newValue)));
-            
-            
-            
-            // _methodReverse?.RegisterValueChangedCallback(e => ApplyMethodReverse(ParseMethodReverse(e.newValue)));
+
+            _methodReverse?.RegisterValueChangedCallback(e => ApplyMethodReverse(ParseMethodReverse(e.newValue)));
             
             
             BuildGroups();
@@ -316,8 +317,8 @@ namespace _scripts.controllers
             Add(_methodForwardControls,Q<Button>(Id.BpQ1), Q<Button>(Id.BmQ1), Q<Button>(Id.BpQ2), Q<Button>(Id.BmQ2));
             
             
-            // Add(_methodReverseControls,);
-            
+            Add(_kinematicsReverse,Q<DropdownField>(Id.MethodReverse));
+            Add(_methodReverseControls,Q<Button>(Id.BpX), Q<Button>(Id.BmX), Q<Button>(Id.BpY), Q<Button>(Id.BmY));
         }
 
         private static void Add(List<VisualElement> list, params VisualElement[] items)
@@ -335,10 +336,19 @@ namespace _scripts.controllers
             {
                 case KinematicsType.Forward:
                     SetVisible(_kinematicsForward,true);
+                    SetVisible(_kinematicsReverse,false);
+                    SetVisible(_methodReverseControls, false);
+                    break;
+                case KinematicsType.Reverse:
+                    SetVisible(_kinematicsReverse,true);
+                    SetVisible(_kinematicsForward,false);
+                    SetVisible(_methodForwardControls, false);
                     break;
                 default:
                     SetVisible(_kinematicsForward, false);
+                    SetVisible(_kinematicsReverse,false);
                     SetVisible(_methodForwardControls, false);
+                    SetVisible(_methodReverseControls, false);
                     _methodForward.value = "Method";
                     break;
                 
@@ -353,6 +363,16 @@ namespace _scripts.controllers
                 SetVisible(_methodForwardControls, false);
             }
         }
+        
+        private void ApplyMethodReverse(MethodReverseType methodReverse)
+        {
+            SetVisible(_methodReverseControls, methodReverse != MethodReverseType.None);
+            if (methodReverse == MethodReverseType.None)
+            {
+                SetVisible(_methodReverseControls, false);
+            }
+        }
+        
 
         private void ApplyModeUi(ModeType mode)
         {
@@ -512,6 +532,18 @@ namespace _scripts.controllers
                 "HTM" => MethodForwardType.HTM,
                 "Denavit-Hartenberg" => MethodForwardType.DenavitHartenberg,
                 _       => MethodForwardType.None
+            };
+        }
+        
+        private static MethodReverseType ParseMethodReverse(string raw)
+        {
+            var s = (raw ?? "").Trim();
+            return s switch
+            {
+                "a" => MethodReverseType.a,
+                "b" => MethodReverseType.b,
+                "c" => MethodReverseType.c,
+                _       => MethodReverseType.None
             };
         }
         
