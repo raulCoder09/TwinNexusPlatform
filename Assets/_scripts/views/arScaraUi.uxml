@@ -60,9 +60,7 @@
                 <ui:VisualElement name="nameHomeAndViewPanel" class="headerMiniPanel columnOrientationItems">
                     <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
-                <ui:VisualElement name="nameHomeAndViewPanel" class="bodyMiniPanel columnOrientationItems">
-                    <!-- ver que ponemos aqui -->
-                </ui:VisualElement>
+                <ui:VisualElement name="nameHomeAndViewPanel" class="bodyMiniPanel columnOrientationItems" />
                 <ui:VisualElement name="nameHomeAndViewPanel" class="footerMiniPanel rowOrientationItems">
                     <ui:Button name="homeButton" text="Home" class="generalButton" />
                     <ui:Button name="resetButton" text="Reset" class="generalButton" />
@@ -117,7 +115,6 @@
                     <ui:Button name="minusXButton" text="-X" class="generalButton hideItem" />
                     <ui:Button name="minusJ1Button" text="-J1" class="generalButton hideItem" />
                     <ui:Button name="plusJ1Button" text="+J1" class="generalButton hideItem" />
-                    
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="miniPanel">
@@ -139,10 +136,10 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="centerPanel" class="centerPanel passthrough" />
-        <ui:VisualElement name="rightPanel" class="rightPanel">
+        <ui:VisualElement name="centerPanel" class="centerPanel passthrough" style="width: 60%;" />
+        <ui:VisualElement name="rightPanel" class="rightPanel" style="width: 20%;">
             <ui:VisualElement class="miniPanel">
-                <ui:VisualElement class="headerMiniPanel ">
+                <ui:VisualElement class="headerMiniPanel columnOrientationItems">
                     <ui:Label name="xLabel" text="X = 00.00 mm" class="textMiniPanelLabel hideItem" />
                     <ui:Label name="yLabel" text="Y = 00.00 mm" class="textMiniPanelLabel hideItem" />
                     <ui:Label name="q1Label" text="Q1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
@@ -151,8 +148,8 @@
                     <ui:Label name="j2Label" text="J2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="bodyMiniPanel rowOrientationItems ">
-                    <ui:Button name="MEDARAButton" text="MEDARA" class="generalButton hideItem" />
-                    <ui:Button name="EmergencyButton" text="Emergency" class="generalButton hideItem" />
+                        <ui:Button name="MEDARAButton" text="MEDARA" class="generalButton hideItem" />
+                        <ui:Button name="EmergencyButton" text="Emergency" class="generalButton hideItem" />
                 </ui:VisualElement>
                 <ui:VisualElement class="footerMiniPanel rowOrientationItems">
                     <ui:Button name="ChainOr3DButton" text="Chain/3D" class="generalButton hideItem" />

@@ -243,8 +243,8 @@ namespace _scripts.controllers
         private void SetBodyOpaque(bool opaque)
         {
             if (_body == null) return;
-            // _body.RemoveFromClassList(opaque ? Uss.BgTransparent : Uss.BgOpaque);
-            // _body.AddToClassList(opaque ? Uss.BgOpaque : Uss.BgTransparent);
+            _body.RemoveFromClassList(opaque ? Uss.BgTransparent : Uss.BgOpaque);
+            _body.AddToClassList(opaque ? Uss.BgOpaque : Uss.BgTransparent);
         }
 
         #endregion
@@ -300,7 +300,7 @@ namespace _scripts.controllers
 
             Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2));
 
-            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<DropdownField>(Id.Kinematics),Q<Button>(Id.Results));
+            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<Label>(Id.LQ1),Q<Label>(Id.LQ2),Q<DropdownField>(Id.Kinematics),Q<Button>(Id.Results));
             Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2));
         
             
@@ -453,7 +453,7 @@ namespace _scripts.controllers
             
             if (_environmentController != null)
             {
-                 // _environmentController.CreateEnvironment(env);
+                  _environmentController.CreateEnvironment(env);
             }
             else
             {

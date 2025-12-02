@@ -55,7 +55,7 @@ namespace _scripts.controllers
                 return;
             }
 
-             _currentEnv = Instantiate(prefab);
+            _currentEnv = Instantiate(prefab);
             var arscaraParent = GameObject.FindGameObjectWithTag("ARSCARA");
             if (arscaraParent != null)
             {
