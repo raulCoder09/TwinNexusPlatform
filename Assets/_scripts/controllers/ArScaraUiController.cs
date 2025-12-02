@@ -16,8 +16,6 @@ namespace _scripts.controllers
         private enum MethodForwardType { None, Geometric, HTM, DenavitHartenberg }
         private enum MethodReverseType {None,a,b,c }
         
-        
-        
         private enum ArScaraPanel { None, Control, JogTeach, Points }
         // private enum Placement { None, Raycast, QRMarker }
 
@@ -81,7 +79,6 @@ namespace _scripts.controllers
             public const string Run = "RunButton";
             public const string Stop = "StopButton";
             public const string Emergency = "EmergencyButton";
-            public const string Medara = "MEDARAButton";
             public const string ChainOr3D = "ChainOr3DButton";
             public const string Results = "ResultsButton";
 
@@ -103,6 +100,8 @@ namespace _scripts.controllers
         private Label _warning;
         private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _destination, _points,_kinematics,_methodForward,_placementMenu,_methodReverse;
         private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
+        
+        
 
         private readonly List<VisualElement> _worldButtons = new();
         private readonly List<VisualElement> _jointButtons = new();
@@ -112,7 +111,6 @@ namespace _scripts.controllers
         private readonly List<VisualElement> _teachEdit    = new();
         private readonly List<VisualElement> _runStop    = new();
         private readonly List<VisualElement> _commanding   = new();
-        private readonly List<VisualElement> _medara   = new();
 
         private readonly List<VisualElement> _kinematicsForward = new();
         private readonly List<VisualElement> _kinematicsReverse = new();
@@ -121,6 +119,12 @@ namespace _scripts.controllers
         private readonly List<VisualElement> _virtualControls = new();
         private readonly List<VisualElement> _arControls = new();
         private readonly List<VisualElement> _twinNexusControls = new();
+
+        internal DropdownField Views
+        {
+            get => _views;
+            set => _views = value;
+        }
 
         private void Awake()
         {
@@ -161,6 +165,8 @@ namespace _scripts.controllers
             _methodForward = Q<DropdownField>(Id.MethodForward);
             _methodReverse = Q<DropdownField>(Id.MethodReverse);
             
+            
+            
 
             Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ =>
             {
@@ -192,7 +198,6 @@ namespace _scripts.controllers
             _methodForward?.RegisterValueChangedCallback(e => ApplyMethodForward(ParseMethodForward(e.newValue)));
 
             _methodReverse?.RegisterValueChangedCallback(e => ApplyMethodReverse(ParseMethodReverse(e.newValue)));
-            
             
             BuildGroups();
         }
@@ -294,13 +299,13 @@ namespace _scripts.controllers
         private void BuildGroups()
         {
             
-            // Add(_worldButtons, );
+            Add(_worldButtons,Q<Button>(Id.Results),Q<Button>(Id.ChainOr3D) );
             Add(_virtualControls,Q<DropdownField>(Id.Views));
             Add(_arControls,Q<DropdownField>(Id.Placement));
 
-            Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2));
+            Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2),Q<Button>(Id.ChainOr3D));
 
-            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<Label>(Id.LQ1),Q<Label>(Id.LQ2),Q<DropdownField>(Id.Kinematics),Q<Button>(Id.Results));
+            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<Label>(Id.LQ1),Q<Label>(Id.LQ2),Q<DropdownField>(Id.Kinematics));
             Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2));
         
             
@@ -310,7 +315,6 @@ namespace _scripts.controllers
         
             Add(_teachEdit, Q<Button>(Id.Teach), Q<Button>(Id.Edit));
             Add(_runStop, Q<Button>(Id.Run), Q<Button>(Id.Stop),Q<Button>(Id.Emergency));
-            Add(_medara,Q<Button>(Id.Medara),Q<Button>(Id.ChainOr3D));
             
             Add(_commanding, _destination);
             Add(_kinematicsForward,Q<DropdownField>(Id.MethodForward));
@@ -335,14 +339,14 @@ namespace _scripts.controllers
             switch (kinematics)
             {
                 case KinematicsType.Forward:
-                    SetVisible(_kinematicsForward,true);
                     SetVisible(_kinematicsReverse,false);
                     SetVisible(_methodReverseControls, false);
+                    SetVisible(_kinematicsForward,true);
                     break;
                 case KinematicsType.Reverse:
-                    SetVisible(_kinematicsReverse,true);
                     SetVisible(_kinematicsForward,false);
                     SetVisible(_methodForwardControls, false);
+                    SetVisible(_kinematicsReverse,true);
                     break;
                 default:
                     SetVisible(_kinematicsForward, false);
@@ -382,7 +386,6 @@ namespace _scripts.controllers
             SetVisible(_teachEdit, common);
             SetVisible(_commanding, common);
             SetVisible(_runStop, common);
-            SetVisible(_medara, common);
 
             SetVisible(_worldButtons, mode == ModeType.World);
             SetVisible(_worldLabels,  mode == ModeType.World);
@@ -402,7 +405,6 @@ namespace _scripts.controllers
                 SetVisible(_jointLabels,  false);
             }
         }
-
         #endregion
 
         #region Event Handlers
@@ -444,8 +446,7 @@ namespace _scripts.controllers
             {
                 SetValue(_arScaraMenu, "ARSCARA menu");
             }
-
-            // Verificar disponibilidad de XR para AR
+            
             if (env == ArScaraEnvironmentController.EnvType.Augmented && !_environmentController.IsXRAvailable())
             {
                 _warning.text = "AR not available: enable a provider in Project Settings > XR Plug-in Management.";
@@ -535,6 +536,7 @@ namespace _scripts.controllers
             };
         }
         
+
         private static MethodReverseType ParseMethodReverse(string raw)
         {
             var s = (raw ?? "").Trim();

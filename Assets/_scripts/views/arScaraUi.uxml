@@ -60,10 +60,13 @@
                 <ui:VisualElement name="nameHomeAndViewPanel" class="headerMiniPanel columnOrientationItems">
                     <ui:Label class="nameMiniPanel" />
                 </ui:VisualElement>
-                <ui:VisualElement name="nameHomeAndViewPanel" class="bodyMiniPanel columnOrientationItems" />
-                <ui:VisualElement name="nameHomeAndViewPanel" class="footerMiniPanel rowOrientationItems">
+                <ui:VisualElement name="nameHomeAndViewPanel" class="bodyMiniPanel rowOrientationItems" >
                     <ui:Button name="homeButton" text="Home" class="generalButton" />
                     <ui:Button name="resetButton" text="Reset" class="generalButton" />
+                </ui:VisualElement>
+                <ui:VisualElement name="nameHomeAndViewPanel" class="footerMiniPanel rowOrientationItems">
+                    <ui:Button name="StopButtona" text="Stop" class="generalButton" />
+                    <ui:Button name="EmergencyButtona" text="Emergency" class="generalButton" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
@@ -136,30 +139,30 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="centerPanel" class="centerPanel passthrough" style="width: 60%;" />
-        <ui:VisualElement name="rightPanel" class="rightPanel" style="width: 20%;">
+        <ui:VisualElement name="centerPanel" class="centerPanel passthrough" />
+        <ui:VisualElement name="rightPanel" class="rightPanel">
             <ui:VisualElement class="miniPanel">
-                <ui:VisualElement class="headerMiniPanel columnOrientationItems">
-                    <ui:Label name="xLabel" text="X = 00.00 mm" class="textMiniPanelLabel hideItem" />
-                    <ui:Label name="yLabel" text="Y = 00.00 mm" class="textMiniPanelLabel hideItem" />
-                    <ui:Label name="q1Label" text="Q1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
-                    <ui:Label name="q2Label" text="Q2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
-                    <ui:Label name="j1Label" text="J1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
-                    <ui:Label name="j2Label" text="J2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                <ui:VisualElement class="headerMiniPanel2 rowOrientationItems">
+                    <ui:VisualElement class="columnOrientationItems" >
+                        <ui:Label name="xLabel" text="X = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                        <ui:Label name="yLabel" text="Y = 00.00 mm" class="textMiniPanelLabel hideItem" />
+                        <ui:Label name="q1Label" text="Q1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                        <ui:Label name="q2Label" text="Q2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="columnOrientationItems">
+                        <ui:Label name="j1Label" text="J1 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                        <ui:Label name="j2Label" text="J2 = 00.00 deg" class="textMiniPanelLabel hideItem" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="bodyMiniPanel rowOrientationItems ">
-                        <ui:Button name="MEDARAButton" text="MEDARA" class="generalButton hideItem" />
-                        <ui:Button name="EmergencyButton" text="Emergency" class="generalButton hideItem" />
+                <ui:VisualElement class="bodyMiniPanel2 rowOrientationItems ">
+                    <ui:Button name="EmergencyButton" text="Emergency" class="generalButton hideItem" />
                 </ui:VisualElement>
-                <ui:VisualElement class="footerMiniPanel rowOrientationItems">
+                <ui:VisualElement class="footerMiniPanel2 columnOrientationItems">
                     <ui:Button name="ChainOr3DButton" text="Chain/3D" class="generalButton hideItem" />
                     <ui:Button name="ResultsButton" text="Results" class="generalButton hideItem" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="miniPanel">
-                <ui:VisualElement class="headerMiniPanel ">
-                    <ui:Label class="nameMiniPanel" />
-                </ui:VisualElement>
                 <ui:VisualElement class="bodyMiniPanel columnOrientationItems">
                     <ui:RadioButton name="continuousMove" label="Continuous" class="textMiniPanelLabel hideItem" />
                     <ui:RadioButton name="longMove" label="Long" class="textMiniPanelLabel hideItem" />

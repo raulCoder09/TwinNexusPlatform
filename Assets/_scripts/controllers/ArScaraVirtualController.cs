@@ -14,6 +14,8 @@ namespace _scripts.controllers
         
         private ArScaraModel3DController _arScaraModel3DController;
         private ArScaraKinematicChainController _arScaraKinematicChainController;
+        private CameraController _cameraController;
+        private ArScaraUiController _arScaraUiController;
         
         private string _modeMotion;
         private float _speed;
@@ -25,6 +27,8 @@ namespace _scripts.controllers
             _jogAndTeachController = GameObject.FindWithTag("VirtualEnvironmentArScara").GetComponent<JogAndTeachController>();
             _arScaraModel3DController = GameObject.FindWithTag("ArScaraModel3D").GetComponent<ArScaraModel3DController>();
             _arScaraKinematicChainController = GameObject.FindWithTag("AeScaraKinematicChain").GetComponent<ArScaraKinematicChainController>();
+            _cameraController=GameObject.FindWithTag("VirtualEnvironmentCamera").GetComponent<CameraController>();
+            _arScaraUiController=GameObject.FindWithTag("UserInterfaceArScara").GetComponent<ArScaraUiController>();
             
         }
 
@@ -150,7 +154,8 @@ namespace _scripts.controllers
                 ("Mode", _jogAndTeachController.Mode),
                 ("Speed", _jogAndTeachController.Speed),
                 ("Command", _jogAndTeachController.Command),
-                ("Destination", _jogAndTeachController.Destination)
+                ("Destination", _jogAndTeachController.Destination),
+                ("Views",_arScaraUiController.Views)
             };
             
             foreach (var (itemName, dropdownField) in dropdowns)
@@ -161,6 +166,23 @@ namespace _scripts.controllers
         {
             button.RegisterCallback<PointerDownEvent>(_ =>
             {
+                switch (itemName)
+                {
+                    case "PowerHigh":
+                        _jogAndTeachController.Speed.value = "High";
+                        _controlPanelController.PowerLabel.text = "Power: High";
+                        _speed = 0.001f;
+                        break;
+                    case "PowerLow":
+                        _jogAndTeachController.Speed.value = "Low";
+                        _controlPanelController.PowerLabel.text = "Power: Low";
+                        _speed = 0.15f;
+                        break;
+                    default:
+                        break;
+                }
+                
+                
                 if (itemName=="Reset")
                 {
                     _emergencyDetected=false;
@@ -319,6 +341,9 @@ namespace _scripts.controllers
                                 _speed = 0.15f;
                                 break;
                         }
+                        break;
+                    case "Views":
+                        _cameraController.SetView(evt.newValue);
                         break;
                 }
             });

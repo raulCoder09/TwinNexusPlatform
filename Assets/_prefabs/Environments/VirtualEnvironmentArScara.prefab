@@ -296,13 +296,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2036187026720057081}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.54993045, y: -0, z: -0, w: 0.8352105}
-  m_LocalPosition: {x: 0.004, y: 0.533, z: 0.074}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8322835160682238714}
-  m_LocalEulerAnglesHint: {x: 66.725, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!108 &9134154876922132472
 Light:
   m_ObjectHideFlags: 0
@@ -1935,6 +1935,7 @@ GameObject:
   - component: {fileID: 2549074018718115658}
   - component: {fileID: 8371450707985195675}
   - component: {fileID: 787774167658458830}
+  - component: {fileID: 3255517316726626184}
   m_Layer: 0
   m_Name: VirtualEnvironmentCamera
   m_TagString: VirtualEnvironmentCamera
@@ -2060,6 +2061,18 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &3255517316726626184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5858468303674310854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f37c3e8154f742508bd6a4a0cdb99222, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_scripts.controllers.CameraController
 --- !u!1 &6073129471163581579
 GameObject:
   m_ObjectHideFlags: 0

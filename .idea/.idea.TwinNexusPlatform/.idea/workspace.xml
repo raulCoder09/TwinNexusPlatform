@@ -7,9 +7,10 @@
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraEnvironmentController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraKinematicChainController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraKinematicChainController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraVirtualController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraVirtualController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/_scripts/views/arScaraUi.uxml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/views/arScaraUi.uxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_scripts/views/styles/cyberpunk.uss" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/views/styles/cyberpunk.uss" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +27,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraEnvironmentController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraModel3DController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/CameraController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/ControlPanelController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/JogAndTeachController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/_scripts/controllers/LinkController.cs" root0="FORCE_HIGHLIGHTING" />
@@ -277,7 +279,7 @@
       <workItem from="1764492729010" duration="17785000" />
       <workItem from="1764581902573" duration="6106000" />
       <workItem from="1764591772772" duration="52000" />
-      <workItem from="1764591984678" duration="10336000" />
+      <workItem from="1764591984678" duration="22699000" />
     </task>
     <servers />
   </component>
@@ -311,17 +313,30 @@
           <option name="timeStamp" value="3" />
         </breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs</url>
-          <line>193</line>
-          <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraUiController.cs" containingFunctionPresentation="Method 'Awake'">
+          <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/LinkController.cs</url>
+          <line>127</line>
+          <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/LinkController.cs" containingFunctionPresentation="Method 'StartStepMotion'">
             <startOffsets>
-              <option value="8955" />
+              <option value="3008" />
             </startOffsets>
             <endOffsets>
-              <option value="9057" />
+              <option value="3077" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="14" />
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraVirtualController.cs</url>
+          <line>290</line>
+          <properties documentPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraVirtualController.cs" containingFunctionPresentation="Method 'ExecuteMotion'">
+            <startOffsets>
+              <option value="12716" />
+            </startOffsets>
+            <endOffsets>
+              <option value="12717" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="22" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
