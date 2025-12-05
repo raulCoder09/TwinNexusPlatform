@@ -16,8 +16,8 @@ namespace _scripts.controllers
         private enum MethodForwardType { None, Geometric, HTM, DenavitHartenberg }
         private enum MethodReverseType {None,a,b,c }
         
-        private enum ArScaraPanel { None, Control, JogTeach, Points }
-        // private enum Placement { None, Raycast, QRMarker }
+        private enum ArScaraUiMenu { None, Control, JogTeach, Points }
+        private enum Placement { None, Raycast, QRMarker }
 
         private static class Uss
         {
@@ -91,34 +91,30 @@ namespace _scripts.controllers
             public const string MethodForward= "MethodForwardDropdown";
             public const string MethodReverse= "MethodReverseDropdown";
             
+            public const string Equations= "equationsPanel";
+            
             
         }
 
         private UIDocument _doc;
         private VisualElement _root;
-        private VisualElement _body, _slidingPanels, _scrim, _navPanel;
+        private VisualElement _body, _slidingPanels, _scrim, _navPanel,_equations;
         private Label _warning;
-        private DropdownField _environmentMenu, _arScaraMenu, _views, _mode, _speed, _destination, _points,_kinematics,_methodForward,_placementMenu,_methodReverse;
+        private DropdownField _environmentMenu, _arScaraUiMenu, _views, _mode, _speed, _destination, _points,_kinematics,_methodForward,_placementMenu,_methodReverse;
         private VisualElement _controlPanel, _jogTeachPanel, _pointsPanel;
+        private Button _chainOr3D,_bpQ1,_bmQ1,_bpQ2, _bmQ2,_results,_run,_stop,_emergency,_teach,_edit,_bpX,_bmX, _bpY,
+            _bmY,_bpJ1,_bmJ1,_bpJ2,_bmJ2;
+        private Label _labelX, _labelY, _labelQ1, _labelQ2,_labelJ1,_labelJ2;
+        private RadioButton _moveContinuous, _moveLong, _moveHalf, _moveShort;
         
+        private readonly List<VisualElement> _worldControlsGroup = new();
+        private readonly List<VisualElement> _jointControlsGroup = new();
         
-
-        private readonly List<VisualElement> _worldButtons = new();
-        private readonly List<VisualElement> _jointButtons = new();
-        private readonly List<VisualElement> _worldLabels  = new();
-        private readonly List<VisualElement> _jointLabels  = new();
-        private readonly List<VisualElement> _moveRadios   = new();
-        private readonly List<VisualElement> _teachEdit    = new();
-        private readonly List<VisualElement> _runStop    = new();
-        private readonly List<VisualElement> _commanding   = new();
-
-        private readonly List<VisualElement> _kinematicsForward = new();
-        private readonly List<VisualElement> _kinematicsReverse = new();
-        private readonly List<VisualElement> _methodForwardControls = new();
-        private readonly List<VisualElement> _methodReverseControls = new();
-        private readonly List<VisualElement> _virtualControls = new();
-        private readonly List<VisualElement> _arControls = new();
-        private readonly List<VisualElement> _twinNexusControls = new();
+        private readonly List<VisualElement> _kinematicsReverseGroup = new();
+        private readonly List<VisualElement> _methodForwardControlsGroup = new();
+        private readonly List<VisualElement> _virtualControlsGroup = new();
+        private readonly List<VisualElement> _arControlsGroup = new();
+        private readonly List<VisualElement> _twinNexusControlsGroup = new();
 
         internal DropdownField Views
         {
@@ -148,7 +144,7 @@ namespace _scripts.controllers
             _warning = Q<Label>(Id.Warning);
 
             _environmentMenu = Q<DropdownField>(Id.EnvMenu);
-            _arScaraMenu = Q<DropdownField>(Id.ArScaraMenu);
+            _arScaraUiMenu = Q<DropdownField>(Id.ArScaraMenu);
             _placementMenu = Q<DropdownField>(Id.Placement);
 
             _views = Q<DropdownField>(Id.Views);
@@ -164,17 +160,70 @@ namespace _scripts.controllers
             _kinematics = Q<DropdownField>(Id.Kinematics);
             _methodForward = Q<DropdownField>(Id.MethodForward);
             _methodReverse = Q<DropdownField>(Id.MethodReverse);
+
+            _chainOr3D = Q<Button>(Id.ChainOr3D);
+
+            _labelX = Q<Label>(Id.LX);
+            _labelY=Q<Label>(Id.LY);
+            _labelQ1 = Q<Label>(Id.LQ1);
+            _labelQ2=Q<Label>(Id.LQ2);
+            
+            _labelJ1 = Q<Label>(Id.LJ1);
+            _labelJ2 = Q<Label>(Id.LJ2);
+            
+            _bpQ1 = Q<Button>(Id.BpQ1);
+            _bmQ1 = Q<Button>(Id.BmQ1);
+            _bpQ2 = Q<Button>(Id.BpQ2);
+            _bmQ2=Q<Button>(Id.BmQ2);
+            
+            _results = Q<Button>(Id.Results);
+            _run = Q<Button>(Id.Run);
+            _stop = Q<Button>(Id.Stop);
+            _emergency = Q<Button>(Id.Emergency);
+            _teach = Q<Button>(Id.Teach);
+            _edit = Q<Button>(Id.Edit);
+            
+            _moveContinuous= Q<RadioButton>(Id.MoveCont);
+            _moveLong = Q<RadioButton>(Id.MoveLong);
+            _moveHalf = Q<RadioButton>(Id.MoveMed);
+            _moveShort = Q<RadioButton>(Id.MoveShort);
+            
+            _equations=Q<VisualElement>(Id.Equations);
+            
+            _bpX = Q<Button>(Id.BpX);
+            _bmX = Q<Button>(Id.BmX);
+            _bpY = Q<Button>(Id.BpY);
+            _bmY = Q<Button>(Id.BmY);
             
             
-            
+            _bpJ1=Q<Button>(Id.BpJ1);
+            _bmJ1=Q<Button>(Id.BmJ1);
+            _bpJ2=Q<Button>(Id.BpJ2);
+            _bmJ2=Q<Button>(Id.BmJ2);
+
+
+
+
+            Q<Button>(Id.Results).RegisterCallback<ClickEvent>(_ =>
+            {
+                if (_equations.ClassListContains(Uss.Hide) || !_equations.ClassListContains(Uss.Show))
+                {
+                    SetVisible(_equations, true);
+                }
+                else
+                {
+                    SetVisible(_equations, false);
+                }
+                
+            } );
 
             Q<Button>(Id.ShowMenu)?.RegisterCallback<ClickEvent>(_ =>
             {
                 SetValue(_environmentMenu, "environment");
-                SetValue(_arScaraMenu, "ARSCARA menu");
+                SetValue(_arScaraUiMenu, "ARSCARA menu");
                 SetValue(_placementMenu, "Placement");
 
-                ShowOnlyArScaraPanel(ArScaraPanel.None);
+                ShowOnlyArScaraPanel(ArScaraUiMenu.None);
 
                 _warning.style.display = DisplayStyle.Flex;
                 _warning.text = "Select a work environment";
@@ -191,13 +240,15 @@ namespace _scripts.controllers
             });
 
             _environmentMenu?.RegisterValueChangedCallback(e => OnEnvironmentChanged(ParseEnv(e.newValue)));
-            _arScaraMenu?.RegisterValueChangedCallback(e => OnArScaraMenuChanged(ParseArScaraPanel(e.newValue)));
-            // _placementMenu?.RegisterValueChangedCallback(e => OnPlacementMenuChanged(ParsePlacement(e.newValue)));
-            _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
-            _kinematics?.RegisterValueChangedCallback(e => ApplyKinematics(ParseKinematics(e.newValue)));
-            _methodForward?.RegisterValueChangedCallback(e => ApplyMethodForward(ParseMethodForward(e.newValue)));
-
-            _methodReverse?.RegisterValueChangedCallback(e => ApplyMethodReverse(ParseMethodReverse(e.newValue)));
+            _arScaraUiMenu?.RegisterValueChangedCallback(e => OnArScaraUiMenuChanged(ParseArScaraUiMenu(e.newValue)));
+            _mode?.RegisterValueChangedCallback(e => OnModeUiMenuChanged(ParseMode(e.newValue)));
+            _kinematics?.RegisterValueChangedCallback(e => OnKinematicsMenuChanged(ParseKinematics(e.newValue)));
+            // // _placementMenu?.RegisterValueChangedCallback(e => OnPlacementMenuChanged(ParsePlacement(e.newValue)));
+            // _mode?.RegisterValueChangedCallback(e => ApplyModeUi(ParseMode(e.newValue)));
+            
+            // _methodForward?.RegisterValueChangedCallback(e => ApplyMethodForward(ParseMethodForward(e.newValue)));
+            //
+            // _methodReverse?.RegisterValueChangedCallback(e => ApplyMethodReverse(ParseMethodReverse(e.newValue)));
             
             BuildGroups();
         }
@@ -206,9 +257,8 @@ namespace _scripts.controllers
         {
             HideUI();
             _slidingPanels.style.display = DisplayStyle.None;
-
             SetValue(_environmentMenu, "environment");
-            SetValue(_arScaraMenu, "ARSCARA menu");
+            SetValue(_arScaraUiMenu, "ARSCARA menu");
             SetValue(_placementMenu, "Placement");
             SetValue(_views, "Select view");
             SetValue(_mode, "Mode");
@@ -218,12 +268,8 @@ namespace _scripts.controllers
             SetValue(_kinematics, "Kinematics");
             SetValue(_methodForward, "Method");
             SetValue(_methodReverse, "Method");
-
             _warning.text = "Select a work environment";
-            _arScaraMenu?.SetEnabled(false);
-            // _placementMenu?.SetEnabled(false);
-
-            ShowOnlyArScaraPanel(ArScaraPanel.None);
+            ShowOnlyArScaraPanel(ArScaraUiMenu.None);
             SetBodyOpaque(true);
             ApplyModeUi(ModeType.None);
         }
@@ -276,11 +322,11 @@ namespace _scripts.controllers
             _scrim?.AddToClassList(Uss.ScrimTransparent);
         }
 
-        private void ShowOnlyArScaraPanel(ArScaraPanel which)
+        private void ShowOnlyArScaraPanel(ArScaraUiMenu which)
         {
-            SetArScaraPanel(_controlPanel, which == ArScaraPanel.Control);
-            SetArScaraPanel(_jogTeachPanel, which == ArScaraPanel.JogTeach);
-            SetArScaraPanel(_pointsPanel, which == ArScaraPanel.Points);
+            SetArScaraPanel(_controlPanel, which == ArScaraUiMenu.Control);
+            SetArScaraPanel(_jogTeachPanel, which == ArScaraUiMenu.JogTeach);
+            SetArScaraPanel(_pointsPanel, which == ArScaraUiMenu.Points);
         }
 
         private static void SetArScaraPanel(VisualElement panel, bool visible)
@@ -298,31 +344,15 @@ namespace _scripts.controllers
 
         private void BuildGroups()
         {
-            
-            Add(_worldButtons,Q<Button>(Id.Results),Q<Button>(Id.ChainOr3D) );
-            Add(_virtualControls,Q<DropdownField>(Id.Views));
-            Add(_arControls,Q<DropdownField>(Id.Placement));
-
-            Add(_jointButtons, Q<Button>(Id.BpJ1), Q<Button>(Id.BmJ1), Q<Button>(Id.BpJ2), Q<Button>(Id.BmJ2),Q<Button>(Id.ChainOr3D));
-
-            Add(_worldLabels, Q<Label>(Id.LX), Q<Label>(Id.LY),Q<Label>(Id.LQ1),Q<Label>(Id.LQ2),Q<DropdownField>(Id.Kinematics));
-            Add(_jointLabels, Q<Label>(Id.LJ1), Q<Label>(Id.LJ2));
-        
-            
-            
-            Add(_moveRadios, Q<RadioButton>(Id.MoveCont), Q<RadioButton>(Id.MoveLong),
-                Q<RadioButton>(Id.MoveMed),  Q<RadioButton>(Id.MoveShort));
-        
-            Add(_teachEdit, Q<Button>(Id.Teach), Q<Button>(Id.Edit));
-            Add(_runStop, Q<Button>(Id.Run), Q<Button>(Id.Stop),Q<Button>(Id.Emergency));
-            
-            Add(_commanding, _destination);
-            Add(_kinematicsForward,Q<DropdownField>(Id.MethodForward));
-            Add(_methodForwardControls,Q<Button>(Id.BpQ1), Q<Button>(Id.BmQ1), Q<Button>(Id.BpQ2), Q<Button>(Id.BmQ2));
-            
-            
-            Add(_kinematicsReverse,Q<DropdownField>(Id.MethodReverse));
-            Add(_methodReverseControls,Q<Button>(Id.BpX), Q<Button>(Id.BmX), Q<Button>(Id.BpY), Q<Button>(Id.BmY));
+            Add(_virtualControlsGroup, _views,_arScaraUiMenu);
+            Add(_arControlsGroup,_arScaraUiMenu, _placementMenu);
+            Add(_worldControlsGroup,_speed,_chainOr3D,_kinematics,_labelX,_labelY,_labelQ1,_labelQ2);
+            Add(_jointControlsGroup,_speed,_chainOr3D,_run,_stop,_emergency,_teach,_edit,_moveContinuous,
+                _moveLong,_moveHalf,_moveShort,_destination,_labelJ1,_labelJ2,_bpJ1,_bmJ1,_bpJ2,_bmJ2);
+            Add(_methodForwardControlsGroup,_methodForward,_bpQ1,_bmQ1,_bpQ2,_bmQ2,_results,_run,_stop,_emergency,_teach
+                ,_edit,_moveContinuous,_moveLong,_moveHalf,_moveShort,_destination);
+            Add(_kinematicsReverseGroup,_methodReverse,_bpX,_bmX,_bpY,_bmY,_results,_run,_stop,_emergency,_teach
+                ,_edit,_moveContinuous,_moveLong,_moveHalf,_moveShort,_destination);
         }
 
         private static void Add(List<VisualElement> list, params VisualElement[] items)
@@ -331,83 +361,7 @@ namespace _scripts.controllers
         }
 
         #endregion
-
-        #region Mode UI
-
-        private void ApplyKinematics(KinematicsType kinematics)
-        {
-            switch (kinematics)
-            {
-                case KinematicsType.Forward:
-                    SetVisible(_kinematicsReverse,false);
-                    SetVisible(_methodReverseControls, false);
-                    SetVisible(_kinematicsForward,true);
-                    break;
-                case KinematicsType.Reverse:
-                    SetVisible(_kinematicsForward,false);
-                    SetVisible(_methodForwardControls, false);
-                    SetVisible(_kinematicsReverse,true);
-                    break;
-                default:
-                    SetVisible(_kinematicsForward, false);
-                    SetVisible(_kinematicsReverse,false);
-                    SetVisible(_methodForwardControls, false);
-                    SetVisible(_methodReverseControls, false);
-                    _methodForward.value = "Method";
-                    break;
-                
-            }
-        }
-
-        private void ApplyMethodForward(MethodForwardType methodForward)
-        {
-            SetVisible(_methodForwardControls, methodForward != MethodForwardType.None);
-            if (methodForward == MethodForwardType.None)
-            {
-                SetVisible(_methodForwardControls, false);
-            }
-        }
         
-        private void ApplyMethodReverse(MethodReverseType methodReverse)
-        {
-            SetVisible(_methodReverseControls, methodReverse != MethodReverseType.None);
-            if (methodReverse == MethodReverseType.None)
-            {
-                SetVisible(_methodReverseControls, false);
-            }
-        }
-        
-
-        private void ApplyModeUi(ModeType mode)
-        {
-            bool common = mode is ModeType.World or ModeType.Joint;
-            SetVisible(_speed, common);
-            SetVisible(_moveRadios, common);
-            SetVisible(_teachEdit, common);
-            SetVisible(_commanding, common);
-            SetVisible(_runStop, common);
-
-            SetVisible(_worldButtons, mode == ModeType.World);
-            SetVisible(_worldLabels,  mode == ModeType.World);
-
-            SetVisible(_jointButtons, mode == ModeType.Joint);
-            SetVisible(_jointLabels,  mode == ModeType.Joint);
-
-            _kinematics.value = "Kinematics";
-            _methodForward.value="Method";
-            _methodReverse.value="Method";
-            
-            if (mode == ModeType.None)
-            {
-                SetVisible(_worldButtons, false);
-                SetVisible(_jointButtons, false);
-                SetVisible(_worldLabels,  false);
-                SetVisible(_jointLabels,  false);
-            }
-        }
-        #endregion
-
-        #region Event Handlers
 
         private void OnEnvironmentChanged(ArScaraEnvironmentController.EnvType env)
         {
@@ -415,68 +369,149 @@ namespace _scripts.controllers
             {
                 case ArScaraEnvironmentController.EnvType.Virtual:
                 case ArScaraEnvironmentController.EnvType.TwinNexus:
-                    SetVisible(_virtualControls, true);
-                    SetVisible(_arControls,false);
+                    SetVisible(_arControlsGroup, false);
+                    SetVisible(_virtualControlsGroup, true);
+                    SetBodyOpaque(false);
+                    _environmentController.CreateEnvironment(env);
+                    _warning.text = "Select ARSCARA robot interface";
                     break;
                 case ArScaraEnvironmentController.EnvType.Augmented:
-                    SetVisible(_arControls,true);
-                    SetVisible(_virtualControls, false);
+                    SetVisible(_virtualControlsGroup, false);
+                    SetVisible(_arControlsGroup, true);
+                    SetBodyOpaque(false);
+                    _environmentController.CreateEnvironment(env);
                     break;
                 default:
-                    SetVisible(_virtualControls, false);
-                    SetVisible(_arControls,false);
-                    _mode.value = "Mode";
-                    _speed.value = "Speed";
-                    _destination.value = "Destination";
-                    _kinematics.value = "Kinematics";
-                    _methodForward.value = "Method";
-                    _methodReverse.value = "Method";
-                    _points.value = "Points";
+                    SetBodyOpaque(true);
+                    SetVisible(_arControlsGroup, false);
+                    SetVisible(_virtualControlsGroup, false);
+                    SetValue(_arScaraUiMenu, "ARSCARA menu");
+                    _warning.text = "Select a work environment";
                     break;
             }
-            bool none = env == ArScaraEnvironmentController.EnvType.None;
-            
-            // Actualizar UI según selección
-            _arScaraMenu?.SetEnabled(!none);
-            // _placementMenu?.SetEnabled(!none && (env == ArScaraEnvironmentController.EnvType.Augmented));
-            _warning.text = none ? "Select a work environment" : "Select ARSCARA robot interface";
-            SetBodyOpaque(none);
-            
-            if (none)
-            {
-                SetValue(_arScaraMenu, "ARSCARA menu");
-            }
-            
-            if (env == ArScaraEnvironmentController.EnvType.Augmented && !_environmentController.IsXRAvailable())
-            {
-                _warning.text = "AR not available: enable a provider in Project Settings > XR Plug-in Management.";
-            }
-            
-            if (_environmentController != null)
-            {
-                  _environmentController.CreateEnvironment(env);
-            }
-            else
-            {
-                Debug.LogError("Environment Controller not assigned!");
-            }
         }
-
-        private void OnArScaraMenuChanged(ArScaraPanel panel)
+        
+        private void OnArScaraUiMenuChanged(ArScaraUiMenu uiMenu)
         {
-            if (panel == ArScaraPanel.None)
+            if (uiMenu == ArScaraUiMenu.None)
             {
                 _warning.style.display = DisplayStyle.Flex;
                 _warning.text = _environmentMenu?.value == "environment"
                     ? "Select a work environment"
                     : "Select ARSCARA robot interface";
-                ShowOnlyArScaraPanel(ArScaraPanel.None);
+                ShowOnlyArScaraPanel(ArScaraUiMenu.None);
                 return;
             }
 
             _warning.style.display = DisplayStyle.None;
-            ShowOnlyArScaraPanel(panel);
+            ShowOnlyArScaraPanel(uiMenu);
         }
+
+        private void OnModeUiMenuChanged(ModeType mode)
+        {
+            switch (mode)
+            {
+                case ModeType.World:
+                    SetVisible(_methodForwardControlsGroup, false);
+                    SetVisible(_kinematicsReverseGroup, false);
+                    SetVisible(_jointControlsGroup, false);
+                    SetVisible(_worldControlsGroup, true);
+                    break;
+                case ModeType.Joint:
+                    SetVisible(_methodForwardControlsGroup, false);
+                    SetVisible(_kinematicsReverseGroup, false);
+                    SetVisible(_worldControlsGroup, false);
+                    SetVisible(_jointControlsGroup, true);
+                    break;
+                case ModeType.None:
+                    SetVisible(_worldControlsGroup, false);
+                    break;
+                default:
+                    SetVisible(_worldControlsGroup, false);
+                    break;
+            }
+            
+        }
+        private void OnKinematicsMenuChanged(KinematicsType kinematics)
+        {
+            switch (kinematics)
+            {
+                case KinematicsType.Forward:
+                    SetVisible(_kinematicsReverseGroup, false);
+                    SetVisible(_methodForwardControlsGroup, true);
+                    break;
+                case KinematicsType.Reverse:
+                    SetVisible(_methodForwardControlsGroup, false);
+                    SetVisible(_kinematicsReverseGroup, true);
+                    break;
+                default:
+                    SetVisible(_methodForwardControlsGroup, false);
+                    SetVisible(_kinematicsReverseGroup, false);
+                    _methodForward.value = "Method";
+                    break;
+                
+            }
+        }
+        
+        
+        #region Mode UI
+
+        // private void ApplyKinematics(KinematicsType kinematics)
+        // {
+        //     switch (kinematics)
+        //     {
+        //         case KinematicsType.Forward:
+        //             SetVisible(_kinematicsReverseGroup,false);
+        //             SetVisible(_methodReverseControlsGroup, false);
+        //             SetVisible(_kinematicsForwardGroup,true);
+        //             break;
+        //         case KinematicsType.Reverse:
+        //             SetVisible(_kinematicsForwardGroup,false);
+        //             SetVisible(_methodForwardControlsGroup, false);
+        //             SetVisible(_kinematicsReverseGroup,true);
+        //             break;
+        //         default:
+        //             SetVisible(_kinematicsForwardGroup, false);
+        //             SetVisible(_kinematicsReverseGroup,false);
+        //             SetVisible(_methodForwardControlsGroup, false);
+        //             SetVisible(_methodReverseControlsGroup, false);
+        //             _methodForward.value = "Method";
+        //             break;
+        //         
+        //     }
+        // }
+
+        private void ApplyMethodForward(MethodForwardType methodForward)
+        {
+            SetVisible(_methodForwardControlsGroup, methodForward != MethodForwardType.None);
+            if (methodForward == MethodForwardType.None)
+            {
+                SetVisible(_methodForwardControlsGroup, false);
+            }
+        }
+        
+        
+
+        private void ApplyModeUi(ModeType mode)
+        {
+            bool common = mode is ModeType.World or ModeType.Joint;
+            SetVisible(_speed, common);
+            SetVisible(_worldControlsGroup, mode == ModeType.World);
+            SetVisible(_jointControlsGroup, mode == ModeType.Joint);
+            _kinematics.value = "Kinematics";
+            _methodForward.value="Method";
+            _methodReverse.value="Method";
+            
+            if (mode == ModeType.None)
+            {
+                SetVisible(_worldControlsGroup, false);
+                SetVisible(_jointControlsGroup, false);
+            }
+        }
+        #endregion
+
+        #region Event Handlers
+        
 
         // private void OnPlacementMenuChanged(Placement placement)
         // {
@@ -550,28 +585,28 @@ namespace _scripts.controllers
         }
         
 
-        private static ArScaraPanel ParseArScaraPanel(string raw)
+        private static ArScaraUiMenu ParseArScaraUiMenu(string raw)
         {
             var s = (raw ?? "").Trim();
             return s switch
             {
-                "Control panel" => ArScaraPanel.Control,
-                "Jog and teach" => ArScaraPanel.JogTeach,
-                "Points"        => ArScaraPanel.Points,
-                _               => ArScaraPanel.None
+                "Control panel" => ArScaraUiMenu.Control,
+                "Jog and teach" => ArScaraUiMenu.JogTeach,
+                "Points"        => ArScaraUiMenu.Points,
+                _               => ArScaraUiMenu.None
             };
         }
 
-        // private static Placement ParsePlacement(string raw)
-        // {
-        //     var s = (raw ?? "").Trim();
-        //     return s switch
-        //     {
-        //         "Raycast"   => Placement.Raycast,
-        //         "QR marker" => Placement.QRMarker,
-        //         _           => Placement.None
-        //     };
-        // }
+        private static Placement ParsePlacement(string raw)
+        {
+            var s = (raw ?? "").Trim();
+            return s switch
+            {
+                "Raycast"   => Placement.Raycast,
+                "QR marker" => Placement.QRMarker,
+                _           => Placement.None
+            };
+        }
 
         #endregion
 

@@ -177,7 +177,6 @@ namespace _scripts.controllers
 
             if (_speed <= 0)
             {
-                Debug.LogWarning("Speed not set or invalid");
                 _motionCoroutine = null;
                 yield break;
             }

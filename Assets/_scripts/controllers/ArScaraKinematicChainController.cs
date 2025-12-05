@@ -1,3 +1,4 @@
+using System;
 using _scripts.models.robotics;
 using UnityEngine;
 
@@ -36,6 +37,7 @@ namespace _scripts.controllers
         private RobotKinematics _robotKinematics;
         private LinkController _linkControllerB;
         private LinkController _linkControllerD;
+        private JogAndTeachController _jogAndTeachController;
 
         private enum Method
         {
@@ -57,6 +59,11 @@ namespace _scripts.controllers
             set => _linkControllerD = value;
         }
 
+
+        private void Awake()
+        {
+            _jogAndTeachController = GameObject.FindWithTag("VirtualEnvironmentArScara").GetComponent<JogAndTeachController>();
+        }
 
         private void Start()
         {
@@ -143,9 +150,11 @@ namespace _scripts.controllers
                             _linkLengthA);
                         break;
                 }
-                
-                // print($"End effector - X: {_currentPosition.x:F5}, Y: {_currentPosition.y:F5}, Z: {_currentPosition.z:F5}");
-                // print($"{_method} compute - X: {_x:F5}, Y: {_y:F5}, Z: {_z:F5}");
+
+                _jogAndTeachController.XLabel.text = $"X: {1000*_currentPosition.x:F5} mm";
+                _jogAndTeachController.YLabel.text = $"Y: {1000*_currentPosition.z:F5} mm";
+                _jogAndTeachController.Q1Label.text = $"Q1: {_linkControllerB.GetNormalizedAngle():F5} deg";
+                _jogAndTeachController.Q2Label.text = $"Q2: {_linkControllerD.GetNormalizedAngle():F5} deg";
             }
         }
         

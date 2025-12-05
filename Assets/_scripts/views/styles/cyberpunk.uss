@@ -1,161 +1,226 @@
-.body{
+.body {
     flex-grow: 1;
     width: 100%;
     height: 100%;
-    background-color: rgb(0,0,0);
+    background-color: rgb(0, 0, 0);
 }
 
-.header{ width: 100%; height: 10%; }
-.main{ width: 100%; height: 80%; }
-
-.appTitlePanel{
-    width: 100%; height: 70%;
-    align-content: center; align-self: center; align-items: center; justify-content: center;
+.header {
+    width: 100%;
+    height: 10%;
 }
 
-.appTitle{
+.main {
+    width: 100%;
+    height: 80%;
+}
+
+.appTitlePanel {
+    width: 100%;
+    height: 70%;
+    align-content: center;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.appTitle {
     -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-text-align: upper-center;
-    color: rgb(0,255,40); font-size: 250px; white-space: normal;
+    color: rgb(0, 255, 40);
+    font-size: 250px;
+    white-space: normal;
 }
 
-.appSubtitlePanel{
-    width: 100%; height: 20%;
-    align-content: center; align-self: center; align-items: center; justify-content: center;
+.appSubtitlePanel {
+    width: 100%;
+    height: 20%;
+    align-content: center;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
 }
 
-.appSubtitle{
+.appSubtitle {
     -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-text-align: upper-center;
-    color: rgb(0,255,40); font-size: 50px; white-space: normal;
+    color: rgb(0, 255, 40);
+    font-size: 50px;
+    white-space: normal;
 }
 
-.buttonsPanel{
-    width: 100%; height: 10%;
-    flex-direction: row; align-items: center; justify-content: space-around;
-    align-self: center; align-content: center;
+.buttonsPanel {
+    width: 100%;
+    height: 10%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    align-self: center;
+    align-content: center;
 }
 
-.footer{ width: 100%; height: 10%; }
+.footer {
+    width: 100%;
+    height: 10%;
+}
 
-.generalButton{
+.generalButton {
     -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
-    color: rgb(0,0,0); background-color: rgb(0,255,40);
-    width: 200px; height: 75px; font-size: 40px;
+    color: rgb(0, 0, 0);
+    background-color: rgb(0, 255, 40);
+    width: 200px;
+    height: 75px;
+    font-size: 40px;
     -unity-font-style: bold;
-    border-width: 2px; border-color: rgb(0,200,0);
+    border-width: 2px;
+    border-color: rgb(0, 200, 0);
     opacity: 0.95;
 }
-.generalButton:hover{
-    background-color: rgb(0,200,0);
-    opacity: 1;
-}
-.generalButton:focus{
-    border-color: rgb(255,255,255);
+
+.generalButton:hover {
+    background-color: rgb(0, 200, 0);
     opacity: 1;
 }
 
-.slidingPanels{
-    flex-grow: 1; 
+.generalButton:focus {
+    border-color: rgb(255, 255, 255);
+    opacity: 1;
+}
+
+.slidingPanels {
+    flex-grow: 1;
     position: absolute;
     width: 100%;
     height: 100%;
 }
 
-
-
-.scrim{
-    flex-grow: 1; width: 100%; height: 100%;
+.scrim {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
 }
-.scrimTransparent{
+
+.scrimTransparent {
     opacity: 0;
 }
-.scrimOpaque{ 
-    background-color: rgba(0,0,0,0.9);
-    opacity: 1; 
+
+.scrimOpaque {
+    background-color: rgba(0, 0, 0, 0.9);
+    opacity: 1;
 }
 
-.subpanels{
-    flex-grow: 1; position: absolute;
-    width: 50%; height: 60%;
-    background-color: rgba(0,0,0,0.9);
-    border-width: 2px; border-color: rgb(0,255,40);
+.subpanels {
+    flex-grow: 1;
+    position: absolute;
+    width: 50%;
+    height: 60%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-width: 2px;
+    border-color: rgb(0, 255, 40);
     opacity: 0.95;
 }
-.subpanels:hover{ opacity: 1; }
 
-.subpanelPanelOut{ 
+.subpanels:hover {
+    opacity: 1;
+}
+
+.subpanelPanelOut {
     opacity: 0;
     translate: -100% 35%;
     transition-timing-function: ease-out-cubic;
     transition-duration: 1.5s;
 }
-.subpanelPanelIn{ 
+
+.subpanelPanelIn {
     opacity: 1;
     display: flex;
     translate: 50% 35%;
-    transition-timing-function: ease-out-cubic; 
+    transition-timing-function: ease-out-cubic;
     transition-duration: 1.5s;
 }
 
-.mainMenuPanelOut{
+.mainMenuPanelOut {
     opacity: 0;
     translate: -100% 0;
-    transition-timing-function:  ease-out-cubic;
-    transition-duration: .5s;
+    transition-timing-function: ease-out-cubic;
+    transition-duration: 0.5s;
 }
-.mainMenuPanelIn{
+
+.mainMenuPanelIn {
     opacity: 1;
     display: flex;
     translate: 0;
-    transition-timing-function:   ease-out-cubic;
+    transition-timing-function: ease-out-cubic;
     transition-duration: 1s;
 }
 
-.headerSubpanel{
-    width: 100%; 
+.headerSubpanel {
+    width: 100%;
     height: 20%;
-    align-items: center; 
-    justify-content: center; 
+    align-items: center;
+    justify-content: center;
     align-self: center;
     align-content: center;
 }
 
-.tittleSubpanel{
+.tittleSubpanel {
     -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-text-align: upper-center;
-    color: rgb(0,255,40); font-size: 100px; white-space: normal;
+    color: rgb(0, 255, 40);
+    font-size: 100px;
+    white-space: normal;
 }
 
-.bodySubpanel{ width: 100%; height: 60%; }
-
-.footerSubpanel{
-    width: 100%; height: 20%;
-    align-items: center; justify-content: space-around; align-self: center; align-content: center;
+.bodySubpanel {
+    width: 100%;
+    height: 60%;
 }
 
-.inputFields{ width: 60%; height: 50px; font-size: 20px; -unity-font-style: bold; }
-.dropdownOptions{ width: 250px; height: 50px; font-size: 20px; -unity-font-style: bold; }
+.footerSubpanel {
+    width: 100%;
+    height: 20%;
+    align-items: center;
+    justify-content: space-around;
+    align-self: center;
+    align-content: center;
+}
 
-.instructions{
+.inputFields {
+    width: 60%;
+    height: 50px;
+    font-size: 20px;
+    -unity-font-style: bold;
+}
+
+.dropdownOptions {
+    width: 250px;
+    height: 50px;
+    font-size: 20px;
+    -unity-font-style: bold;
+}
+
+.instructions {
     -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-text-align: upper-center;
-    color: rgb(0,255,40); font-size: 40px; white-space: normal;
+    color: rgb(0, 255, 40);
+    font-size: 40px;
+    white-space: normal;
 }
 
-.arScaraPanelsIn{
+.arScaraPanelsIn {
     flex-grow: 1;
     position: absolute;
-    width: 100%; 
+    width: 100%;
     height: 80%;
     display: flex;
-    opacity: 1; 
+    opacity: 1;
     flex-direction: row;
     translate: 0 10%;
     transition-timing-function: ease-out-cubic;
     transition-duration: 1.5s;
 }
-.arScaraPanelsOut{
+
+.arScaraPanelsOut {
     flex-grow: 1;
     position: absolute;
     width: 100%;
@@ -166,87 +231,160 @@
     transition-duration: 1.5s;
 }
 
-/*original*/
-.leftPanel{ width: 20%; height: 100%; }
-.centerPanel{ width: 60%; height: 100%; }
-.rightPanel{ width: 20%; height: 100%; }
-
-
-.miniPanel{
-    width: 100%; height: 50%;
-    flex-direction: column; align-items: center; justify-content: center; align-self: center; align-content: center;
+.leftPanel {
+    width: 20%;
+    height: 100%;
 }
 
-.headerMiniPanel{
-    width: 100%; height: 20%;
-    align-items: center; justify-content: center; align-self: center; align-content: center;
+.centerPanel {
+    width: 60%;
+    height: 100%;
 }
 
-.bodyMiniPanel{
-    width: 100%; height: 60%;
-    align-items: center; justify-content: center; align-self: center; align-content: center;
+.rightPanel {
+    width: 20%;
+    height: 100%;
 }
 
-.footerMiniPanel{
-    width: 100%; height: 20%;
-    align-items: center; justify-content: center; align-self: center; align-content: center;
-}
-
-.headerMiniPanel2{
-    width: 100%; height: 60%;
-    align-items: center; justify-content: center; align-self: center; align-content: center;
-}
-
-.bodyMiniPanel2{
-    width: 100%; height: 20%;
-    align-items: center; justify-content: center; align-self: center; align-content: center;
-}
-
-.footerMiniPanel2{
-    width: 100%; height: 20%;
-    align-items: center; justify-content: center; align-self: center; align-content: center;
-}
-
-
-
-
-.columnOrientationItems{ 
-    flex-direction: column; 
-}
-.rowOrientationItems{
-    flex-direction: row;
-}
-.centerItemsCompletely{
-    align-items: center; 
+.miniPanel {
+    width: 100%;
+    height: 50%;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     align-self: center;
     align-content: center;
 }
 
-.showItem{ display: flex; }
-.hideItem{ display: none; }
+.headerMiniPanel {
+    width: 100%;
+    height: 20%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
 
-.nameMiniPanel{
+.bodyMiniPanel {
+    width: 100%;
+    height: 60%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+.footerMiniPanel {
+    width: 100%;
+    height: 20%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+.headerMiniPanel2 {
+    width: 100%;
+    height: 60%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+.bodyMiniPanel2 {
+    width: 100%;
+    height: 20%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+.footerMiniPanel2 {
+    width: 100%;
+    height: 20%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+.columnOrientationItems {
+    flex-direction: column;
+}
+
+.rowOrientationItems {
+    flex-direction: row;
+}
+
+.centerItemsCompletely {
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    align-content: center;
+}
+
+.showItem {
+    display: flex;
+}
+
+.hideItem {
+    display: none;
+}
+
+.nameMiniPanel {
     -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-text-align: upper-center;
-    color: rgb(0,255,40); font-size: 50px; white-space: normal;
+    color: rgb(0, 255, 40);
+    font-size: 50px;
+    white-space: normal;
 }
 
-.textMiniPanelLabel{
+.textMiniPanelLabel {
     -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
     -unity-text-align: upper-center;
-    color: rgb(0,255,40); font-size: 50px; white-space: normal;
+    color: rgb(0, 255, 40);
+    font-size: 50px;
+    white-space: normal;
 }
 
-
-.backgroundTransparent{
-    background-color: rgba(0,0,0,0);
-}
-.backgroundOpaque{
-    background-color: rgba(0,0,0,255);
-
+.backgroundTransparent {
+    background-color: rgba(0, 0, 0, 0);
 }
 
- .passthrough {
-  -unity-picking-mode: ignore;
+.backgroundOpaque {
+    background-color: rgba(0, 0, 0, 255);
+}
+
+.passthrough {
+    -unity-picking-mode: ignore;
+}
+
+.equationsPanel {
+    flex-grow: 1;
+    position: absolute;
+    width: 1200px;
+    height: 400px;
+    background-color: rgba(6, 12, 58, 0.58);
+    translate: 600px 600px;
+    border-top-color: rgb(0, 0, 255);
+    border-left-color: rgb(0, 0, 255);
+    border-bottom-color: rgb(0, 0, 255);
+    border-right-color: rgb(0, 0, 255);
+    border-top-width: 3px;
+    border-right-width: 3px;
+    border-bottom-width: 3px;
+    border-left-width: 3px;
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    border-bottom-left-radius: 100px;
+}
+
+.ExtraData {
+    font-size: 45px;
+    width: 100%;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("project://database/Assets/_fonts/references/VT323-Regular.ttf?fileID=12800000&guid=289b75764e32a4b85b2ee0c973db7173&type=3#VT323-Regular");
 }

@@ -8,20 +8,18 @@ namespace _scripts.controllers
     {
         private GameObject _arScaraUi;
         private VisualElement _root;
-        
-        private Label 
+
+        private Label
             _emergencyStopLabel,
             _safeguardLabel,
             _motorsLabel,
             _powerLabel,
             _xLabel,
             _yLabel,
-            _zLabel,
-            _uLabel,
             _j1Label,
             _j2Label,
-            _j3Label,
-            _j4Label;
+            _q1Label,
+            _q2Label;
 
         private DropdownField 
             _mode, 
@@ -188,18 +186,7 @@ namespace _scripts.controllers
             get => _yLabel;
             set => _yLabel = value;
         }
-
-        internal Label ZLabel
-        {
-            get => _zLabel;
-            set => _zLabel = value;
-        }
-
-        internal Label ULabel
-        {
-            get => _uLabel;
-            set => _uLabel = value;
-        }
+        
 
         internal Label J1Label
         {
@@ -213,16 +200,16 @@ namespace _scripts.controllers
             set => _j2Label = value;
         }
 
-        internal Label J3Label
+        internal Label Q1Label
         {
-            get => _j3Label;
-            set => _j3Label = value;
+            get => _q1Label;
+            set => _q1Label = value;
         }
 
-        internal Label J4Label
+        internal Label Q2Label
         {
-            get => _j4Label;
-            set => _j4Label = value;
+            get => _q2Label;
+            set => _q2Label = value;
         }
 
         internal Label EmergencyStopLabel{
@@ -294,12 +281,10 @@ namespace _scripts.controllers
             
             _xLabel= _root.Q<Label>("xLabel");
             _yLabel= _root.Q<Label>("yLabel");
-            _zLabel= _root.Q<Label>("zLabel");
-            _uLabel= _root.Q<Label>("uLabel");
             _j1Label= _root.Q<Label>("j1Label");
             _j2Label= _root.Q<Label>("j2Label");
-            _j3Label= _root.Q<Label>("j3Label");
-            _j4Label= _root.Q<Label>("j4Label");
+            _q1Label= _root.Q<Label>("q1Label");
+            _q2Label= _root.Q<Label>("q2Label");
             
             _emergencyStopLabel= _root.Q<Label>("EmergencyStopLabel");
             _safeguardLabel= _root.Q<Label>("SafeguardLabel");
