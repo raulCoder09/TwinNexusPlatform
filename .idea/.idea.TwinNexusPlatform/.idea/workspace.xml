@@ -5,18 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a43be88-e671-4ca5-97a3-0ab22bcb4127" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/AndroidProjectSystem.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TwinNexusPlatform/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/PerformanceTestRunInfo.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/PerformanceTestRunInfo.json.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/PerformanceTestRunSettings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/PerformanceTestRunSettings.json.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraEnvironmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_scripts/controllers/ArScaraEnvironmentController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/PackageManagerSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/PackageManagerSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -93,7 +85,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="$USER_HOME$/Unity/Hub/Editor/6000.4.0b3/Editor/Unity" />
+      <option name="EXE_PATH" value="$USER_HOME$/Unity/Hub/Editor/6000.4.0b7/Editor/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath $PROJECT_DIR$ -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -103,7 +95,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="$USER_HOME$/Unity/Hub/Editor/6000.4.0b3/Editor/Unity" />
+      <option name="EXE_PATH" value="$USER_HOME$/Unity/Hub/Editor/6000.4.0b7/Editor/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath $PROJECT_DIR$ -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -290,6 +282,8 @@
       <workItem from="1764869189312" duration="12434000" />
       <workItem from="1764927026212" duration="13450000" />
       <workItem from="1769074089045" duration="246000" />
+      <workItem from="1772028603052" duration="138000" />
+      <workItem from="1772028920478" duration="18000" />
     </task>
     <servers />
   </component>
